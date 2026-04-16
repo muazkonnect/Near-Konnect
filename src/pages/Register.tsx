@@ -90,10 +90,11 @@ const Register = () => {
       metadata.longitude = String(workerCoords?.longitude ?? "");
     }
 
+    // No emailRedirectTo → Supabase emails a 6-digit OTP code instead of a magic link
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
-      options: { data: metadata, emailRedirectTo: window.location.origin },
+      options: { data: metadata },
     });
 
     setLoading(false);
