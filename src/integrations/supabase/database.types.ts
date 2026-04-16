@@ -10,46 +10,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
-      ad_placement_settings: {
-        Row: {
-          config: Json
-          created_at: string
-          enabled: boolean
-          frequency_max: number
-          frequency_min: number
-          id: string
-          placement_key: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          config?: Json
-          created_at?: string
-          enabled?: boolean
-          frequency_max?: number
-          frequency_min?: number
-          id?: string
-          placement_key: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          config?: Json
-          created_at?: string
-          enabled?: boolean
-          frequency_max?: number
-          frequency_min?: number
-          id?: string
-          placement_key?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
       blood_requests: {
         Row: {
           blood_group: string
@@ -84,15 +48,7 @@ export type Database = {
           updated_at?: string
           urgency?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "blood_requests_requester_id_fkey_profiles"
-            columns: ["requester_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       bookings: {
         Row: {
@@ -204,84 +160,30 @@ export type Database = {
           },
         ]
       }
-      featured_services: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          ends_at: string | null
-          id: string
-          is_active: boolean
-          owner_user_id: string | null
-          priority: number
-          rotation_seed: number
-          service_id: string
-          starts_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          ends_at?: string | null
-          id?: string
-          is_active?: boolean
-          owner_user_id?: string | null
-          priority?: number
-          rotation_seed?: number
-          service_id: string
-          starts_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          ends_at?: string | null
-          id?: string
-          is_active?: boolean
-          owner_user_id?: string | null
-          priority?: number
-          rotation_seed?: number
-          service_id?: string
-          starts_at?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       messages: {
         Row: {
-          conversation_key: string | null
           created_at: string
-          delivered_at: string | null
           id: string
           message_text: string
           receiver_id: string
-          seen_at: string | null
           sender_id: string
-          status: Database["public"]["Enums"]["message_status"]
-          updated_at: string
+          status: string
         }
         Insert: {
-          conversation_key?: string | null
           created_at?: string
-          delivered_at?: string | null
           id?: string
-          message_text: string
+          message_text?: string
           receiver_id: string
-          seen_at?: string | null
           sender_id: string
-          status?: Database["public"]["Enums"]["message_status"]
-          updated_at?: string
+          status?: string
         }
         Update: {
-          conversation_key?: string | null
           created_at?: string
-          delivered_at?: string | null
           id?: string
           message_text?: string
           receiver_id?: string
-          seen_at?: string | null
           sender_id?: string
-          status?: Database["public"]["Enums"]["message_status"]
-          updated_at?: string
+          status?: string
         }
         Relationships: [
           {
@@ -299,60 +201,6 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
-      }
-      native_ads: {
-        Row: {
-          ad_type: string
-          created_at: string
-          created_by: string | null
-          cta_label: string
-          cta_url: string
-          description: string | null
-          ends_at: string | null
-          id: string
-          image_url: string | null
-          is_active: boolean
-          placement: string
-          priority: number
-          starts_at: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          ad_type?: string
-          created_at?: string
-          created_by?: string | null
-          cta_label?: string
-          cta_url: string
-          description?: string | null
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean
-          placement?: string
-          priority?: number
-          starts_at?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          ad_type?: string
-          created_at?: string
-          created_by?: string | null
-          cta_label?: string
-          cta_url?: string
-          description?: string | null
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean
-          placement?: string
-          priority?: number
-          starts_at?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       profiles: {
         Row: {
@@ -437,81 +285,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      service_analytics_events: {
-        Row: {
-          created_at: string
-          event_type: Database["public"]["Enums"]["analytics_event_type"]
-          id: string
-          metadata: Json
-          owner_user_id: string | null
-          service_id: string
-          source: string
-        }
-        Insert: {
-          created_at?: string
-          event_type: Database["public"]["Enums"]["analytics_event_type"]
-          id?: string
-          metadata?: Json
-          owner_user_id?: string | null
-          service_id: string
-          source?: string
-        }
-        Update: {
-          created_at?: string
-          event_type?: Database["public"]["Enums"]["analytics_event_type"]
-          id?: string
-          metadata?: Json
-          owner_user_id?: string | null
-          service_id?: string
-          source?: string
-        }
-        Relationships: []
-      }
-      service_boosts: {
-        Row: {
-          boost_type: Database["public"]["Enums"]["boost_type"]
-          created_at: string
-          ends_at: string | null
-          id: string
-          metadata: Json
-          owner_user_id: string
-          price_cents: number | null
-          service_id: string
-          starts_at: string | null
-          status: Database["public"]["Enums"]["boost_status"]
-          updated_at: string
-          visibility_multiplier: number
-        }
-        Insert: {
-          boost_type: Database["public"]["Enums"]["boost_type"]
-          created_at?: string
-          ends_at?: string | null
-          id?: string
-          metadata?: Json
-          owner_user_id: string
-          price_cents?: number | null
-          service_id: string
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["boost_status"]
-          updated_at?: string
-          visibility_multiplier?: number
-        }
-        Update: {
-          boost_type?: Database["public"]["Enums"]["boost_type"]
-          created_at?: string
-          ends_at?: string | null
-          id?: string
-          metadata?: Json
-          owner_user_id?: string
-          price_cents?: number | null
-          service_id?: string
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["boost_status"]
-          updated_at?: string
-          visibility_multiplier?: number
-        }
-        Relationships: []
       }
       service_categories: {
         Row: {
@@ -622,42 +395,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_service_analytics_summary: {
-        Args: { _days?: number; _owner_user_id: string; _service_id: string }
-        Returns: {
-          contact_clicks: number
-          conversion_rate: number
-          conversions: number
-          messages_received: number
-          profile_views: number
-        }[]
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
-      has_role:
-        | {
-            Args: {
-              _role: Database["public"]["Enums"]["app_role"]
-              _user_id: string
-            }
-            Returns: boolean
-          }
-        | {
-            Args: {
-              _role: Database["public"]["Enums"]["app_role"]
-              _user_id: string
-            }
-            Returns: boolean
-          }
     }
     Enums: {
-      analytics_event_type:
-        | "profile_view"
-        | "contact_click"
-        | "message_received"
-        | "conversion"
       app_role: "customer" | "worker" | "admin"
-      boost_status: "pending" | "active" | "expired" | "rejected"
-      boost_type: "featured_listing" | "priority_ranking" | "urgent_boost"
-      message_status: "sent" | "delivered" | "seen" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -785,16 +532,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      analytics_event_type: [
-        "profile_view",
-        "contact_click",
-        "message_received",
-        "conversion",
-      ],
       app_role: ["customer", "worker", "admin"],
-      boost_status: ["pending", "active", "expired", "rejected"],
-      boost_type: ["featured_listing", "priority_ranking", "urgent_boost"],
-      message_status: ["sent", "delivered", "seen", "failed"],
     },
   },
 } as const
