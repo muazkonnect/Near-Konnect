@@ -124,8 +124,8 @@ const Register = () => {
       navigate(redirect, { replace: true });
       return;
     }
-    toast.success("Account created! Check your email to confirm.");
-    navigate(`/login?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+    toast.success("We sent a 6-digit code to your email.");
+    navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
   return (
