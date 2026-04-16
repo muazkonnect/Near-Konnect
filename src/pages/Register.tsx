@@ -13,6 +13,7 @@ import logoImg from "@/assets/logo.png";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
 
 const Register = () => {
   const navigate = useNavigate();

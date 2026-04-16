@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/i18n";
 import logoImg from "@/assets/logo.png";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -79,6 +80,8 @@ const Login = () => {
               {loading ? t("login.submitting") : t("login.submit")}
             </Button>
           </form>
+
+          <SocialAuthButtons disabled={loading} />
 
           <div className="text-center mt-4">
             <Link to="/forgot-password" className="text-sm text-primary hover:underline">
