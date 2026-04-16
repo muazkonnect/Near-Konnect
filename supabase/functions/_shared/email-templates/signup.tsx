@@ -87,4 +87,12 @@ const button = {
   padding: '12px 20px',
   textDecoration: 'none',
 }
+const codeStyle = {
+  fontFamily: 'Courier, monospace',
+  fontSize: '28px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '6px',
+  color: '#000000',
+  margin: '0 0 20px',
+}
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
