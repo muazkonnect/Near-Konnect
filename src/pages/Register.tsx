@@ -98,11 +98,25 @@ const Register = () => {
 
     setLoading(false);
     if (error) {
-      toast.error(getAuthErrorMessage(error));
+      const msg = getAuthErrorMessage(error);
+      toast.error(msg);
+      if (/already registered|already exists|log in instead/i.test(msg)) {
+        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+      }
       return;
     }
     const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
     const redirect = searchParams.get("redirect") || defaultRedirect;
+
+    // Supabase quirk: when email confirmations are on, signing up with an
+    // existing email returns a "fake" user with empty identities and no session.
+    // Detect that and route the user to login instead of pretending it succeeded.
+    const identities = (data.user as { identities?: unknown[] } | null)?.identities;
+    if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
+      toast.error("This email is already registered. Please log in instead.");
+      navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+      return;
+    }
 
     if (data.session) {
       toast.success("Account created successfully!");
