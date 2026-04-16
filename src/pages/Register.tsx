@@ -13,6 +13,7 @@ import logoImg from "@/assets/logo.png";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -90,10 +91,11 @@ const Register = () => {
       metadata.longitude = String(workerCoords?.longitude ?? "");
     }
 
+    // No emailRedirectTo → Supabase emails a 6-digit OTP code instead of a magic link
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
-      options: { data: metadata, emailRedirectTo: window.location.origin },
+      options: { data: metadata },
     });
 
     setLoading(false);
@@ -123,8 +125,8 @@ const Register = () => {
       navigate(redirect, { replace: true });
       return;
     }
-    toast.success("Account created! Check your email to confirm.");
-    navigate(`/login?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+    toast.success("We sent a 6-digit code to your email.");
+    navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
   return (
@@ -269,6 +271,8 @@ const Register = () => {
               {loading ? t("register.submitting") : t("register.submit")}
             </Button>
           </form>
+
+          <SocialAuthButtons disabled={loading} />
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             {t("register.hasAccount")}{" "}

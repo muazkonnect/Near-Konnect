@@ -12,6 +12,7 @@ const Discover = lazy(() => import("./pages/Discover.tsx"));
 const WorkerProfile = lazy(() => import("./pages/WorkerProfile.tsx"));
 const Login = lazy(() => import("./pages/Login.tsx"));
 const Register = lazy(() => import("./pages/Register.tsx"));
+const VerifyOtp = lazy(() => import("./pages/VerifyOtp.tsx"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword.tsx"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const WorkerDashboard = lazy(() => import("./pages/WorkerDashboard.tsx"));
@@ -26,6 +27,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions.tsx"));
 const SupportChatbot = lazy(() => import("./components/SupportChatbot"));
 const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
+const UnverifiedEmailBanner = lazy(() => import("@/components/UnverifiedEmailBanner"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +54,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <Suspense fallback={null}>
+              <UnverifiedEmailBanner />
+            </Suspense>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -59,6 +64,7 @@ const App = () => (
                 <Route path="/worker/:id" element={<WorkerProfile />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/verify-otp" element={<VerifyOtp />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
