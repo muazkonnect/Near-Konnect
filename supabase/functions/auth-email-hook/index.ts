@@ -39,7 +39,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 const SITE_NAME = "Near Konnect App"
 const SENDER_DOMAIN = "notify.www.nearkonnect.com"
 const ROOT_DOMAIN = "www.nearkonnect.com"
-const FROM_DOMAIN = "www.nearkonnect.com" // Domain shown in From address (may be root or sender subdomain)
+const FROM_DOMAIN = SENDER_DOMAIN
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
@@ -54,6 +54,7 @@ const SAMPLE_DATA: Record<string, object> = {
     siteUrl: SAMPLE_PROJECT_URL,
     recipient: SAMPLE_EMAIL,
     confirmationUrl: SAMPLE_PROJECT_URL,
+    token: '123456',
   },
   magiclink: {
     siteName: SITE_NAME,
@@ -80,7 +81,7 @@ const SAMPLE_DATA: Record<string, object> = {
 }
 
 // Preview endpoint handler - returns rendered HTML without sending email
-async function handlePreview(req: Request): Promise<Response> {
+async function handlePreview(req: Request, url: URL): Promise<Response> {
   const previewCorsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, content-type',
@@ -93,19 +94,29 @@ async function handlePreview(req: Request): Promise<Response> {
   const apiKey = Deno.env.get('LOVABLE_API_KEY')
   const authHeader = req.headers.get('Authorization')
 
-  if (!apiKey || authHeader !== `Bearer ${apiKey}`) {
+  if (!apiKey || (req.method !== 'GET' && authHeader !== `Bearer ${apiKey}`)) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
-  let type: string
-  try {
-    const body = await req.json()
-    type = body.type
-  } catch (error) {
-    return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+  let type = url.searchParams.get('type') ?? ''
+
+  if (!type && req.method !== 'GET') {
+    try {
+      const body = await req.json()
+      type = body.type
+    } catch {
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+  }
+
+  if (!type) {
+    return new Response(JSON.stringify({ error: 'Missing email type' }), {
       status: 400,
       headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
     })
@@ -300,7 +311,7 @@ Deno.serve(async (req) => {
 
   // Route to preview handler for /preview path
   if (url.pathname.endsWith('/preview')) {
-    return handlePreview(req)
+    return handlePreview(req, url)
   }
 
   // Main webhook handler
