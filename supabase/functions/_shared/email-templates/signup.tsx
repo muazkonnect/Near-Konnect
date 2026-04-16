@@ -4,7 +4,6 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -26,7 +25,6 @@ export const SignupEmail = ({
   siteName,
   siteUrl,
   recipient,
-  confirmationUrl,
   token,
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
@@ -36,11 +34,11 @@ export const SignupEmail = ({
       <Container style={container}>
         <Heading style={h1}>Verify your email</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
+          Welcome to{' '}
           <Link href={siteUrl} style={link}>
             <strong>{siteName}</strong>
           </Link>
-          ! Enter the 6-digit code below in the app to verify{' '}
+          ! Use the code below in the app to verify{' '}
           <Link href={`mailto:${recipient}`} style={link}>
             {recipient}
           </Link>
@@ -48,12 +46,6 @@ export const SignupEmail = ({
         </Text>
         {token ? <Text style={codeStyle}>{token}</Text> : null}
         <Text style={text}>This code expires in 10 minutes.</Text>
-        <Text style={text}>
-          Or click the button below to verify instantly:
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
         <Text style={footer}>
           If you didn't create an account, you can safely ignore this email.
         </Text>
@@ -79,20 +71,13 @@ const text = {
   margin: '0 0 25px',
 }
 const link = { color: 'inherit', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
 const codeStyle = {
   fontFamily: 'Courier, monospace',
-  fontSize: '28px',
+  fontSize: '32px',
   fontWeight: 'bold' as const,
-  letterSpacing: '6px',
+  letterSpacing: '8px',
   color: '#000000',
+  textAlign: 'center' as const,
   margin: '0 0 20px',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
