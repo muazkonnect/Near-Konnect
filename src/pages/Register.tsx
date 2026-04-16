@@ -272,6 +272,8 @@ const Register = () => {
             </Button>
           </form>
 
+          <SocialAuthButtons disabled={loading} />
+
           <p className="text-center text-sm text-muted-foreground mt-6">
             {t("register.hasAccount")}{" "}
             <Link to="/login" className="text-primary font-medium hover:underline">{t("nav.logIn")}</Link>
