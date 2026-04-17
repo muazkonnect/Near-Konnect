@@ -72,6 +72,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
   return (
     <div className="w-full overflow-hidden rounded-2xl border" style={{ height }}>
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} scrollWheelZoom>
+        <InvalidateOnMount />
         <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {fitToWorkers && points.length > 0 && <FitBounds points={points} />}
         {userCoords && (
