@@ -39,9 +39,6 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
               <h3 className="max-w-full truncate text-sm font-semibold text-card-foreground md:text-base">{worker.name}</h3>
-              {sponsored && (
-                <Badge variant="outline" className="rounded-full px-1.5 py-0 text-[9px] md:text-[10px]">Sponsored</Badge>
-              )}
               {worker.verified && (
                 <CheckCircle className="w-4 h-4 text-primary shrink-0" />
               )}
