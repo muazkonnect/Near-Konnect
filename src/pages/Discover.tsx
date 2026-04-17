@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -281,40 +281,89 @@ const Discover = () => {
           </div>
         </div>
 
-        <div className="space-y-3 rounded-2xl border bg-muted/30 p-3">
-          <p className="text-sm font-semibold text-foreground">Browse by category</p>
-          <div className="grid gap-2 sm:grid-cols-2">
+        <div className="space-y-4 rounded-2xl border bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Browse by category</p>
+              <p className="text-xs text-muted-foreground">Pick a category to narrow your search</p>
+            </div>
+            {(selectedMainCategory || selectedSubCategory) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 gap-1 px-2 text-xs"
+                onClick={() => {
+                  const next = new URLSearchParams(searchParams);
+                  next.delete("main_category");
+                  next.delete("sub_category");
+                  setExpandedMainCategory("");
+                  setSearchParams(next);
+                }}
+              >
+                <X className="h-3 w-3" /> Clear
+              </Button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             {MAIN_SERVICE_CATEGORIES.map((mainCategory) => {
               const isSelected = selectedMainCategory === mainCategory;
-              const isExpanded = expandedMainCategory === mainCategory;
+              const Icon = ({
+                "Home & Local Services": HomeIcon,
+                "Automotive & Transport": Car,
+                "Shops, Food & Daily Needs": ShoppingBag,
+                "Professional & Business Services": Briefcase,
+                "Health, Education & Community": HeartPulse,
+                "Events & Lifestyle": Sparkles,
+              } as const)[mainCategory];
               return (
                 <button
                   key={mainCategory}
                   type="button"
                   onClick={() => toggleMainCategory(mainCategory)}
-                  className={`flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all ${
-                    isSelected ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-foreground hover:bg-muted"
+                  className={`tap-feedback flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all ${
+                    isSelected
+                      ? "border-primary bg-primary/10 text-primary shadow-sm"
+                      : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-muted"
                   }`}
                 >
-                  <span>{mainCategory}</span>
-                  {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <span
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                      isSelected ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="text-xs font-medium leading-tight">{mainCategory}</span>
                 </button>
               );
             })}
           </div>
 
           {expandedMainCategory && (
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {SUBCATEGORIES_BY_MAIN[expandedMainCategory as keyof typeof SUBCATEGORIES_BY_MAIN].map((subCategory) => (
-                <Badge
-                  key={subCategory}
-                  variant={selectedSubCategory === subCategory ? "default" : "outline"}
-                  className="cursor-pointer shrink-0 rounded-full px-3 py-1.5"
-                  onClick={() => toggleSubCategory(subCategory)}
-                >
-                  {subCategory}
-                </Badge>
-              ))}
+            <div className="rounded-xl bg-muted/40 p-3">
+              <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {expandedMainCategory}
+              </p>
+              <div className="-mx-1 flex flex-wrap gap-1.5 px-1">
+                {SUBCATEGORIES_BY_MAIN[expandedMainCategory as keyof typeof SUBCATEGORIES_BY_MAIN].map((subCategory) => {
+                  const active = selectedSubCategory === subCategory;
+                  return (
+                    <button
+                      key={subCategory}
+                      type="button"
+                      onClick={() => toggleSubCategory(subCategory)}
+                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                        active
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card text-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {subCategory}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
