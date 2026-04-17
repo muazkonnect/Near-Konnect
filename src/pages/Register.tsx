@@ -125,7 +125,7 @@ const Register = () => {
       navigate(redirect, { replace: true });
       return;
     }
-    toast.success("We sent a 6-digit code to your email.");
+    toast.success("An 8-digit OTP has been sent to your email.");
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
