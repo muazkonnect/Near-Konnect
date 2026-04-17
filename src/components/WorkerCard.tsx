@@ -62,10 +62,12 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
                 <span className="font-semibold text-card-foreground">{worker.rating}</span>
                 <span>({worker.reviewCount})</span>
               </span>
-              {worker.distance > 0 && (
+              {(matchedMeters !== undefined || worker.distance > 0) && (
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
-                  {worker.distance} {t("worker.km")}
+                  {matchedMeters !== undefined
+                    ? `${Math.round(matchedMeters)} m`
+                    : `${worker.distance} ${t("worker.km")}`}
                 </span>
               )}
               <span className="flex items-center gap-1">
