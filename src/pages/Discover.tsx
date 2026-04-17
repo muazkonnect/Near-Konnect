@@ -344,6 +344,27 @@ const Discover = () => {
           )}
         </div>
 
+        <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">Radius:</span>
+          {([1, 2, 3] as const).map((km) => (
+            <Button
+              key={km}
+              size="sm"
+              variant={radiusKm === km ? "default" : "outline"}
+              onClick={() => setRadiusKm(radiusKm === km ? null : km)}
+              disabled={!userCoords}
+              className="shrink-0 rounded-full"
+            >
+              {km} km
+            </Button>
+          ))}
+          {radiusKm && (
+            <Button size="sm" variant="ghost" onClick={() => setRadiusKm(null)} className="shrink-0 rounded-full text-xs">
+              Clear
+            </Button>
+          )}
+        </div>
+
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {([0, 3, 4, 4.5] as const).map((rating) => (
             <Button
