@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, Eye, EyeOff, Navigation } from "lucide-react";
+import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
+import MapLocationPicker from "@/components/MapLocationPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +11,7 @@ import PasswordStrength from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/passwordValidation";
 import { useI18n } from "@/i18n";
 import logoImg from "@/assets/logo.png";
-import { getCurrentPosition, type Coords } from "@/lib/geolocation";
+import { type Coords } from "@/lib/geolocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import SocialAuthButtons from "@/components/SocialAuthButtons";
@@ -34,20 +35,6 @@ const Register = () => {
   const [bloodGroup, setBloodGroup] = useState("");
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
-  const [capturingLocation, setCapturingLocation] = useState(false);
-
-  const handleCaptureWorkerLocation = async () => {
-    setCapturingLocation(true);
-    try {
-      const coords = await getCurrentPosition();
-      setWorkerCoords(coords);
-      toast.success("Service location saved.");
-    } catch {
-      toast.error("Please enable location access to continue.");
-    } finally {
-      setCapturingLocation(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +57,7 @@ const Register = () => {
       return;
     }
     if (role === "worker" && !workerCoords) {
-      toast.error("Use your current location as your fixed service location.");
+      toast.error("Please pick your fixed service location on the map.");
       return;
     }
 
@@ -253,16 +240,10 @@ const Register = () => {
                   <Label htmlFor="experience">{t("register.experience")} *</Label>
                   <Input id="experience" type="number" placeholder="e.g. 5" className="mt-1.5" value={experience} onChange={e => setExperience(e.target.value)} />
                 </div>
-                <div className="rounded-xl border bg-muted/40 p-3">
-                  <p className="text-sm font-medium text-foreground">Use your current location as your service location?</p>
-                  <p className="mt-1 text-xs text-muted-foreground">This fixed location is used for nearby matching and cannot be changed frequently.</p>
-                  <Button type="button" variant="outline" className="mt-3 w-full gap-2" onClick={handleCaptureWorkerLocation} disabled={capturingLocation || !!workerCoords}>
-                    <Navigation className="h-4 w-4" />
-                    {workerCoords ? "Service location saved" : capturingLocation ? "Detecting location..." : "Use my current location"}
-                  </Button>
-                  {workerCoords && (
-                    <p className="mt-2 text-xs text-muted-foreground">{workerCoords.latitude.toFixed(5)}, {workerCoords.longitude.toFixed(5)}</p>
-                  )}
+                <div className="rounded-xl border bg-muted/40 p-3 space-y-2">
+                  <p className="text-sm font-medium text-foreground">Pick your fixed service location *</p>
+                  <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
+                  <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
                 </div>
               </>
             )}
