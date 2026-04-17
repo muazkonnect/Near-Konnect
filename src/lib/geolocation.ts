@@ -1,3 +1,6 @@
+// All location logic powered by Google Maps Geolocation API.
+// No usage of navigator.geolocation anywhere.
+
 export interface Coords {
   latitude: number;
   longitude: number;
@@ -7,18 +10,28 @@ export interface GeoWatchResult {
   stop: () => void;
 }
 
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+
+async function fetchGoogleLocation(): Promise<Coords> {
+  if (!GOOGLE_MAPS_API_KEY) {
+    throw new Error("Google Maps API key not configured");
+  }
+  const res = await fetch(
+    `https://www.googleapis.com/geolocation/v1/geolocate?key=${GOOGLE_MAPS_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ considerIp: true }),
+    },
+  );
+  if (!res.ok) throw new Error(`Google geolocation failed: ${res.status}`);
+  const data = (await res.json()) as { location?: { lat: number; lng: number } };
+  if (!data.location) throw new Error("No location returned");
+  return { latitude: data.location.lat, longitude: data.location.lng };
+}
+
 export function getCurrentPosition(): Promise<Coords> {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error("Geolocation not supported"));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-      (err) => reject(err),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  });
+  return fetchGoogleLocation();
 }
 
 export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -31,25 +44,32 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// Polls Google's geolocation API on an interval. Stop with the returned handle.
 export function watchCurrentPosition(
   onSuccess: (coords: Coords) => void,
-  onError?: (error: GeolocationPositionError) => void,
+  onError?: (error: { code: number; message: string }) => void,
 ): GeoWatchResult {
-  if (!navigator.geolocation) {
-    throw new Error("Geolocation not supported");
-  }
+  let stopped = false;
 
-  const watchId = navigator.geolocation.watchPosition(
-    (pos) => onSuccess({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-    (error) => onError?.(error),
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 15000,
-    },
-  );
+  const tick = async () => {
+    try {
+      const coords = await fetchGoogleLocation();
+      if (!stopped) onSuccess(coords);
+    } catch (err) {
+      if (!stopped) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        onError?.({ code: 2, message });
+      }
+    }
+  };
+
+  tick();
+  const id = window.setInterval(tick, 30000);
 
   return {
-    stop: () => navigator.geolocation.clearWatch(watchId),
+    stop: () => {
+      stopped = true;
+      window.clearInterval(id);
+    },
   };
 }
