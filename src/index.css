@@ -189,6 +189,12 @@
 .leaflet-container {
   font-family: inherit;
   background: hsl(var(--muted));
+  z-index: 0;
+}
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1 !important;
 }
 .leaflet-control-zoom a {
   background: hsl(var(--card)) !important;
