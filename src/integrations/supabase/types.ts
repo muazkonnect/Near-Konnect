@@ -1067,6 +1067,19 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_nearby_workers: {
+        Args: {
+          lat: number
+          lng: number
+          max_results?: number
+          radius_meters?: number
+        }
+        Returns: {
+          distance: number
+          id: string
+          name: string
+        }[]
+      }
       get_service_analytics_summary: {
         Args: { _days?: number; _owner_user_id: string; _service_id: string }
         Returns: {
