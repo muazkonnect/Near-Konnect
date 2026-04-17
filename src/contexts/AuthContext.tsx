@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (workerError) throw workerError;
 
         if (lat !== null && lng !== null) {
-          const { error: locError } = await supabase.rpc("set_worker_location", { lat, lng });
+          const { error: locError } = await (supabase.rpc as any)("set_worker_location", { lat, lng });
           if (locError) console.warn("Failed to set workplace_location", locError);
         }
       }
