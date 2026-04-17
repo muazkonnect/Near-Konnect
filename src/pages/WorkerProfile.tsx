@@ -230,11 +230,20 @@ const WorkerProfile = () => {
                   </span>
                 )}
               </div>
-              <WorkersMap
-                workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
-                userCoords={userCoords}
-                height="280px"
-              />
+              <div className="md:hidden">
+                <WorkersMap
+                  workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
+                  userCoords={userCoords}
+                  height="220px"
+                />
+              </div>
+              <div className="hidden md:block">
+                <WorkersMap
+                  workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
+                  userCoords={userCoords}
+                  height="320px"
+                />
+              </div>
             </div>
           )}
 

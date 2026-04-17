@@ -70,8 +70,8 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
   const center: [number, number] = points[0] ?? [24.8607, 67.0011];
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border" style={{ height }}>
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} scrollWheelZoom>
+    <div className="w-full overflow-hidden rounded-2xl border shadow-sm" style={{ height }}>
+      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} scrollWheelZoom zoomControl={true} attributionControl={true}>
         <InvalidateOnMount />
         <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {fitToWorkers && points.length > 0 && <FitBounds points={points} />}
