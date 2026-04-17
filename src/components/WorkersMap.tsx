@@ -44,6 +44,26 @@ function FitBounds({ points }: { points: [number, number][] }) {
   return null;
 }
 
+function InvalidateOnMount() {
+  const map = useMap();
+  useEffect(() => {
+    const run = () => map.invalidateSize();
+    const t1 = setTimeout(run, 100);
+    const t2 = setTimeout(run, 400);
+    const t3 = setTimeout(run, 1000);
+    window.addEventListener("resize", run);
+    window.addEventListener("orientationchange", run);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("resize", run);
+      window.removeEventListener("orientationchange", run);
+    };
+  }, [map]);
+  return null;
+}
+
 const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true }: Props) => {
   const points: [number, number][] = workers.map((w) => [w.latitude, w.longitude]);
   if (userCoords) points.push([userCoords.latitude, userCoords.longitude]);
@@ -52,6 +72,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
   return (
     <div className="w-full overflow-hidden rounded-2xl border" style={{ height }}>
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} scrollWheelZoom>
+        <InvalidateOnMount />
         <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {fitToWorkers && points.length > 0 && <FitBounds points={points} />}
         {userCoords && (
