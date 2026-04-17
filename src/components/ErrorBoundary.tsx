@@ -9,6 +9,12 @@ interface State {
   error: Error | null;
 }
 
+const isChunkLoadError = (error: Error | null) => {
+  if (!error) return false;
+  const msg = `${error.name} ${error.message}`;
+  return /ChunkLoadError|Loading chunk|Failed to fetch dynamically imported module|Importing a module script failed/i.test(msg);
+};
+
 class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false, error: null };
 
@@ -18,6 +24,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("App error caught by ErrorBoundary:", error, errorInfo);
+    if (isChunkLoadError(error)) {
+      // Stale deploy: force a full reload to fetch fresh chunks.
+      setTimeout(() => window.location.reload(), 50);
+    }
   }
 
   handleReload = () => {
