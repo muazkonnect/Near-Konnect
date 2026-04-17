@@ -14,6 +14,7 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
+type RadiusKm = 1 | 2 | 3 | null;
 const MAX_RADIUS_KM = 20;
 
 const Discover = () => {
@@ -28,6 +29,7 @@ const Discover = () => {
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
   const [showMapView, setShowMapView] = useState(false);
+  const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
 
   const { data: monetization } = useQuery({
@@ -49,6 +51,23 @@ const Discover = () => {
         frequency: settingRes.data?.frequency_min || 5,
       };
     },
+  });
+
+  const { data: nearbyIds } = useQuery({
+    queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
+    queryFn: async () => {
+      if (!userCoords || !radiusKm) return null;
+      const { data, error } = await (supabase.rpc as any)("get_nearby_workers", {
+        lat: userCoords.latitude,
+        lng: userCoords.longitude,
+        radius_meters: radiusKm * 1000,
+        max_results: 100,
+      });
+      if (error) throw error;
+      return new Set<string>((data || []).map((r: any) => r.id));
+    },
+    enabled: !!userCoords && !!radiusKm,
+    staleTime: 30_000,
   });
 
   const { data: dbWorkers = [] } = useQuery({
@@ -174,6 +193,9 @@ const Discover = () => {
         .filter((w) => w.distance > 0 && w.distance <= MAX_RADIUS_KM)
         .sort((a, b) => a.distance - b.distance);
     }
+    if (radiusKm && nearbyIds) {
+      list = list.filter((w) => nearbyIds.has(w.id));
+    }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
       if (sort === "rating") return b.rating - a.rating;
@@ -181,7 +203,7 @@ const Discover = () => {
       return b.experience - a.experience;
     });
     return list;
-  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords]);
+  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds]);
 
   const sponsoredServiceIds = useMemo(() => {
     const ids = new Set<string>();
@@ -319,6 +341,27 @@ const Discover = () => {
                 </Badge>
               ))}
             </div>
+          )}
+        </div>
+
+        <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">Radius:</span>
+          {([1, 2, 3] as const).map((km) => (
+            <Button
+              key={km}
+              size="sm"
+              variant={radiusKm === km ? "default" : "outline"}
+              onClick={() => setRadiusKm(radiusKm === km ? null : km)}
+              disabled={!userCoords}
+              className="shrink-0 rounded-full"
+            >
+              {km} km
+            </Button>
+          ))}
+          {radiusKm && (
+            <Button size="sm" variant="ghost" onClick={() => setRadiusKm(null)} className="shrink-0 rounded-full text-xs">
+              Clear
+            </Button>
           )}
         </div>
 
