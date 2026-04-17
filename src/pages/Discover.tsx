@@ -4,7 +4,7 @@ import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, ChevronDown, 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import MonetizedWorkerGrid from "@/components/MonetizedWorkerGrid";
+import WorkerCard from "@/components/WorkerCard";
 import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,27 +32,6 @@ const Discover = () => {
   const [showMapView, setShowMapView] = useState(false);
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
-
-  const { data: monetization } = useQuery({
-    queryKey: ["discover_monetization"],
-    queryFn: async () => {
-      const [featuredRes, boostsRes, adsRes, settingRes] = await Promise.all([
-        (supabase as any).from("featured_services").select("service_id, rotation_seed").eq("is_active", true),
-        (supabase as any).from("service_boosts").select("service_id").eq("status", "active"),
-        (supabase as any)
-          .from("native_ads")
-          .select("id,title,description,image_url,cta_label,cta_url,placement,priority")
-          .eq("is_active", true),
-        (supabase as any).from("ad_placement_settings").select("frequency_min").eq("placement_key", "discover_feed").maybeSingle(),
-      ]);
-      return {
-        featured: featuredRes.data || [],
-        boosts: boostsRes.data || [],
-        ads: adsRes.data || [],
-        frequency: settingRes.data?.frequency_min || 5,
-      };
-    },
-  });
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
@@ -261,19 +240,11 @@ const Discover = () => {
   });
 
   const sorted = [...filteredWithAdvanced].sort((a, b) => {
-    const aSponsored = sponsoredServiceIds.has(a.id) ? 1 : 0;
-    const bSponsored = sponsoredServiceIds.has(b.id) ? 1 : 0;
-    if (aSponsored !== bSponsored) return bSponsored - aSponsored;
     if (sort === "distance") return a.distance - b.distance;
     if (sort === "rating") return b.rating - a.rating;
     if (sort === "experience") return b.experience - a.experience;
     return a.experience - b.experience;
   });
-
-  const discoverAds = useMemo(() => {
-    const placement = selectedMainCategory || selectedSubCategory ? "category_feed" : "discover_feed";
-    return (monetization?.ads || []).filter((a: any) => a.placement === placement || a.placement === "search_results");
-  }, [monetization, selectedMainCategory, selectedSubCategory]);
 
   return (
     <AppLayout title="Explore" subtitle="Discover trusted services nearby with smart filters and map/list browsing.">
