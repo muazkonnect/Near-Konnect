@@ -64,7 +64,9 @@ const Discover = () => {
         max_results: 100,
       });
       if (error) throw error;
-      return new Set<string>((data || []).map((r: any) => r.id));
+      const map = new Map<string, number>();
+      (data || []).forEach((r: any) => map.set(r.id, Number(r.distance) || 0));
+      return map;
     },
     enabled: !!userCoords && !!radiusKm,
     staleTime: 30_000,
