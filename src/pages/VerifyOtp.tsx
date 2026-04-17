@@ -10,6 +10,7 @@ import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import logoImg from "@/assets/logo.png";
 
 const RESEND_COOLDOWN = 45;
+const OTP_LENGTH = 8;
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
