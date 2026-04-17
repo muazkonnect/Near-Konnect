@@ -64,7 +64,9 @@ const Discover = () => {
         max_results: 100,
       });
       if (error) throw error;
-      return new Set<string>((data || []).map((r: any) => r.id));
+      const result: Record<string, number> = {};
+      (data || []).forEach((r: any) => { result[r.id] = Number(r.distance) || 0; });
+      return result;
     },
     enabled: !!userCoords && !!radiusKm,
     staleTime: 30_000,
@@ -194,7 +196,9 @@ const Discover = () => {
         .sort((a, b) => a.distance - b.distance);
     }
     if (radiusKm && nearbyIds) {
-      list = list.filter((w) => nearbyIds.has(w.id));
+      list = list
+        .filter((w) => nearbyIds[w.id] !== undefined)
+        .map((w) => ({ ...w, matchedDistanceMeters: nearbyIds[w.id] }));
     }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;

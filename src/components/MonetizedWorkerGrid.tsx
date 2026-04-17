@@ -2,7 +2,7 @@ import WorkerCard from "@/components/WorkerCard";
 import NativeAdCard, { type NativeAd } from "@/components/NativeAdCard";
 import type { Worker } from "@/data/mockData";
 
-type FeedWorker = Worker & { isSponsored?: boolean };
+type FeedWorker = Worker & { isSponsored?: boolean; matchedDistanceMeters?: number };
 
 interface MonetizedWorkerGridProps {
   workers: FeedWorker[];

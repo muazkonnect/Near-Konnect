@@ -7,12 +7,13 @@ import { useI18n } from "@/i18n";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Props {
-  worker: Worker;
+  worker: Worker & { matchedDistanceMeters?: number };
   index?: number;
   sponsored?: boolean;
 }
 
 const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
+  const matchedMeters = worker.matchedDistanceMeters;
   const initials = worker.name.split(" ").map(n => n[0]).join("").slice(0, 2);
   const { t } = useI18n();
 
@@ -61,10 +62,12 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
                 <span className="font-semibold text-card-foreground">{worker.rating}</span>
                 <span>({worker.reviewCount})</span>
               </span>
-              {worker.distance > 0 && (
+              {(matchedMeters !== undefined || worker.distance > 0) && (
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
-                  {worker.distance} {t("worker.km")}
+                  {matchedMeters !== undefined
+                    ? `${Math.round(matchedMeters)} m`
+                    : `${worker.distance} ${t("worker.km")}`}
                 </span>
               )}
               <span className="flex items-center gap-1">
