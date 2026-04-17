@@ -64,9 +64,9 @@ const Discover = () => {
         max_results: 100,
       });
       if (error) throw error;
-      const map = new Map<string, number>();
-      (data || []).forEach((r: any) => map.set(r.id, Number(r.distance) || 0));
-      return map;
+      const result: Record<string, number> = {};
+      (data || []).forEach((r: any) => { result[r.id] = Number(r.distance) || 0; });
+      return result;
     },
     enabled: !!userCoords && !!radiusKm,
     staleTime: 30_000,
