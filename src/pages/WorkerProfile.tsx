@@ -130,7 +130,7 @@ const WorkerProfile = () => {
           <ArrowLeft className="w-4 h-4" /> Back to search
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card border rounded-2xl p-6 md:p-8 pb-24 md:pb-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card border rounded-2xl p-6 md:p-8 pb-44 md:pb-8">
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             {worker.profilePhoto ? (
               <img src={worker.profilePhoto} alt={worker.name} className="w-24 h-24 rounded-2xl object-cover shrink-0" />
