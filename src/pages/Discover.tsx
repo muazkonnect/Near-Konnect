@@ -193,6 +193,9 @@ const Discover = () => {
         .filter((w) => w.distance > 0 && w.distance <= MAX_RADIUS_KM)
         .sort((a, b) => a.distance - b.distance);
     }
+    if (radiusKm && nearbyIds) {
+      list = list.filter((w) => nearbyIds.has(w.id));
+    }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
       if (sort === "rating") return b.rating - a.rating;
@@ -200,7 +203,7 @@ const Discover = () => {
       return b.experience - a.experience;
     });
     return list;
-  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords]);
+  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds]);
 
   const sponsoredServiceIds = useMemo(() => {
     const ids = new Set<string>();
