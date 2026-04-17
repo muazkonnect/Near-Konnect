@@ -95,6 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (role === "worker") {
+        const lat = toNumberOrNull(md.latitude);
+        const lng = toNumberOrNull(md.longitude);
         const { error: workerError } = await supabase.from("workers").upsert(
           {
             user_id: nextUser.id,
@@ -103,14 +105,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             sub_category: subCategory,
             experience: Math.max(0, parseInt(String(md.experience || "0"), 10) || 0),
             available: true,
-            latitude: toNumberOrNull(md.latitude),
-            longitude: toNumberOrNull(md.longitude),
+            latitude: lat,
+            longitude: lng,
             service_areas: [],
             city: null,
           },
           { onConflict: "user_id" }
         );
         if (workerError) throw workerError;
+
+        if (lat !== null && lng !== null) {
+          const { error: locError } = await supabase.rpc("set_worker_location", { lat, lng });
+          if (locError) console.warn("Failed to set workplace_location", locError);
+        }
       }
     })().catch((error) => {
       console.error("Failed to ensure user records", error);
