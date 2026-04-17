@@ -64,9 +64,9 @@ const VerifyOtp = () => {
     navigate(redirect, { replace: true });
   };
 
-  // Auto-submit when 6 digits entered
+  // Auto-submit when full code entered
   useEffect(() => {
-    if (code.length === 6 && !loading) void handleVerify(code);
+    if (code.length === OTP_LENGTH && !loading) void handleVerify(code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
