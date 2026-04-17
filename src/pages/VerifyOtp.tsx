@@ -100,7 +100,7 @@ const VerifyOtp = () => {
             </div>
             <h1 className="text-2xl font-bold text-card-foreground mb-1">Verify your email</h1>
             <p className="text-sm text-muted-foreground mb-3">
-              We sent a 6-digit code to{" "}
+              We sent a {OTP_LENGTH}-character code to{" "}
               <span className="font-medium text-foreground">{email}</span>
             </p>
             <p className="text-xs text-muted-foreground/90 bg-muted/50 border border-border rounded-md px-3 py-2 mb-6">
@@ -110,15 +110,15 @@ const VerifyOtp = () => {
 
             <div className="mb-6">
               <InputOTP
-                maxLength={6}
+                maxLength={OTP_LENGTH}
                 value={code}
-                onChange={setCode}
+                onChange={(v) => setCode(v.toUpperCase())}
                 disabled={loading}
                 autoFocus
               >
                 <InputOTPGroup>
-                  {[0, 1, 2, 3, 4, 5].map(i => (
-                    <InputOTPSlot key={i} index={i} className="w-11 h-12 text-lg" />
+                  {Array.from({ length: OTP_LENGTH }, (_, i) => (
+                    <InputOTPSlot key={i} index={i} className="w-9 h-12 text-base" />
                   ))}
                 </InputOTPGroup>
               </InputOTP>
