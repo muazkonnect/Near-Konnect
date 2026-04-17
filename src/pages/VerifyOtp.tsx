@@ -10,6 +10,7 @@ import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import logoImg from "@/assets/logo.png";
 
 const RESEND_COOLDOWN = 45;
+const OTP_LENGTH = 8;
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
@@ -63,9 +64,9 @@ const VerifyOtp = () => {
     navigate(redirect, { replace: true });
   };
 
-  // Auto-submit when 6 digits entered
+  // Auto-submit when full code entered
   useEffect(() => {
-    if (code.length === 6 && !loading) void handleVerify(code);
+    if (code.length === OTP_LENGTH && !loading) void handleVerify(code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
@@ -99,7 +100,7 @@ const VerifyOtp = () => {
             </div>
             <h1 className="text-2xl font-bold text-card-foreground mb-1">Verify your email</h1>
             <p className="text-sm text-muted-foreground mb-3">
-              We sent a 6-digit code to{" "}
+              We sent a {OTP_LENGTH}-character code to{" "}
               <span className="font-medium text-foreground">{email}</span>
             </p>
             <p className="text-xs text-muted-foreground/90 bg-muted/50 border border-border rounded-md px-3 py-2 mb-6">
@@ -109,15 +110,16 @@ const VerifyOtp = () => {
 
             <div className="mb-6">
               <InputOTP
-                maxLength={6}
+                maxLength={OTP_LENGTH}
                 value={code}
-                onChange={setCode}
+                onChange={(v) => setCode(v.toUpperCase())}
                 disabled={loading}
                 autoFocus
+                pattern="^[A-Za-z0-9]*$"
               >
                 <InputOTPGroup>
-                  {[0, 1, 2, 3, 4, 5].map(i => (
-                    <InputOTPSlot key={i} index={i} className="w-11 h-12 text-lg" />
+                  {Array.from({ length: OTP_LENGTH }, (_, i) => (
+                    <InputOTPSlot key={i} index={i} className="w-9 h-12 text-base" />
                   ))}
                 </InputOTPGroup>
               </InputOTP>
