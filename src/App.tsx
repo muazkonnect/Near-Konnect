@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/i18n";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Discover = lazy(() => import("./pages/Discover.tsx"));
@@ -47,8 +48,9 @@ const PageLoader = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <I18nProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <I18nProvider>
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
@@ -88,6 +90,7 @@ const App = () => (
       </AuthProvider>
     </I18nProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
