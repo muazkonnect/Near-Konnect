@@ -1164,6 +1164,10 @@ export type Database = {
           read_ct: number
         }[]
       }
+      set_worker_location: {
+        Args: { lat: number; lng: number }
+        Returns: undefined
+      }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
