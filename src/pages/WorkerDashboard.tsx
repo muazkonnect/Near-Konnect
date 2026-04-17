@@ -327,29 +327,51 @@ const WorkerDashboard = () => {
                 <Button onClick={handleSave} disabled={saving} className="gap-2">
                   <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleSetFixedLocation}
-                  disabled={settingLocation || !!(workerData.latitude && workerData.longitude)}
-                  className="gap-2"
-                >
-                  <Navigation className="h-4 w-4" />
-                  {workerData.latitude && workerData.longitude
-                    ? "Fixed service location saved"
-                    : settingLocation
-                    ? "Detecting..."
-                    : "Use current location as fixed service location"}
-                </Button>
               </div>
 
-              <div className="mt-3 rounded-xl border bg-muted/40 p-3 text-xs text-muted-foreground">
-                <p className="font-medium text-foreground">Location mode: Using your service location</p>
+              <div className="mt-4 rounded-xl border bg-muted/40 p-4">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Fixed service location</p>
+                    <p className="text-xs text-muted-foreground">
+                      {workerData.latitude && workerData.longitude
+                        ? "This is permanent and cannot be changed."
+                        : "Set this once from your shop or work spot. It cannot be changed later."}
+                    </p>
+                  </div>
+                  {workerData.latitude && workerData.longitude && (
+                    <Badge variant="outline" className="gap-1 rounded-full">
+                      <Lock className="h-3 w-3" /> Locked
+                    </Badge>
+                  )}
+                </div>
+
                 {workerData.latitude && workerData.longitude ? (
-                  <p className="mt-1 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> {workerData.latitude.toFixed(4)}, {workerData.longitude.toFixed(4)}
-                  </p>
+                  <>
+                    <div className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">
+                      <MapPin className="h-3 w-3" />
+                      {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
+                    </div>
+                    <WorkersMap
+                      workers={[{
+                        id: workerData.id,
+                        name: profession || "Your service location",
+                        latitude: workerData.latitude,
+                        longitude: workerData.longitude,
+                      }]}
+                      height="240px"
+                    />
+                  </>
                 ) : (
-                  <p className="mt-1">Set your fixed service location to appear in nearby results.</p>
+                  <Button
+                    variant="outline"
+                    onClick={handleSetFixedLocation}
+                    disabled={settingLocation}
+                    className="mt-1 gap-2"
+                  >
+                    <Navigation className="h-4 w-4" />
+                    {settingLocation ? "Detecting..." : "Use current location as fixed service location"}
+                  </Button>
                 )}
               </div>
             </div>
