@@ -14,6 +14,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
+import WorkersMap from "@/components/WorkersMap";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
+import { calculateDistance } from "@/lib/geolocation";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -23,6 +26,7 @@ const WorkerProfile = () => {
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const { coords: userCoords } = useRealtimeLocation();
 
   const trackEvent = async (eventType: "profile_view" | "contact_click" | "conversion") => {
     if (!id || !dbWorker) return;
@@ -214,6 +218,25 @@ const WorkerProfile = () => {
               {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
             </div>
           </div>
+
+          {dbWorker.latitude && dbWorker.longitude && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-semibold text-card-foreground">Pinned Service Location</h2>
+                {userCoords && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {calculateDistance(userCoords.latitude, userCoords.longitude, dbWorker.latitude, dbWorker.longitude).toFixed(2)} km away
+                  </span>
+                )}
+              </div>
+              <WorkersMap
+                workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
+                userCoords={userCoords}
+                height="280px"
+              />
+            </div>
+          )}
 
           {/* Write Review */}
           {user && user.id !== worker.userId && (
