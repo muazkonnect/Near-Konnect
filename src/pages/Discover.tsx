@@ -193,12 +193,7 @@ const Discover = () => {
     return list;
   }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds]);
 
-  const sponsoredServiceIds = useMemo(() => {
-    const ids = new Set<string>();
-    (monetization?.featured || []).forEach((row: any) => ids.add(row.service_id));
-    (monetization?.boosts || []).forEach((row: any) => ids.add(row.service_id));
-    return ids;
-  }, [monetization]);
+
 
   const toggleMainCategory = (mainCategory: string) => {
     const next = new URLSearchParams(searchParams);
@@ -389,11 +384,11 @@ const Discover = () => {
             height="500px"
           />
         ) : (
-          <MonetizedWorkerGrid
-            workers={sorted.map((w) => ({ ...w, isSponsored: sponsoredServiceIds.has(w.id) }))}
-            ads={discoverAds}
-            adFrequencyMin={Math.max(4, monetization?.frequency || 5)}
-          />
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {sorted.map((w, i) => (
+              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} />
+            ))}
+          </div>
         )}
 
         {sorted.length === 0 && (
