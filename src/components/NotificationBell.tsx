@@ -23,230 +23,265 @@ interface Notification {
   read: boolean;
 }
 
+// Global singleton state to prevent duplicate triggers from multiple mounted layout components
+let globalNotifications: Notification[] = [];
+let subscribers: ((notifs: Notification[]) => void)[] = [];
+let globalChannel: ReturnType<typeof supabase.channel> | null = null;
+let initializedUserId: string | null = null;
+let isFetching = false;
+
+const broadcast = () => {
+  subscribers.forEach((notify) => notify(globalNotifications));
+};
+
 const NotificationBell = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>(globalNotifications);
   const [open, setOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Fetch initial unread messages & bookings
   useEffect(() => {
     if (!user) return;
 
-    const fetchNotifications = async () => {
-      const notifs: Notification[] = [];
+    // Register local listener for this instance
+    const updateLocal = (notifs: Notification[]) => setNotifications([...notifs]);
+    subscribers.push(updateLocal);
+    
+    // Sync immediately if we already have data
+    if (initializedUserId === user.id) {
+      updateLocal(globalNotifications);
+    }
 
-      // Unread messages
-      const { data: msgs } = await supabase
-        .from("messages")
-        .select("id, sender_id, message_text, created_at, profiles!messages_sender_id_fkey_profiles(full_name)")
-        .eq("receiver_id", user.id)
-        .eq("status", "delivered")
-        .order("created_at", { ascending: false })
-        .limit(10);
+    const initData = async () => {
+      // Ensure only one instance fetches and subscribes per user
+      if (initializedUserId !== user.id && !isFetching) {
+        isFetching = true;
+        initializedUserId = user.id;
 
-      msgs?.forEach((m: any) => {
-        notifs.push({
-          id: `msg-${m.id}`,
-          type: "message",
-          title: `Message from ${m.profiles?.full_name || "Someone"}`,
-          body: m.message_text?.slice(0, 60) || "New message",
-          created_at: m.created_at,
-          link: `/chat/${m.sender_id}`,
-          read: false,
+        const notifs: Notification[] = [];
+
+        // Unread messages
+        const { data: msgs } = await supabase
+          .from("messages")
+          .select("id, sender_id, message_text, created_at, profiles!messages_sender_id_fkey_profiles(full_name)")
+          .eq("receiver_id", user.id)
+          .eq("status", "delivered")
+          .order("created_at", { ascending: false })
+          .limit(10);
+
+        msgs?.forEach((m: any) => {
+          notifs.push({
+            id: `msg-${m.id}`,
+            type: "message",
+            title: `Message from ${m.profiles?.full_name || "Someone"}`,
+            body: m.message_text?.slice(0, 60) || "New message",
+            created_at: m.created_at,
+            link: `/chat/${m.sender_id}`,
+            read: false,
+          });
         });
-      });
 
-      // Recent bookings
-      const { data: bookings } = await supabase
-        .from("bookings")
-        .select("id, status, service_description, created_at, booking_date")
-        .or(`customer_id.eq.${user.id},worker_id.eq.${user.id}`)
-        .in("status", ["pending", "confirmed"])
-        .order("created_at", { ascending: false })
-        .limit(5);
-
-      bookings?.forEach((b: any) => {
-        notifs.push({
-          id: `book-${b.id}`,
-          type: "booking",
-          title: `Booking ${b.status}`,
-          body: `${b.service_description} on ${b.booking_date}`,
-          created_at: b.created_at,
-          link: "/dashboard",
-          read: false,
-        });
-      });
-
-      // Get user's blood group for matching requests
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("blood_group, is_blood_donor")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (profile?.is_blood_donor && profile?.blood_group) {
-        const { data: bloodReqs } = await supabase
-          .from("blood_requests")
-          .select("id, blood_group, urgency, message, city, created_at, requester_id")
-          .eq("status", "open")
-          .eq("blood_group", profile.blood_group)
-          .neq("requester_id", user.id)
+        // Recent bookings
+        const { data: bookings } = await supabase
+          .from("bookings")
+          .select("id, status, service_description, created_at, booking_date")
+          .or(`customer_id.eq.${user.id},worker_id.eq.${user.id}`)
+          .in("status", ["pending", "confirmed"])
           .order("created_at", { ascending: false })
           .limit(5);
 
-        for (const req of bloodReqs || []) {
-          const { data: reqProfile } = await supabase
-            .from("profiles")
-            .select("full_name")
-            .eq("user_id", req.requester_id)
-            .maybeSingle();
-
+        bookings?.forEach((b: any) => {
           notifs.push({
-            id: `blood-${req.id}`,
-            type: "blood_request",
-            title: `🩸 ${req.urgency === "critical" ? "CRITICAL: " : ""}${req.blood_group} Blood Needed`,
-            body: `${reqProfile?.full_name || "Someone"} needs ${req.blood_group} blood${req.city ? ` in ${req.city}` : ""}`,
-            created_at: req.created_at,
-            link: "/blood-donors",
+            id: `book-${b.id}`,
+            type: "booking",
+            title: `Booking ${b.status}`,
+            body: `${b.service_description} on ${b.booking_date}`,
+            created_at: b.created_at,
+            link: "/dashboard",
             read: false,
           });
-        }
-      }
+        });
 
-      notifs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setNotifications(notifs.slice(0, 15));
-    };
-
-    fetchNotifications();
-  }, [user]);
-
-  // Real-time subscriptions
-  useEffect(() => {
-    if (!user) return;
-
-    let cancelled = false;
-    const channelName = `notif-${user.id}-${Math.random().toString(36).slice(2)}`;
-    const channel = supabase.channel(channelName);
-
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` },
-      async (payload: any) => {
-        if (cancelled) return;
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("user_id", payload.new.sender_id)
-          .maybeSingle();
-
-        const senderName = profile?.full_name || "Someone";
-        const notif: Notification = {
-          id: `msg-${payload.new.id}`,
-          type: "message",
-          title: `Message from ${senderName}`,
-          body: payload.new.message_text?.slice(0, 60) || "New message",
-          created_at: payload.new.created_at,
-          link: `/chat/${payload.new.sender_id}`,
-          read: false,
-        };
-
-        setNotifications((prev) => [notif, ...prev].slice(0, 15));
-        toast.info(`💬 ${senderName}`, { description: payload.new.message_text?.slice(0, 80) });
-      }
-    );
-
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "bookings" },
-      (payload: any) => {
-        if (cancelled) return;
-        if (payload.new.customer_id !== user.id && payload.new.worker_id !== user.id) return;
-        const notif: Notification = {
-          id: `book-${payload.new.id}`,
-          type: "booking",
-          title: "New Booking",
-          body: `${payload.new.service_description} on ${payload.new.booking_date}`,
-          created_at: payload.new.created_at,
-          link: "/dashboard",
-          read: false,
-        };
-        setNotifications((prev) => [notif, ...prev].slice(0, 15));
-        toast.info("📋 New Booking", { description: payload.new.service_description });
-      }
-    );
-
-    channel.on(
-      "postgres_changes",
-      { event: "UPDATE", schema: "public", table: "bookings" },
-      (payload: any) => {
-        if (cancelled) return;
-        if (payload.new.customer_id !== user.id && payload.new.worker_id !== user.id) return;
-        toast.info(`📋 Booking ${payload.new.status}`, { description: payload.new.service_description });
-      }
-    );
-
-    // Blood request notifications
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "blood_requests" },
-      async (payload: any) => {
-        if (cancelled) return;
-        if (payload.new.requester_id === user.id) return;
-
-        // Check if user is a donor with matching blood group
+        // Get user's blood group for matching requests
         const { data: profile } = await supabase
           .from("profiles")
           .select("blood_group, is_blood_donor")
           .eq("user_id", user.id)
           .maybeSingle();
 
-        if (!profile?.is_blood_donor || profile?.blood_group !== payload.new.blood_group) return;
+        if (profile?.is_blood_donor && profile?.blood_group) {
+          const { data: bloodReqs } = await supabase
+            .from("blood_requests")
+            .select("id, blood_group, urgency, message, city, created_at, requester_id")
+            .eq("status", "open")
+            .eq("blood_group", profile.blood_group)
+            .neq("requester_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(5);
 
-        const { data: reqProfile } = await supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("user_id", payload.new.requester_id)
-          .maybeSingle();
+          for (const req of bloodReqs || []) {
+            const { data: reqProfile } = await supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("user_id", req.requester_id)
+              .maybeSingle();
 
-        const notif: Notification = {
-          id: `blood-${payload.new.id}`,
-          type: "blood_request",
-          title: `🩸 ${payload.new.urgency === "critical" ? "CRITICAL: " : ""}${payload.new.blood_group} Blood Needed`,
-          body: `${reqProfile?.full_name || "Someone"} needs ${payload.new.blood_group} blood${payload.new.city ? ` in ${payload.new.city}` : ""}`,
-          created_at: payload.new.created_at,
-          link: "/blood-donors",
-          read: false,
-        };
+            notifs.push({
+              id: `blood-${req.id}`,
+              type: "blood_request",
+              title: `🩸 ${req.urgency === "critical" ? "CRITICAL: " : ""}${req.blood_group} Blood Needed`,
+              body: `${reqProfile?.full_name || "Someone"} needs ${req.blood_group} blood${req.city ? ` in ${req.city}` : ""}`,
+              created_at: req.created_at,
+              link: "/blood-donors",
+              read: false,
+            });
+          }
+        }
 
-        setNotifications((prev) => [notif, ...prev].slice(0, 15));
-        toast.error(`🩸 ${payload.new.blood_group} Blood Needed!`, {
-          description: notif.body,
-          duration: 10000,
-        });
+        notifs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        globalNotifications = notifs.slice(0, 15);
+        broadcast();
+        isFetching = false;
+
+        // Real-time subscriptions
+        if (globalChannel) {
+          supabase.removeChannel(globalChannel);
+        }
+
+        const channelName = `notif-${user.id}`;
+        const channel = supabase.channel(channelName);
+
+        channel.on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` },
+          async (payload: any) => {
+            const { data: senderProfile } = await supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("user_id", payload.new.sender_id)
+              .maybeSingle();
+
+            const senderName = senderProfile?.full_name || "Someone";
+            const notif: Notification = {
+              id: `msg-${payload.new.id}`,
+              type: "message",
+              title: `Message from ${senderName}`,
+              body: payload.new.message_text?.slice(0, 60) || "New message",
+              created_at: payload.new.created_at,
+              link: `/chat/${payload.new.sender_id}`,
+              read: false,
+            };
+
+            globalNotifications = [notif, ...globalNotifications].slice(0, 15);
+            broadcast();
+            toast.info(`💬 ${senderName}`, { description: payload.new.message_text?.slice(0, 80) });
+          }
+        );
+
+        channel.on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "bookings" },
+          (payload: any) => {
+            if (payload.new.customer_id !== user.id && payload.new.worker_id !== user.id) return;
+            const notif: Notification = {
+              id: `book-${payload.new.id}`,
+              type: "booking",
+              title: "New Booking",
+              body: `${payload.new.service_description} on ${payload.new.booking_date}`,
+              created_at: payload.new.created_at,
+              link: "/dashboard",
+              read: false,
+            };
+            
+            globalNotifications = [notif, ...globalNotifications].slice(0, 15);
+            broadcast();
+            toast.info("📋 New Booking", { description: payload.new.service_description });
+          }
+        );
+
+        channel.on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "bookings" },
+          (payload: any) => {
+            if (payload.new.customer_id !== user.id && payload.new.worker_id !== user.id) return;
+            toast.info(`📋 Booking ${payload.new.status}`, { description: payload.new.service_description });
+          }
+        );
+
+        // Blood request notifications
+        channel.on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "blood_requests" },
+          async (payload: any) => {
+            if (payload.new.requester_id === user.id) return;
+
+            const { data: donorProfile } = await supabase
+              .from("profiles")
+              .select("blood_group, is_blood_donor")
+              .eq("user_id", user.id)
+              .maybeSingle();
+
+            if (donorProfile?.is_blood_donor && donorProfile.blood_group === payload.new.blood_group) {
+              const { data: reqProfile } = await supabase
+                .from("profiles")
+                .select("full_name")
+                .eq("user_id", payload.new.requester_id)
+                .maybeSingle();
+
+              const notif: Notification = {
+                id: `blood-${payload.new.id}`,
+                type: "blood_request",
+                title: `🩸 ${payload.new.urgency === "critical" ? "CRITICAL: " : ""}${payload.new.blood_group} Blood Needed`,
+                body: `${reqProfile?.full_name || "Someone"} needs ${payload.new.blood_group} blood${payload.new.city ? ` in ${payload.new.city}` : ""}`,
+                created_at: payload.new.created_at,
+                link: "/blood-donors",
+                read: false,
+              };
+
+              globalNotifications = [notif, ...globalNotifications].slice(0, 15);
+              broadcast();
+              toast.error(`🩸 ${payload.new.blood_group} Blood Needed!`, {
+                description: notif.body,
+                duration: 10000,
+              });
+            }
+          }
+        );
+
+        channel.subscribe();
+        globalChannel = channel;
       }
-    );
+    };
 
-    channel.subscribe();
+    initData();
 
     return () => {
-      cancelled = true;
-      supabase.removeChannel(channel);
+      subscribers = subscribers.filter((notify) => notify !== updateLocal);
+      
+      // Cleanup channel if this was the last mounted instance
+      if (subscribers.length === 0 && globalChannel) {
+        supabase.removeChannel(globalChannel);
+        globalChannel = null;
+        initializedUserId = null;
+        globalNotifications = [];
+      }
     };
   }, [user]);
 
   const handleClick = (notif: Notification) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
+    globalNotifications = globalNotifications.map((n) =>
+      n.id === notif.id ? { ...n, read: true } : n
     );
+    broadcast();
     setOpen(false);
     navigate(notif.link);
   };
 
   const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    globalNotifications = globalNotifications.map((n) => ({ ...n, read: true }));
+    broadcast();
   };
 
   return (

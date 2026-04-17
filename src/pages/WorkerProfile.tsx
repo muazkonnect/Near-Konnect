@@ -89,7 +89,6 @@ const WorkerProfile = () => {
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
-    city: dbWorker.city || "",
   };
 
   const avgRating = dbReviews.length
@@ -139,7 +138,7 @@ const WorkerProfile = () => {
                 <h1 className="text-2xl font-bold text-card-foreground">{worker.name}</h1>
                 {worker.verified && <CheckCircle className="w-5 h-5 text-primary" />}
               </div>
-              <p className="text-muted-foreground mb-3">{worker.profession} · {worker.city}</p>
+              <p className="text-muted-foreground mb-3">{worker.profession}</p>
               <div className="flex items-center gap-4 text-sm flex-wrap">
                 <span className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-star fill-star" />

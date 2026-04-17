@@ -96,10 +96,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
               />
             </div>
             <NotificationBell />
-            <Button variant="outline" className="rounded-2xl">
-              <Bell className="h-4 w-4" />
-              <span className="hidden lg:inline">Activity</span>
-            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

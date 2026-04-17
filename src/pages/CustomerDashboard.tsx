@@ -79,7 +79,6 @@ const CustomerDashboard = () => {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -87,7 +86,6 @@ const CustomerDashboard = () => {
     if (profile) {
       setName(profile.full_name || "");
       setPhone(profile.phone || "");
-      setCity(profile.city || "");
       setBloodGroup((profile as any).blood_group || "");
     }
   }, [profile]);
@@ -100,7 +98,7 @@ const CustomerDashboard = () => {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: name, phone, city, blood_group: bloodGroup } as any).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: name, phone, blood_group: bloodGroup } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error("Failed to save");
     else { toast.success("Profile updated!"); queryClient.invalidateQueries({ queryKey: ["my_profile"] }); }
@@ -197,7 +195,7 @@ const CustomerDashboard = () => {
                 </div>
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground">Keep your city, phone and blood group updated for faster local matches.</p>
+              <p className="text-sm text-muted-foreground">Keep your phone and blood group updated for faster local matches.</p>
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
@@ -248,7 +246,6 @@ const CustomerDashboard = () => {
               <div className="space-y-4">
                 <div><Label>Full Name</Label><Input value={name} onChange={e => setName(e.target.value)} className="mt-1.5" /></div>
                 <div><Label>Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} className="mt-1.5" /></div>
-                <div><Label>City</Label><Input value={city} onChange={e => setCity(e.target.value)} className="mt-1.5" /></div>
                 <div>
                   <Label>Blood Group</Label>
                   <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">

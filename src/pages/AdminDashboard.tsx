@@ -352,7 +352,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-card-foreground">{p.full_name || "Unnamed"}</p>
-                  <p className="text-sm text-muted-foreground">{p.phone || "No phone"} · {p.city || "No city"}</p>
+                  <p className="text-sm text-muted-foreground">{p.phone || "No phone"}</p>
                 </div>
                 <span className="text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleDateString()}

@@ -9,7 +9,7 @@ const PrivacyPolicy = () => (
       <div className="prose prose-sm text-muted-foreground space-y-4">
         <p>Last updated: April 2026</p>
         <h2 className="text-lg font-semibold text-foreground">Information We Collect</h2>
-        <p>We collect information you provide directly to us, such as your name, email address, phone number, city, and profession when you create an account. For workers, we may also collect experience details and service area information.</p>
+        <p>We collect information you provide directly to us, such as your name, email address, phone number, and profession when you create an account. For workers, we may also collect experience details and service area information.</p>
         <h2 className="text-lg font-semibold text-foreground">How We Use Your Information</h2>
         <p>We use the information we collect to provide and improve our services, connect customers with workers, facilitate communication, and send service-related notifications.</p>
         <h2 className="text-lg font-semibold text-foreground">Location Data</h2>

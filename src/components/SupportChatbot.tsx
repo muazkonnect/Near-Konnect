@@ -145,7 +145,7 @@ const SupportChatbot = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 h-12 rounded-2xl border bg-card px-4 text-foreground shadow-premium hover:bg-muted flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] group"
+          className="fixed bottom-28 left-4 md:bottom-6 md:right-6 md:left-auto z-[60] h-12 rounded-2xl border bg-card px-4 text-foreground shadow-premium hover:bg-muted flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] group"
           aria-label="Open support chat"
         >
           <Bot className="h-5 w-5" />
@@ -156,7 +156,7 @@ const SupportChatbot = () => {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 left-4 right-4 md:left-auto md:bottom-6 md:right-6 z-50 md:w-[380px] max-w-[calc(100vw-2rem)] h-[70vh] md:h-[520px] max-h-[calc(100vh-7rem)] md:max-h-[calc(100vh-4rem)] bg-card border rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-28 left-4 w-[calc(100vw-2rem)] md:w-[380px] md:bottom-6 md:right-6 md:left-auto z-[60] h-[70vh] md:h-[520px] max-h-[calc(100vh-7rem)] md:max-h-[calc(100vh-4rem)] bg-card border rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b bg-primary text-primary-foreground rounded-t-2xl">
             <div className="flex items-center gap-2">
