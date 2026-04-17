@@ -115,6 +115,7 @@ const VerifyOtp = () => {
                 onChange={(v) => setCode(v.toUpperCase())}
                 disabled={loading}
                 autoFocus
+                pattern="^[A-Za-z0-9]*$"
               >
                 <InputOTPGroup>
                   {Array.from({ length: OTP_LENGTH }, (_, i) => (
