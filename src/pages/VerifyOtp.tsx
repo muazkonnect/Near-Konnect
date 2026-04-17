@@ -98,9 +98,13 @@ const VerifyOtp = () => {
               <Mail className="w-6 h-6 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-card-foreground mb-1">Verify your email</h1>
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground mb-3">
               We sent a 6-digit code to{" "}
               <span className="font-medium text-foreground">{email}</span>
+            </p>
+            <p className="text-xs text-muted-foreground/90 bg-muted/50 border border-border rounded-md px-3 py-2 mb-6">
+              Don't see it? Check your <span className="font-medium text-foreground">Spam</span> or{" "}
+              <span className="font-medium text-foreground">Promotions</span> folder.
             </p>
 
             <div className="mb-6">
