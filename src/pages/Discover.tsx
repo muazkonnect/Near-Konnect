@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import MonetizedWorkerGrid from "@/components/MonetizedWorkerGrid";
+import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -191,9 +192,13 @@ const Discover = () => {
       });
     }
     if (userCoords) {
-      list = list
-        .filter((w) => w.distance > 0 && w.distance <= MAX_RADIUS_KM)
-        .sort((a, b) => a.distance - b.distance);
+      // Keep all workers; just sort known-distance ones first
+      list.sort((a, b) => {
+        const aHas = a.distance > 0 ? 1 : 0;
+        const bHas = b.distance > 0 ? 1 : 0;
+        if (aHas !== bHas) return bHas - aHas;
+        return a.distance - b.distance;
+      });
     }
     if (radiusKm && nearbyIds) {
       list = list
@@ -396,19 +401,22 @@ const Discover = () => {
 
         <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
         {showMapView ? (
-          <div className="rounded-2xl border bg-card p-12 text-center">
-            <Map className="mx-auto mb-2 h-9 w-9 text-primary" />
-            <p className="font-semibold text-card-foreground">Map view</p>
-            <p className="text-sm text-muted-foreground">Nearby workers (simulated pins within {MAX_RADIUS_KM} km)</p>
-            <div className="mx-auto mt-4 max-w-md space-y-2 text-left">
-              {sorted.slice(0, 6).map((worker) => (
-                <div key={`map-pin-${worker.id}`} className="flex items-center justify-between rounded-xl border bg-muted/40 px-3 py-2 text-xs">
-                  <span className="font-medium text-foreground">📍 {worker.name}</span>
-                  <span className="text-muted-foreground">{worker.distance.toFixed(1)} km away</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <WorkersMap
+            workers={sorted
+              .filter((w) => (dbWorkers.find((d: any) => d.id === w.id)?.latitude) && (dbWorkers.find((d: any) => d.id === w.id)?.longitude))
+              .map((w) => {
+                const db = dbWorkers.find((d: any) => d.id === w.id);
+                return {
+                  id: w.id,
+                  name: w.name,
+                  latitude: db.latitude,
+                  longitude: db.longitude,
+                  distanceKm: w.distance > 0 ? w.distance : undefined,
+                };
+              })}
+            userCoords={userCoords}
+            height="500px"
+          />
         ) : (
           <MonetizedWorkerGrid
             workers={sorted.map((w) => ({ ...w, isSponsored: sponsoredServiceIds.has(w.id) }))}

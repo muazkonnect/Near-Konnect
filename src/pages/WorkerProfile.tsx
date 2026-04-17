@@ -14,6 +14,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
+import WorkersMap from "@/components/WorkersMap";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
+import { calculateDistance } from "@/lib/geolocation";
 
 const WorkerProfile = () => {
   const { id } = useParams();
