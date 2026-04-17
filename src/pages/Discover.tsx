@@ -196,7 +196,9 @@ const Discover = () => {
         .sort((a, b) => a.distance - b.distance);
     }
     if (radiusKm && nearbyIds) {
-      list = list.filter((w) => nearbyIds.has(w.id));
+      list = list
+        .filter((w) => nearbyIds[w.id] !== undefined)
+        .map((w) => ({ ...w, matchedDistanceMeters: nearbyIds[w.id] }));
     }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
