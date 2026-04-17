@@ -7,12 +7,13 @@ import { useI18n } from "@/i18n";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Props {
-  worker: Worker;
+  worker: Worker & { matchedDistanceMeters?: number };
   index?: number;
   sponsored?: boolean;
 }
 
 const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
+  const matchedMeters = worker.matchedDistanceMeters;
   const initials = worker.name.split(" ").map(n => n[0]).join("").slice(0, 2);
   const { t } = useI18n();
 
