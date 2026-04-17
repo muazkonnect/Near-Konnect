@@ -7,6 +7,7 @@ import {
   Clock,
   Compass,
   HeartPulse,
+  Lock,
   MapPin,
   MessageSquare,
   Navigation,
@@ -27,6 +28,7 @@ import AvatarUpload from "@/components/AvatarUpload";
 import BloodDonationCard from "@/components/BloodDonationCard";
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
+import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { getCurrentPosition } from "@/lib/geolocation";
