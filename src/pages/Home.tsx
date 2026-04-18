@@ -138,15 +138,7 @@ const Home = () => {
   }, [search, workerSuggestions]);
 
   return (
-    <AppLayout
-      title=""
-      subtitle=""
-      action={
-        <Button variant="default" className="h-10" onClick={() => navigate("/blood-donors")}>
-          Request Help
-        </Button>
-      }
-    >
+    <AppLayout title="" subtitle="">
       <section className="space-y-8">
         {/* HERO SEARCH */}
         <motion.div
