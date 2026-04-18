@@ -29,6 +29,7 @@ import AvatarUpload from "@/components/AvatarUpload";
 import BloodDonationCard from "@/components/BloodDonationCard";
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
+import DashboardNav from "@/components/DashboardNav";
 import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
