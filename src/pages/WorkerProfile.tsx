@@ -125,7 +125,7 @@ const WorkerProfile = () => {
 
   return (
     <AppLayout title="" subtitle="">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl overflow-x-hidden">
         <Link to="/discover" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to search
         </Link>
@@ -313,7 +313,7 @@ const WorkerProfile = () => {
         </motion.div>
 
         <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-full bg-hero p-2 shadow-premium">
+          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
             {user ? (
               <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={handleMessage}>
                 <MessageSquare className="mr-1 h-4 w-4" /> Message
