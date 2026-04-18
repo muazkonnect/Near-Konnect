@@ -51,6 +51,7 @@ const WorkerDashboard = () => {
   const [available, setAvailable] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (workerData) {
