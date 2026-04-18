@@ -45,45 +45,43 @@ export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsPro
   };
 
   return (
-    <div className="space-y-2">
-      <div className="relative my-4">
+    <div className="space-y-3">
+      <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-border" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+        <div className="relative flex justify-center text-[11px] uppercase tracking-widest">
+          <span className="bg-background px-3 font-semibold text-muted-foreground">Or continue with</span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 gap-2"
-          onClick={() => handle("google")}
-          disabled={disabled || loading !== null}
-        >
-          {loading === "google" ? (
-            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <GoogleIcon />
-          )}
-          Google
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 gap-2"
-          onClick={() => handle("apple")}
-          disabled={disabled || loading !== null}
-        >
-          {loading === "apple" ? (
-            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <AppleIcon />
-          )}
-          Apple
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="outline"
+        className="h-12 w-full gap-2 rounded-2xl border-border text-base"
+        onClick={() => handle("google")}
+        disabled={disabled || loading !== null}
+      >
+        {loading === "google" ? (
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        ) : (
+          <GoogleIcon />
+        )}
+        Google
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        className="h-12 w-full gap-2 rounded-2xl border-border text-base"
+        onClick={() => handle("apple")}
+        disabled={disabled || loading !== null}
+      >
+        {loading === "apple" ? (
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        ) : (
+          <AppleIcon />
+        )}
+        Apple
+      </Button>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,11 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 import PasswordStrength from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/passwordValidation";
 import { useI18n } from "@/i18n";
-import logoImg from "@/assets/logo.png";
 import { type Coords } from "@/lib/geolocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import SocialAuthButtons from "@/components/SocialAuthButtons";
+import AuthShell from "@/components/AuthShell";
+import AuthTabs from "@/components/AuthTabs";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -78,7 +79,6 @@ const Register = () => {
       metadata.longitude = String(workerCoords?.longitude ?? "");
     }
 
-    // No emailRedirectTo → Supabase emails a 6-digit OTP code instead of a magic link
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
@@ -97,9 +97,6 @@ const Register = () => {
     const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
     const redirect = searchParams.get("redirect") || defaultRedirect;
 
-    // Supabase quirk: when email confirmations are on, signing up with an
-    // existing email returns a "fake" user with empty identities and no session.
-    // Detect that and route the user to login instead of pretending it succeeded.
     const identities = (data.user as { identities?: unknown[] } | null)?.identities;
     if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
       toast.error("This email is already registered. Please log in instead.");
@@ -116,152 +113,144 @@ const Register = () => {
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
+  const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
+  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-[hsl(var(--gradient-end))]/5 blur-3xl" />
-
-      <div className="w-full max-w-md relative">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <img src={logoImg} alt="Near Konnect" className="h-12 object-contain" />
-        </Link>
-
-        <div className="glass rounded-2xl p-6 md:p-8 shadow-premium">
-          <h1 className="text-2xl font-bold text-card-foreground mb-1">{t("register.title")}</h1>
-          <p className="text-sm text-muted-foreground mb-6">{t("register.subtitle")}</p>
-
-          <div className="flex gap-1 mb-6 p-1 bg-muted rounded-xl">
-            {(["customer", "worker"] as const).map(r => (
+    <AuthShell
+      title={t("register.title")}
+      subtitle={t("register.subtitle")}
+      heroExtra={
+        <div className="space-y-3">
+          <AuthTabs active="register" />
+          <div className="grid grid-cols-2 gap-1 rounded-full bg-white/5 p-1">
+            {(["customer", "worker"] as const).map((r) => (
               <button
                 key={r}
+                type="button"
                 onClick={() => setRole(r)}
-                className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                  role === r
-                    ? "bg-gradient-brand text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-card-foreground"
+                className={`rounded-full py-2 text-xs font-semibold transition ${
+                  role === r ? "bg-white text-hero shadow-sm" : "text-hero-muted"
                 }`}
               >
                 {t(`register.${r}`)}
               </button>
             ))}
           </div>
+        </div>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <Label htmlFor="name" className={labelClass}>{t("register.fullName")} *</Label>
+          <Input id="name" placeholder={t("register.fullName")} value={name} onChange={e => setName(e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <Label htmlFor="phone" className={labelClass}>{t("register.phone")}</Label>
+          <Input id="phone" placeholder="+92 3XX XXXXXXX" value={phone} onChange={e => setPhone(e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <Label htmlFor="email" className={labelClass}>{t("register.email")} *</Label>
+          <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <Label htmlFor="password" className={labelClass}>{t("register.password")} *</Label>
+          <div className="relative">
+            <Input id="password" type={showPw ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className={`${inputClass} pr-10`} />
+            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-label="Toggle password">
+              {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+          <PasswordStrength password={password} />
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="bloodGroup" className={labelClass}>Blood Group</Label>
+          <select id="bloodGroup" value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select blood group</option>
+            {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
+              <option key={bg} value={bg}>{bg}</option>
+            ))}
+          </select>
+        </div>
+
+        <label htmlFor="willingToDonate" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
+          <input
+            type="checkbox"
+            id="willingToDonate"
+            checked={willingToDonate}
+            onChange={e => setWillingToDonate(e.target.checked)}
+            className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+          />
+          I am willing to donate blood
+        </label>
+
+        {role === "worker" && (
+          <>
             <div>
-              <Label htmlFor="name">{t("register.fullName")} *</Label>
-              <div className="relative mt-1.5">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input id="name" placeholder={t("register.fullName")} className="pl-10" value={name} onChange={e => setName(e.target.value)} />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="phone">{t("register.phone")}</Label>
-              <div className="relative mt-1.5">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input id="phone" placeholder="+92 3XX XXXXXXX" className="pl-10" value={phone} onChange={e => setPhone(e.target.value)} />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="email">{t("register.email")} *</Label>
-              <div className="relative mt-1.5">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input id="email" type="email" placeholder="you@example.com" className="pl-10" value={email} onChange={e => setEmail(e.target.value)} />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="password">{t("register.password")} *</Label>
-              <div className="relative mt-1.5">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input id="password" type={showPw ? "text" : "password"} placeholder="••••••••" className="pl-10 pr-10" value={password} onChange={e => setPassword(e.target.value)} />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              <PasswordStrength password={password} />
-            </div>
-            <div>
-              <Label htmlFor="bloodGroup">Blood Group</Label>
-              <select id="bloodGroup" value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <option value="">Select blood group</option>
-                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
-                  <option key={bg} value={bg}>{bg}</option>
+              <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
+              <select
+                id="mainCategory"
+                value={mainCategory}
+                onChange={(e) => {
+                  const next = e.target.value as MainServiceCategory | "";
+                  setMainCategory(next);
+                  setSubCategory("");
+                }}
+                className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Select main category</option>
+                {MAIN_SERVICE_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>{category}</option>
                 ))}
               </select>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-              <input
-                type="checkbox"
-                id="willingToDonate"
-                checked={willingToDonate}
-                onChange={e => setWillingToDonate(e.target.checked)}
-                className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
-              />
-              <label htmlFor="willingToDonate" className="text-sm font-medium text-foreground cursor-pointer">
-                I am willing to donate blood
-              </label>
+            <div>
+              <Label htmlFor="subCategory" className={labelClass}>Subcategory *</Label>
+              <select
+                id="subCategory"
+                value={subCategory}
+                onChange={e => setSubCategory(e.target.value)}
+                disabled={!mainCategory}
+                className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Select subcategory</option>
+                {(mainCategory ? SUBCATEGORIES_BY_MAIN[mainCategory] : []).map((category) => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
             </div>
+            <div>
+              <Label htmlFor="experience" className={labelClass}>{t("register.experience")} *</Label>
+              <Input id="experience" type="number" placeholder="e.g. 5" value={experience} onChange={e => setExperience(e.target.value)} className={inputClass} />
+            </div>
+            <div className="space-y-2 rounded-2xl border border-border bg-muted/40 p-4">
+              <p className="text-sm font-semibold text-foreground">Pick your fixed service location *</p>
+              <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
+              <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
+            </div>
+          </>
+        )}
 
-            {role === "worker" && (
-              <>
-                <div>
-                  <Label htmlFor="mainCategory">Main Category *</Label>
-                  <select
-                    id="mainCategory"
-                    value={mainCategory}
-                    onChange={(e) => {
-                      const nextMainCategory = e.target.value as MainServiceCategory | "";
-                      setMainCategory(nextMainCategory);
-                      setSubCategory("");
-                    }}
-                    className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <option value="">Select main category</option>
-                    {MAIN_SERVICE_CATEGORIES.map((category) => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="subCategory">Subcategory *</Label>
-                  <select
-                    id="subCategory"
-                    value={subCategory}
-                    onChange={e => setSubCategory(e.target.value)}
-                    disabled={!mainCategory}
-                    className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <option value="">Select subcategory</option>
-                    {(mainCategory ? SUBCATEGORIES_BY_MAIN[mainCategory] : []).map((category) => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="experience">{t("register.experience")} *</Label>
-                  <Input id="experience" type="number" placeholder="e.g. 5" className="mt-1.5" value={experience} onChange={e => setExperience(e.target.value)} />
-                </div>
-                <div className="rounded-xl border bg-muted/40 p-3 space-y-2">
-                  <p className="text-sm font-medium text-foreground">Pick your fixed service location *</p>
-                  <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
-                  <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
-                </div>
-              </>
-            )}
+        <Button type="submit" disabled={loading} variant="hero" size="lg" className="w-full">
+          {loading ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              {t("register.submitting")}
+            </>
+          ) : (
+            t("register.submit")
+          )}
+        </Button>
+      </form>
 
-            <Button className="w-full bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-md h-11 rounded-xl font-semibold" type="submit" disabled={loading}>
-              {loading ? t("register.submitting") : t("register.submit")}
-            </Button>
-          </form>
+      <SocialAuthButtons disabled={loading} />
 
-          <SocialAuthButtons disabled={loading} />
-
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            {t("register.hasAccount")}{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">{t("nav.logIn")}</Link>
-          </p>
-        </div>
-      </div>
-    </div>
+      <p className="mt-8 text-center text-sm text-muted-foreground">
+        {t("register.hasAccount")}{" "}
+        <Link to="/login" className="font-semibold text-foreground hover:underline">{t("nav.logIn")}</Link>
+      </p>
+    </AuthShell>
   );
 };
 
