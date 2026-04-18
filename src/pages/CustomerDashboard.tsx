@@ -81,6 +81,7 @@ const CustomerDashboard = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -89,6 +90,7 @@ const CustomerDashboard = () => {
       setName(profile.full_name || "");
       setPhone(profile.phone || "");
       setBloodGroup((profile as any).blood_group || "");
+      setUseWhatsapp(!!(profile as any).use_whatsapp);
     }
   }, [profile]);
 
