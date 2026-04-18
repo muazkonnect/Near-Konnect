@@ -129,7 +129,11 @@ const WorkerDashboard = () => {
   const confirmedBookings = bookings.filter((b: any) => b.status === "confirmed");
 
   const handleSave = async () => {
-    if (!workerData) return;
+    if (!workerData || !user) return;
+    if (useWhatsapp && !phone.trim()) {
+      toast.error("Please add a phone number to enable WhatsApp.");
+      return;
+    }
     setSaving(true);
 
     const { error: workerError } = await supabase
@@ -142,8 +146,13 @@ const WorkerDashboard = () => {
       })
       .eq("id", workerData.id);
 
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ phone, use_whatsapp: useWhatsapp } as any)
+      .eq("user_id", user.id);
+
     setSaving(false);
-    if (workerError) {
+    if (workerError || profileError) {
       toast.error("Failed to save changes");
     } else {
       toast.success("Profile updated!");
