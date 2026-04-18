@@ -139,8 +139,8 @@ const Home = () => {
 
   return (
     <AppLayout
-      title={`Hi, ${firstName} 👋`}
-      subtitle="Find local help in seconds — services, urgent requests, trusted nearby."
+      title=""
+      subtitle=""
       action={
         <Button variant="default" className="h-10" onClick={() => navigate("/blood-donors")}>
           Request Help
@@ -148,67 +148,75 @@ const Home = () => {
       }
     >
       <section className="space-y-8">
-        {/* HERO BANNER + SEARCH */}
+        {/* HERO SEARCH */}
         <motion.div
           initial="hidden"
           animate="visible"
           variants={fadeUp}
           custom={0}
-          className="-mt-12 overflow-hidden rounded-3xl bg-card shadow-premium"
+          className="relative -mt-16 overflow-hidden rounded-[2rem] bg-hero p-5 text-hero-foreground shadow-premium md:-mt-20 md:p-8"
         >
-          <div className="relative hidden overflow-hidden md:block md:bg-hero md:p-6 md:text-hero-foreground">
-            <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
-            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
-              backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
-              backgroundSize: "20px 20px",
-            }} />
-            <div className="relative">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hero-muted">Welcome back</p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight">What service do you need today?</h2>
-              <p className="mt-1 text-sm text-hero-muted">Search by profession, city or category.</p>
-            </div>
-          </div>
+          <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{
+            backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }} />
 
-          <div className="p-4 md:bg-card md:p-5">
-            <div className="relative mb-3">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <Input
+          <div className="relative">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> Live nearby
+              </span>
+              <span className="text-[11px] font-medium text-hero-muted">{new Date().toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
+            </div>
+
+            <h2 className="mt-4 text-2xl font-bold leading-tight tracking-tight md:text-3xl">
+              What do you need help with <span className="text-primary">today?</span>
+            </h2>
+
+            <form
+              onSubmit={(e) => { e.preventDefault(); navigate(`/discover?search=${encodeURIComponent(search)}`); }}
+              className="mt-5 flex items-center gap-1 rounded-full bg-white/10 p-1.5 ring-1 ring-white/10 backdrop-blur-sm focus-within:ring-primary/40"
+            >
+              <Search className="ml-3 h-4 w-4 shrink-0 text-hero-muted" />
+              <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Find services near you..."
-                className="h-12 rounded-full border-none bg-muted pl-11 text-base"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") navigate(`/discover?search=${encodeURIComponent(search)}`);
-                }}
+                placeholder="Try 'Electrician' or 'Tutor near me'..."
+                className="flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
               />
-            </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {suggestions.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  onClick={() => {
-                    setSearch(suggestion);
-                    navigate(`/discover?search=${encodeURIComponent(suggestion)}`);
-                  }}
-                  className="tap-feedback shrink-0 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-primary hover:text-primary-foreground"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
+              <Button type="submit" size="sm" className="h-9 rounded-full px-4">Search</Button>
+            </form>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" />
+            {suggestions.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] text-hero-muted">Try:</span>
+                {suggestions.slice(0, 4).map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => {
+                      setSearch(suggestion);
+                      navigate(`/discover?search=${encodeURIComponent(suggestion)}`);
+                    }}
+                    className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 rounded-full bg-white/5 px-3 py-2 text-[11px] text-hero-muted ring-1 ring-white/5">
+              <MapPin className="h-3.5 w-3.5 text-primary" />
               {locationStatus === "denied" ? (
-                <span>Please enable location to continue</span>
+                <span>Enable location to see nearby help</span>
               ) : browsingCoords ? (
-                <span className="truncate">
-                  Using current location · {browsingCoords.latitude.toFixed(2)}, {browsingCoords.longitude.toFixed(2)}
-                </span>
+                <span className="truncate">Using current location · {browsingCoords.latitude.toFixed(2)}, {browsingCoords.longitude.toFixed(2)}</span>
               ) : (
                 <span>Detecting location...</span>
               )}
-              <Button type="button" variant="ghost" size="sm" className="ml-auto h-7 gap-1 px-2 text-[11px]" onClick={refreshLocation}>
+              <Button type="button" variant="ghost" size="sm" className="ml-auto h-6 gap-1 px-2 text-[11px] text-hero-foreground hover:bg-white/10" onClick={refreshLocation}>
                 <Navigation className="h-3 w-3" /> Update
               </Button>
             </div>
