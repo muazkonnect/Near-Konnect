@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Compass, HeartPulse, MapPin, Navigation, Search, Sparkles, UserSearch } from "lucide-react";
+import { ArrowRight, Briefcase, Car, Compass, HeartPulse, Home as HomeIcon, MapPin, Navigation, Search, ShoppingBag, Sparkles, UserSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
 import ActiveBloodRequests from "@/components/ActiveBloodRequests";
-import { serviceCategories, workers as mockWorkers } from "@/data/mockData";
+import { workers as mockWorkers } from "@/data/mockData";
+import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { supabase } from "@/integrations/supabase/client";
 import type { Worker } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
@@ -120,13 +121,14 @@ const Home = () => {
       .slice(0, 8);
   }, [search, workers, browsingCoords]);
 
-  const quickCategories = [
-    { id: "electrician", name: "Electrician", icon: "⚡" },
-    { id: "plumber", name: "Plumber", icon: "🔧" },
-    { id: "tutor", name: "Tutor", icon: "📚" },
-    { id: "delivery", name: "Delivery", icon: "🛵" },
-    { id: "blood-donors", name: "Blood Donation", icon: "🩸", urgent: true },
-  ];
+  const mainCategoryMeta = [
+    { name: "Home & Local Services", icon: HomeIcon, accent: "from-primary/20 to-primary/5" },
+    { name: "Automotive & Transport", icon: Car, accent: "from-blue-500/20 to-blue-500/5" },
+    { name: "Shops, Food & Daily Needs", icon: ShoppingBag, accent: "from-orange-500/20 to-orange-500/5" },
+    { name: "Professional & Business Services", icon: Briefcase, accent: "from-purple-500/20 to-purple-500/5" },
+    { name: "Health, Education & Community", icon: HeartPulse, accent: "from-destructive/20 to-destructive/5" },
+    { name: "Events & Lifestyle", icon: Sparkles, accent: "from-pink-500/20 to-pink-500/5" },
+  ] as const;
 
   useEffect(() => {
     if (!search.trim()) {
@@ -301,37 +303,30 @@ const Home = () => {
         {/* CATEGORIES */}
         <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={4}>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground">Categories</h2>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Browse by category</h2>
+              <p className="text-xs text-muted-foreground">All services, organized by what you need</p>
+            </div>
             <Button variant="ghost" size="sm" onClick={() => navigate("/discover")} className="gap-1">
               All <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {quickCategories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => navigate(category.id === "blood-donors" ? "/blood-donors" : `/discover?category=${category.id}`)}
-                className="tap-feedback group rounded-2xl border bg-card p-4 text-left transition-colors hover:border-foreground/15 hover:bg-primary hover:text-primary-foreground"
-              >
-                <div className="mb-2 text-2xl">{category.icon}</div>
-                <p className="text-sm font-bold text-foreground group-hover:text-primary-foreground">{category.name}</p>
-                {category.urgent && (
-                  <Badge variant="destructive" className="mt-2 rounded-full px-2 py-0 text-[10px]">
-                    Urgent
-                  </Badge>
-                )}
-              </button>
-            ))}
-            {serviceCategories.slice(0, 5).map((category) => (
-              <button
-                key={category.id}
-                onClick={() => navigate(`/discover?category=${category.id}`)}
-                className="tap-feedback group rounded-2xl border bg-card p-4 text-left transition-colors hover:border-foreground/15 hover:bg-primary hover:text-primary-foreground"
-              >
-                <div className="mb-2 text-2xl">{category.icon}</div>
-                <p className="text-sm font-bold text-foreground group-hover:text-primary-foreground">{category.name}</p>
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {mainCategoryMeta.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.name}
+                  onClick={() => navigate(`/discover?mainCategory=${encodeURIComponent(category.name)}`)}
+                  className={`tap-feedback group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border bg-gradient-to-br ${category.accent} p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md`}
+                >
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-card text-primary ring-1 ring-border transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <p className="text-sm font-bold leading-tight text-foreground">{category.name}</p>
+                </button>
+              );
+            })}
           </div>
         </motion.section>
       </section>
