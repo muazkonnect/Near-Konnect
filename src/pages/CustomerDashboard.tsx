@@ -406,7 +406,8 @@ const CustomerDashboard = () => {
               )}
             </div>
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
       </section>
     </AppLayout>
   );
