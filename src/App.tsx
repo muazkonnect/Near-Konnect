@@ -7,28 +7,27 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/i18n";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { lazy, Suspense } from "react";
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Discover = lazy(() => import("./pages/Discover.tsx"));
-const WorkerProfile = lazy(() => import("./pages/WorkerProfile.tsx"));
-const Login = lazy(() => import("./pages/Login.tsx"));
-const Register = lazy(() => import("./pages/Register.tsx"));
-const VerifyOtp = lazy(() => import("./pages/VerifyOtp.tsx"));
-const ForgotPassword = lazy(() => import("./pages/ForgotPassword.tsx"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
-const WorkerDashboard = lazy(() => import("./pages/WorkerDashboard.tsx"));
-const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard.tsx"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
-const BloodDonors = lazy(() => import("./pages/BloodDonors.tsx"));
-const Chat = lazy(() => import("./pages/Chat.tsx"));
-const Messages = lazy(() => import("./pages/Messages.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Disclaimer = lazy(() => import("./pages/Disclaimer.tsx"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
-const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions.tsx"));
-const SupportChatbot = lazy(() => import("./components/SupportChatbot"));
-const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
-const UnverifiedEmailBanner = lazy(() => import("@/components/UnverifiedEmailBanner"));
+import Index from "./pages/Index";
+import Discover from "./pages/Discover";
+import WorkerProfile from "./pages/WorkerProfile";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import VerifyOtp from "./pages/VerifyOtp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import WorkerDashboard from "./pages/WorkerDashboard";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import BloodDonors from "./pages/BloodDonors";
+import Chat from "./pages/Chat";
+import Messages from "./pages/Messages";
+import NotFound from "./pages/NotFound";
+import Disclaimer from "./pages/Disclaimer";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import SupportChatbot from "@/components/SupportChatbot";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,25 +40,16 @@ const queryClient = new QueryClient({
   },
 });
 
-const PageLoader = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-  </div>
-);
-
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={null}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
               <UnverifiedEmailBanner />
-            </Suspense>
-            <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/discover" element={<Discover />} />
@@ -80,16 +70,13 @@ const App = () => (
                 <Route path="/terms" element={<TermsAndConditions />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Suspense>
-            <Suspense fallback={null}>
               <MobileBottomNav />
               <SupportChatbot />
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </I18nProvider>
-  </QueryClientProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </I18nProvider>
+    </QueryClientProvider>
   </ErrorBoundary>
 );
 
