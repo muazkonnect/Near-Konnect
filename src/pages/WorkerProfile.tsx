@@ -167,10 +167,10 @@ const WorkerProfile = () => {
               )}
               <div className="flex-1 pt-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-bold tracking-tight text-card-foreground">{worker.name}</h1>
+                  <h1 className="text-2xl font-bold tracking-tight text-primary">{worker.name}</h1>
                   {worker.verified && <CheckCircle className="h-5 w-5 text-primary" />}
                 </div>
-                <p className="text-sm text-muted-foreground">{worker.profession}</p>
+                <p className="text-sm text-secondary-foreground px-0 py-0 my-0">{worker.profession}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                   <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-foreground">
                     <Star className="h-3 w-3 fill-star text-star" />
