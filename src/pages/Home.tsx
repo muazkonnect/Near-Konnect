@@ -14,7 +14,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
-import heroBubbles from "@/assets/hero-bubbles.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -157,19 +156,17 @@ const Home = () => {
           custom={0}
           className="-mt-12 overflow-hidden rounded-3xl bg-card shadow-premium"
         >
-          <div className="grid md:grid-cols-[1fr_auto] md:items-center md:gap-6 md:bg-hero md:p-6 md:text-hero-foreground">
-            <div className="hidden md:block">
+          <div className="relative hidden overflow-hidden md:block md:bg-hero md:p-6 md:text-hero-foreground">
+            <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
+              backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }} />
+            <div className="relative">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hero-muted">Welcome back</p>
               <h2 className="mt-1 text-2xl font-bold tracking-tight">What service do you need today?</h2>
               <p className="mt-1 text-sm text-hero-muted">Search by profession, city or category.</p>
             </div>
-            <img
-              src={heroBubbles}
-              alt=""
-              width={1024}
-              height={1024}
-              className="hidden h-32 w-32 object-contain md:block"
-            />
           </div>
 
           <div className="p-4 md:bg-card md:p-5">
