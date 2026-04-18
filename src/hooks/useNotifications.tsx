@@ -1,0 +1,248 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+
+export interface AppNotification {
+  id: string;
+  type: "message" | "booking" | "blood_request";
+  title: string;
+  body: string;
+  created_at: string;
+  link: string;
+  read: boolean;
+}
+
+// Module-scoped singleton state — shared across every consumer
+let store: AppNotification[] = [];
+let readIds = new Set<string>();
+let subs: ((n: AppNotification[]) => void)[] = [];
+let channel: ReturnType<typeof supabase.channel> | null = null;
+let initUserId: string | null = null;
+let initializing = false;
+
+const broadcast = () => {
+  const snapshot = store.map((n) => ({ ...n, read: readIds.has(n.id) }));
+  subs.forEach((fn) => fn(snapshot));
+};
+
+const upsert = (n: AppNotification) => {
+  store = [n, ...store.filter((x) => x.id !== n.id)].slice(0, 25);
+  broadcast();
+};
+
+const init = async (userId: string) => {
+  if (initializing || initUserId === userId) return;
+  initializing = true;
+  initUserId = userId;
+
+  const list: AppNotification[] = [];
+
+  const { data: msgs } = await supabase
+    .from("messages")
+    .select("id, sender_id, message_text, created_at, profiles!messages_sender_id_fkey_profiles(full_name)")
+    .eq("receiver_id", userId)
+    .eq("status", "delivered")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  msgs?.forEach((m: any) => {
+    list.push({
+      id: `msg-${m.id}`,
+      type: "message",
+      title: `Message from ${m.profiles?.full_name || "Someone"}`,
+      body: m.message_text?.slice(0, 60) || "New message",
+      created_at: m.created_at,
+      link: `/chat/${m.sender_id}`,
+      read: false,
+    });
+  });
+
+  const { data: bookings } = await supabase
+    .from("bookings")
+    .select("id, status, service_description, created_at, booking_date, customer_id, worker_id")
+    .or(`customer_id.eq.${userId},worker_id.eq.${userId}`)
+    .in("status", ["pending", "confirmed"])
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  bookings?.forEach((b: any) => {
+    list.push({
+      id: `book-${b.id}`,
+      type: "booking",
+      title: `Booking ${b.status}`,
+      body: `${b.service_description} on ${b.booking_date}`,
+      created_at: b.created_at,
+      link: "/dashboard",
+      read: false,
+    });
+  });
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("blood_group, is_blood_donor")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (profile?.is_blood_donor && profile?.blood_group) {
+    const { data: bloodReqs } = await supabase
+      .from("blood_requests")
+      .select("id, blood_group, urgency, message, city, created_at, requester_id")
+      .eq("status", "open")
+      .eq("blood_group", profile.blood_group)
+      .neq("requester_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    for (const req of bloodReqs || []) {
+      const { data: rp } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", req.requester_id)
+        .maybeSingle();
+
+      list.push({
+        id: `blood-${req.id}`,
+        type: "blood_request",
+        title: `🩸 ${req.urgency === "critical" ? "CRITICAL: " : ""}${req.blood_group} Blood Needed`,
+        body: `${rp?.full_name || "Someone"} needs ${req.blood_group} blood${req.city ? ` in ${req.city}` : ""}`,
+        created_at: req.created_at,
+        link: "/blood-donors",
+        read: false,
+      });
+    }
+  }
+
+  list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  store = list.slice(0, 25);
+  broadcast();
+  initializing = false;
+
+  if (channel) supabase.removeChannel(channel);
+  const ch = supabase.channel(`notif-${userId}`);
+
+  ch.on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "messages", filter: `receiver_id=eq.${userId}` },
+    async (payload: any) => {
+      const { data: sp } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", payload.new.sender_id)
+        .maybeSingle();
+      const senderName = sp?.full_name || "Someone";
+      upsert({
+        id: `msg-${payload.new.id}`,
+        type: "message",
+        title: `Message from ${senderName}`,
+        body: payload.new.message_text?.slice(0, 60) || "New message",
+        created_at: payload.new.created_at,
+        link: `/chat/${payload.new.sender_id}`,
+        read: false,
+      });
+      toast.info(`💬 ${senderName}`, { description: payload.new.message_text?.slice(0, 80) });
+    }
+  );
+
+  ch.on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "bookings" },
+    (payload: any) => {
+      if (payload.new.customer_id !== userId && payload.new.worker_id !== userId) return;
+      upsert({
+        id: `book-${payload.new.id}`,
+        type: "booking",
+        title: "New Booking",
+        body: `${payload.new.service_description} on ${payload.new.booking_date}`,
+        created_at: payload.new.created_at,
+        link: "/dashboard",
+        read: false,
+      });
+      toast.info("📋 New Booking", { description: payload.new.service_description });
+    }
+  );
+
+  ch.on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "blood_requests" },
+    async (payload: any) => {
+      if (payload.new.requester_id === userId) return;
+      const { data: dp } = await supabase
+        .from("profiles")
+        .select("blood_group, is_blood_donor")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (dp?.is_blood_donor && dp.blood_group === payload.new.blood_group) {
+        const { data: rp } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("user_id", payload.new.requester_id)
+          .maybeSingle();
+        upsert({
+          id: `blood-${payload.new.id}`,
+          type: "blood_request",
+          title: `🩸 ${payload.new.urgency === "critical" ? "CRITICAL: " : ""}${payload.new.blood_group} Blood Needed`,
+          body: `${rp?.full_name || "Someone"} needs ${payload.new.blood_group} blood${payload.new.city ? ` in ${payload.new.city}` : ""}`,
+          created_at: payload.new.created_at,
+          link: "/blood-donors",
+          read: false,
+        });
+        toast.error(`🩸 ${payload.new.blood_group} Blood Needed!`, {
+          description: `${rp?.full_name || "Someone"} needs help`,
+          duration: 8000,
+        });
+      }
+    }
+  );
+
+  ch.subscribe();
+  channel = ch;
+};
+
+export const markRead = (predicate: (n: AppNotification) => boolean) => {
+  store.forEach((n) => {
+    if (predicate(n)) readIds.add(n.id);
+  });
+  broadcast();
+};
+
+export const markAllRead = () => {
+  store.forEach((n) => readIds.add(n.id));
+  broadcast();
+};
+
+export const useNotifications = () => {
+  const { user } = useAuth();
+  const [items, setItems] = useState<AppNotification[]>(() =>
+    store.map((n) => ({ ...n, read: readIds.has(n.id) }))
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    const fn = (n: AppNotification[]) => setItems(n);
+    subs.push(fn);
+    init(user.id);
+    return () => {
+      subs = subs.filter((s) => s !== fn);
+      if (subs.length === 0 && channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+        initUserId = null;
+        store = [];
+        readIds = new Set();
+      }
+    };
+  }, [user]);
+
+  const unreadByType = {
+    message: items.filter((n) => !n.read && n.type === "message").length,
+    booking: items.filter((n) => !n.read && n.type === "booking").length,
+    blood_request: items.filter((n) => !n.read && n.type === "blood_request").length,
+  };
+
+  return {
+    items,
+    unread: items.filter((n) => !n.read).length,
+    unreadByType,
+  };
+};

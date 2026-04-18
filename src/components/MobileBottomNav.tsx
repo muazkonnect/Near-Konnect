@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
@@ -33,12 +34,14 @@ const MobileBottomNav = () => {
     navigate("/login");
   };
 
+  const { unreadByType } = useNotifications();
+
   const items = [
-    { label: "Home", to: "/", icon: Home },
-    { label: "Explore", to: "/discover", icon: Compass },
-    { label: "Requests", to: "/blood-donors", icon: Siren, urgent: true },
-    { label: "Messages", to: "/messages", icon: MessageSquare },
-    { label: "Profile", to: profilePath, icon: User },
+    { label: "Home", to: "/", icon: Home, hasDot: false },
+    { label: "Explore", to: "/discover", icon: Compass, hasDot: false },
+    { label: "Requests", to: "/blood-donors", icon: Siren, urgent: true, hasDot: unreadByType.blood_request > 0 || unreadByType.booking > 0 },
+    { label: "Messages", to: "/messages", icon: MessageSquare, hasDot: unreadByType.message > 0 },
+    { label: "Profile", to: profilePath, icon: User, hasDot: false },
   ];
 
   if (shouldHide) return null;
@@ -103,7 +106,12 @@ const MobileBottomNav = () => {
                       : "text-muted-foreground"
                 }`}
               >
-                <item.icon className={`h-[18px] w-[18px] ${item.urgent && !active ? "text-destructive" : ""}`} />
+                <span className="relative">
+                  <item.icon className={`h-[18px] w-[18px] ${item.urgent && !active ? "text-destructive" : ""}`} />
+                  {item.hasDot && (
+                    <span className="absolute -top-0.5 -right-1 h-2 w-2 rounded-full bg-destructive ring-2 ring-card animate-pulse" />
+                  )}
+                </span>
                 <span>{item.label}</span>
               </Link>
             </li>
