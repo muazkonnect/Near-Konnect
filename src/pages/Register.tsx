@@ -70,6 +70,7 @@ const Register = () => {
       role,
       blood_group: bloodGroup,
       is_blood_donor: willingToDonate ? "true" : "false",
+      use_whatsapp: useWhatsapp ? "true" : "false",
     };
     if (role === "worker") {
       metadata.main_category = mainCategory;
