@@ -284,42 +284,60 @@ const WorkerDashboard = () => {
           </button>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid h-auto w-full grid-cols-3 gap-2 rounded-2xl bg-muted p-1 md:grid-cols-6">
-            <TabsTrigger value="overview" className="rounded-xl">Overview</TabsTrigger>
-            <TabsTrigger value="profile" className="rounded-xl">Profile</TabsTrigger>
-            <TabsTrigger value="bookings" className="rounded-xl">Bookings</TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-xl">Messages</TabsTrigger>
-            <TabsTrigger value="reviews" className="rounded-xl">Reviews</TabsTrigger>
-            <TabsTrigger value="blood" className="rounded-xl">Blood</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-5">
+          <TabsList className="grid h-auto w-full grid-cols-3 gap-1.5 rounded-2xl bg-muted p-1.5 md:grid-cols-6">
+            <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Overview</TabsTrigger>
+            <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Profile</TabsTrigger>
+            <TabsTrigger value="bookings" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Bookings</TabsTrigger>
+            <TabsTrigger value="messages" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Messages</TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Reviews</TabsTrigger>
+            <TabsTrigger value="blood" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Blood</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-2xl border bg-card p-5">
-                <h3 className="mb-3 font-semibold text-card-foreground">Pending requests ({pendingBookings.length})</h3>
+              <div className="rounded-3xl border bg-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">
+                      <Clock className="h-3 w-3" /> Pending
+                    </span>
+                    <h3 className="mt-2 font-bold text-card-foreground">Awaiting your reply ({pendingBookings.length})</h3>
+                  </div>
+                </div>
                 {pendingBookings.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No pending requests right now.</p>
+                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                    <p className="text-sm text-muted-foreground">No pending requests right now.</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {pendingBookings.slice(0, 3).map((b: any) => (
-                      <div key={b.id} className="rounded-xl bg-muted/50 p-3">
-                        <p className="text-sm font-medium text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                        <p className="text-xs text-muted-foreground truncate">{b.service_description}</p>
+                      <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
+                        <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                        <p className="truncate text-xs text-muted-foreground">{b.service_description}</p>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              <div className="rounded-2xl border bg-card p-5">
-                <h3 className="mb-3 font-semibold text-card-foreground">Upcoming ({confirmedBookings.length})</h3>
+              <div className="rounded-3xl border bg-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-success">
+                      <CheckCircle className="h-3 w-3" /> Confirmed
+                    </span>
+                    <h3 className="mt-2 font-bold text-card-foreground">Upcoming jobs ({confirmedBookings.length})</h3>
+                  </div>
+                </div>
                 {confirmedBookings.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No upcoming confirmed jobs.</p>
+                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                    <p className="text-sm text-muted-foreground">No upcoming confirmed jobs.</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {confirmedBookings.slice(0, 3).map((b: any) => (
-                      <div key={b.id} className="rounded-xl bg-muted/50 p-3">
-                        <p className="text-sm font-medium text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                      <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
+                        <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
                         <p className="text-xs text-muted-foreground">{new Date(b.booking_date).toLocaleDateString()} · {b.booking_time}</p>
                       </div>
                     ))}
@@ -330,54 +348,62 @@ const WorkerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="profile">
-            <div className="rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-semibold text-card-foreground">Edit service profile</h2>
-              <div className="mb-6 flex items-start gap-4">
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold text-card-foreground">Service profile</h2>
+                  <p className="text-sm text-muted-foreground">How clients see you</p>
+                </div>
+                {workerData.verified && (
+                  <Badge className="gap-1 rounded-full bg-success px-3 py-1 text-success-foreground">
+                    <CheckCircle className="h-3 w-3" /> Verified
+                  </Badge>
+                )}
+              </div>
+
+              <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
                 <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
-                <div className="space-y-1">
-                  <p className="font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
-                  <p className="text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
-                  {workerData.verified && <Badge className="bg-success text-success-foreground">Verified</Badge>}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
+                  <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <Label>Profession</Label>
-                  <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5" />
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession</Label>
+                  <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                 </div>
                 <div>
-                  <Label>Years of Experience</Label>
-                  <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5" />
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
+                  <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                 </div>
                 <div className="md:col-span-2">
-                  <Label>About</Label>
-                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
+                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-muted p-3">
+              <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Availability</p>
+                  <p className="font-semibold text-foreground">Availability</p>
                   <p className="text-xs text-muted-foreground">{available ? "You are visible to clients" : "You are hidden from search"}</p>
                 </div>
                 <Switch checked={available} onCheckedChange={setAvailable} />
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Button onClick={handleSave} disabled={saving} className="gap-2">
-                  <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
-                </Button>
-              </div>
+              <Button onClick={handleSave} disabled={saving} className="mt-5 h-11 gap-2 rounded-xl px-6">
+                <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+              </Button>
 
-              <div className="mt-4 rounded-xl border bg-muted/40 p-4">
-                <div className="mb-2 flex items-center justify-between gap-2">
+              <div className="mt-6 rounded-2xl border bg-gradient-to-br from-muted/60 to-muted/20 p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Fixed service location</p>
+                    <p className="font-semibold text-foreground">Fixed service location</p>
                     <p className="text-xs text-muted-foreground">
                       {workerData.latitude && workerData.longitude
-                        ? "This is permanent and cannot be changed."
-                        : "Set this once from your shop or work spot. It cannot be changed later."}
+                        ? "Permanent and locked to your shop or work spot."
+                        : "Set this once. It cannot be changed later."}
                     </p>
                   </div>
                   {workerData.latitude && workerData.longitude && (
@@ -389,29 +415,26 @@ const WorkerDashboard = () => {
 
                 {workerData.latitude && workerData.longitude ? (
                   <>
-                    <div className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs text-muted-foreground">
                       <MapPin className="h-3 w-3" />
                       {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
                     </div>
-                    <WorkersMap
-                      workers={[{
-                        id: workerData.id,
-                        name: profession || "Your service location",
-                        latitude: workerData.latitude,
-                        longitude: workerData.longitude,
-                      }]}
-                      height="240px"
-                    />
+                    <div className="overflow-hidden rounded-2xl">
+                      <WorkersMap
+                        workers={[{
+                          id: workerData.id,
+                          name: profession || "Your service location",
+                          latitude: workerData.latitude,
+                          longitude: workerData.longitude,
+                        }]}
+                        height="240px"
+                      />
+                    </div>
                   </>
                 ) : (
-                  <Button
-                    variant="outline"
-                    onClick={handleSetFixedLocation}
-                    disabled={settingLocation}
-                    className="mt-1 gap-2"
-                  >
+                  <Button variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-11 gap-2 rounded-xl">
                     <Navigation className="h-4 w-4" />
-                    {settingLocation ? "Detecting..." : "Use current location as fixed service location"}
+                    {settingLocation ? "Detecting..." : "Use current location"}
                   </Button>
                 )}
               </div>
@@ -420,26 +443,29 @@ const WorkerDashboard = () => {
 
           <TabsContent value="bookings" className="space-y-4">
             {pendingBookings.length > 0 && (
-              <div className="rounded-2xl border bg-card p-5">
-                <h3 className="mb-3 font-semibold text-card-foreground">Pending requests</h3>
+              <div className="rounded-3xl border bg-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="font-bold text-card-foreground">Pending requests</h3>
+                  <span className="rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">{pendingBookings.length}</span>
+                </div>
                 <div className="space-y-3">
                   {pendingBookings.map((b: any) => (
-                    <div key={b.id} className="rounded-xl border border-warning/40 bg-muted/30 p-4">
+                    <div key={b.id} className="rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 to-transparent p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
                           <p className="mt-1 text-sm text-muted-foreground">{b.service_description}</p>
-                          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
-                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {b.booking_time}</span>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Clock className="h-3 w-3" /> {b.booking_time}</span>
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleBookingAction(b.id, "confirmed")} className="gap-1">
-                            <CheckCircle className="h-3 w-3" /> Accept
+                          <Button size="sm" onClick={() => handleBookingAction(b.id, "confirmed")} className="h-9 gap-1 rounded-xl">
+                            <CheckCircle className="h-3.5 w-3.5" /> Accept
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleBookingAction(b.id, "rejected")} className="gap-1">
-                            <XCircle className="h-3 w-3" /> Decline
+                          <Button size="sm" variant="outline" onClick={() => handleBookingAction(b.id, "rejected")} className="h-9 gap-1 rounded-xl">
+                            <XCircle className="h-3.5 w-3.5" /> Decline
                           </Button>
                         </div>
                       </div>
@@ -449,21 +475,22 @@ const WorkerDashboard = () => {
               </div>
             )}
 
-            <div className="rounded-2xl border bg-card p-5">
-              <h3 className="mb-3 font-semibold text-card-foreground">Confirmed and past bookings</h3>
+            <div className="rounded-3xl border bg-card p-6">
+              <h3 className="mb-4 font-bold text-card-foreground">All bookings</h3>
               {bookings.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No bookings yet.</p>
+                <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                  <Calendar className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No bookings yet.</p>
+                </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {bookings.map((b: any) => (
-                    <div key={b.id} className="rounded-xl bg-muted/40 p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                          <p className="text-sm text-muted-foreground">{b.service_description}</p>
-                        </div>
-                        <Badge className={b.status === "confirmed" ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}>{b.status}</Badge>
+                    <div key={b.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 p-4 transition-colors hover:bg-muted">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                        <p className="truncate text-sm text-muted-foreground">{b.service_description}</p>
                       </div>
+                      <Badge className={`shrink-0 ${b.status === "confirmed" ? "bg-success text-success-foreground" : b.status === "rejected" ? "bg-destructive text-destructive-foreground" : "bg-muted-foreground/20 text-muted-foreground"}`}>{b.status}</Badge>
                     </div>
                   ))}
                 </div>
@@ -472,25 +499,28 @@ const WorkerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="messages">
-            <div className="rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-semibold text-card-foreground">Messages</h2>
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-card-foreground">Messages</h2>
+                <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">{conversations.length}</span>
+              </div>
               {conversations.length === 0 ? (
-                <div className="py-10 text-center">
+                <div className="rounded-2xl bg-muted/40 p-10 text-center">
                   <MessageSquare className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">No conversations yet.</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {conversations.map((c: any) => (
-                    <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-xl bg-muted/50 p-4 transition-colors hover:bg-muted">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
+                    <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-2xl bg-muted/40 p-4 transition-all hover:bg-muted hover:translate-x-1">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-sm font-bold text-primary-foreground">
                         {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-card-foreground">{c.name}</p>
+                        <p className="font-semibold text-card-foreground">{c.name}</p>
                         <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
                       </div>
-                      <span className="text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
                     </Link>
                   ))}
                 </div>
@@ -499,16 +529,33 @@ const WorkerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="reviews">
-            <div className="rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-semibold text-card-foreground">Reviews ({reviews.length})</h2>
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-card-foreground">Client reviews</h2>
+                  <p className="text-sm text-muted-foreground">{avgRating} average · {reviews.length} total</p>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1.5">
+                  <Star className="h-4 w-4 fill-primary text-primary" />
+                  <span className="text-sm font-bold text-primary">{avgRating}</span>
+                </div>
+              </div>
               {reviews.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No reviews yet.</p>
+                <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                  <Star className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No reviews yet.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {reviews.map((r: any) => (
-                    <div key={r.id} className="rounded-xl bg-muted/50 p-4">
-                      <div className="mb-1 flex items-center justify-between">
-                        <span className="text-sm font-medium text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
+                    <div key={r.id} className="rounded-2xl border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                            {(r.profiles?.full_name || "A").split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                          </div>
+                          <span className="font-semibold text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
+                        </div>
                         <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
                       </div>
                       <StarRating rating={r.rating} size={14} />
