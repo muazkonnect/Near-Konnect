@@ -303,12 +303,12 @@ const WorkerProfile = () => {
               </AuthRequiredDialog>
             )}
             {user ? (
-              <BookingDialog workerId={worker.id} workerName={worker.name}>
-                <Button className="w-full rounded-xl" onClick={() => void trackEvent("conversion")}>Book Now</Button>
-              </BookingDialog>
+              <Button className="w-full rounded-xl" asChild onClick={() => void trackEvent("contact_click")}>
+                <a href={`tel:${worker.phone}`}><Phone className="mr-1 h-4 w-4" /> Call Now</a>
+              </Button>
             ) : (
-              <AuthRequiredDialog title="Log in to book" description="Please log in or sign up to book this service.">
-                <Button className="rounded-xl">Book Now</Button>
+              <AuthRequiredDialog title="Log in to call" description="Please log in or sign up to call this service.">
+                <Button className="rounded-xl"><Phone className="mr-1 h-4 w-4" /> Call Now</Button>
               </AuthRequiredDialog>
             )}
           </div>
