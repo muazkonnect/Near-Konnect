@@ -25,7 +25,6 @@ import NotFound from "./pages/NotFound";
 import Disclaimer from "./pages/Disclaimer";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
-import SupportChatbot from "@/components/SupportChatbot";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 
@@ -71,7 +70,6 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <MobileBottomNav />
-              <SupportChatbot />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
