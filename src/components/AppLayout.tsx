@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
-import NotificationBell from "@/components/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +43,7 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "You";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* MOBILE: dark hero header */}
       <div className="md:hidden">
         {title ? (
@@ -54,7 +53,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>NearKonnect</span>
               </Link>
-              <NotificationBell />
             </div>
 
             <div className="mt-6 flex items-start justify-between gap-3">
@@ -71,7 +69,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
               <MapPin className="h-4 w-4 text-primary" />
               <span>NearKonnect</span>
             </Link>
-            <NotificationBell />
           </div>
         )}
 
@@ -124,7 +121,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
             >
               <Search className="h-4 w-4" /> Find help near you...
             </button>
-            <NotificationBell />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
