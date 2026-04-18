@@ -201,14 +201,27 @@ const CustomerDashboard = () => {
           </button>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-5">
-          <TabsList className="grid h-auto w-full grid-cols-3 gap-1.5 rounded-2xl bg-muted p-1.5 md:grid-cols-5">
-            <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Overview</TabsTrigger>
-            <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Profile</TabsTrigger>
-            <TabsTrigger value="bookings" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Bookings</TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Messages</TabsTrigger>
-            <TabsTrigger value="blood" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Blood</TabsTrigger>
-          </TabsList>
+        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <DashboardNav
+            items={[
+              { value: "overview", label: "Overview", icon: LayoutDashboard },
+              { value: "profile", label: "Profile", icon: User },
+              { value: "bookings", label: "Bookings", icon: Calendar, badge: myBookings.length },
+              { value: "messages", label: "Messages", icon: MessageSquare, badge: conversations.length },
+              { value: "blood", label: "Blood", icon: HeartPulse },
+            ]}
+            active={activeTab}
+            onChange={setActiveTab}
+          />
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="min-w-0 space-y-5">
+            <TabsList className="hidden">
+              <TabsTrigger value="overview" />
+              <TabsTrigger value="profile" />
+              <TabsTrigger value="bookings" />
+              <TabsTrigger value="messages" />
+              <TabsTrigger value="blood" />
+            </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
             <div className="rounded-3xl border bg-gradient-to-br from-card to-muted/30 p-6">
