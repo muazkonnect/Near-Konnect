@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
@@ -22,24 +21,65 @@ interface MapLocationPickerProps {
 
 const DEFAULT_CENTER: Coords = { latitude: 24.8607, longitude: 67.0011 };
 
-function ClickHandler({ onChange }: { onChange: (coords: Coords) => void }) {
-  useMapEvents({
-    click: (e) => onChange({ latitude: e.latlng.lat, longitude: e.latlng.lng }),
-  });
-  return null;
-}
-
-function Recenter({ coords }: { coords: Coords | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (coords) map.setView([coords.latitude, coords.longitude], Math.max(map.getZoom(), 15));
-  }, [coords, map]);
-  return null;
-}
-
 const MapLocationPicker = ({ value, onChange }: MapLocationPickerProps) => {
   const [locating, setLocating] = useState(false);
-  const center = value ?? DEFAULT_CENTER;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // Init map once
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+    const center = value ?? DEFAULT_CENTER;
+    const map = L.map(containerRef.current, {
+      center: [center.latitude, center.longitude],
+      zoom: value ? 15 : 11,
+      scrollWheelZoom: false,
+    });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(map);
+
+    map.on("click", (e: L.LeafletMouseEvent) => {
+      onChangeRef.current({ latitude: e.latlng.lat, longitude: e.latlng.lng });
+    });
+
+    mapRef.current = map;
+
+    const invalidate = () => map.invalidateSize();
+    const t1 = setTimeout(invalidate, 100);
+    const t2 = setTimeout(invalidate, 400);
+    window.addEventListener("resize", invalidate);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", invalidate);
+      map.remove();
+      mapRef.current = null;
+      markerRef.current = null;
+    };
+  }, []);
+
+  // Sync marker + recenter when value changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (value) {
+      const latlng: L.LatLngTuple = [value.latitude, value.longitude];
+      if (markerRef.current) {
+        markerRef.current.setLatLng(latlng);
+      } else {
+        markerRef.current = L.marker(latlng, { icon: markerIcon }).addTo(map);
+      }
+      map.setView(latlng, Math.max(map.getZoom(), 15));
+    } else if (markerRef.current) {
+      markerRef.current.remove();
+      markerRef.current = null;
+    }
+  }, [value]);
 
   const useCurrent = async () => {
     setLocating(true);
@@ -57,20 +97,7 @@ const MapLocationPicker = ({ value, onChange }: MapLocationPickerProps) => {
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">Tap the map to drop a pin at your fixed service location.</p>
       <div className="h-56 w-full rounded-lg overflow-hidden border">
-        <MapContainer
-          center={[center.latitude, center.longitude]}
-          zoom={value ? 15 : 11}
-          style={{ height: "100%", width: "100%" }}
-          scrollWheelZoom={false}
-        >
-          <TileLayer
-            attribution='&copy; OpenStreetMap'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ClickHandler onChange={onChange} />
-          <Recenter coords={value} />
-          {value && <Marker position={[value.latitude, value.longitude]} icon={markerIcon} />}
-        </MapContainer>
+        <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       </div>
       <Button type="button" variant="outline" size="sm" className="w-full gap-2" onClick={useCurrent} disabled={locating}>
         <Navigation className="h-4 w-4" />
