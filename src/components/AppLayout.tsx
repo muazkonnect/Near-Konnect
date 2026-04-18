@@ -47,23 +47,33 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* MOBILE: dark hero header */}
       <div className="md:hidden">
-        <div className="bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
-          <div className="flex items-center justify-between">
+        {title ? (
+          <div className="bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
+            <div className="flex items-center justify-between">
+              <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>NearKonnect</span>
+              </Link>
+              <NotificationBell />
+            </div>
+
+            <div className="mt-6 flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+                {subtitle && <p className="mt-1.5 text-sm text-hero-muted line-clamp-2">{subtitle}</p>}
+              </div>
+              {action && <div className="shrink-0">{action}</div>}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between px-5 pt-5 pb-2">
             <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
               <MapPin className="h-4 w-4 text-primary" />
               <span>NearKonnect</span>
             </Link>
             <NotificationBell />
           </div>
-
-          <div className="mt-6 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-              {subtitle && <p className="mt-1.5 text-sm text-hero-muted line-clamp-2">{subtitle}</p>}
-            </div>
-            {action && <div className="shrink-0">{action}</div>}
-          </div>
-        </div>
+        )}
 
         <main className="px-4 pb-32 pt-5">{children}</main>
       </div>
