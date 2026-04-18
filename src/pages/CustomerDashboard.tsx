@@ -127,61 +127,77 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <AppLayout
-      title={`Welcome, ${firstName}`}
-      subtitle="Your local help hub — bookings, chats, and urgent support in one place."
-      action={
-        <Button className="h-10 rounded-xl gap-2" onClick={() => navigate("/discover")}>
-          <Search className="h-4 w-4" /> Find Services
-        </Button>
-      }
-    >
+    <AppLayout>
       <section className="space-y-6">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {[
-            { label: "Messages", value: String(conversations.length), icon: MessageSquare, tone: "lime" },
-            { label: "Bookings", value: String(myBookings.length), icon: Calendar, tone: "dark" },
-            { label: "Reviews", value: String(myReviews.length), icon: Star, tone: "muted" },
-            { label: "Profile", value: profile?.full_name ? "Ready" : "Setup", icon: User, tone: "muted" },
-          ].map((s) => {
-            const tone =
-              s.tone === "lime"
-                ? "bg-primary text-primary-foreground"
-                : s.tone === "dark"
-                  ? "bg-hero text-hero-foreground"
-                  : "bg-muted text-foreground";
-            return (
-              <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`rounded-3xl p-4 ${tone}`}
-              >
-                <div className="mb-2 inline-flex rounded-full bg-white/15 p-2">
-                  <s.icon className="h-4 w-4" />
+        {/* Dark hero header */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground sm:p-8"
+        >
+          <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/25 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(hsl(var(--hero-foreground))_1px,transparent_1px)] [background-size:18px_18px]" />
+
+          <div className="relative flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="rounded-2xl bg-primary/15 p-1 ring-1 ring-primary/30">
+                <AvatarUpload currentUrl={profile?.avatar_url} onUpload={handleAvatarUpload} />
+              </div>
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+                  <Sparkles className="h-3 w-3 text-primary" />
+                  Your local hub
+                </span>
+                <h1 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">Welcome, {firstName}</h1>
+                <p className="text-sm text-hero-foreground/70">Bookings, chats & urgent help — all in one place.</p>
+              </div>
+            </div>
+
+            <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
+              <Search className="h-4 w-4" /> Find services
+            </Button>
+          </div>
+
+          {/* Stats inside hero */}
+          <div className="relative mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+            {[
+              { label: "Messages", value: String(conversations.length), icon: MessageSquare, accent: true },
+              { label: "Bookings", value: String(myBookings.length), icon: Calendar },
+              { label: "Reviews", value: String(myReviews.length), icon: Star },
+              { label: "Profile", value: profile?.full_name ? "Ready" : "Setup", icon: User },
+            ].map((s) => (
+              <div key={s.label} className={`rounded-2xl p-3 ${s.accent ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-sm"}`}>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <s.icon className="h-3.5 w-3.5 opacity-80" />
+                  <span className="text-[10px] font-medium uppercase tracking-wide opacity-70">{s.label}</span>
                 </div>
-                <p className="text-2xl font-bold">{s.value}</p>
-                <p className="text-xs opacity-80">{s.label}</p>
-              </motion.div>
-            );
-          })}
-        </div>
+                <p className="text-xl font-bold leading-none">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-primary hover:text-primary-foreground transition-colors group">
-            <Compass className="mb-2 h-6 w-6 text-primary group-hover:text-primary-foreground" />
-            <p className="font-bold">Explore services</p>
-            <p className="text-xs opacity-70">Find trusted help nearby</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-2.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <Compass className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
+            </div>
+            <p className="font-bold text-card-foreground">Explore services</p>
+            <p className="text-xs text-muted-foreground">Find trusted help nearby</p>
           </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
-            <HeartPulse className="mb-2 h-6 w-6 text-destructive" />
-            <p className="font-bold">Urgent help</p>
-            <p className="text-xs opacity-70">Blood and emergency support</p>
+          <button onClick={() => navigate("/blood-donors")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-destructive hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-destructive/10 p-2.5">
+              <HeartPulse className="h-5 w-5 text-destructive" />
+            </div>
+            <p className="font-bold text-card-foreground">Urgent help</p>
+            <p className="text-xs text-muted-foreground">Blood and emergency support</p>
           </button>
-          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
-            <MessageSquare className="mb-2 h-6 w-6 text-foreground group-hover:text-primary" />
-            <p className="font-bold">Continue chats</p>
-            <p className="text-xs opacity-70">Talk with services instantly</p>
+          <button onClick={() => navigate("/messages")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-muted p-2.5 group-hover:bg-primary/10 transition-colors">
+              <MessageSquare className="h-5 w-5 text-foreground group-hover:text-primary" />
+            </div>
+            <p className="font-bold text-card-foreground">Continue chats</p>
+            <p className="text-xs text-muted-foreground">Talk with services instantly</p>
           </button>
         </div>
 
