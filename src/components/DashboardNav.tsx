@@ -17,9 +17,9 @@ interface DashboardNavProps {
 const DashboardNav = ({ items, active, onChange }: DashboardNavProps) => {
   return (
     <>
-      {/* Mobile: horizontal scrollable pill bar */}
-      <div className="lg:hidden -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {/* Mobile: wrapping grid so all items are visible without horizontal scroll */}
+      <div className="lg:hidden">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {items.map((item) => {
             const isActive = active === item.value;
             return (
@@ -27,18 +27,18 @@ const DashboardNav = ({ items, active, onChange }: DashboardNavProps) => {
                 key={item.value}
                 onClick={() => onChange(item.value)}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all",
+                  "relative flex min-w-0 items-center justify-center gap-1.5 rounded-2xl px-2 py-2.5 text-xs font-semibold transition-all",
                   isActive
                     ? "bg-hero text-hero-foreground shadow-md"
                     : "bg-muted text-muted-foreground hover:bg-muted/70"
                 )}
               >
-                <item.icon className="h-4 w-4" />
-                {item.label}
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
                 {item.badge !== undefined && Number(item.badge) > 0 && (
                   <span className={cn(
-                    "ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none",
-                    isActive ? "bg-primary text-primary-foreground" : "bg-primary/15 text-primary"
+                    "absolute -top-1 -right-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
                   )}>
                     {item.badge}
                   </span>
