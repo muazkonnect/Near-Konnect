@@ -219,7 +219,7 @@ const WorkerProfile = () => {
             <div className="mt-5 hidden gap-2 md:flex md:flex-wrap">
               {user ? (
                 <Button className="flex-1 gap-2" asChild onClick={() => void trackEvent("contact_click")}>
-                  <a href={`tel:${worker.phone}`}><Phone className="h-4 w-4" /> Call Now</a>
+                  <a href={callHref} target={callTarget} rel={callRel}><Phone className="h-4 w-4" /> {whatsappEnabled ? "WhatsApp Call" : "Call Now"}</a>
                 </Button>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
