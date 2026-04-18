@@ -335,6 +335,19 @@ const CustomerDashboard = () => {
                     ))}
                   </select>
                 </div>
+                <label htmlFor="useWhatsappPref" className="sm:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-input bg-muted/40 p-3.5 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    id="useWhatsappPref"
+                    checked={useWhatsapp}
+                    onChange={e => setUseWhatsapp(e.target.checked)}
+                    className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                  />
+                  <span className="flex-1">
+                    Use WhatsApp for calls & messages
+                    <span className="block text-xs font-normal text-muted-foreground">Customers will reach you on WhatsApp using your phone number.</span>
+                  </span>
+                </label>
               </div>
 
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
