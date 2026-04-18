@@ -136,7 +136,7 @@ const WorkerProfile = () => {
           className="overflow-hidden rounded-[2rem] border bg-card pb-44 shadow-premium md:pb-8"
         >
           {/* Dark hero header */}
-          <div className="relative overflow-hidden bg-hero px-5 pt-6 pb-20 text-hero-foreground md:px-8 md:pt-8 md:pb-24">
+          <div className="relative overflow-hidden bg-hero px-5 pt-6 pb-6 text-hero-foreground md:px-8 md:pt-8 md:pb-8">
             <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
               backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
@@ -155,34 +155,36 @@ const WorkerProfile = () => {
                 {worker.available ? "Available now" : "Currently busy"}
               </span>
             </div>
-          </div>
 
-          {/* Body with overlapping avatar */}
-          <div className="relative px-5 md:px-8">
-            <div className="-mt-14 flex flex-col items-start gap-4 sm:flex-row sm:items-end">
+            {/* Avatar + name + profession — inside the banner */}
+            <div className="relative mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               {worker.profilePhoto ? (
-                <img src={worker.profilePhoto} alt={worker.name} className="h-24 w-24 shrink-0 rounded-3xl border-4 border-card object-cover shadow-md" />
+                <img src={worker.profilePhoto} alt={worker.name} className="h-24 w-24 shrink-0 rounded-3xl border-4 border-hero object-cover shadow-md ring-2 ring-primary/30" />
               ) : (
-                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border-4 border-card bg-hero text-2xl font-bold text-primary shadow-md">{initials}</div>
+                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border-4 border-hero bg-card text-2xl font-bold text-primary shadow-md ring-2 ring-primary/30">{initials}</div>
               )}
-              <div className="flex-1 pt-2">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-bold tracking-tight text-primary">{worker.name}</h1>
+                  <h1 className="text-2xl font-bold tracking-tight text-hero-foreground">{worker.name}</h1>
                   {worker.verified && <CheckCircle className="h-5 w-5 text-primary" />}
                 </div>
-                <p className="text-sm text-secondary-foreground px-0 py-0 my-0">{worker.profession}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-foreground">
+                <p className="text-sm text-hero-muted">{worker.profession}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-hero-foreground backdrop-blur-sm">
                     <Star className="h-3 w-3 fill-star text-star" />
                     {avgRating}
-                    <span className="text-muted-foreground">({dbReviews.length})</span>
+                    <span className="text-hero-muted">({dbReviews.length})</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs text-hero-muted backdrop-blur-sm">
                     <Briefcase className="h-3.5 w-3.5" /> {worker.experience} yrs exp.
                   </span>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Body */}
+          <div className="relative px-5 pt-5 md:px-8 md:pt-6">
 
             <div className="mt-5 grid grid-cols-3 gap-2">
               <div className="flex flex-col items-center gap-1 rounded-2xl border bg-card p-3 text-center">
