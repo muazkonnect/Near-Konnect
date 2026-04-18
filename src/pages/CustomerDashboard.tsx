@@ -139,41 +139,49 @@ const CustomerDashboard = () => {
       <section className="space-y-6">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
-            { label: "Messages", value: String(conversations.length), icon: MessageSquare },
-            { label: "Bookings", value: String(myBookings.length), icon: Calendar },
-            { label: "Reviews", value: String(myReviews.length), icon: Star },
-            { label: "Profile", value: profile?.full_name ? "Ready" : "Setup", icon: User },
-          ].map((s) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border bg-card p-4"
-            >
-              <div className="mb-2 inline-flex rounded-xl bg-muted p-2">
-                <s.icon className="h-4 w-4 text-primary" />
-              </div>
-              <p className="text-xl font-bold text-card-foreground">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </motion.div>
-          ))}
+            { label: "Messages", value: String(conversations.length), icon: MessageSquare, tone: "lime" },
+            { label: "Bookings", value: String(myBookings.length), icon: Calendar, tone: "dark" },
+            { label: "Reviews", value: String(myReviews.length), icon: Star, tone: "muted" },
+            { label: "Profile", value: profile?.full_name ? "Ready" : "Setup", icon: User, tone: "muted" },
+          ].map((s) => {
+            const tone =
+              s.tone === "lime"
+                ? "bg-primary text-primary-foreground"
+                : s.tone === "dark"
+                  ? "bg-hero text-hero-foreground"
+                  : "bg-muted text-foreground";
+            return (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-3xl p-4 ${tone}`}
+              >
+                <div className="mb-2 inline-flex rounded-full bg-white/15 p-2">
+                  <s.icon className="h-4 w-4" />
+                </div>
+                <p className="text-2xl font-bold">{s.value}</p>
+                <p className="text-xs opacity-80">{s.label}</p>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <Compass className="mb-2 h-5 w-5 text-primary" />
-            <p className="font-semibold text-card-foreground">Explore services</p>
-            <p className="text-xs text-muted-foreground">Find trusted help nearby</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-primary hover:text-primary-foreground transition-colors group">
+            <Compass className="mb-2 h-6 w-6 text-primary group-hover:text-primary-foreground" />
+            <p className="font-bold">Explore services</p>
+            <p className="text-xs opacity-70">Find trusted help nearby</p>
           </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <HeartPulse className="mb-2 h-5 w-5 text-destructive" />
-            <p className="font-semibold text-card-foreground">Urgent help</p>
-            <p className="text-xs text-muted-foreground">Request blood and emergency support</p>
+          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
+            <HeartPulse className="mb-2 h-6 w-6 text-destructive" />
+            <p className="font-bold">Urgent help</p>
+            <p className="text-xs opacity-70">Blood and emergency support</p>
           </button>
-          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <MessageSquare className="mb-2 h-5 w-5 text-secondary" />
-            <p className="font-semibold text-card-foreground">Continue chats</p>
-            <p className="text-xs text-muted-foreground">Talk with services instantly</p>
+          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
+            <MessageSquare className="mb-2 h-6 w-6 text-foreground group-hover:text-primary" />
+            <p className="font-bold">Continue chats</p>
+            <p className="text-xs opacity-70">Talk with services instantly</p>
           </button>
         </div>
 
