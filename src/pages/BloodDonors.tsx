@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition, calculateDistance, type Coords } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
+import { markRead } from "@/hooks/useNotifications";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -28,6 +29,10 @@ const BloodDonors = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+
+  useEffect(() => {
+    markRead((n) => n.type === "blood_request" || n.type === "booking");
+  }, []);
   const [activeOnly, setActiveOnly] = useState(true);
   const [userCoords, setUserCoords] = useState<Coords | null>(null);
 
