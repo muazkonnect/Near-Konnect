@@ -238,7 +238,7 @@ const Home = () => {
             onClick={() => navigate("/blood-donors")}
             className="tap-feedback group rounded-3xl bg-hero p-5 text-left text-hero-foreground transition-transform hover:-translate-y-0.5"
           >
-            <HeartPulse className="mb-3 h-6 w-6 text-destructive" />
+            <HeartPulse className="mb-3 h-6 w-6 text-primary" />
             <p className="text-base font-bold">Urgent Help</p>
             <p className="mt-0.5 text-xs text-hero-muted">Blood & emergency support</p>
             <ArrowRight className="mt-3 h-4 w-4 text-hero-muted transition-transform group-hover:translate-x-1" />
