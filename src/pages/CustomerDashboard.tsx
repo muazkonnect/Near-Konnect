@@ -82,6 +82,7 @@ const CustomerDashboard = () => {
   const [phone, setPhone] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (profile) {
