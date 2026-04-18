@@ -201,54 +201,73 @@ const CustomerDashboard = () => {
           </button>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid h-auto w-full grid-cols-3 gap-2 rounded-2xl bg-muted p-1 md:grid-cols-5">
-            <TabsTrigger value="overview" className="rounded-xl">Overview</TabsTrigger>
-            <TabsTrigger value="profile" className="rounded-xl">Profile</TabsTrigger>
-            <TabsTrigger value="bookings" className="rounded-xl">Bookings</TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-xl">Messages</TabsTrigger>
-            <TabsTrigger value="blood" className="rounded-xl">Blood</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-5">
+          <TabsList className="grid h-auto w-full grid-cols-3 gap-1.5 rounded-2xl bg-muted p-1.5 md:grid-cols-5">
+            <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Overview</TabsTrigger>
+            <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Profile</TabsTrigger>
+            <TabsTrigger value="bookings" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Bookings</TabsTrigger>
+            <TabsTrigger value="messages" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Messages</TabsTrigger>
+            <TabsTrigger value="blood" className="rounded-xl data-[state=active]:bg-hero data-[state=active]:text-hero-foreground data-[state=active]:shadow-md">Blood</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            <div className="rounded-2xl border bg-card p-5">
-              <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="rounded-3xl border bg-gradient-to-br from-card to-muted/30 p-6">
+              <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm text-muted-foreground">Profile health</p>
-                  <p className="text-lg font-semibold text-card-foreground">{profile?.full_name ? "You’re ready to hire" : "Complete your profile"}</p>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">
+                    <Sparkles className="h-3 w-3" /> Profile health
+                  </span>
+                  <p className="mt-2 text-xl font-bold text-card-foreground">{profile?.full_name ? "You're ready to hire" : "Complete your profile"}</p>
                 </div>
-                <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <p className="text-sm text-muted-foreground">Keep your phone and blood group updated for faster local matches.</p>
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-2xl border bg-card p-5">
-                <h3 className="mb-3 font-semibold text-card-foreground">Recent bookings</h3>
+              <div className="rounded-3xl border bg-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="font-bold text-card-foreground">Recent bookings</h3>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </div>
                 {myBookings.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No bookings yet.</p>
+                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                    <p className="text-sm text-muted-foreground">No bookings yet.</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {myBookings.slice(0, 3).map((b: any) => (
-                      <div key={b.id} className="rounded-xl bg-muted/50 p-3">
-                        <p className="text-sm font-medium text-card-foreground">{b.workers?.profiles?.full_name || "Service"}</p>
-                        <p className="text-xs text-muted-foreground truncate">{b.service_description}</p>
+                      <div key={b.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 p-3 transition-colors hover:bg-muted">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-card-foreground">{b.workers?.profiles?.full_name || "Service"}</p>
+                          <p className="truncate text-xs text-muted-foreground">{b.service_description}</p>
+                        </div>
+                        <Badge className={`shrink-0 ${statusColor(b.status)}`}>{b.status}</Badge>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
 
-              <div className="rounded-2xl border bg-card p-5">
-                <h3 className="mb-3 font-semibold text-card-foreground">Recent chats</h3>
+              <div className="rounded-3xl border bg-card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="font-bold text-card-foreground">Recent chats</h3>
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                </div>
                 {conversations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No conversations yet.</p>
+                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                    <p className="text-sm text-muted-foreground">No conversations yet.</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {conversations.slice(0, 3).map((c: any) => (
-                      <Link key={c.userId} to={`/chat/${c.userId}`} className="block rounded-xl bg-muted/50 p-3 hover:bg-muted">
-                        <p className="text-sm font-medium text-card-foreground">{c.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{c.lastMessage}</p>
+                      <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-3 rounded-2xl bg-muted/40 p-3 transition-colors hover:bg-muted">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                          {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-card-foreground">{c.name}</p>
+                          <p className="truncate text-xs text-muted-foreground">{c.lastMessage}</p>
+                        </div>
                       </Link>
                     ))}
                   </div>
@@ -258,32 +277,51 @@ const CustomerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="profile">
-            <div className="rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-semibold text-card-foreground">Edit Profile</h2>
-              <div className="mb-6 flex items-start gap-4">
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold text-card-foreground">Edit Profile</h2>
+                  <p className="text-sm text-muted-foreground">Update your personal details</p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+                  <User className="h-3 w-3" /> Personal info
+                </span>
+              </div>
+
+              <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
                 <AvatarUpload currentUrl={profile?.avatar_url} onUpload={handleAvatarUpload} />
-                <div className="flex-1 space-y-1">
-                  <p className="font-semibold text-card-foreground">{profile?.full_name || user?.email}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-card-foreground">{profile?.full_name || user?.email}</p>
+                  <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div><Label>Full Name</Label><Input value={name} onChange={e => setName(e.target.value)} className="mt-1.5" /></div>
-                <div><Label>Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} className="mt-1.5" /></div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>Blood Group</Label>
-                  <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Name</Label>
+                  <Input value={name} onChange={e => setName(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                </div>
+                <div>
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone</Label>
+                  <Input value={phone} onChange={e => setPhone(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Blood Group</Label>
+                  <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <option value="">Select blood group</option>
                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
                     ))}
                   </select>
                 </div>
-                <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
               </div>
 
+              <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+
               {role !== "worker" && (
-                <div className="mt-6">
+                <div className="mt-8 border-t pt-6">
                   <UpgradeToWorker />
                 </div>
               )}
@@ -297,23 +335,28 @@ const CustomerDashboard = () => {
           <TabsContent value="bookings">
             <div className="space-y-3">
               {myBookings.length === 0 ? (
-                <div className="rounded-2xl border bg-card p-10 text-center">
-                  <Calendar className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
-                  <p className="text-muted-foreground">No bookings yet. Find a service and book now!</p>
+                <div className="rounded-3xl border bg-card p-12 text-center">
+                  <div className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4">
+                    <Calendar className="h-8 w-8 text-primary" />
+                  </div>
+                  <p className="font-semibold text-card-foreground">No bookings yet</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Find a service and book your first one!</p>
+                  <Button onClick={() => navigate("/discover")} className="mt-4 h-10 rounded-xl">Explore services</Button>
                 </div>
               ) : (
                 myBookings.map((b: any) => (
-                  <div key={b.id} className="rounded-2xl border bg-card p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-medium text-card-foreground">{b.workers?.profiles?.full_name || "Service"} · {b.workers?.profession}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{b.service_description}</p>
-                        <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {b.booking_time}</span>
+                  <div key={b.id} className="group rounded-2xl border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-md">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-card-foreground">{b.workers?.profiles?.full_name || "Service"}</p>
+                        <p className="text-xs font-medium text-primary">{b.workers?.profession}</p>
+                        <p className="mt-2 text-sm text-muted-foreground">{b.service_description}</p>
+                        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Clock className="h-3 w-3" /> {b.booking_time}</span>
                         </div>
                       </div>
-                      <Badge className={statusColor(b.status)}>{b.status}</Badge>
+                      <Badge className={`shrink-0 ${statusColor(b.status)}`}>{b.status}</Badge>
                     </div>
                   </div>
                 ))
@@ -322,22 +365,28 @@ const CustomerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="messages">
-            <div className="rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-semibold text-card-foreground">Recent Chats</h2>
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-card-foreground">Recent Chats</h2>
+                <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">{conversations.length}</span>
+              </div>
               {conversations.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No conversations yet.</p>
+                <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                  <MessageSquare className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No conversations yet.</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {conversations.map((c: any) => (
-                    <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
+                    <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-2xl bg-muted/40 p-4 transition-all hover:bg-muted hover:translate-x-1">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-sm font-bold text-primary-foreground">
                         {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-card-foreground">{c.name}</p>
+                        <p className="font-semibold text-card-foreground">{c.name}</p>
                         <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
                       </div>
-                      <span className="text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
                     </Link>
                   ))}
                 </div>
