@@ -187,16 +187,16 @@ const WorkerProfile = () => {
           <div className="relative px-5 pt-5 md:px-8 md:pt-6">
 
             <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-1 rounded-2xl border bg-card p-3 text-center">
-                <ShieldCheck className="h-4 w-4 text-primary" />
-                <span className="text-[11px] font-semibold text-card-foreground">Trust verified</span>
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center text-secondary bg-primary">
+                <ShieldCheck className="h-4 w-4 text-primary-foreground" />
+                <span className="text-[11px] font-semibold text-secondary">Trust verified</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border bg-card p-3 text-center">
-                <Clock3 className="h-4 w-4 text-primary" />
-                <span className="text-[11px] font-semibold text-card-foreground">Replies fast</span>
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary">
+                <Clock3 className="h-4 w-4 text-secondary-foreground" />
+                <span className="text-[11px] font-semibold text-secondary-foreground">Replies fast</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border bg-card p-3 text-center">
-                <MapPin className="h-4 w-4 text-primary" />
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-primary">
+                <MapPin className="h-4 w-4 text-secondary" />
                 <span className="text-[11px] font-semibold text-card-foreground">Local expert</span>
               </div>
             </div>
@@ -213,12 +213,12 @@ const WorkerProfile = () => {
                 </AuthRequiredDialog>
               )}
               {user ? (
-                <Button variant="outline" className="flex-1 gap-2" onClick={() => { void trackEvent("contact_click"); handleMessage(); }}>
+                <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground" onClick={() => { void trackEvent("contact_click"); handleMessage(); }}>
                   <MessageSquare className="h-4 w-4" /> Message
                 </Button>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button variant="outline" className="flex-1 gap-2"><MessageSquare className="h-4 w-4" /> Message</Button>
+                  <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground"><MessageSquare className="h-4 w-4" /> Message</Button>
                 </AuthRequiredDialog>
               )}
               {user && (
