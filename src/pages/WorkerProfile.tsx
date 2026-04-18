@@ -125,7 +125,7 @@ const WorkerProfile = () => {
 
   return (
     <AppLayout title="" subtitle="">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl overflow-x-hidden">
         <Link to="/discover" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to search
         </Link>
