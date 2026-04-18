@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useI18n } from "@/i18n";
-import NotificationBell from "@/components/NotificationBell";
 import logoImg from "@/assets/logo.png";
 
 const Navbar = () => {
@@ -59,7 +58,6 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-2 min-w-[220px] justify-end">
           {user ? (
             <>
-              <NotificationBell />
               <span className="text-sm text-muted-foreground truncate max-w-[120px]">
                 {user.user_metadata?.full_name || user.email}
               </span>
@@ -80,7 +78,6 @@ const Navbar = () => {
         </div>
 
         <button className="md:hidden ml-auto flex items-center gap-2" onClick={() => setOpen(!open)}>
-          {user && <NotificationBell />}
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>

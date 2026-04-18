@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import AppLayout from "@/components/AppLayout";
 import { fetchConversationSummaries } from "@/lib/messages";
+import { markRead } from "@/hooks/useNotifications";
 
 const Messages = () => {
   const { user, loading } = useAuth();
@@ -17,6 +18,10 @@ const Messages = () => {
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [loading, user, navigate]);
+
+  useEffect(() => {
+    markRead((n) => n.type === "message");
+  }, []);
 
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations", user?.id],
