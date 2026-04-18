@@ -35,6 +35,7 @@ const Register = () => {
   const [experience, setExperience] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [willingToDonate, setWillingToDonate] = useState(false);
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
