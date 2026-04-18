@@ -453,6 +453,7 @@ export type Database = {
           is_blood_donor: boolean
           phone: string | null
           updated_at: string
+          use_whatsapp: boolean
           user_id: string
         }
         Insert: {
@@ -466,6 +467,7 @@ export type Database = {
           is_blood_donor?: boolean
           phone?: string | null
           updated_at?: string
+          use_whatsapp?: boolean
           user_id: string
         }
         Update: {
@@ -479,6 +481,7 @@ export type Database = {
           is_blood_donor?: boolean
           phone?: string | null
           updated_at?: string
+          use_whatsapp?: boolean
           user_id?: string
         }
         Relationships: []
