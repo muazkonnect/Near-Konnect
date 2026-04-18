@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, Phone, ShieldCheck, Star, Briefcase, MessageSquare, CalendarPlus } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock3, MapPin, Phone, ShieldCheck, Star, Briefcase, MessageSquare, CalendarPlus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -229,85 +229,81 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          <div className="px-5 md:px-8">
-            <h2 className="font-semibold text-card-foreground mb-2">About</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed">{worker.description}</p>
-          </div>
-
-          <div className="mt-6">
-            <h2 className="font-semibold text-card-foreground mb-2">Service Areas</h2>
-            <div className="flex gap-2 flex-wrap">
-              {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
-            </div>
-          </div>
-
-          {dbWorker.latitude && dbWorker.longitude && (
+          <div className="px-5 pb-6 md:px-8">
             <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-semibold text-card-foreground">Pinned Service Location</h2>
-                {userCoords && (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5" />
-                    {calculateDistance(userCoords.latitude, userCoords.longitude, dbWorker.latitude, dbWorker.longitude).toFixed(2)} km away
-                  </span>
-                )}
-              </div>
-              <div className="md:hidden">
-                <WorkersMap
-                  workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
-                  userCoords={userCoords}
-                  height="220px"
-                />
-              </div>
-              <div className="hidden md:block">
-                <WorkersMap
-                  workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
-                  userCoords={userCoords}
-                  height="320px"
-                />
+              <h2 className="font-semibold text-card-foreground mb-2">Service Areas</h2>
+              <div className="flex gap-2 flex-wrap">
+                {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
               </div>
             </div>
-          )}
 
-          {/* Write Review */}
-          {user && user.id !== worker.userId && (
-            <div className="mt-8 p-4 rounded-xl bg-muted/50">
-              <h2 className="font-semibold text-card-foreground mb-3">Leave a Review</h2>
-              <div className="flex items-center gap-2 mb-3">
-                <Label className="text-sm">Rating:</Label>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map(n => (
-                    <button key={n} onClick={() => setReviewRating(n)} className="focus:outline-none">
-                      <Star className={`w-5 h-5 ${n <= reviewRating ? "text-star fill-star" : "text-muted-foreground"}`} />
-                    </button>
-                  ))}
+            {dbWorker.latitude && dbWorker.longitude && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="font-semibold text-card-foreground">Pinned Service Location</h2>
+                  {userCoords && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {calculateDistance(userCoords.latitude, userCoords.longitude, dbWorker.latitude, dbWorker.longitude).toFixed(2)} km away
+                    </span>
+                  )}
+                </div>
+                <div className="md:hidden">
+                  <WorkersMap
+                    workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
+                    userCoords={userCoords}
+                    height="220px"
+                  />
+                </div>
+                <div className="hidden md:block">
+                  <WorkersMap
+                    workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
+                    userCoords={userCoords}
+                    height="320px"
+                  />
                 </div>
               </div>
-              <Textarea placeholder="Write your review..." value={reviewText} onChange={e => setReviewText(e.target.value)} rows={3} className="mb-3" />
-              <Button onClick={handleSubmitReview} disabled={submittingReview} size="sm">
-                {submittingReview ? "Submitting..." : "Submit Review"}
-              </Button>
-            </div>
-          )}
+            )}
 
-          <div className="mt-8">
-            <h2 className="font-semibold text-card-foreground mb-4">Reviews ({dbReviews.length})</h2>
-            {dbReviews.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No reviews yet.</p>
-            ) : (
-              <div className="space-y-4">
-                {dbReviews.map((r: any) => (
-                  <div key={r.id} className="p-4 rounded-xl bg-muted/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
-                      <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <StarRating rating={r.rating} size={14} />
-                    {r.review_text && <p className="text-sm text-muted-foreground mt-2">{r.review_text}</p>}
+            {user && user.id !== worker.userId && (
+              <div className="mt-8 p-4 rounded-2xl bg-muted/50">
+                <h2 className="font-semibold text-card-foreground mb-3">Leave a Review</h2>
+                <div className="flex items-center gap-2 mb-3">
+                  <Label className="text-sm">Rating:</Label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button key={n} onClick={() => setReviewRating(n)} className="focus:outline-none">
+                        <Star className={`w-5 h-5 ${n <= reviewRating ? "text-star fill-star" : "text-muted-foreground"}`} />
+                      </button>
+                    ))}
                   </div>
-                ))}
+                </div>
+                <Textarea placeholder="Write your review..." value={reviewText} onChange={e => setReviewText(e.target.value)} rows={3} className="mb-3" />
+                <Button onClick={handleSubmitReview} disabled={submittingReview} size="sm">
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </Button>
               </div>
             )}
+
+            <div className="mt-8">
+              <h2 className="font-semibold text-card-foreground mb-4">Reviews ({dbReviews.length})</h2>
+              {dbReviews.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No reviews yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {dbReviews.map((r: any) => (
+                    <div key={r.id} className="p-4 rounded-2xl bg-muted/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-sm text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
+                        <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <StarRating rating={r.rating} size={14} />
+                      {r.review_text && <p className="text-sm text-muted-foreground mt-2">{r.review_text}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
 
