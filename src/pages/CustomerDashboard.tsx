@@ -11,6 +11,7 @@ import AvatarUpload from "@/components/AvatarUpload";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
 import BloodDonationCard from "@/components/BloodDonationCard";
 import AppLayout from "@/components/AppLayout";
+import DashboardNav from "@/components/DashboardNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
