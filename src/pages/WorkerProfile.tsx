@@ -161,7 +161,7 @@ const WorkerProfile = () => {
               {worker.profilePhoto ? (
                 <img src={worker.profilePhoto} alt={worker.name} className="h-24 w-24 shrink-0 rounded-3xl border-4 border-hero object-cover shadow-md ring-2 ring-primary/30" />
               ) : (
-                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border-4 border-hero bg-card text-2xl font-bold text-primary shadow-md ring-2 ring-primary/30">{initials}</div>
+                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border-4 border-hero text-2xl font-bold shadow-md ring-2 ring-primary/30 text-primary-foreground bg-primary">{initials}</div>
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
