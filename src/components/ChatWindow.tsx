@@ -241,33 +241,31 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="sticky top-0 z-10 p-4 border-b bg-card/95 backdrop-blur">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <Link to={backLink} className="inline-flex h-8 w-8 items-center justify-center rounded-full border text-muted-foreground transition-colors hover:text-primary">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-            <div className="min-w-0">
-              <h3 className="truncate font-semibold text-card-foreground">{otherUserName}</h3>
-              <p className="text-xs text-success">Live chat active</p>
-            </div>
+      <div className="sticky top-0 z-10 bg-hero text-hero-foreground p-4 rounded-t-2xl">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link to={backLink} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-hero-foreground hover:bg-white/15">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div className="min-w-0">
+            <h3 className="truncate font-bold">{otherUserName}</h3>
+            <p className="text-xs text-primary">● Online</p>
           </div>
         </div>
-        <div className="mt-2 rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
-          <p className="font-medium text-foreground">Service Summary</p>
+        <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-xs text-hero-muted">
+          <p className="font-semibold text-hero-foreground">Service Summary</p>
           <p>Discuss scope, share timeline, then confirm booking in one tap.</p>
           <div className="mt-2 flex gap-2">
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[11px] font-medium text-foreground">
+            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
               <FileText className="h-3 w-3" /> Send Offer
             </button>
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[11px] font-medium text-foreground">
+            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-hero-foreground">
               <CheckCircle2 className="h-3 w-3" /> Confirm Booking
             </button>
           </div>
         </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/20">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/30">
         {hasOlder && (
           <div className="flex justify-center">
             <Button variant="outline" size="sm" className="rounded-full" onClick={loadOlderMessages} disabled={loadingOlder}>
@@ -295,16 +293,16 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
           return (
             <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                className={`max-w-[78%] px-4 py-2.5 text-sm shadow-sm ${
                   isMine
                     ? isFailed
-                      ? "bg-destructive/15 text-foreground rounded-br-md border border-destructive/30"
-                      : "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-muted text-foreground rounded-bl-md"
+                      ? "bg-destructive/15 text-foreground rounded-3xl rounded-br-md border border-destructive/30"
+                      : "bg-primary text-primary-foreground rounded-3xl rounded-br-md"
+                    : "bg-hero text-hero-foreground rounded-3xl rounded-bl-md"
                 }`}
               >
                 <p>{msg.message_text}</p>
-                <p className={`text-[10px] mt-1 ${isMine ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                <p className={`text-[10px] mt-1 ${isMine ? "text-primary-foreground/70" : "text-hero-muted"}`}>
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   {isMine && <span className="ml-1">· {msg.status === "failed" ? "failed" : msg.status}</span>}
                 </p>
@@ -327,12 +325,12 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
         )}
       </div>
 
-      <div className="sticky bottom-0 p-3 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="sticky bottom-0 p-3 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <form
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-          className="flex gap-2"
+          className="flex items-center gap-2 rounded-full bg-muted p-1.5"
         >
-          <Button type="button" variant="outline" size="icon" className="rounded-xl">
+          <Button type="button" variant="ghost" size="icon" className="rounded-full">
             <Paperclip className="w-4 h-4" />
           </Button>
           <Input
@@ -345,9 +343,9 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
                 handleSend();
               }
             }}
-            className="flex-1 rounded-xl"
+            className="flex-1 rounded-full border-none bg-transparent shadow-none focus-visible:ring-0"
           />
-          <Button type="submit" size="icon" className="rounded-xl" disabled={!text.trim() || sending}>
+          <Button type="submit" size="icon" className="rounded-full" disabled={!text.trim() || sending}>
             <Send className="w-4 h-4" />
           </Button>
         </form>

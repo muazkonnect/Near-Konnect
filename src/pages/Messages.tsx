@@ -61,14 +61,14 @@ const Messages = () => {
     <AppLayout title="Messages" subtitle="Chat with nearby helpers and confirm work quickly.">
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations..." className="h-11 rounded-xl pl-10" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations..." className="h-12 rounded-full border-none bg-muted pl-11" />
         </div>
 
         {filteredConversations.length === 0 ? (
-          <div className="rounded-2xl border bg-muted/30 py-16 text-center">
+          <div className="rounded-3xl bg-muted/40 py-16 text-center">
             <MessageSquare className="mx-auto mb-2 h-9 w-9 text-muted-foreground" />
-            <p className="font-medium text-foreground">No conversations yet</p>
+            <p className="font-bold text-foreground">No conversations yet</p>
             <p className="text-sm text-muted-foreground">Start by messaging a service from Explore.</p>
           </div>
         ) : (
@@ -77,13 +77,13 @@ const Messages = () => {
               <Link
                 key={c.userId}
                 to={`/chat/${c.userId}`}
-                className="tap-feedback flex items-center gap-4 rounded-2xl border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
+                className="tap-feedback flex items-center gap-4 rounded-2xl bg-card p-4 transition-all hover:bg-muted"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent text-sm font-bold text-accent-foreground">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-hero text-sm font-bold text-primary">
                   {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-card-foreground">{c.name}</p>
+                  <p className="font-bold text-card-foreground">{c.name}</p>
                   <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
                 </div>
                 <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
