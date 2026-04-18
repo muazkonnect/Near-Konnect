@@ -49,6 +49,8 @@ const WorkerDashboard = () => {
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -59,6 +61,8 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
+      setPhone((workerData as any).profiles?.phone || "");
+      setUseWhatsapp(!!(workerData as any).profiles?.use_whatsapp);
     }
   }, [workerData]);
 
