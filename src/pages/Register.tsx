@@ -187,6 +187,17 @@ const Register = () => {
           I am willing to donate blood
         </label>
 
+        <label htmlFor="useWhatsapp" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
+          <input
+            type="checkbox"
+            id="useWhatsapp"
+            checked={useWhatsapp}
+            onChange={e => setUseWhatsapp(e.target.checked)}
+            className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+          />
+          Use WhatsApp for calls & messages (requires phone number)
+        </label>
+
         {role === "worker" && (
           <>
             <div>
