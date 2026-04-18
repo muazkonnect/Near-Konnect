@@ -281,91 +281,102 @@ const Discover = () => {
           </div>
         </div>
 
-        <div className="space-y-4 rounded-2xl border bg-card p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-foreground">Browse by category</p>
-              <p className="text-xs text-muted-foreground">Pick a category to narrow your search</p>
-            </div>
-            {(selectedMainCategory || selectedSubCategory) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1 px-2 text-xs"
-                onClick={() => {
-                  const next = new URLSearchParams(searchParams);
-                  next.delete("main_category");
-                  next.delete("sub_category");
-                  setExpandedMainCategory("");
-                  setSearchParams(next);
-                }}
-              >
-                <X className="h-3 w-3" /> Clear
-              </Button>
-            )}
-          </div>
+        <div className="relative overflow-hidden rounded-3xl bg-hero p-5 text-hero-foreground md:p-6">
+          <div aria-hidden className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
+            backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }} />
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-            {MAIN_SERVICE_CATEGORIES.map((mainCategory) => {
-              const isSelected = selectedMainCategory === mainCategory;
-              const Icon = ({
-                "Home & Local Services": HomeIcon,
-                "Automotive & Transport": Car,
-                "Shops, Food & Daily Needs": ShoppingBag,
-                "Professional & Business Services": Briefcase,
-                "Health, Education & Community": HeartPulse,
-                "Events & Lifestyle": Sparkles,
-              } as const)[mainCategory];
-              return (
-                <button
-                  key={mainCategory}
-                  type="button"
-                  onClick={() => toggleMainCategory(mainCategory)}
-                  className={`tap-feedback flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all ${
-                    isSelected
-                      ? "border-primary bg-primary/10 text-primary shadow-sm"
-                      : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-muted"
-                  }`}
+          <div className="relative space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
+                  <Sparkles className="h-3 w-3 text-primary" /> Categories
+                </span>
+                <p className="mt-2 text-lg font-bold tracking-tight">Browse by category</p>
+                <p className="text-xs text-hero-muted">Pick a category to narrow your search</p>
+              </div>
+              {(selectedMainCategory || selectedSubCategory) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 gap-1 px-2 text-xs text-hero-foreground hover:bg-white/10"
+                  onClick={() => {
+                    const next = new URLSearchParams(searchParams);
+                    next.delete("main_category");
+                    next.delete("sub_category");
+                    setExpandedMainCategory("");
+                    setSearchParams(next);
+                  }}
                 >
-                  <span
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                      isSelected ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                  <X className="h-3 w-3" /> Clear
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+              {MAIN_SERVICE_CATEGORIES.map((mainCategory) => {
+                const isSelected = selectedMainCategory === mainCategory;
+                const Icon = ({
+                  "Home & Local Services": HomeIcon,
+                  "Automotive & Transport": Car,
+                  "Shops, Food & Daily Needs": ShoppingBag,
+                  "Professional & Business Services": Briefcase,
+                  "Health, Education & Community": HeartPulse,
+                  "Events & Lifestyle": Sparkles,
+                } as const)[mainCategory];
+                return (
+                  <button
+                    key={mainCategory}
+                    type="button"
+                    onClick={() => toggleMainCategory(mainCategory)}
+                    className={`tap-feedback group flex flex-col items-start gap-2.5 rounded-2xl p-3 text-left transition-all ${
+                      isSelected
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-white/5 text-hero-foreground ring-1 ring-white/10 hover:bg-white/10"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <span className="text-xs font-medium leading-tight">{mainCategory}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {expandedMainCategory && (
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                {expandedMainCategory}
-              </p>
-              <div className="-mx-1 flex flex-wrap gap-1.5 px-1">
-                {SUBCATEGORIES_BY_MAIN[expandedMainCategory as keyof typeof SUBCATEGORIES_BY_MAIN].map((subCategory) => {
-                  const active = selectedSubCategory === subCategory;
-                  return (
-                    <button
-                      key={subCategory}
-                      type="button"
-                      onClick={() => toggleSubCategory(subCategory)}
-                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                        active
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-card text-foreground hover:border-primary/40"
+                    <span
+                      className={`grid h-9 w-9 place-items-center rounded-full transition-colors ${
+                        isSelected ? "bg-primary-foreground/15 text-primary-foreground" : "bg-white/10 text-primary group-hover:bg-white/15"
                       }`}
                     >
-                      {subCategory}
-                    </button>
-                  );
-                })}
-              </div>
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="text-xs font-semibold leading-tight">{mainCategory}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+
+            {expandedMainCategory && (
+              <div className="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-hero-muted">
+                  {expandedMainCategory}
+                </p>
+                <div className="-mx-1 flex flex-wrap gap-1.5 px-1">
+                  {SUBCATEGORIES_BY_MAIN[expandedMainCategory as keyof typeof SUBCATEGORIES_BY_MAIN].map((subCategory) => {
+                    const active = selectedSubCategory === subCategory;
+                    return (
+                      <button
+                        key={subCategory}
+                        type="button"
+                        onClick={() => toggleSubCategory(subCategory)}
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                          active
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-white/10 text-hero-foreground hover:bg-white/15"
+                        }`}
+                      >
+                        {subCategory}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
