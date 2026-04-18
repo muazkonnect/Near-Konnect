@@ -129,7 +129,7 @@ const BloodDonors = () => {
       <section className="-mt-12 rounded-3xl bg-card p-5 shadow-premium">
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="rounded-2xl bg-hero text-hero-foreground p-4">
-            <p className="text-3xl font-bold text-destructive">{stats.total}</p>
+            <p className="text-3xl font-bold text-primary">{stats.total}</p>
             <p className="text-xs text-hero-muted">Total Donors</p>
           </div>
           <div className="rounded-2xl bg-primary text-primary-foreground p-4">
