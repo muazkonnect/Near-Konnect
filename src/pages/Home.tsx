@@ -121,13 +121,14 @@ const Home = () => {
       .slice(0, 8);
   }, [search, workers, browsingCoords]);
 
-  const quickCategories = [
-    { id: "electrician", name: "Electrician", icon: "⚡" },
-    { id: "plumber", name: "Plumber", icon: "🔧" },
-    { id: "tutor", name: "Tutor", icon: "📚" },
-    { id: "delivery", name: "Delivery", icon: "🛵" },
-    { id: "blood-donors", name: "Blood Donation", icon: "🩸", urgent: true },
-  ];
+  const mainCategoryMeta = [
+    { name: "Home & Local Services", icon: HomeIcon, accent: "from-primary/20 to-primary/5" },
+    { name: "Automotive & Transport", icon: Car, accent: "from-blue-500/20 to-blue-500/5" },
+    { name: "Shops, Food & Daily Needs", icon: ShoppingBag, accent: "from-orange-500/20 to-orange-500/5" },
+    { name: "Professional & Business Services", icon: Briefcase, accent: "from-purple-500/20 to-purple-500/5" },
+    { name: "Health, Education & Community", icon: HeartPulse, accent: "from-destructive/20 to-destructive/5" },
+    { name: "Events & Lifestyle", icon: Sparkles, accent: "from-pink-500/20 to-pink-500/5" },
+  ] as const;
 
   useEffect(() => {
     if (!search.trim()) {
