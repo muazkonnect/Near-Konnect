@@ -153,16 +153,17 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
             </DropdownMenu>
           </div>
 
-          {/* Dark hero card with title */}
-          <div className="bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-              {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}
+          {title && (
+            <div className="bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+                {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}
+              </div>
+              {action}
             </div>
-            {action}
-          </div>
+          )}
 
-          <main className="rounded-3xl bg-card p-6">{children}</main>
+          <main className={title ? "rounded-3xl bg-card p-6" : ""}>{children}</main>
         </div>
       </div>
     </div>
