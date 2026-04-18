@@ -198,58 +198,89 @@ const WorkerDashboard = () => {
     );
   }
 
+  const workerName = (workerData as any).profiles?.full_name || "Service pro";
+  const firstName = workerName.split(" ")[0];
+
   return (
-    <AppLayout
-      title="Service Dashboard"
-      subtitle="Manage bookings, profile and chats with a fast mobile-first workflow."
-      action={
-        <Button className="h-10 gap-2 rounded-xl" onClick={() => navigate("/discover")}>
-          <Search className="h-4 w-4" /> Explore
-        </Button>
-      }
-    >
+    <AppLayout>
       <section className="space-y-6">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-          {[
-            { label: "Rating", value: avgRating, icon: Star, tone: "lime" },
-            { label: "Reviews", value: String(reviews.length), icon: UserCheck, tone: "dark" },
-            { label: "Bookings", value: String(bookings.length), icon: Calendar, tone: "muted" },
-            { label: "Messages", value: String(conversations.length), icon: MessageSquare, tone: "muted" },
-            { label: "Status", value: available ? "Available" : "Offline", icon: available ? CheckCircle : XCircle, tone: available ? "lime" : "dark" },
-          ].map((s) => {
-            const tone =
-              s.tone === "lime"
-                ? "bg-primary text-primary-foreground"
-                : s.tone === "dark"
-                  ? "bg-hero text-hero-foreground"
-                  : "bg-muted text-foreground";
-            return (
-              <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`rounded-3xl p-4 ${tone}`}>
-                <div className="mb-2 inline-flex rounded-full bg-white/15 p-2">
-                  <s.icon className="h-4 w-4" />
+        {/* Dark hero header */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground sm:p-8"
+        >
+          <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/25 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(hsl(var(--hero-foreground))_1px,transparent_1px)] [background-size:18px_18px]" />
+
+          <div className="relative flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="rounded-2xl bg-primary/15 p-1 ring-1 ring-primary/30">
+                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
+              </div>
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+                  <span className={`h-1.5 w-1.5 rounded-full ${available ? "animate-pulse bg-primary" : "bg-muted-foreground"}`} />
+                  {available ? "Available now" : "Currently offline"}
+                </span>
+                <h1 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">Hi, {firstName}</h1>
+                <p className="text-sm text-hero-foreground/70">{profession || "Set your profession in profile"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
+                <span className={`h-2 w-2 rounded-full ${available ? "bg-primary" : "bg-destructive"}`} />
+                {available ? "Visible" : "Hidden"}
+                <Switch checked={available} onCheckedChange={(v) => { setAvailable(v); supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })); }} className="ml-1" />
+              </div>
+              <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
+                <Search className="h-4 w-4" /> Explore
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats inside hero */}
+          <div className="relative mt-6 grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
+            {[
+              { label: "Rating", value: avgRating, icon: Star, accent: true },
+              { label: "Reviews", value: String(reviews.length), icon: UserCheck },
+              { label: "Bookings", value: String(bookings.length), icon: Calendar },
+              { label: "Messages", value: String(conversations.length), icon: MessageSquare },
+              { label: "Pending", value: String(pendingBookings.length), icon: Clock },
+            ].map((s) => (
+              <div key={s.label} className={`rounded-2xl p-3 ${s.accent ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-sm"}`}>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <s.icon className="h-3.5 w-3.5 opacity-80" />
+                  <span className="text-[10px] font-medium uppercase tracking-wide opacity-70">{s.label}</span>
                 </div>
-                <p className="text-2xl font-bold">{s.value}</p>
-                <p className="text-xs opacity-80">{s.label}</p>
-              </motion.div>
-            );
-          })}
-        </div>
+                <p className="text-xl font-bold leading-none">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-primary hover:text-primary-foreground transition-colors group">
-            <Compass className="mb-2 h-6 w-6 text-primary group-hover:text-primary-foreground" />
-            <p className="font-bold">Find more demand</p>
-            <p className="text-xs opacity-70">See local categories and active jobs</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-2.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <Compass className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
+            </div>
+            <p className="font-bold text-card-foreground">Find more demand</p>
+            <p className="text-xs text-muted-foreground">See local categories and active jobs</p>
           </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors">
-            <HeartPulse className="mb-2 h-6 w-6 text-destructive" />
-            <p className="font-bold">Urgent network</p>
-            <p className="text-xs opacity-70">Help with blood and emergency requests</p>
+          <button onClick={() => navigate("/blood-donors")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-destructive hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-destructive/10 p-2.5">
+              <HeartPulse className="h-5 w-5 text-destructive" />
+            </div>
+            <p className="font-bold text-card-foreground">Urgent network</p>
+            <p className="text-xs text-muted-foreground">Help with blood and emergency requests</p>
           </button>
-          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
-            <MessageSquare className="mb-2 h-6 w-6 text-foreground group-hover:text-primary" />
-            <p className="font-bold">Reply faster</p>
-            <p className="text-xs opacity-70">Keep your response time high</p>
+          <button onClick={() => navigate("/messages")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
+            <div className="mb-3 inline-flex rounded-2xl bg-muted p-2.5 group-hover:bg-primary/10 transition-colors">
+              <MessageSquare className="h-5 w-5 text-foreground group-hover:text-primary" />
+            </div>
+            <p className="font-bold text-card-foreground">Reply faster</p>
+            <p className="text-xs text-muted-foreground">Keep your response time high</p>
           </button>
         </div>
 
