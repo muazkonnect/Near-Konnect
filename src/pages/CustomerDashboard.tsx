@@ -101,8 +101,12 @@ const CustomerDashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
+    if (useWhatsapp && !phone.trim()) {
+      toast.error("Please add a phone number to enable WhatsApp.");
+      return;
+    }
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: name, phone, blood_group: bloodGroup } as any).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: name, phone, blood_group: bloodGroup, use_whatsapp: useWhatsapp } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error("Failed to save");
     else { toast.success("Profile updated!"); queryClient.invalidateQueries({ queryKey: ["my_profile"] }); }
