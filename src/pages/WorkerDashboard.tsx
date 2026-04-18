@@ -49,6 +49,8 @@ const WorkerDashboard = () => {
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -59,6 +61,8 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
+      setPhone((workerData as any).profiles?.phone || "");
+      setUseWhatsapp(!!(workerData as any).profiles?.use_whatsapp);
     }
   }, [workerData]);
 
@@ -125,7 +129,11 @@ const WorkerDashboard = () => {
   const confirmedBookings = bookings.filter((b: any) => b.status === "confirmed");
 
   const handleSave = async () => {
-    if (!workerData) return;
+    if (!workerData || !user) return;
+    if (useWhatsapp && !phone.trim()) {
+      toast.error("Please add a phone number to enable WhatsApp.");
+      return;
+    }
     setSaving(true);
 
     const { error: workerError } = await supabase
@@ -138,8 +146,13 @@ const WorkerDashboard = () => {
       })
       .eq("id", workerData.id);
 
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ phone, use_whatsapp: useWhatsapp } as any)
+      .eq("user_id", user.id);
+
     setSaving(false);
-    if (workerError) {
+    if (workerError || profileError) {
       toast.error("Failed to save changes");
     } else {
       toast.success("Profile updated!");
@@ -395,10 +408,27 @@ const WorkerDashboard = () => {
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
                   <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                 </div>
+                <div>
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone</Label>
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 3XX XXXXXXX" className="mt-1.5 h-11 rounded-xl" />
+                </div>
                 <div className="md:col-span-2">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
                   <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
                 </div>
+                <label htmlFor="useWhatsappPrefWorker" className="md:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-input bg-muted/40 p-3.5 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    id="useWhatsappPrefWorker"
+                    checked={useWhatsapp}
+                    onChange={e => setUseWhatsapp(e.target.checked)}
+                    className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                  />
+                  <span className="flex-1">
+                    Use WhatsApp for calls & messages
+                    <span className="block text-xs font-normal text-muted-foreground">Clients will reach you on WhatsApp using your phone number.</span>
+                  </span>
+                </label>
               </div>
 
               <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">

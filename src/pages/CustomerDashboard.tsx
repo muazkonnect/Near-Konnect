@@ -81,6 +81,7 @@ const CustomerDashboard = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -89,6 +90,7 @@ const CustomerDashboard = () => {
       setName(profile.full_name || "");
       setPhone(profile.phone || "");
       setBloodGroup((profile as any).blood_group || "");
+      setUseWhatsapp(!!(profile as any).use_whatsapp);
     }
   }, [profile]);
 
@@ -99,8 +101,12 @@ const CustomerDashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
+    if (useWhatsapp && !phone.trim()) {
+      toast.error("Please add a phone number to enable WhatsApp.");
+      return;
+    }
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: name, phone, blood_group: bloodGroup } as any).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: name, phone, blood_group: bloodGroup, use_whatsapp: useWhatsapp } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error("Failed to save");
     else { toast.success("Profile updated!"); queryClient.invalidateQueries({ queryKey: ["my_profile"] }); }
@@ -329,6 +335,19 @@ const CustomerDashboard = () => {
                     ))}
                   </select>
                 </div>
+                <label htmlFor="useWhatsappPref" className="sm:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-input bg-muted/40 p-3.5 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    id="useWhatsappPref"
+                    checked={useWhatsapp}
+                    onChange={e => setUseWhatsapp(e.target.checked)}
+                    className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                  />
+                  <span className="flex-1">
+                    Use WhatsApp for calls & messages
+                    <span className="block text-xs font-normal text-muted-foreground">Customers will reach you on WhatsApp using your phone number.</span>
+                  </span>
+                </label>
               </div>
 
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
