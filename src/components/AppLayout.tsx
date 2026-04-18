@@ -1,8 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Bell, ChevronDown, Compass, HeartPulse, Home, LogOut, MessageSquare, Search, UserRound } from "lucide-react";
+import { ChevronDown, Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import NotificationBell from "@/components/NotificationBell";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import logoImg from "@/assets/logo.png";
 
 interface AppLayoutProps {
   title: string;
@@ -44,21 +41,39 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
     { label: "Profile", to: profilePath, icon: UserRound },
   ];
 
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "You";
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="md:hidden sticky top-0 z-40 border-b bg-card/95 backdrop-blur-xl">
-        <div className="flex h-16 items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" loading="lazy" />
-          </Link>
-          <NotificationBell />
-        </div>
-      </header>
+      {/* MOBILE: dark hero header */}
+      <div className="md:hidden">
+        <div className="bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
+              <MapPin className="h-4 w-4 text-primary" />
+              <span>NearKonnect</span>
+            </Link>
+            <NotificationBell />
+          </div>
 
+          <div className="mt-6 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+              {subtitle && <p className="mt-1.5 text-sm text-hero-muted line-clamp-2">{subtitle}</p>}
+            </div>
+            {action && <div className="shrink-0">{action}</div>}
+          </div>
+        </div>
+
+        <main className="px-4 pb-32 pt-5">{children}</main>
+      </div>
+
+      {/* DESKTOP: sidebar + dark hero card */}
       <div className="mx-auto hidden max-w-[1200px] md:flex md:gap-6 md:px-4 md:py-6">
-        <aside className="sticky top-6 h-[calc(100vh-3rem)] w-64 rounded-3xl border bg-card p-4 shadow-premium">
-          <Link to="/" className="mb-5 flex items-center gap-2 px-2">
-            <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" loading="lazy" />
+        <aside className="sticky top-6 h-[calc(100vh-3rem)] w-64 rounded-3xl bg-hero text-hero-foreground p-4">
+          <Link to="/" className="mb-7 flex items-center gap-2 px-2">
+            <MapPin className="h-5 w-5 text-primary" />
+            <span className="text-base font-bold">NearKonnect</span>
           </Link>
 
           <nav className="space-y-1.5">
@@ -68,12 +83,10 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${
+                  className={`flex items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all ${
                     active
                       ? "bg-primary text-primary-foreground"
-                      : item.emphasis
-                        ? "text-destructive hover:bg-destructive/10"
-                        : "text-muted-foreground hover:bg-muted"
+                      : "text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
@@ -82,75 +95,66 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
               );
             })}
           </nav>
+
+          <div className="absolute inset-x-4 bottom-4">
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </button>
+          </div>
         </aside>
 
-        <div className="min-w-0 flex-1">
-          <div className="sticky top-6 z-30 mb-5 flex items-center gap-3 rounded-3xl border bg-card/95 p-3 backdrop-blur-xl shadow-premium">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                readOnly
-                onClick={() => navigate("/discover")}
-                placeholder="Find help near you..."
-                className="h-11 rounded-2xl border-none bg-muted pl-10"
-              />
-            </div>
+        <div className="min-w-0 flex-1 space-y-5">
+          <div className="flex items-center gap-3 rounded-full bg-card px-3 py-2 shadow-premium">
+            <button
+              onClick={() => navigate("/discover")}
+              className="flex flex-1 items-center gap-2 rounded-full bg-muted px-4 py-2.5 text-left text-sm text-muted-foreground hover:bg-muted/80"
+            >
+              <Search className="h-4 w-4" /> Find help near you...
+            </button>
             <NotificationBell />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-2xl bg-muted px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/80">
-                  <span>{user?.user_metadata?.full_name?.split(" ")[0] || "You"}</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <button className="inline-flex items-center gap-2 rounded-full bg-hero px-3 py-2 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero/90">
+                  <span>{firstName}</span>
+                  <ChevronDown className="h-4 w-4 text-hero-muted" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 rounded-xl">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(profilePath)}>
-                  <UserRound className="mr-2 h-4 w-4" />
-                  Dashboard
+                  <UserRound className="mr-2 h-4 w-4" /> Dashboard
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/messages")}>
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Messages
+                  <MessageSquare className="mr-2 h-4 w-4" /> Messages
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/discover")}>
-                  <Search className="mr-2 h-4 w-4" />
-                  Explore
+                  <Search className="mr-2 h-4 w-4" /> Explore
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  <LogOut className="mr-2 h-4 w-4" /> Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          <main className="rounded-3xl border bg-card p-6 shadow-premium">
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-                {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
-              </div>
-              {action}
+          {/* Dark hero card with title */}
+          <div className="bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+              {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}
             </div>
-            {children}
-          </main>
+            {action}
+          </div>
+
+          <main className="rounded-3xl bg-card p-6">{children}</main>
         </div>
       </div>
-
-      <main className="px-4 pb-32 pt-4 md:hidden">
-        <div className="mb-5 flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-            {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
-          </div>
-          {action}
-        </div>
-        {children}
-      </main>
     </div>
   );
 };
