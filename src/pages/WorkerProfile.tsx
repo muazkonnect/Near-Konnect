@@ -127,7 +127,13 @@ const WorkerProfile = () => {
     }
   };
 
-  const handleMessage = () => navigate(`/chat/${worker.userId}`);
+  const handleMessage = () => {
+    if (messageHref) {
+      window.open(messageHref, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(`/chat/${worker.userId}`);
+    }
+  };
 
   const initials = worker.name.split(" ").map(n => n[0]).join("");
 
