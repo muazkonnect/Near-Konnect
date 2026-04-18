@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,83 +6,94 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 30% 10%;
+    /* Servicely-style: white body, lime accent, deep black hero */
+    --background: 0 0% 100%;
+    --foreground: 220 15% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 10%;
+    --card-foreground: 220 15% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 10%;
+    --popover-foreground: 220 15% 8%;
 
-    --primary: 151 74% 43%;
-    --primary-foreground: 0 0% 100%;
+    /* Lime-yellow accent */
+    --primary: 75 100% 62%;
+    --primary-foreground: 220 15% 8%;
 
-    --secondary: 211 72% 59%;
+    /* Deep black hero / dark surfaces */
+    --hero: 220 15% 8%;
+    --hero-foreground: 0 0% 100%;
+    --hero-muted: 220 10% 65%;
+
+    --secondary: 220 15% 8%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 14% 96%;
     --muted-foreground: 220 10% 46%;
 
-    --accent: 29 100% 96%;
-    --accent-foreground: 29 100% 38%;
+    --accent: 75 100% 95%;
+    --accent-foreground: 75 80% 25%;
 
     --destructive: 359 100% 65%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 151 74% 43%;
+    --ring: 75 100% 62%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 151 74% 43%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 151 45% 94%;
-    --sidebar-accent-foreground: 151 74% 30%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 15% 25%;
+    --sidebar-primary: 75 100% 62%;
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 75 100% 95%;
+    --sidebar-accent-foreground: 220 15% 8%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 151 74% 43%;
+    --sidebar-ring: 75 100% 62%;
 
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
-    --warning: 29 100% 50%;
-    --warning-foreground: 220 30% 10%;
+    --warning: 38 100% 50%;
+    --warning-foreground: 220 15% 8%;
     --star: 45 100% 51%;
 
-    --gradient-start: 151 74% 43%;
-    --gradient-end: 211 72% 59%;
+    --gradient-start: 75 100% 62%;
+    --gradient-end: 75 90% 50%;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    --background: 220 15% 6%;
+    --foreground: 0 0% 98%;
 
-    --card: 222 47% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 15% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 151 74% 46%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 75 100% 62%;
+    --primary-foreground: 220 15% 8%;
 
-    --secondary: 211 70% 50%;
-    --secondary-foreground: 0 0% 100%;
+    --hero: 0 0% 0%;
+    --hero-foreground: 0 0% 100%;
+    --hero-muted: 220 10% 65%;
 
-    --muted: 222 30% 16%;
-    --muted-foreground: 215 20% 55%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 220 15% 8%;
 
-    --accent: 29 65% 16%;
-    --accent-foreground: 29 85% 78%;
+    --muted: 220 15% 14%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 75 80% 20%;
+    --accent-foreground: 75 100% 80%;
 
     --destructive: 359 77% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 151 74% 46%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 75 100% 62%;
   }
 }
 
@@ -97,7 +108,28 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  .bg-hero { background-color: hsl(var(--hero)); }
+  .text-hero-foreground { color: hsl(var(--hero-foreground)); }
+  .text-hero-muted { color: hsl(var(--hero-muted)); }
+  .bg-primary-soft { background-color: hsl(var(--accent)); }
+
+  .hero-section {
+    @apply bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-6 pb-8 md:rounded-3xl md:px-8 md:pt-8 md:pb-10;
+  }
+
+  .pill {
+    @apply rounded-full;
+  }
+
+  .soft-card {
+    @apply rounded-2xl bg-card border border-border/60 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.06)];
   }
 }
 
