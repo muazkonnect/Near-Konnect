@@ -290,25 +290,25 @@ const WorkerProfile = () => {
         </motion.div>
 
         <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-2xl border bg-card/95 p-2 shadow-premium backdrop-blur-xl">
+          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-full bg-hero p-2 shadow-premium">
             {user ? (
-              <Button variant="outline" className="rounded-xl" onClick={handleMessage}>
-                <MessageSquare className="mr-1 h-4 w-4" /> Contact
+              <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={handleMessage}>
+                <MessageSquare className="mr-1 h-4 w-4" /> Message
               </Button>
             ) : (
               <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                <Button variant="outline" className="rounded-xl" onClick={() => void trackEvent("contact_click")}>
-                  <MessageSquare className="mr-1 h-4 w-4" /> Contact
+                <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={() => void trackEvent("contact_click")}>
+                  <MessageSquare className="mr-1 h-4 w-4" /> Message
                 </Button>
               </AuthRequiredDialog>
             )}
             {user ? (
-              <Button className="w-full rounded-xl" asChild onClick={() => void trackEvent("contact_click")}>
+              <Button className="w-full rounded-full" asChild onClick={() => void trackEvent("contact_click")}>
                 <a href={`tel:${worker.phone}`}><Phone className="mr-1 h-4 w-4" /> Call Now</a>
               </Button>
             ) : (
               <AuthRequiredDialog title="Log in to call" description="Please log in or sign up to call this service.">
-                <Button className="rounded-xl"><Phone className="mr-1 h-4 w-4" /> Call Now</Button>
+                <Button className="rounded-full"><Phone className="mr-1 h-4 w-4" /> Call Now</Button>
               </AuthRequiredDialog>
             )}
           </div>

@@ -139,23 +139,23 @@ const Home = () => {
 
   return (
     <AppLayout
-      title={`Welcome back, ${firstName}`}
-      subtitle="Find local help in seconds — services, urgent requests, and trusted nearby services."
+      title={`Hi, ${firstName} 👋`}
+      subtitle="Find local help in seconds — services, urgent requests, trusted nearby."
       action={
-        <Button className="h-10 rounded-xl" onClick={() => navigate("/blood-donors")}>
+        <Button variant="default" className="h-10" onClick={() => navigate("/blood-donors")}>
           Request Help
         </Button>
       }
     >
       <section className="space-y-6">
-        <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="rounded-3xl border bg-muted/40 p-4">
+        <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="-mt-12 rounded-3xl bg-card p-4 shadow-premium">
           <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Find services near you..."
-              className="h-12 rounded-2xl bg-card pl-10 text-base"
+              className="h-12 rounded-full border-none bg-muted pl-11 text-base"
               onKeyDown={(e) => {
                 if (e.key === "Enter") navigate(`/discover?search=${encodeURIComponent(search)}`);
               }}
@@ -169,43 +169,43 @@ const Home = () => {
                   setSearch(suggestion);
                   navigate(`/discover?search=${encodeURIComponent(suggestion)}`);
                 }}
-                className="tap-feedback shrink-0 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-foreground"
+                className="tap-feedback shrink-0 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-primary hover:text-primary-foreground"
               >
                 {suggestion}
               </button>
             ))}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border bg-card p-2 text-xs text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             {locationStatus === "denied" ? (
               <span>Please enable location to continue</span>
             ) : browsingCoords ? (
-              <span>Using your current location · {browsingCoords.latitude.toFixed(3)}, {browsingCoords.longitude.toFixed(3)}</span>
+              <span className="truncate">Using current location · {browsingCoords.latitude.toFixed(2)}, {browsingCoords.longitude.toFixed(2)}</span>
             ) : (
-              <span>Detecting your current location...</span>
+              <span>Detecting location...</span>
             )}
-            <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 px-2 text-[11px]" onClick={refreshLocation}>
-              <Navigation className="h-3 w-3" /> Update my location
+            <Button type="button" variant="ghost" size="sm" className="ml-auto h-7 gap-1 px-2 text-[11px]" onClick={refreshLocation}>
+              <Navigation className="h-3 w-3" /> Update
             </Button>
           </div>
         </motion.div>
 
         <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={1} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <UserSearch className="mb-2 h-5 w-5 text-primary" />
-            <p className="font-semibold text-foreground">Find a Service</p>
-            <p className="text-xs text-muted-foreground">Trusted people near your location</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-primary p-5 text-left text-primary-foreground">
+            <UserSearch className="mb-2 h-6 w-6" />
+            <p className="text-base font-bold">Find a Service</p>
+            <p className="mt-0.5 text-xs opacity-80">Trusted people near you</p>
           </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <HeartPulse className="mb-2 h-5 w-5 text-destructive" />
-            <p className="font-semibold text-foreground">Request Urgent Help</p>
-            <p className="text-xs text-muted-foreground">Blood and emergency support fast</p>
+          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-3xl bg-hero p-5 text-left text-hero-foreground">
+            <HeartPulse className="mb-2 h-6 w-6 text-destructive" />
+            <p className="text-base font-bold">Urgent Help</p>
+            <p className="mt-0.5 text-xs text-hero-muted">Blood & emergency support</p>
           </button>
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <Compass className="mb-2 h-5 w-5 text-secondary" />
-            <p className="font-semibold text-foreground">Browse Categories</p>
-            <p className="text-xs text-muted-foreground">Explore services by type</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-muted p-5 text-left">
+            <Compass className="mb-2 h-6 w-6 text-foreground" />
+            <p className="text-base font-bold text-foreground">Categories</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Browse all services</p>
           </button>
         </motion.div>
 
@@ -254,10 +254,10 @@ const Home = () => {
               <button
                 key={category.id}
                 onClick={() => navigate(category.id === "blood-donors" ? "/blood-donors" : `/discover?category=${category.id}`)}
-                className="tap-feedback rounded-2xl border bg-card p-3 text-left"
+                className="tap-feedback rounded-2xl bg-muted p-4 text-left hover:bg-primary hover:text-primary-foreground transition-colors group"
               >
-                <div className="mb-1.5 text-xl">{category.icon}</div>
-                <p className="text-sm font-semibold text-foreground">{category.name}</p>
+                <div className="mb-2 text-2xl">{category.icon}</div>
+                <p className="text-sm font-bold text-foreground group-hover:text-primary-foreground">{category.name}</p>
                 {category.urgent && (
                   <Badge variant="destructive" className="mt-2 rounded-full px-2 py-0 text-[10px]">
                     Urgent
@@ -269,10 +269,10 @@ const Home = () => {
               <button
                 key={category.id}
                 onClick={() => navigate(`/discover?category=${category.id}`)}
-                className="tap-feedback rounded-2xl border bg-card p-3 text-left"
+                className="tap-feedback rounded-2xl bg-muted p-4 text-left hover:bg-primary hover:text-primary-foreground transition-colors group"
               >
-                <div className="mb-1.5 text-xl">{category.icon}</div>
-                <p className="text-sm font-semibold text-foreground">{category.name}</p>
+                <div className="mb-2 text-2xl">{category.icon}</div>
+                <p className="text-sm font-bold text-foreground group-hover:text-primary-foreground">{category.name}</p>
               </button>
             ))}
           </div>

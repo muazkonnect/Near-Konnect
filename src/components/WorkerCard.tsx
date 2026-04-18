@@ -25,14 +25,14 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
     >
       <Link
         to={`/worker/${worker.id}`}
-        className={`tap-feedback block rounded-2xl border bg-card p-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-premium md:p-5 group ${
-          sponsored ? "border-primary/40 shadow-premium" : ""
+        className={`tap-feedback block rounded-3xl bg-card p-4 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-premium md:p-5 group ${
+          sponsored ? "ring-2 ring-primary" : ""
         }`}
       >
         <div className="flex items-start gap-3 md:gap-4">
-          <Avatar className="h-12 w-12 rounded-xl border-2 border-border transition-colors group-hover:border-primary/30 md:h-14 md:w-14">
+          <Avatar className="h-14 w-14 rounded-2xl bg-hero md:h-16 md:w-16">
             <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-            <AvatarFallback className="rounded-xl bg-gradient-brand text-primary-foreground font-bold text-sm">
+            <AvatarFallback className="rounded-2xl bg-hero text-primary font-bold text-base">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -45,16 +45,19 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
               <p className="text-xs text-muted-foreground md:text-sm">{worker.profession}</p>
-              <Badge
-                variant={worker.available ? "default" : "secondary"}
-                className={`md:hidden ${worker.available ? "bg-success/10 text-success border-success/20 font-medium" : ""}`}
+              <span
+                className={`md:hidden inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                  worker.available ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
               >
                 {worker.available ? t("worker.available") : t("worker.busy")}
-              </Badge>
+              </span>
             </div>
-            <p className="mt-1 text-xs font-semibold text-primary">Starting from PKR 1,500</p>
+            <p className="mt-2 inline-flex items-center rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
+              From PKR 1,500
+            </p>
             <div className="mt-2 flex flex-wrap items-center gap-2 md:gap-3 text-[11px] text-muted-foreground md:text-xs">
-              <span className="flex items-center gap-1 px-2 py-0.5 bg-star/10 rounded-full">
+              <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5">
                 <Star className="w-3 h-3 text-star fill-star" />
                 <span className="font-semibold text-card-foreground">{worker.rating}</span>
                 <span>({worker.reviewCount})</span>
@@ -74,12 +77,13 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
             </div>
           </div>
           <div className="hidden shrink-0 self-start md:block">
-            <Badge
-              variant={worker.available ? "default" : "secondary"}
-              className={worker.available ? "bg-success/10 text-success border-success/20 font-medium" : ""}
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                worker.available ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              }`}
             >
               {worker.available ? t("worker.available") : t("worker.busy")}
-            </Badge>
+            </span>
           </div>
         </div>
       </Link>
