@@ -7,6 +7,7 @@ import {
   Clock,
   Compass,
   HeartPulse,
+  LayoutDashboard,
   Lock,
   MapPin,
   MessageSquare,
