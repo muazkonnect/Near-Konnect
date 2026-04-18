@@ -139,8 +139,8 @@ const Home = () => {
 
   return (
     <AppLayout
-      title={`Hi, ${firstName} 👋`}
-      subtitle="Find local help in seconds — services, urgent requests, trusted nearby."
+      title=""
+      subtitle=""
       action={
         <Button variant="default" className="h-10" onClick={() => navigate("/blood-donors")}>
           Request Help
