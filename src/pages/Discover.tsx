@@ -244,38 +244,38 @@ const Discover = () => {
   return (
     <AppLayout title="Explore" subtitle="Discover trusted services nearby with smart filters and map/list browsing.">
       <div className="space-y-5">
-        <div className="rounded-2xl border bg-muted/40 p-3">
-          <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="rounded-3xl bg-card p-4 shadow-premium md:-mt-12">
+          <div className="mb-3 flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             {locationStatus === "denied" ? (
               <span>Please enable location to continue</span>
             ) : userCoords ? (
-              <span>Using your current location ({userCoords.latitude.toFixed(2)}, {userCoords.longitude.toFixed(2)})</span>
+              <span className="truncate">Using current location ({userCoords.latitude.toFixed(2)}, {userCoords.longitude.toFixed(2)})</span>
             ) : (
               <span>Detecting current location...</span>
             )}
-            <Button variant="ghost" size="sm" onClick={refreshLocation} className="h-6 gap-1 px-2 text-[11px]">
-              <Navigation className="h-3 w-3" /> Update my location
+            <Button variant="ghost" size="sm" onClick={refreshLocation} className="ml-auto h-6 gap-1 px-2 text-[11px]">
+              <Navigation className="h-3 w-3" /> Update
             </Button>
           </div>
 
           <div className="mb-3 flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Find services near you..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 rounded-xl bg-card pl-10" />
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Find services near you..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 rounded-full border-none bg-muted pl-11" />
             </div>
-            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl" onClick={() => setShowMapView((v) => !v)}>
+            <Button variant="outline" size="icon" className="h-12 w-12" onClick={() => setShowMapView((v) => !v)}>
               {showMapView ? <List className="h-4 w-4" /> : <Map className="h-4 w-4" />}
             </Button>
           </div>
 
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             {(["distance", "rating", "experience", "price"] as SortKey[]).map((s) => (
-              <Button key={s} variant={sort === s ? "default" : "outline"} size="sm" onClick={() => setSort(s)} className="shrink-0 rounded-full">
+              <Button key={s} variant={sort === s ? "default" : "outline"} size="sm" onClick={() => setSort(s)} className="shrink-0">
                 {sortLabels[s]}
               </Button>
             ))}
-            <Button variant="outline" size="sm" className="shrink-0 gap-1 rounded-full">
+            <Button variant="outline" size="sm" className="shrink-0 gap-1">
               <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
             </Button>
           </div>
