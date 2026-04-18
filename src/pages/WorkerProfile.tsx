@@ -187,15 +187,15 @@ const WorkerProfile = () => {
           <div className="relative px-5 pt-5 md:px-8 md:pt-6">
 
             <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center text-secondary bg-primary">
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center text-secondary bg-secondary-foreground">
                 <ShieldCheck className="h-4 w-4 text-primary-foreground" />
                 <span className="text-[11px] font-semibold text-secondary">Trust verified</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary">
-                <Clock3 className="h-4 w-4 text-secondary-foreground" />
-                <span className="text-[11px] font-semibold text-secondary-foreground">Replies fast</span>
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary-foreground">
+                <Clock3 className="h-4 w-4 text-secondary" />
+                <span className="text-[11px] font-semibold text-secondary">Replies fast</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-primary">
+              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary-foreground">
                 <MapPin className="h-4 w-4 text-secondary" />
                 <span className="text-[11px] font-semibold text-card-foreground">Local expert</span>
               </div>
