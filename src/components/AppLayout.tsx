@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 
 interface AppLayoutProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   action?: ReactNode;
   children: ReactNode;
