@@ -25,8 +25,20 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("App error caught by ErrorBoundary:", error, errorInfo);
     if (isChunkLoadError(error)) {
-      // Stale deploy: force a full reload to fetch fresh chunks.
-      setTimeout(() => window.location.reload(), 50);
+      // Stale deploy: force a full reload (once) to fetch fresh chunks.
+      try {
+        const key = "__chunk_reload_at";
+        const last = Number(sessionStorage.getItem(key) || "0");
+        const now = Date.now();
+        if (now - last > 10000) {
+          sessionStorage.setItem(key, String(now));
+          const url = new URL(window.location.href);
+          url.searchParams.set("_r", String(now));
+          setTimeout(() => window.location.replace(url.toString()), 50);
+        }
+      } catch {
+        setTimeout(() => window.location.reload(), 50);
+      }
     }
   }
 
