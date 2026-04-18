@@ -35,6 +35,7 @@ const Register = () => {
   const [experience, setExperience] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [willingToDonate, setWillingToDonate] = useState(false);
+  const [useWhatsapp, setUseWhatsapp] = useState(false);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,6 +70,7 @@ const Register = () => {
       role,
       blood_group: bloodGroup,
       is_blood_donor: willingToDonate ? "true" : "false",
+      use_whatsapp: useWhatsapp ? "true" : "false",
     };
     if (role === "worker") {
       metadata.main_category = mainCategory;
@@ -183,6 +185,17 @@ const Register = () => {
             className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
           />
           I am willing to donate blood
+        </label>
+
+        <label htmlFor="useWhatsapp" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
+          <input
+            type="checkbox"
+            id="useWhatsapp"
+            checked={useWhatsapp}
+            onChange={e => setUseWhatsapp(e.target.checked)}
+            className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+          />
+          Use WhatsApp for calls & messages (requires phone number)
         </label>
 
         {role === "worker" && (

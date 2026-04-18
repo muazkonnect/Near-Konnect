@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const role = md.role === "worker" ? "worker" : "customer";
       const bloodGroup = String(md.blood_group || "").trim() || null;
       const isBloodDonor = toBoolean(md.is_blood_donor);
+      const useWhatsapp = toBoolean(md.use_whatsapp);
       const rawMainCategory = String(md.main_category || "").trim();
       const rawSubCategory = String(md.sub_category || "").trim();
 
@@ -73,7 +74,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           phone: phone || null,
           blood_group: bloodGroup,
           is_blood_donor: isBloodDonor,
-        },
+          use_whatsapp: useWhatsapp,
+        } as any,
         { onConflict: "user_id" }
       );
       if (profileError) throw profileError;

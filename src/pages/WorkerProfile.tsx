@@ -43,7 +43,7 @@ const WorkerProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url)")
+        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
@@ -90,10 +90,18 @@ const WorkerProfile = () => {
     available: dbWorker.available,
     verified: dbWorker.verified,
     phone: (dbWorker as any).profiles?.phone || "",
+    useWhatsapp: !!(dbWorker as any).profiles?.use_whatsapp,
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
   };
+
+  const sanitizedPhone = worker.phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
+  const whatsappEnabled = worker.useWhatsapp && sanitizedPhone.length > 0;
+  const callHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent("Hi, I'd like to book your service.")}` : `tel:${worker.phone}`;
+  const callTarget = whatsappEnabled ? "_blank" : undefined;
+  const callRel = whatsappEnabled ? "noopener noreferrer" : undefined;
+  const messageHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}` : null;
 
   const avgRating = dbReviews.length
     ? (dbReviews.reduce((s: number, r: any) => s + r.rating, 0) / dbReviews.length).toFixed(1)
@@ -119,7 +127,13 @@ const WorkerProfile = () => {
     }
   };
 
-  const handleMessage = () => navigate(`/chat/${worker.userId}`);
+  const handleMessage = () => {
+    if (messageHref) {
+      window.open(messageHref, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(`/chat/${worker.userId}`);
+    }
+  };
 
   const initials = worker.name.split(" ").map(n => n[0]).join("");
 
@@ -205,7 +219,7 @@ const WorkerProfile = () => {
             <div className="mt-5 hidden gap-2 md:flex md:flex-wrap">
               {user ? (
                 <Button className="flex-1 gap-2" asChild onClick={() => void trackEvent("contact_click")}>
-                  <a href={`tel:${worker.phone}`}><Phone className="h-4 w-4" /> Call Now</a>
+                  <a href={callHref} target={callTarget} rel={callRel}><Phone className="h-4 w-4" /> {whatsappEnabled ? "WhatsApp Call" : "Call Now"}</a>
                 </Button>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
@@ -329,7 +343,7 @@ const WorkerProfile = () => {
             )}
             {user ? (
               <Button className="w-full rounded-full" asChild onClick={() => void trackEvent("contact_click")}>
-                <a href={`tel:${worker.phone}`}><Phone className="mr-1 h-4 w-4" /> Call Now</a>
+                <a href={callHref} target={callTarget} rel={callRel}><Phone className="mr-1 h-4 w-4" /> {whatsappEnabled ? "WhatsApp" : "Call Now"}</a>
               </Button>
             ) : (
               <AuthRequiredDialog title="Log in to call" description="Please log in or sign up to call this service.">
