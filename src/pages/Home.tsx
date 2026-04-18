@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Compass, HeartPulse, MapPin, Navigation, Search, Sparkles, UserSearch } from "lucide-react";
+import { ArrowRight, Briefcase, Car, Compass, HeartPulse, Home as HomeIcon, MapPin, Navigation, Search, ShoppingBag, Sparkles, UserSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
