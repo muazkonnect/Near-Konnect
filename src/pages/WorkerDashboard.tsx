@@ -211,37 +211,45 @@ const WorkerDashboard = () => {
       <section className="space-y-6">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {[
-            { label: "Rating", value: avgRating, icon: Star },
-            { label: "Reviews", value: String(reviews.length), icon: UserCheck },
-            { label: "Bookings", value: String(bookings.length), icon: Calendar },
-            { label: "Messages", value: String(conversations.length), icon: MessageSquare },
-            { label: "Status", value: available ? "Available" : "Offline", icon: available ? CheckCircle : XCircle },
-          ].map((s) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-card p-4">
-              <div className="mb-2 inline-flex rounded-xl bg-muted p-2">
-                <s.icon className="h-4 w-4 text-primary" />
-              </div>
-              <p className="text-xl font-bold text-card-foreground">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </motion.div>
-          ))}
+            { label: "Rating", value: avgRating, icon: Star, tone: "lime" },
+            { label: "Reviews", value: String(reviews.length), icon: UserCheck, tone: "dark" },
+            { label: "Bookings", value: String(bookings.length), icon: Calendar, tone: "muted" },
+            { label: "Messages", value: String(conversations.length), icon: MessageSquare, tone: "muted" },
+            { label: "Status", value: available ? "Available" : "Offline", icon: available ? CheckCircle : XCircle, tone: available ? "lime" : "dark" },
+          ].map((s) => {
+            const tone =
+              s.tone === "lime"
+                ? "bg-primary text-primary-foreground"
+                : s.tone === "dark"
+                  ? "bg-hero text-hero-foreground"
+                  : "bg-muted text-foreground";
+            return (
+              <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`rounded-3xl p-4 ${tone}`}>
+                <div className="mb-2 inline-flex rounded-full bg-white/15 p-2">
+                  <s.icon className="h-4 w-4" />
+                </div>
+                <p className="text-2xl font-bold">{s.value}</p>
+                <p className="text-xs opacity-80">{s.label}</p>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <Compass className="mb-2 h-5 w-5 text-primary" />
-            <p className="font-semibold text-card-foreground">Find more demand</p>
-            <p className="text-xs text-muted-foreground">See local categories and active jobs</p>
+          <button onClick={() => navigate("/discover")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-primary hover:text-primary-foreground transition-colors group">
+            <Compass className="mb-2 h-6 w-6 text-primary group-hover:text-primary-foreground" />
+            <p className="font-bold">Find more demand</p>
+            <p className="text-xs opacity-70">See local categories and active jobs</p>
           </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <HeartPulse className="mb-2 h-5 w-5 text-destructive" />
-            <p className="font-semibold text-card-foreground">Urgent network</p>
-            <p className="text-xs text-muted-foreground">Help with blood and emergency requests</p>
+          <button onClick={() => navigate("/blood-donors")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors">
+            <HeartPulse className="mb-2 h-6 w-6 text-destructive" />
+            <p className="font-bold">Urgent network</p>
+            <p className="text-xs opacity-70">Help with blood and emergency requests</p>
           </button>
-          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-2xl border bg-card p-4 text-left">
-            <MessageSquare className="mb-2 h-5 w-5 text-secondary" />
-            <p className="font-semibold text-card-foreground">Reply faster</p>
-            <p className="text-xs text-muted-foreground">Keep your response time high</p>
+          <button onClick={() => navigate("/messages")} className="tap-feedback rounded-3xl bg-muted p-5 text-left hover:bg-hero hover:text-hero-foreground transition-colors group">
+            <MessageSquare className="mb-2 h-6 w-6 text-foreground group-hover:text-primary" />
+            <p className="font-bold">Reply faster</p>
+            <p className="text-xs opacity-70">Keep your response time high</p>
           </button>
         </div>
 

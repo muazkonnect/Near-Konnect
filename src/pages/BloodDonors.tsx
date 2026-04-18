@@ -126,43 +126,26 @@ const BloodDonors = () => {
       subtitle="Respond to nearby blood donation requests quickly and safely."
       action={<BloodRequestDialog />}
     >
-      <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-b from-destructive/5 to-background">
-        <div className="absolute -top-32 -right-32 w-[400px] h-[400px] rounded-full bg-red-500/5 blur-3xl" />
-        <div className="px-4 pb-6 pt-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="flex items-center gap-2 mb-2">
-              <Heart className="w-6 h-6 text-destructive" />
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">Blood Help Network</h1>
-            </div>
-            <p className="text-muted-foreground mb-6 max-w-lg">
-              Find willing blood donors in your area. Every drop counts — connect with someone who can help save a life.
-            </p>
-          </motion.div>
-
-          {/* Stats */}
-          <div className="flex gap-4 mb-6">
-            <div className="bg-card border rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-bold text-destructive">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total Donors</p>
-            </div>
-            <div className="bg-card border rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-bold text-success">{stats.active}</p>
-              <p className="text-xs text-muted-foreground">Active Now</p>
-            </div>
+      <section className="-mt-12 rounded-3xl bg-card p-5 shadow-premium">
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="rounded-2xl bg-hero text-hero-foreground p-4">
+            <p className="text-3xl font-bold text-destructive">{stats.total}</p>
+            <p className="text-xs text-hero-muted">Total Donors</p>
           </div>
-
-          {/* Search */}
-          <div className="flex gap-3 max-w-2xl">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search by name or city..."
-                className="pl-10 h-12 rounded-xl border-border bg-card shadow-sm"
-              />
-            </div>
+          <div className="rounded-2xl bg-primary text-primary-foreground p-4">
+            <p className="text-3xl font-bold">{stats.active}</p>
+            <p className="text-xs opacity-80">Active Now</p>
           </div>
+        </div>
+
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by name or city..."
+            className="pl-11 h-12 rounded-full border-none bg-muted"
+          />
         </div>
       </section>
 
@@ -228,18 +211,18 @@ const BloodDonors = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-card border rounded-2xl p-5 hover:shadow-lg transition-shadow"
+                  className="bg-card rounded-3xl p-5 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.08)] hover:shadow-premium transition-shadow"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-sm font-bold text-red-600 shrink-0">
+                    <div className="w-14 h-14 rounded-2xl bg-hero flex items-center justify-center text-base font-bold text-primary shrink-0">
                       {donor.avatar_url ? (
-                        <img src={donor.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                        <img src={donor.avatar_url} alt="" className="w-14 h-14 rounded-2xl object-cover" />
                       ) : (
                         (donor.full_name || "?").slice(0, 2).toUpperCase()
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-card-foreground truncate">{donor.full_name || "Anonymous"}</p>
+                      <p className="font-bold text-card-foreground truncate">{donor.full_name || "Anonymous"}</p>
                       {donor.city && (
                         <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3" /> {donor.city}
@@ -247,23 +230,23 @@ const BloodDonors = () => {
                         </p>
                       )}
                     </div>
-                    <Badge className={`text-xs font-bold border rounded-full px-2.5 py-1 ${bloodGroupColor(donor.blood_group || "")}`}>
+                    <span className="inline-flex items-center rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground">
                       {donor.blood_group || "?"}
-                    </Badge>
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2 mt-4">
-                    <Badge variant="outline" className={`text-xs rounded-full ${donor.donor_status === "active" ? "border-green-300 text-green-600 bg-green-50" : "border-muted text-muted-foreground"}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${donor.donor_status === "active" ? "bg-green-500" : "bg-muted-foreground"}`} />
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${donor.donor_status === "active" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${donor.donor_status === "active" ? "bg-hero" : "bg-muted-foreground"}`} />
                       {donor.donor_status === "active" ? "Available" : "Inactive"}
-                    </Badge>
+                    </span>
                   </div>
 
                   <div className="flex gap-2 mt-4">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 gap-1.5 rounded-xl"
+                      className="flex-1 gap-1.5"
                       onClick={() => navigate(`/chat/${donor.user_id}`)}
                     >
                       <MessageSquare className="w-3.5 h-3.5" /> Help Now
@@ -271,8 +254,7 @@ const BloodDonors = () => {
                     {donor.phone && (
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="gap-1.5 rounded-xl"
+                        className="gap-1.5"
                         onClick={() => window.open(`tel:${donor.phone}`, "_self")}
                       >
                         <Phone className="w-3.5 h-3.5" /> Call
