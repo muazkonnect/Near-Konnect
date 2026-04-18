@@ -90,10 +90,18 @@ const WorkerProfile = () => {
     available: dbWorker.available,
     verified: dbWorker.verified,
     phone: (dbWorker as any).profiles?.phone || "",
+    useWhatsapp: !!(dbWorker as any).profiles?.use_whatsapp,
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
   };
+
+  const sanitizedPhone = worker.phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
+  const whatsappEnabled = worker.useWhatsapp && sanitizedPhone.length > 0;
+  const callHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent("Hi, I'd like to book your service.")}` : `tel:${worker.phone}`;
+  const callTarget = whatsappEnabled ? "_blank" : undefined;
+  const callRel = whatsappEnabled ? "noopener noreferrer" : undefined;
+  const messageHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}` : null;
 
   const avgRating = dbReviews.length
     ? (dbReviews.reduce((s: number, r: any) => s + r.rating, 0) / dbReviews.length).toFixed(1)
