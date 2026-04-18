@@ -231,6 +231,11 @@ const WorkerProfile = () => {
 
           <div className="px-5 pb-6 md:px-8">
             <div className="mt-6">
+              <h2 className="font-semibold text-card-foreground mb-2">About</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">{worker.description || "No description provided yet."}</p>
+            </div>
+
+            <div className="mt-6">
               <h2 className="font-semibold text-card-foreground mb-2">Service Areas</h2>
               <div className="flex gap-2 flex-wrap">
                 {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
