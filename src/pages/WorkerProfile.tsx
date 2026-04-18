@@ -218,7 +218,7 @@ const WorkerProfile = () => {
                 </Button>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button variant="outline" className="flex-1 gap-2"><MessageSquare className="h-4 w-4" /> Message</Button>
+                  <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground"><MessageSquare className="h-4 w-4" /> Message</Button>
                 </AuthRequiredDialog>
               )}
               {user && (
