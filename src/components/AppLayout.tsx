@@ -70,7 +70,7 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
                   to={item.to}
                   className={`flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition-all ${
                     active
-                      ? "bg-primary/12 text-primary"
+                      ? "bg-primary text-primary-foreground"
                       : item.emphasis
                         ? "text-destructive hover:bg-destructive/10"
                         : "text-muted-foreground hover:bg-muted"

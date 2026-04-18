@@ -56,6 +56,11 @@ export default {
           foreground: "hsl(var(--warning-foreground))",
         },
         star: "hsl(var(--star))",
+        hero: {
+          DEFAULT: "hsl(var(--hero))",
+          foreground: "hsl(var(--hero-foreground))",
+          muted: "hsl(var(--hero-muted))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
