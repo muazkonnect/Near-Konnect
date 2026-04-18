@@ -1,7 +1,6 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
 import type { Coords } from "@/lib/geolocation";
 
 const workerIcon = L.icon({
@@ -34,65 +33,87 @@ interface Props {
   fitToWorkers?: boolean;
 }
 
-function FitBounds({ points }: { points: [number, number][] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!points.length) return;
-    const bounds = L.latLngBounds(points);
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
-  }, [points, map]);
-  return null;
-}
+const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true }: Props) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const layerRef = useRef<L.LayerGroup | null>(null);
 
-function InvalidateOnMount() {
-  const map = useMap();
+  // Initialize map once
   useEffect(() => {
-    const run = () => map.invalidateSize();
-    const t1 = setTimeout(run, 100);
-    const t2 = setTimeout(run, 400);
-    const t3 = setTimeout(run, 1000);
-    window.addEventListener("resize", run);
-    window.addEventListener("orientationchange", run);
+    if (!containerRef.current || mapRef.current) return;
+    const map = L.map(containerRef.current, {
+      center: [24.8607, 67.0011],
+      zoom: 12,
+      scrollWheelZoom: true,
+      zoomControl: true,
+      attributionControl: true,
+    });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(map);
+    layerRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
+
+    const invalidate = () => map.invalidateSize();
+    const t1 = setTimeout(invalidate, 100);
+    const t2 = setTimeout(invalidate, 400);
+    const t3 = setTimeout(invalidate, 1000);
+    window.addEventListener("resize", invalidate);
+    window.addEventListener("orientationchange", invalidate);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
-      window.removeEventListener("resize", run);
-      window.removeEventListener("orientationchange", run);
+      window.removeEventListener("resize", invalidate);
+      window.removeEventListener("orientationchange", invalidate);
+      map.remove();
+      mapRef.current = null;
+      layerRef.current = null;
     };
-  }, [map]);
-  return null;
-}
+  }, []);
 
-const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true }: Props) => {
-  const points: [number, number][] = workers.map((w) => [w.latitude, w.longitude]);
-  if (userCoords) points.push([userCoords.latitude, userCoords.longitude]);
-  const center: [number, number] = points[0] ?? [24.8607, 67.0011];
+  // Update markers when data changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const layer = layerRef.current;
+    if (!map || !layer) return;
+    layer.clearLayers();
+
+    const points: [number, number][] = [];
+
+    workers.forEach((w) => {
+      const m = L.marker([w.latitude, w.longitude], { icon: workerIcon });
+      const distanceHtml =
+        w.distanceKm !== undefined
+          ? `<p style="font-size:12px;color:#6b7280;margin:0">${w.distanceKm.toFixed(2)} km away</p>`
+          : "";
+      m.bindPopup(`<div><p style="font-weight:600;margin:0 0 2px 0">${w.name}</p>${distanceHtml}</div>`);
+      m.addTo(layer);
+      points.push([w.latitude, w.longitude]);
+    });
+
+    if (userCoords) {
+      const um = L.marker([userCoords.latitude, userCoords.longitude], { icon: userIcon });
+      um.bindPopup("You are here");
+      um.addTo(layer);
+      points.push([userCoords.latitude, userCoords.longitude]);
+    }
+
+    if (fitToWorkers && points.length > 0) {
+      if (points.length === 1) {
+        map.setView(points[0], Math.max(map.getZoom(), 14));
+      } else {
+        map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 15 });
+      }
+    }
+
+    setTimeout(() => map.invalidateSize(), 50);
+  }, [workers, userCoords, fitToWorkers]);
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border shadow-sm" style={{ height }}>
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} scrollWheelZoom zoomControl={true} attributionControl={true}>
-        <InvalidateOnMount />
-        <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {fitToWorkers && points.length > 0 && <FitBounds points={points} />}
-        {userCoords && (
-          <Marker position={[userCoords.latitude, userCoords.longitude]} icon={userIcon}>
-            <Popup>You are here</Popup>
-          </Marker>
-        )}
-        {workers.map((w) => (
-          <Marker key={w.id} position={[w.latitude, w.longitude]} icon={workerIcon}>
-            <Popup>
-              <div className="space-y-1">
-                <p className="font-semibold">{w.name}</p>
-                {w.distanceKm !== undefined && (
-                  <p className="text-xs text-muted-foreground">{w.distanceKm.toFixed(2)} km away</p>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+      <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
     </div>
   );
 };
