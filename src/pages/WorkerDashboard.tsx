@@ -584,7 +584,8 @@ const WorkerDashboard = () => {
           <TabsContent value="blood">
             <BloodDonationCard />
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
       </section>
     </AppLayout>
   );
