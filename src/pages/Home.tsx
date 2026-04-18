@@ -321,7 +321,7 @@ const Home = () => {
                   className={`tap-feedback group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border bg-gradient-to-br ${category.accent} p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md`}
                 >
                   <span className="grid h-10 w-10 place-items-center rounded-xl bg-card text-primary ring-1 ring-border transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4 text-primary-foreground bg-secondary-foreground" />
                   </span>
                   <p className="text-sm font-bold leading-tight text-foreground">{category.name}</p>
                 </button>
