@@ -43,7 +43,7 @@ const WorkerProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url)")
+        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
