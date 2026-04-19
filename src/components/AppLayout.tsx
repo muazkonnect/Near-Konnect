@@ -65,7 +65,19 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
           </div>
         )}
 
-        <main className="px-4 pb-32 pt-5">{children}</main>
+        <main className="px-4 pt-5">{children}</main>
+
+        {user && (
+          <div className="px-4 pb-32 pt-6 flex justify-center">
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* DESKTOP: sidebar + dark hero card */}
