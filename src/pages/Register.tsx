@@ -16,6 +16,8 @@ import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
+import ContactMethodsEditor from "@/components/ContactMethodsEditor";
+import { type ContactMethod, validateContactMethods, sanitizePhone } from "@/lib/contactMethods";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,7 +29,6 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mainCategory, setMainCategory] = useState<MainServiceCategory | "">("");
@@ -35,14 +36,17 @@ const Register = () => {
   const [experience, setExperience] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [willingToDonate, setWillingToDonate] = useState(false);
-  const [useWhatsapp, setUseWhatsapp] = useState(false);
+  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
+
+  const phoneEntry = contactMethods.find((m) => m.type === "phone");
+  const phone = phoneEntry?.value ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
-    const normalizedPhone = phone.trim();
+    const normalizedPhone = sanitizePhone(phone);
     const normalizedExperience = experience.trim();
 
     if (!normalizedName || !normalizedEmail || !password) {
@@ -52,6 +56,19 @@ const Register = () => {
     const pwValidation = validatePassword(password);
     if (!pwValidation.isValid) {
       toast.error("Password doesn't meet requirements: " + pwValidation.errors[0]);
+      return;
+    }
+    if (!normalizedPhone) {
+      toast.error("A phone number is required.");
+      return;
+    }
+    // Normalise phone in the contact list too
+    const trimmedMethods: ContactMethod[] = contactMethods.map((m) =>
+      m.type === "phone" ? { ...m, value: normalizedPhone } : { ...m, value: m.value.trim() }
+    );
+    const contactErr = validateContactMethods(trimmedMethods);
+    if (contactErr) {
+      toast.error(contactErr);
       return;
     }
     if (role === "worker" && (!mainCategory || !subCategory || !normalizedExperience)) {
@@ -64,13 +81,15 @@ const Register = () => {
     }
 
     setLoading(true);
+    const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
     const metadata: Record<string, string> = {
       full_name: normalizedName,
       phone: normalizedPhone,
       role,
       blood_group: bloodGroup,
       is_blood_donor: willingToDonate ? "true" : "false",
-      use_whatsapp: useWhatsapp ? "true" : "false",
+      use_whatsapp: hasWhatsapp ? "true" : "false",
+      contact_methods: JSON.stringify(trimmedMethods),
     };
     if (role === "worker") {
       metadata.main_category = mainCategory;
