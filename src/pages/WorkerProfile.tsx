@@ -152,7 +152,7 @@ const WorkerProfile = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-[2rem] border bg-card pb-44 shadow-premium md:pb-8"
+          className="overflow-hidden rounded-[2rem] border bg-card pb-8 shadow-premium"
         >
           {/* Dark hero header */}
           <div className="relative overflow-hidden bg-hero px-5 pt-6 pb-6 text-hero-foreground md:px-8 md:pt-8 md:pb-8">
@@ -201,10 +201,10 @@ const WorkerProfile = () => {
               </div>
             </div>
 
-            {/* Contact options inside hero banner (desktop) */}
-            <div className="relative mt-6 hidden md:block">
+            {/* Contact options inside hero banner */}
+            <div className="relative mt-6">
               {user ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
+                <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <ContactMethodsBar
                     methods={contactMethods}
                     onInAppMessage={handleInAppMessage}
@@ -212,7 +212,7 @@ const WorkerProfile = () => {
                     variant="hero"
                   />
                   <BookingDialog workerId={worker.id} workerName={worker.name}>
-                    <Button className="gap-2" onClick={() => void trackEvent("conversion")}>
+                    <Button className="w-full gap-2 sm:w-auto" onClick={() => void trackEvent("conversion")}>
                       <CalendarPlus className="h-4 w-4" /> Book Now
                     </Button>
                   </BookingDialog>
@@ -328,27 +328,6 @@ const WorkerProfile = () => {
           </div>
         </motion.div>
 
-        {/* Mobile floating contact bar */}
-        <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto flex max-w-md items-center justify-between gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
-            {user ? (
-              <>
-                <div className="min-w-0 flex-1 overflow-x-auto">
-                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="hero" className="flex-nowrap px-1" />
-                </div>
-                <BookingDialog workerId={worker.id} workerName={worker.name}>
-                  <Button size="sm" className="shrink-0 rounded-full" onClick={() => void trackEvent("conversion")}>
-                    <CalendarPlus className="mr-1 h-4 w-4" /> Book
-                  </Button>
-                </BookingDialog>
-              </>
-            ) : (
-              <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                <Button className="w-full rounded-full">Log in to contact</Button>
-              </AuthRequiredDialog>
-            )}
-          </div>
-        </div>
       </div>
     </AppLayout>
   );
