@@ -169,13 +169,14 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       </div>
 
       <style>{`
-        .leaflet-container { background: hsl(var(--muted)); font-family: inherit; }
+        .leaflet-container { background: hsl(var(--muted)); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 13px; }
+        .leaflet-container * { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important; }
         .leaflet-control-zoom { border: none !important; box-shadow: 0 6px 20px -8px rgba(0,0,0,0.3) !important; border-radius: 12px !important; overflow: hidden; }
-        .leaflet-control-zoom a { background: white !important; color: hsl(var(--foreground)) !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 600 !important; }
-        .leaflet-control-zoom a:hover { background: hsl(var(--muted)) !important; }
+        .leaflet-control-zoom a { background: white !important; color: #000 !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 500 !important; }
+        .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; backdrop-filter: blur(6px); font-size: 10px !important; padding: 2px 6px !important; border-radius: 6px !important; margin: 6px !important; }
-        .wm-popup .leaflet-popup-content-wrapper { border-radius: 14px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
-        .wm-popup .leaflet-popup-content { margin: 10px 12px; }
+        .wm-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
+        .wm-popup .leaflet-popup-content { margin: 10px 12px; font-weight: 400; }
         .wm-popup .leaflet-popup-tip { box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
       `}</style>
     </div>
