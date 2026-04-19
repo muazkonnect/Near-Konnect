@@ -328,27 +328,6 @@ const WorkerProfile = () => {
           </div>
         </motion.div>
 
-        {/* Mobile floating contact bar */}
-        <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto flex max-w-md items-center justify-between gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
-            {user ? (
-              <>
-                <div className="min-w-0 flex-1 overflow-x-auto">
-                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="hero" className="flex-nowrap px-1" />
-                </div>
-                <BookingDialog workerId={worker.id} workerName={worker.name}>
-                  <Button size="sm" className="shrink-0 rounded-full" onClick={() => void trackEvent("conversion")}>
-                    <CalendarPlus className="mr-1 h-4 w-4" /> Book
-                  </Button>
-                </BookingDialog>
-              </>
-            ) : (
-              <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                <Button className="w-full rounded-full">Log in to contact</Button>
-              </AuthRequiredDialog>
-            )}
-          </div>
-        </div>
       </div>
     </AppLayout>
   );
