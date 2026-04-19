@@ -80,7 +80,7 @@ const DashboardNav = ({ items, active, onChange }: DashboardNavProps) => {
                   {item.badge !== undefined && Number(item.badge) > 0 && (
                     <span className={cn(
                       "rounded-full px-2 py-0.5 text-[10px] font-bold leading-none",
-                      isActive ? "bg-primary text-primary-foreground" : "bg-primary/15 text-primary"
+                      isActive ? "bg-primary text-primary-foreground" : "text-primary bg-secondary"
                     )}>
                       {item.badge}
                     </span>
