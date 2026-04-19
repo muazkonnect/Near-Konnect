@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, Phone, ShieldCheck, Star, Briefcase, MessageSquare, CalendarPlus, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +17,8 @@ import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkersMap from "@/components/WorkersMap";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -43,7 +45,7 @@ const WorkerProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp)")
+        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
@@ -81,6 +83,16 @@ const WorkerProfile = () => {
     );
   }
 
+  const profilePhone = (dbWorker as any).profiles?.phone || "";
+  const storedMethods = parseContactMethods((dbWorker as any).profiles?.contact_methods);
+  const fallbackMethods: ContactMethod[] = profilePhone
+    ? [
+        { type: "phone", value: profilePhone },
+        ...((dbWorker as any).profiles?.use_whatsapp ? [{ type: "whatsapp", value: profilePhone } as ContactMethod] : []),
+      ]
+    : [];
+  const contactMethods: ContactMethod[] = storedMethods.length > 0 ? storedMethods : fallbackMethods;
+
   const worker = {
     id: dbWorker.id,
     userId: dbWorker.user_id,
@@ -89,19 +101,10 @@ const WorkerProfile = () => {
     experience: dbWorker.experience,
     available: dbWorker.available,
     verified: dbWorker.verified,
-    phone: (dbWorker as any).profiles?.phone || "",
-    useWhatsapp: !!(dbWorker as any).profiles?.use_whatsapp,
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
   };
-
-  const sanitizedPhone = worker.phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
-  const whatsappEnabled = worker.useWhatsapp && sanitizedPhone.length > 0;
-  const callHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent("Hi, I'd like to book your service.")}` : `tel:${worker.phone}`;
-  const callTarget = whatsappEnabled ? "_blank" : undefined;
-  const callRel = whatsappEnabled ? "noopener noreferrer" : undefined;
-  const messageHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}` : null;
 
   const avgRating = dbReviews.length
     ? (dbReviews.reduce((s: number, r: any) => s + r.rating, 0) / dbReviews.length).toFixed(1)
@@ -127,12 +130,14 @@ const WorkerProfile = () => {
     }
   };
 
-  const handleMessage = () => {
-    if (messageHref) {
-      window.open(messageHref, "_blank", "noopener,noreferrer");
-    } else {
-      navigate(`/chat/${worker.userId}`);
-    }
+  const handleInAppMessage = () => {
+    void trackEvent("contact_click");
+    if (!user) return;
+    navigate(`/chat/${worker.userId}`);
+  };
+
+  const handleChannelClick = () => {
+    void trackEvent("contact_click");
   };
 
   const initials = worker.name.split(" ").map(n => n[0]).join("");
@@ -215,32 +220,21 @@ const WorkerProfile = () => {
               </div>
             </div>
 
-            {/* Desktop actions */}
-            <div className="mt-5 hidden gap-2 md:flex md:flex-wrap">
+            {/* Contact options */}
+            <div className="mt-5 hidden md:block">
               {user ? (
-                <Button className="flex-1 gap-2" asChild onClick={() => void trackEvent("contact_click")}>
-                  <a href={callHref} target={callTarget} rel={callRel}><Phone className="h-4 w-4" /> {whatsappEnabled ? "WhatsApp Call" : "Call Now"}</a>
-                </Button>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="card" />
+                  <BookingDialog workerId={worker.id} workerName={worker.name}>
+                    <Button variant="dark" className="gap-2" onClick={() => void trackEvent("conversion")}>
+                      <CalendarPlus className="h-4 w-4" /> Book Now
+                    </Button>
+                  </BookingDialog>
+                </div>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button className="flex-1 gap-2"><Phone className="h-4 w-4" /> Call Now</Button>
+                  <Button className="w-full gap-2"><CalendarPlus className="h-4 w-4" /> Log in to contact</Button>
                 </AuthRequiredDialog>
-              )}
-              {user ? (
-                <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground" onClick={() => { void trackEvent("contact_click"); handleMessage(); }}>
-                  <MessageSquare className="h-4 w-4" /> Message
-                </Button>
-              ) : (
-                <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground"><MessageSquare className="h-4 w-4" /> Message</Button>
-                </AuthRequiredDialog>
-              )}
-              {user && (
-                <BookingDialog workerId={worker.id} workerName={worker.name}>
-                  <Button variant="dark" className="flex-1 gap-2" onClick={() => void trackEvent("conversion")}>
-                    <CalendarPlus className="h-4 w-4" /> Book Now
-                  </Button>
-                </BookingDialog>
               )}
             </div>
           </div>
@@ -328,26 +322,23 @@ const WorkerProfile = () => {
           </div>
         </motion.div>
 
+        {/* Mobile floating contact bar */}
         <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
+          <div className="mx-auto flex max-w-md items-center justify-between gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
             {user ? (
-              <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={handleMessage}>
-                <MessageSquare className="mr-1 h-4 w-4" /> Message
-              </Button>
+              <>
+                <div className="min-w-0 flex-1 overflow-x-auto">
+                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="hero" className="flex-nowrap px-1" />
+                </div>
+                <BookingDialog workerId={worker.id} workerName={worker.name}>
+                  <Button size="sm" className="shrink-0 rounded-full" onClick={() => void trackEvent("conversion")}>
+                    <CalendarPlus className="mr-1 h-4 w-4" /> Book
+                  </Button>
+                </BookingDialog>
+              </>
             ) : (
               <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={() => void trackEvent("contact_click")}>
-                  <MessageSquare className="mr-1 h-4 w-4" /> Message
-                </Button>
-              </AuthRequiredDialog>
-            )}
-            {user ? (
-              <Button className="w-full rounded-full" asChild onClick={() => void trackEvent("contact_click")}>
-                <a href={callHref} target={callTarget} rel={callRel}><Phone className="mr-1 h-4 w-4" /> {whatsappEnabled ? "WhatsApp" : "Call Now"}</a>
-              </Button>
-            ) : (
-              <AuthRequiredDialog title="Log in to call" description="Please log in or sign up to call this service.">
-                <Button className="rounded-full"><Phone className="mr-1 h-4 w-4" /> Call Now</Button>
+                <Button className="w-full rounded-full">Log in to contact</Button>
               </AuthRequiredDialog>
             )}
           </div>

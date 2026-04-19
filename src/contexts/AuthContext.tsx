@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import { isValidMainCategory, isValidSubcategoryForMain } from "@/data/serviceCategories";
+import { parseContactMethods } from "@/lib/contactMethods";
 
 const toBoolean = (value: unknown): boolean => {
   if (typeof value === "boolean") return value;
@@ -58,6 +59,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const bloodGroup = String(md.blood_group || "").trim() || null;
       const isBloodDonor = toBoolean(md.is_blood_donor);
       const useWhatsapp = toBoolean(md.use_whatsapp);
+      let contactMethods: { type: string; value: string }[] = [];
+      try {
+        const raw = md.contact_methods;
+        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+        contactMethods = parseContactMethods(parsed);
+      } catch {
+        contactMethods = [];
+      }
       const rawMainCategory = String(md.main_category || "").trim();
       const rawSubCategory = String(md.sub_category || "").trim();
 
@@ -75,6 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           blood_group: bloodGroup,
           is_blood_donor: isBloodDonor,
           use_whatsapp: useWhatsapp,
+          contact_methods: contactMethods,
         } as any,
         { onConflict: "user_id" }
       );

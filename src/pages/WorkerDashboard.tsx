@@ -38,6 +38,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchConversationSummaries } from "@/lib/messages";
+import ContactMethodsEditor from "@/components/ContactMethodsEditor";
+import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone } from "@/lib/contactMethods";
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
@@ -49,8 +51,7 @@ const WorkerDashboard = () => {
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
-  const [phone, setPhone] = useState("");
-  const [useWhatsapp, setUseWhatsapp] = useState(false);
+  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -61,8 +62,15 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
-      setPhone((workerData as any).profiles?.phone || "");
-      setUseWhatsapp(!!(workerData as any).profiles?.use_whatsapp);
+      const profilePhone = (workerData as any).profiles?.phone || "";
+      const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
+      if (stored.length > 0) {
+        setContactMethods(stored.some((m) => m.type === "phone") ? stored : [{ type: "phone", value: profilePhone }, ...stored]);
+      } else {
+        const seed: ContactMethod[] = [{ type: "phone", value: profilePhone }];
+        if ((workerData as any).profiles?.use_whatsapp && profilePhone) seed.push({ type: "whatsapp", value: profilePhone });
+        setContactMethods(seed);
+      }
     }
   }, [workerData]);
 
@@ -130,10 +138,15 @@ const WorkerDashboard = () => {
 
   const handleSave = async () => {
     if (!workerData || !user) return;
-    if (useWhatsapp && !phone.trim()) {
-      toast.error("Please add a phone number to enable WhatsApp.");
-      return;
-    }
+    const trimmed: ContactMethod[] = contactMethods.map((m) =>
+      m.type === "phone" ? { ...m, value: sanitizePhone(m.value) } : { ...m, value: m.value.trim() }
+    );
+    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
+    if (!phoneVal) { toast.error("A phone number is required."); return; }
+    const err = validateContactMethods(trimmed);
+    if (err) { toast.error(err); return; }
+    const hasWhatsapp = trimmed.some((m) => m.type === "whatsapp" && m.value);
+
     setSaving(true);
 
     const { error: workerError } = await supabase
@@ -148,7 +161,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone, use_whatsapp: useWhatsapp } as any)
+      .update({ phone: phoneVal, use_whatsapp: hasWhatsapp, contact_methods: trimmed } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -408,27 +421,15 @@ const WorkerDashboard = () => {
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
                   <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                 </div>
-                <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone</Label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 3XX XXXXXXX" className="mt-1.5 h-11 rounded-xl" />
-                </div>
                 <div className="md:col-span-2">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
                   <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
                 </div>
-                <label htmlFor="useWhatsappPrefWorker" className="md:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-input bg-muted/40 p-3.5 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    id="useWhatsappPrefWorker"
-                    checked={useWhatsapp}
-                    onChange={e => setUseWhatsapp(e.target.checked)}
-                    className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                  />
-                  <span className="flex-1">
-                    Use WhatsApp for calls & messages
-                    <span className="block text-xs font-normal text-muted-foreground">Clients will reach you on WhatsApp using your phone number.</span>
-                  </span>
-                </label>
+                <div className="md:col-span-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact options</Label>
+                  <p className="mb-2 mt-1 text-xs text-muted-foreground">Phone is required. Add any other apps so clients can reach you.</p>
+                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
+                </div>
               </div>
 
               <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">

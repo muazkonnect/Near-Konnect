@@ -446,6 +446,7 @@ export type Database = {
           avatar_url: string | null
           blood_group: string | null
           city: string | null
+          contact_methods: Json
           created_at: string
           donor_status: string
           full_name: string
@@ -460,6 +461,7 @@ export type Database = {
           avatar_url?: string | null
           blood_group?: string | null
           city?: string | null
+          contact_methods?: Json
           created_at?: string
           donor_status?: string
           full_name?: string
@@ -474,6 +476,7 @@ export type Database = {
           avatar_url?: string | null
           blood_group?: string | null
           city?: string | null
+          contact_methods?: Json
           created_at?: string
           donor_status?: string
           full_name?: string
