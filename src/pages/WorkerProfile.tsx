@@ -322,26 +322,23 @@ const WorkerProfile = () => {
           </div>
         </motion.div>
 
+        {/* Mobile floating contact bar */}
         <div className="fixed inset-x-0 bottom-20 z-40 px-4 md:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-2 gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
+          <div className="mx-auto flex max-w-md items-center justify-between gap-2 rounded-full bg-hero p-2 shadow-premium min-w-0">
             {user ? (
-              <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={handleMessage}>
-                <MessageSquare className="mr-1 h-4 w-4" /> Message
-              </Button>
+              <>
+                <div className="min-w-0 flex-1 overflow-x-auto">
+                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="hero" className="flex-nowrap px-1" />
+                </div>
+                <BookingDialog workerId={worker.id} workerName={worker.name}>
+                  <Button size="sm" className="shrink-0 rounded-full" onClick={() => void trackEvent("conversion")}>
+                    <CalendarPlus className="mr-1 h-4 w-4" /> Book
+                  </Button>
+                </BookingDialog>
+              </>
             ) : (
               <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                <Button variant="ghost" className="rounded-full text-hero-foreground hover:bg-white/10" onClick={() => void trackEvent("contact_click")}>
-                  <MessageSquare className="mr-1 h-4 w-4" /> Message
-                </Button>
-              </AuthRequiredDialog>
-            )}
-            {user ? (
-              <Button className="w-full rounded-full" asChild onClick={() => void trackEvent("contact_click")}>
-                <a href={callHref} target={callTarget} rel={callRel}><Phone className="mr-1 h-4 w-4" /> {whatsappEnabled ? "WhatsApp" : "Call Now"}</a>
-              </Button>
-            ) : (
-              <AuthRequiredDialog title="Log in to call" description="Please log in or sign up to call this service.">
-                <Button className="rounded-full"><Phone className="mr-1 h-4 w-4" /> Call Now</Button>
+                <Button className="w-full rounded-full">Log in to contact</Button>
               </AuthRequiredDialog>
             )}
           </div>
