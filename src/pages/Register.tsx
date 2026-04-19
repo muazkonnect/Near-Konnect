@@ -167,8 +167,9 @@ const Register = () => {
           <Input id="name" placeholder={t("register.fullName")} value={name} onChange={e => setName(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <Label htmlFor="phone" className={labelClass}>{t("register.phone")}</Label>
-          <Input id="phone" placeholder="+92 3XX XXXXXXX" value={phone} onChange={e => setPhone(e.target.value)} className={inputClass} />
+          <Label className={labelClass}>Contact options *</Label>
+          <p className="mb-2 text-xs text-muted-foreground">Phone is required. Add any other apps you use so customers can reach you.</p>
+          <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
         </div>
         <div>
           <Label htmlFor="email" className={labelClass}>{t("register.email")} *</Label>
@@ -204,17 +205,6 @@ const Register = () => {
             className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
           />
           I am willing to donate blood
-        </label>
-
-        <label htmlFor="useWhatsapp" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
-          <input
-            type="checkbox"
-            id="useWhatsapp"
-            checked={useWhatsapp}
-            onChange={e => setUseWhatsapp(e.target.checked)}
-            className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
-          />
-          Use WhatsApp for calls & messages (requires phone number)
         </label>
 
         {role === "worker" && (
