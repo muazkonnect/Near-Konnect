@@ -68,7 +68,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
 
         <main className="px-4 pt-5">{children}</main>
 
-        {user && (
+        {user && showSignOut && (
           <div className="px-4 pb-32 pt-6 flex justify-center">
             <Button
               variant="outline"
