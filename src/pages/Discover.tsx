@@ -270,14 +270,11 @@ const Discover = () => {
           </div>
 
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-            {(["distance", "rating", "experience", "price"] as SortKey[]).map((s) => (
+            {(["distance", "rating", "experience"] as SortKey[]).map((s) => (
               <Button key={s} variant={sort === s ? "default" : "outline"} size="sm" onClick={() => setSort(s)} className="shrink-0">
                 {sortLabels[s]}
               </Button>
             ))}
-            <Button variant="outline" size="sm" className="shrink-0 gap-1">
-              <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
-            </Button>
           </div>
         </div>
 
@@ -410,17 +407,6 @@ const Discover = () => {
               className="shrink-0 rounded-full"
             >
               {rating === 0 ? "All ratings" : `${rating}+ stars`}
-            </Button>
-          ))}
-          {(["all", "budget", "mid", "premium"] as const).map((band) => (
-            <Button
-              key={band}
-              size="sm"
-              variant={priceBand === band ? "default" : "outline"}
-              onClick={() => setPriceBand(band)}
-              className="shrink-0 rounded-full"
-            >
-              {band}
             </Button>
           ))}
         </div>
