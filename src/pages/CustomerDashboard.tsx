@@ -344,10 +344,6 @@ const CustomerDashboard = () => {
                   <Input value={name} onChange={e => setName(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                 </div>
                 <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone</Label>
-                  <Input value={phone} onChange={e => setPhone(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
-                </div>
-                <div className="sm:col-span-2">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Blood Group</Label>
                   <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <option value="">Select blood group</option>
@@ -356,19 +352,11 @@ const CustomerDashboard = () => {
                     ))}
                   </select>
                 </div>
-                <label htmlFor="useWhatsappPref" className="sm:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-input bg-muted/40 p-3.5 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    id="useWhatsappPref"
-                    checked={useWhatsapp}
-                    onChange={e => setUseWhatsapp(e.target.checked)}
-                    className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                  />
-                  <span className="flex-1">
-                    Use WhatsApp for calls & messages
-                    <span className="block text-xs font-normal text-muted-foreground">Customers will reach you on WhatsApp using your phone number.</span>
-                  </span>
-                </label>
+                <div className="sm:col-span-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact options</Label>
+                  <p className="mb-2 mt-1 text-xs text-muted-foreground">Phone is required. Add any other apps so people can reach you.</p>
+                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
+                </div>
               </div>
 
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
