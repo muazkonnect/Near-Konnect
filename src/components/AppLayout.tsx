@@ -150,18 +150,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
           )}
 
           <main className={title ? "rounded-3xl bg-card p-6" : ""}>{children}</main>
-
-          {user && (
-            <div className="flex justify-center pt-2">
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-              >
-                <LogOut className="h-4 w-4" /> Sign out
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>
