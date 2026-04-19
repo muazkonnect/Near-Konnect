@@ -84,7 +84,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
 
       {/* DESKTOP: sidebar + dark hero card */}
       <div className="mx-auto hidden max-w-[1200px] md:flex md:gap-6 md:px-4 md:py-6">
-        <aside className="sticky top-6 flex h-[calc(100vh-3rem)] w-64 flex-col rounded-3xl bg-hero text-hero-foreground p-4">
+        <aside className="sticky top-6 flex h-[calc(100vh-3rem)] w-64 flex-col rounded-3xl bg-hero text-hero-foreground p-4 py-[18px] my-0">
           <Link to="/" className="mb-7 flex items-center gap-2 px-2">
             <MapPin className="h-5 w-5 text-primary" />
             <span className="text-base font-bold">NearKonnect</span>
@@ -113,7 +113,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           {user && (
             <button
               onClick={handleSignOut}
-              className="mt-2 flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold text-hero-muted transition-colors hover:bg-destructive hover:text-destructive-foreground"
+              className="mt-2 w-full gap-3 rounded-full px-4 text-sm font-semibold text-hero-muted transition-colors hover:bg-destructive hover:text-destructive-foreground py-[12px] my-[460px] flex items-center justify-start"
             >
               <LogOut className="h-4 w-4" /> Sign out
             </button>
