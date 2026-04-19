@@ -201,19 +201,6 @@ const Home = () => {
               </div>
             )}
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 rounded-full bg-white/5 px-3 py-2 text-[11px] text-hero-muted ring-1 ring-white/5">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
-              {locationStatus === "denied" ? (
-                <span>Enable location to see nearby help</span>
-              ) : browsingCoords ? (
-                <span className="truncate">Using current location · {browsingCoords.latitude.toFixed(2)}, {browsingCoords.longitude.toFixed(2)}</span>
-              ) : (
-                <span>Detecting location...</span>
-              )}
-              <Button type="button" variant="ghost" size="sm" className="ml-auto h-6 gap-1 px-2 text-[11px] text-hero-foreground hover:bg-white/10" onClick={refreshLocation}>
-                <Navigation className="h-3 w-3" /> Update
-              </Button>
-            </div>
           </div>
         </motion.div>
 
