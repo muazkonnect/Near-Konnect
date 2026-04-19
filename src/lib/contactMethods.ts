@@ -1,6 +1,6 @@
 import { Phone, Video } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { FaWhatsapp, FaViber, FaTelegramPlane, FaSignalMessenger } from "react-icons/fa6";
+import { FaWhatsapp, FaViber, FaTelegram, FaSignalMessenger } from "react-icons/fa6";
 import type { IconType } from "react-icons";
 
 export type ContactType = "phone" | "whatsapp" | "imo" | "botim" | "viber" | "telegram" | "signal";
