@@ -171,16 +171,16 @@ const Home = () => {
 
             <form
               onSubmit={(e) => { e.preventDefault(); navigate(`/discover?search=${encodeURIComponent(search)}`); }}
-              className="mt-5 flex items-center gap-1 rounded-full bg-white/10 p-1.5 ring-1 ring-white/10 backdrop-blur-sm focus-within:ring-primary/40"
+              className="mt-5 flex items-center gap-1 rounded-full bg-white/10 p-1.5 pl-2 ring-1 ring-white/10 backdrop-blur-sm focus-within:ring-primary/40"
             >
-              <Search className="ml-3 h-4 w-4 shrink-0 text-hero-muted" />
+              <Search className="ml-1 h-4 w-4 shrink-0 text-hero-muted" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Try 'Electrician' or 'Tutor near me'..."
-                className="flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
+                placeholder="Try 'Electrician'..."
+                className="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
               />
-              <Button type="submit" size="sm" className="h-9 rounded-full px-4">Search</Button>
+              <Button type="submit" size="sm" className="h-9 shrink-0 rounded-full px-3 sm:px-4">Search</Button>
             </form>
 
             {suggestions.length > 0 && (
