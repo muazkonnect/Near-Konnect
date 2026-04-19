@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition, calculateDistance, type Coords } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { parseContactMethods } from "@/lib/contactMethods";
 import { markRead } from "@/hooks/useNotifications";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -51,7 +53,7 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status")
+        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods")
         .eq("is_blood_donor", true)
         .order("full_name");
       if (error) throw error;
