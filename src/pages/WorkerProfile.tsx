@@ -152,7 +152,7 @@ const WorkerProfile = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-[2rem] border bg-card pb-44 shadow-premium md:pb-8"
+          className="overflow-hidden rounded-[2rem] border bg-card pb-8 shadow-premium"
         >
           {/* Dark hero header */}
           <div className="relative overflow-hidden bg-hero px-5 pt-6 pb-6 text-hero-foreground md:px-8 md:pt-8 md:pb-8">
