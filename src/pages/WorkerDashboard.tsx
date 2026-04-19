@@ -291,8 +291,8 @@ const WorkerDashboard = () => {
 
         <div className="grid gap-3 md:grid-cols-3">
           <button onClick={() => navigate("/discover")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-2.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <Compass className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
+            <div className="mb-3 inline-flex rounded-2xl p-2.5 group-hover:text-primary-foreground transition-colors bg-muted">
+              <Compass className="h-5 w-5 text-primary-foreground" />
             </div>
             <p className="font-bold text-card-foreground">Find more demand</p>
             <p className="text-xs text-muted-foreground">See local categories and active jobs</p>
@@ -305,8 +305,8 @@ const WorkerDashboard = () => {
             <p className="text-xs text-muted-foreground">Help with blood and emergency requests</p>
           </button>
           <button onClick={() => navigate("/messages")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl bg-muted p-2.5 group-hover:bg-primary/10 transition-colors">
-              <MessageSquare className="h-5 w-5 text-foreground group-hover:text-primary" />
+            <div className="mb-3 inline-flex rounded-2xl p-2.5 transition-colors bg-muted">
+              <MessageSquare className="h-5 w-5 text-secondary" />
             </div>
             <p className="font-bold text-card-foreground">Reply faster</p>
             <p className="text-xs text-muted-foreground">Keep your response time high</p>
@@ -550,7 +550,7 @@ const WorkerDashboard = () => {
             <div className="rounded-3xl border bg-card p-6 sm:p-8">
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-card-foreground">Messages</h2>
-                <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">{conversations.length}</span>
+                <span className="rounded-full px-2.5 py-1 text-xs font-semibold text-primary bg-secondary">{conversations.length}</span>
               </div>
               {conversations.length === 0 ? (
                 <div className="rounded-2xl bg-muted/40 p-10 text-center">
