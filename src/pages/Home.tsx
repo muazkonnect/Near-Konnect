@@ -289,31 +289,51 @@ const Home = () => {
 
         {/* CATEGORIES */}
         <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={4}>
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-foreground">Browse by category</h2>
-              <p className="text-xs text-muted-foreground">All services, organized by what you need</p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/discover")} className="gap-1">
-              All <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {mainCategoryMeta.map((category) => {
-              const Icon = category.icon;
-              return (
-                <button
-                  key={category.name}
-                  onClick={() => navigate(`/discover?mainCategory=${encodeURIComponent(category.name)}`)}
-                  className={`tap-feedback group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border bg-gradient-to-br ${category.accent} p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md`}
-                >
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-card text-primary ring-1 ring-border transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="h-4 w-4 text-primary-foreground bg-inherit" />
+          <div className="relative overflow-hidden rounded-3xl bg-hero p-5 text-hero-foreground md:p-6">
+            <div aria-hidden className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
+              backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }} />
+
+            <div className="relative space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
+                    <Sparkles className="h-3 w-3 text-primary" /> Categories
                   </span>
-                  <p className="text-sm font-bold leading-tight text-foreground">{category.name}</p>
-                </button>
-              );
-            })}
+                  <p className="mt-2 text-lg font-bold tracking-tight">Browse by category</p>
+                  <p className="text-xs text-hero-muted">Pick a category to narrow your search</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/discover")}
+                  className="h-7 gap-1 px-2 text-xs text-hero-foreground hover:bg-white/10"
+                >
+                  All <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                {mainCategoryMeta.map((category) => {
+                  const Icon = category.icon;
+                  return (
+                    <button
+                      key={category.name}
+                      type="button"
+                      onClick={() => navigate(`/discover?main_category=${encodeURIComponent(category.name)}`)}
+                      className="tap-feedback group flex flex-col items-start gap-2.5 rounded-2xl bg-white/5 p-3 text-left text-hero-foreground ring-1 ring-white/10 transition-all hover:bg-white/10"
+                    >
+                      <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-primary transition-colors group-hover:bg-white/15">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span className="text-xs font-semibold leading-tight">{category.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </motion.section>
       </section>
