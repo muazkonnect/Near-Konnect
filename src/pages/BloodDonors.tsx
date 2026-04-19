@@ -137,12 +137,12 @@ const BloodDonors = () => {
       <section className="-mt-12 rounded-3xl bg-card p-5 shadow-premium">
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="rounded-2xl bg-hero text-hero-foreground p-4">
-            <p className="text-3xl font-bold text-primary">{stats.total}</p>
-            <p className="text-xs text-hero-muted">Total Donors</p>
+            <p className="text-3xl font-bold text-primary text-center">{stats.total}</p>
+            <p className="text-xs text-hero-muted text-center">Total Donors</p>
           </div>
           <div className="rounded-2xl bg-primary text-primary-foreground p-4">
-            <p className="text-3xl font-bold">{stats.active}</p>
-            <p className="text-xs opacity-80">Active Now</p>
+            <p className="text-3xl font-bold text-center">{stats.active}</p>
+            <p className="text-xs opacity-80 text-center">Active Now</p>
           </div>
         </div>
 
@@ -301,7 +301,7 @@ const BloodDonors = () => {
                           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Reach out via</span>
                           <span className="h-px flex-1 bg-border" />
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex-wrap gap-1.5 flex items-center justify-center">
                           <ContactMethodsBar
                             methods={donor.contact_methods_parsed}
                             variant="card"
