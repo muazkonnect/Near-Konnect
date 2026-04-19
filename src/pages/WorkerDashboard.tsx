@@ -218,7 +218,7 @@ const WorkerDashboard = () => {
 
   if (!workerData) {
     return (
-      <AppLayout title="Service Dashboard" subtitle="Create your service profile to start receiving local jobs.">
+      <AppLayout title="Service Dashboard" subtitle="Create your service profile to start receiving local jobs." showSignOut>
         <div className="rounded-2xl border bg-card p-8 text-center">
           <p className="mb-4 text-muted-foreground">You don't have a service profile yet.</p>
           <Button onClick={() => navigate("/register?role=worker")}>Register as Service</Button>
@@ -231,7 +231,7 @@ const WorkerDashboard = () => {
   const firstName = workerName.split(" ")[0];
 
   return (
-    <AppLayout>
+    <AppLayout showSignOut>
       <section className="space-y-6">
         {/* Dark hero header */}
         <motion.div

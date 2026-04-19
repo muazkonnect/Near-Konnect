@@ -156,7 +156,7 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout showSignOut>
       <section className="space-y-6">
         {/* Dark hero header */}
         <motion.div

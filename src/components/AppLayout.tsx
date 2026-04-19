@@ -10,9 +10,10 @@ interface AppLayoutProps {
   subtitle?: string;
   action?: ReactNode;
   children: ReactNode;
+  showSignOut?: boolean;
 }
 
-const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
+const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: AppLayoutProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -67,7 +68,7 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
 
         <main className="px-4 pt-5">{children}</main>
 
-        {user && (
+        {user && showSignOut && (
           <div className="px-4 pb-32 pt-6 flex justify-center">
             <Button
               variant="outline"
