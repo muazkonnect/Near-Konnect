@@ -1,16 +1,13 @@
 import { useEffect } from "react";
-import { Home, Compass, Siren, MessageSquare, User, Plus, BriefcaseBusiness, Droplets, Megaphone, LogOut, Settings } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Compass, Siren, MessageSquare, User } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNotifications } from "@/hooks/useNotifications";
 
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { role } = useUserRole();
 
   const hideNavRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/terms", "/privacy", "/disclaimer"];
@@ -29,11 +26,6 @@ const MobileBottomNav = () => {
         ? "/admin"
         : "/dashboard";
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/login");
-  };
-
   const { unreadByType } = useNotifications();
 
   const items = [
@@ -47,49 +39,7 @@ const MobileBottomNav = () => {
   if (shouldHide) return null;
 
   return (
-    <>
-      <div className="md:hidden fixed bottom-[5.5rem] right-4 z-50">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size="icon" className="h-14 w-14 rounded-full shadow-premium">
-              <Plus className="h-6 w-6" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-52 rounded-2xl p-2">
-            <Link to="/discover" className="tap-feedback flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-muted">
-              <BriefcaseBusiness className="h-4 w-4 text-primary" />
-              <span>Find Service</span>
-            </Link>
-            <Link to="/blood-donors" className="tap-feedback flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-muted">
-              <Droplets className="h-4 w-4 text-destructive" />
-              <span>Request Blood</span>
-            </Link>
-            <Link to="/blood-donors" className="tap-feedback flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-muted">
-              <Megaphone className="h-4 w-4 text-secondary" />
-              <span>Post Job</span>
-            </Link>
-            {user && (
-              <>
-                <div className="my-1 h-px bg-border" />
-                <Link to={profilePath} className="tap-feedback flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-muted">
-                  <Settings className="h-4 w-4 text-muted-foreground" />
-                  <span>Account</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="tap-feedback flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-destructive hover:bg-destructive/10"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign out</span>
-                </button>
-              </>
-            )}
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.25rem)] max-w-md rounded-3xl border border-border/70 bg-card/98 backdrop-blur-xl shadow-premium px-3 py-2.5">
+    <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.25rem)] max-w-md rounded-3xl border border-border/70 bg-card/98 backdrop-blur-xl shadow-premium px-3 py-2.5">
       <ul className="grid grid-cols-5 gap-1">
         {items.map((item) => {
           const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
@@ -119,7 +69,6 @@ const MobileBottomNav = () => {
         })}
       </ul>
     </nav>
-    </>
   );
 };
 
