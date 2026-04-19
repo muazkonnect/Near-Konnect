@@ -141,7 +141,7 @@ const BloodDonors = () => {
         action={<BloodRequestDialog />}
       >
         {/* Stats card overlapping hero */}
-        <section className="-mt-12 grid grid-cols-3 gap-2 rounded-3xl bg-card p-3 shadow-premium">
+        <section className="-mt-12 grid grid-cols-3 gap-2 rounded-3xl bg-card p-3 shadow-premium my-[8px] py-[12px]">
           <div className="rounded-2xl bg-destructive/10 p-3 text-center">
             <p className="text-xl font-extrabold text-destructive leading-none">{openRequestsCount}</p>
             <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Open</p>
