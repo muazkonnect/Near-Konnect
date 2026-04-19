@@ -41,15 +41,16 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
       {/* MOBILE: dark hero header */}
       <div className="md:hidden">
         {title ? (
-          <div className="bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+            <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>NearKonnect</span>
               </Link>
             </div>
 
-            <div className="mt-6 flex items-start justify-between gap-3">
+            <div className="relative mt-6 flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-1.5 text-sm text-hero-muted line-clamp-2">{subtitle}</p>}
@@ -141,12 +142,13 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           </div>
 
           {title && (
-            <div className="bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
+            <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
+              <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              <div className="relative min-w-0">
                 <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}
               </div>
-              {action}
+              {action && <div className="relative">{action}</div>}
             </div>
           )}
 
