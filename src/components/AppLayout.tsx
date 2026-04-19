@@ -1,14 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
+import { Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 
