@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, Phone, ShieldCheck, Star, Briefcase, MessageSquare, CalendarPlus, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +17,8 @@ import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkersMap from "@/components/WorkersMap";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -43,7 +45,7 @@ const WorkerProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp)")
+        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
@@ -81,6 +83,16 @@ const WorkerProfile = () => {
     );
   }
 
+  const profilePhone = (dbWorker as any).profiles?.phone || "";
+  const storedMethods = parseContactMethods((dbWorker as any).profiles?.contact_methods);
+  const fallbackMethods: ContactMethod[] = profilePhone
+    ? [
+        { type: "phone", value: profilePhone },
+        ...((dbWorker as any).profiles?.use_whatsapp ? [{ type: "whatsapp", value: profilePhone } as ContactMethod] : []),
+      ]
+    : [];
+  const contactMethods: ContactMethod[] = storedMethods.length > 0 ? storedMethods : fallbackMethods;
+
   const worker = {
     id: dbWorker.id,
     userId: dbWorker.user_id,
@@ -89,19 +101,10 @@ const WorkerProfile = () => {
     experience: dbWorker.experience,
     available: dbWorker.available,
     verified: dbWorker.verified,
-    phone: (dbWorker as any).profiles?.phone || "",
-    useWhatsapp: !!(dbWorker as any).profiles?.use_whatsapp,
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
   };
-
-  const sanitizedPhone = worker.phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
-  const whatsappEnabled = worker.useWhatsapp && sanitizedPhone.length > 0;
-  const callHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent("Hi, I'd like to book your service.")}` : `tel:${worker.phone}`;
-  const callTarget = whatsappEnabled ? "_blank" : undefined;
-  const callRel = whatsappEnabled ? "noopener noreferrer" : undefined;
-  const messageHref = whatsappEnabled ? `https://wa.me/${sanitizedPhone}` : null;
 
   const avgRating = dbReviews.length
     ? (dbReviews.reduce((s: number, r: any) => s + r.rating, 0) / dbReviews.length).toFixed(1)
@@ -127,12 +130,14 @@ const WorkerProfile = () => {
     }
   };
 
-  const handleMessage = () => {
-    if (messageHref) {
-      window.open(messageHref, "_blank", "noopener,noreferrer");
-    } else {
-      navigate(`/chat/${worker.userId}`);
-    }
+  const handleInAppMessage = () => {
+    void trackEvent("contact_click");
+    if (!user) return;
+    navigate(`/chat/${worker.userId}`);
+  };
+
+  const handleChannelClick = () => {
+    void trackEvent("contact_click");
   };
 
   const initials = worker.name.split(" ").map(n => n[0]).join("");
