@@ -53,9 +53,9 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods")
+        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods" as any)
         .eq("is_blood_donor", true)
-        .order("full_name");
+        .order("full_name") as any;
       if (error) throw error;
 
       // Get worker location data for donors who are workers
