@@ -409,17 +409,6 @@ const Discover = () => {
               {rating === 0 ? "All ratings" : `${rating}+ stars`}
             </Button>
           ))}
-          {(["all", "budget", "mid", "premium"] as const).map((band) => (
-            <Button
-              key={band}
-              size="sm"
-              variant={priceBand === band ? "default" : "outline"}
-              onClick={() => setPriceBand(band)}
-              className="shrink-0 rounded-full"
-            >
-              {band}
-            </Button>
-          ))}
         </div>
 
         <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
