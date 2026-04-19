@@ -28,7 +28,7 @@ export const CONTACT_APPS: ContactAppDef[] = [
   { type: "imo",      label: "IMO",      icon: Video,             brandClass: "bg-[#3776E5] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "botim",    label: "Botim",    icon: Video,             brandClass: "bg-[#34D9C8] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "viber",    label: "Viber",    icon: FaViber,           brandClass: "bg-[#7360F2] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
-  { type: "telegram", label: "Telegram", icon: FaTelegramPlane,   brandClass: "bg-[#229ED9] text-white",        placeholder: "@username or +92...", isPhone: false },
+  { type: "telegram", label: "Telegram", icon: FaTelegram,        brandClass: "bg-[#229ED9] text-white",        placeholder: "@username or +92...", isPhone: false },
   { type: "signal",   label: "Signal",   icon: FaSignalMessenger, brandClass: "bg-[#3A76F0] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
 ];
 
