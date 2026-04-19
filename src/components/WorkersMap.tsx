@@ -7,35 +7,38 @@ import type { Coords } from "@/lib/geolocation";
 const workerIcon = L.divIcon({
   className: "",
   html: `
-    <div style="position:relative;display:flex;flex-direction:column;align-items:center;">
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center;font-family:system-ui,-apple-system,sans-serif;">
       <div style="
-        width:34px;height:34px;border-radius:9999px;
-        background:hsl(var(--primary));
+        width:32px;height:32px;border-radius:9999px;
+        background:#000;
         border:3px solid white;
-        box-shadow:0 6px 16px -4px hsl(var(--primary)/0.6), 0 0 0 4px hsl(var(--primary)/0.18);
-        display:grid;place-items:center;color:white;font-weight:700;font-size:14px;
+        box-shadow:0 4px 12px -2px rgba(0,0,0,0.5);
+        display:grid;place-items:center;color:white;
       ">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
       </div>
-      <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid hsl(var(--primary));margin-top:-2px;filter:drop-shadow(0 2px 2px hsl(var(--primary)/0.4));"></div>
+      <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #000;margin-top:-2px;"></div>
     </div>
   `,
-  iconSize: [34, 44],
-  iconAnchor: [17, 44],
-  popupAnchor: [0, -42],
+  iconSize: [32, 42],
+  iconAnchor: [16, 42],
+  popupAnchor: [0, -40],
 });
 
 const userIcon = L.divIcon({
   className: "",
   html: `
-    <div style="position:relative;width:18px;height:18px;">
-      <div style="position:absolute;inset:-8px;border-radius:9999px;background:hsl(var(--primary)/0.25);animation:wm-pulse 2s ease-out infinite;"></div>
-      <div style="position:relative;width:18px;height:18px;border-radius:9999px;background:hsl(var(--primary));border:3px solid white;box-shadow:0 4px 10px -2px hsl(var(--primary)/0.6);"></div>
+    <div style="position:relative;width:16px;height:16px;font-family:system-ui,-apple-system,sans-serif;">
+      <div style="position:absolute;inset:-6px;border-radius:9999px;background:rgba(0,0,0,0.3);animation:wm-blink 1.2s ease-in-out infinite;"></div>
+      <div style="position:relative;width:16px;height:16px;border-radius:9999px;background:#000;border:3px solid white;box-shadow:0 3px 8px -1px rgba(0,0,0,0.5);animation:wm-blink-dot 1.2s ease-in-out infinite;"></div>
     </div>
-    <style>@keyframes wm-pulse{0%{transform:scale(0.6);opacity:0.8}100%{transform:scale(1.6);opacity:0}}</style>
+    <style>
+      @keyframes wm-blink{0%,100%{transform:scale(0.8);opacity:0.7}50%{transform:scale(1.6);opacity:0}}
+      @keyframes wm-blink-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+    </style>
   `,
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
 });
 
 export interface WorkerPin {
@@ -166,13 +169,14 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       </div>
 
       <style>{`
-        .leaflet-container { background: hsl(var(--muted)); font-family: inherit; }
+        .leaflet-container { background: hsl(var(--muted)); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 13px; }
+        .leaflet-container * { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important; }
         .leaflet-control-zoom { border: none !important; box-shadow: 0 6px 20px -8px rgba(0,0,0,0.3) !important; border-radius: 12px !important; overflow: hidden; }
-        .leaflet-control-zoom a { background: white !important; color: hsl(var(--foreground)) !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 600 !important; }
-        .leaflet-control-zoom a:hover { background: hsl(var(--muted)) !important; }
+        .leaflet-control-zoom a { background: white !important; color: #000 !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 500 !important; }
+        .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; backdrop-filter: blur(6px); font-size: 10px !important; padding: 2px 6px !important; border-radius: 6px !important; margin: 6px !important; }
-        .wm-popup .leaflet-popup-content-wrapper { border-radius: 14px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
-        .wm-popup .leaflet-popup-content { margin: 10px 12px; }
+        .wm-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
+        .wm-popup .leaflet-popup-content { margin: 10px 12px; font-weight: 400; }
         .wm-popup .leaflet-popup-tip { box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
       `}</style>
     </div>
