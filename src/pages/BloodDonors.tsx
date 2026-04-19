@@ -283,32 +283,36 @@ const BloodDonors = () => {
                   {/* Divider */}
                   <div className="relative my-4 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                  {/* Actions */}
-                  <div className="relative flex gap-2">
+                  {/* Primary in-app message CTA */}
+                  <div className="relative">
                     <Button
                       size="sm"
-                      variant="outline"
-                      className="flex-1 gap-1.5 rounded-xl"
+                      className="w-full gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={() => navigate(`/chat/${donor.user_id}`)}
                     >
-                      <MessageSquare className="h-3.5 w-3.5" /> Message
+                      <MessageSquare className="h-3.5 w-3.5" /> Message in-app
                     </Button>
-                    {donor.phone ? (
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => window.open(`tel:${donor.phone}`, "_self")}
-                      >
-                        <Phone className="h-3.5 w-3.5" /> Call
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => navigate(`/chat/${donor.user_id}`)}
-                      >
-                        <Heart className="h-3.5 w-3.5" /> Help
-                      </Button>
+
+                    {/* Contact channels */}
+                    {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
+                      <>
+                        <div className="mt-3 mb-2 flex items-center gap-2">
+                          <span className="h-px flex-1 bg-border" />
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Reach out via</span>
+                          <span className="h-px flex-1 bg-border" />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {donor.contact_methods_parsed.slice(0, 6).map((m: any) => {
+                            const app = (require("@/lib/contactMethods") as typeof import("@/lib/contactMethods")).CONTACT_APP_BY_TYPE[m.type as keyof typeof import("@/lib/contactMethods")["CONTACT_APP_BY_TYPE"]];
+                            return null;
+                          })}
+                          <ContactMethodsBar
+                            methods={donor.contact_methods_parsed}
+                            variant="card"
+                            className="!gap-1.5 [&>a]:!h-9 [&>a]:!w-9 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
+                          />
+                        </div>
+                      </>
                     )}
                   </div>
                 </motion.div>
