@@ -302,10 +302,6 @@ const BloodDonors = () => {
                           <span className="h-px flex-1 bg-border" />
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                          {donor.contact_methods_parsed.slice(0, 6).map((m: any) => {
-                            const app = (require("@/lib/contactMethods") as typeof import("@/lib/contactMethods")).CONTACT_APP_BY_TYPE[m.type as keyof typeof import("@/lib/contactMethods")["CONTACT_APP_BY_TYPE"]];
-                            return null;
-                          })}
                           <ContactMethodsBar
                             methods={donor.contact_methods_parsed}
                             variant="card"
