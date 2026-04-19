@@ -59,7 +59,7 @@ const BloodDonors = () => {
       if (error) throw error;
 
       // Get worker location data for donors who are workers
-      const userIds = data.map(d => d.user_id);
+      const userIds = (data as any[]).map((d: any) => d.user_id);
       const { data: workerData } = await supabase
         .from("workers")
         .select("user_id, latitude, longitude")
@@ -70,10 +70,11 @@ const BloodDonors = () => {
         if (w.latitude && w.longitude) workerMap.set(w.user_id, { lat: w.latitude, lng: w.longitude });
       });
 
-      return data.map(d => ({
+      return (data as any[]).map((d: any) => ({
         ...d,
         latitude: workerMap.get(d.user_id)?.lat ?? null,
         longitude: workerMap.get(d.user_id)?.lng ?? null,
+        contact_methods_parsed: parseContactMethods(d.contact_methods),
       }));
     },
     enabled: !!user,
