@@ -38,16 +38,17 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
         )}
 
         {/* Dark header strip */}
-        <div className="flex items-center justify-between bg-hero px-4 pt-4 pb-12 text-hero-foreground">
+        <div className="relative overflow-hidden flex items-center justify-between bg-hero px-4 pt-4 pb-12 text-hero-foreground">
+          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
+            className={`relative inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
               worker.available ? "bg-primary text-primary-foreground" : "bg-white/10 text-hero-muted"
             }`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${worker.available ? "bg-primary-foreground" : "bg-hero-muted"}`} />
             {worker.available ? t("worker.available") : t("worker.busy")}
           </span>
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-hero-foreground transition-transform group-hover:rotate-45">
+          <span className="relative grid h-8 w-8 place-items-center rounded-full bg-white/10 text-hero-foreground transition-transform group-hover:rotate-45">
             <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>

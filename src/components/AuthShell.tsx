@@ -23,7 +23,8 @@ const AuthShell = ({ title, subtitle, brand = "NearKonnect", showBack = true, he
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen max-w-md flex-col">
         {/* Dark hero */}
-        <div className="bg-hero text-hero-foreground rounded-b-[2.5rem] px-6 pb-10 pt-8">
+        <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2.5rem] px-6 pb-10 pt-8">
+          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
           <div className="flex items-center justify-between">
             {showBack ? (
               <button
