@@ -1,14 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
+import { Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -72,7 +65,19 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
           </div>
         )}
 
-        <main className="px-4 pb-32 pt-5">{children}</main>
+        <main className="px-4 pt-5">{children}</main>
+
+        {user && (
+          <div className="px-4 pb-32 pt-6 flex justify-center">
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* DESKTOP: sidebar + dark hero card */}
@@ -103,14 +108,6 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
             })}
           </nav>
 
-          <div className="absolute inset-x-4 bottom-4">
-            <button
-              onClick={handleSignOut}
-              className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
-            >
-              <LogOut className="h-4 w-4" /> Sign out
-            </button>
-          </div>
         </aside>
 
         <div className="min-w-0 flex-1 space-y-5">
@@ -122,31 +119,16 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
               <Search className="h-4 w-4" /> Find help near you...
             </button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-full bg-hero px-3 py-2 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero/90">
-                  <span>{firstName}</span>
-                  <ChevronDown className="h-4 w-4 text-hero-muted" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 rounded-xl">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(profilePath)}>
-                  <UserRound className="mr-2 h-4 w-4" /> Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/messages")}>
-                  <MessageSquare className="mr-2 h-4 w-4" /> Messages
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/discover")}>
-                  <Search className="mr-2 h-4 w-4" /> Explore
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" /> Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <button
+              onClick={() => navigate(profilePath)}
+              className="inline-flex items-center gap-2 rounded-full bg-hero px-3 py-2 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero/90"
+              aria-label="Open dashboard"
+            >
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-foreground text-xs">
+                {firstName.charAt(0).toUpperCase()}
+              </span>
+              <span className="hidden sm:inline">{firstName}</span>
+            </button>
           </div>
 
           {title && (
@@ -160,6 +142,18 @@ const AppLayout = ({ title, subtitle, action, children }: AppLayoutProps) => {
           )}
 
           <main className={title ? "rounded-3xl bg-card p-6" : ""}>{children}</main>
+
+          {user && (
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
