@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition, calculateDistance, type Coords } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { parseContactMethods } from "@/lib/contactMethods";
 import { markRead } from "@/hooks/useNotifications";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -51,13 +53,13 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status")
+        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods" as any)
         .eq("is_blood_donor", true)
-        .order("full_name");
+        .order("full_name") as any;
       if (error) throw error;
 
       // Get worker location data for donors who are workers
-      const userIds = data.map(d => d.user_id);
+      const userIds = (data as any[]).map((d: any) => d.user_id);
       const { data: workerData } = await supabase
         .from("workers")
         .select("user_id, latitude, longitude")
@@ -68,10 +70,11 @@ const BloodDonors = () => {
         if (w.latitude && w.longitude) workerMap.set(w.user_id, { lat: w.latitude, lng: w.longitude });
       });
 
-      return data.map(d => ({
+      return (data as any[]).map((d: any) => ({
         ...d,
         latitude: workerMap.get(d.user_id)?.lat ?? null,
         longitude: workerMap.get(d.user_id)?.lng ?? null,
+        contact_methods_parsed: parseContactMethods(d.contact_methods),
       }));
     },
     enabled: !!user,
@@ -280,32 +283,32 @@ const BloodDonors = () => {
                   {/* Divider */}
                   <div className="relative my-4 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                  {/* Actions */}
-                  <div className="relative flex gap-2">
+                  {/* Primary in-app message CTA */}
+                  <div className="relative">
                     <Button
                       size="sm"
-                      variant="outline"
-                      className="flex-1 gap-1.5 rounded-xl"
+                      className="w-full gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={() => navigate(`/chat/${donor.user_id}`)}
                     >
-                      <MessageSquare className="h-3.5 w-3.5" /> Message
+                      <MessageSquare className="h-3.5 w-3.5" /> Message in-app
                     </Button>
-                    {donor.phone ? (
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => window.open(`tel:${donor.phone}`, "_self")}
-                      >
-                        <Phone className="h-3.5 w-3.5" /> Call
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => navigate(`/chat/${donor.user_id}`)}
-                      >
-                        <Heart className="h-3.5 w-3.5" /> Help
-                      </Button>
+
+                    {/* Contact channels */}
+                    {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
+                      <>
+                        <div className="mt-3 mb-2 flex items-center gap-2">
+                          <span className="h-px flex-1 bg-border" />
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Reach out via</span>
+                          <span className="h-px flex-1 bg-border" />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <ContactMethodsBar
+                            methods={donor.contact_methods_parsed}
+                            variant="card"
+                            className="!gap-1.5 [&>a]:!h-9 [&>a]:!w-9 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
+                          />
+                        </div>
+                      </>
                     )}
                   </div>
                 </motion.div>
