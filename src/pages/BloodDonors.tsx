@@ -136,9 +136,10 @@ const BloodDonors = () => {
     >
       <section className="-mt-12 rounded-3xl bg-card p-5 shadow-premium">
         <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="rounded-2xl bg-hero text-hero-foreground p-4">
-            <p className="text-3xl font-bold text-primary text-center">{stats.total}</p>
-            <p className="text-xs text-hero-muted text-center">Total Donors</p>
+          <div className="relative overflow-hidden rounded-2xl bg-hero text-hero-foreground p-4">
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
+            <p className="relative text-3xl font-bold text-primary text-center">{stats.total}</p>
+            <p className="relative text-xs text-hero-muted text-center">Total Donors</p>
           </div>
           <div className="rounded-2xl bg-primary text-primary-foreground p-4">
             <p className="text-3xl font-bold text-center">{stats.active}</p>

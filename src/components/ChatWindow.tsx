@@ -241,8 +241,9 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="sticky top-0 z-10 bg-hero text-hero-foreground p-4 rounded-t-2xl">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="sticky top-0 z-10 relative overflow-hidden bg-hero text-hero-foreground p-4 rounded-t-2xl">
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
+        <div className="relative flex items-center gap-3 min-w-0">
           <Link to={backLink} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-hero-foreground hover:bg-white/15">
             <ArrowLeft className="h-4 w-4" />
           </Link>
