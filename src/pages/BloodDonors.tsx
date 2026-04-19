@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Droplet, Search, MapPin, Phone, MessageSquare, Filter, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Droplet, Search, MapPin, MessageSquare, Heart, ChevronDown, Users, Siren } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -15,37 +15,32 @@ import AppLayout from "@/components/AppLayout";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods } from "@/lib/contactMethods";
 import { markRead } from "@/hooks/useNotifications";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
-const bloodGroupColor = (bg: string) => {
-  if (bg.startsWith("O")) return "bg-red-500/15 text-red-600 border-red-200";
-  if (bg.startsWith("A") && !bg.startsWith("AB")) return "bg-orange-500/15 text-orange-600 border-orange-200";
-  if (bg.startsWith("B")) return "bg-rose-500/15 text-rose-600 border-rose-200";
-  return "bg-pink-500/15 text-pink-600 border-pink-200";
-};
 
 const BloodDonors = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [activeOnly, setActiveOnly] = useState(true);
+  const [userCoords, setUserCoords] = useState<Coords | null>(null);
+  const [tab, setTab] = useState<"requests" | "donors">("requests");
+  const [expandedDonor, setExpandedDonor] = useState<string | null>(null);
 
   useEffect(() => {
     markRead((n) => n.type === "blood_request" || n.type === "booking");
   }, []);
-  const [activeOnly, setActiveOnly] = useState(true);
-  const [userCoords, setUserCoords] = useState<Coords | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [authLoading, user, navigate]);
 
   useEffect(() => {
-    getCurrentPosition()
-      .then(setUserCoords)
-      .catch(() => setUserCoords(null));
+    getCurrentPosition().then(setUserCoords).catch(() => setUserCoords(null));
   }, []);
 
   const { data: donors = [], isLoading } = useQuery({
@@ -58,7 +53,6 @@ const BloodDonors = () => {
         .order("full_name") as any;
       if (error) throw error;
 
-      // Get worker location data for donors who are workers
       const userIds = (data as any[]).map((d: any) => d.user_id);
       const { data: workerData } = await supabase
         .from("workers")
@@ -66,7 +60,7 @@ const BloodDonors = () => {
         .in("user_id", userIds);
 
       const workerMap = new Map<string, { lat: number; lng: number }>();
-      workerData?.forEach(w => {
+      workerData?.forEach((w) => {
         if (w.latitude && w.longitude) workerMap.set(w.user_id, { lat: w.latitude, lng: w.longitude });
       });
 
@@ -80,7 +74,6 @@ const BloodDonors = () => {
     enabled: !!user,
   });
 
-  // Realtime subscription for profile changes
   useEffect(() => {
     const channelName = `blood-donors-${Math.random().toString(36).slice(2)}`;
     const ch = supabase.channel(channelName);
@@ -91,18 +84,29 @@ const BloodDonors = () => {
     return () => { supabase.removeChannel(ch); };
   }, [queryClient]);
 
+  const { data: openRequestsCount = 0 } = useQuery({
+    queryKey: ["blood_requests_open_count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("blood_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "open");
+      return count || 0;
+    },
+    enabled: !!user,
+  });
+
   const filtered = useMemo(() => {
-    let list = donors.filter(d => d.user_id !== user?.id);
-    if (activeOnly) list = list.filter(d => d.donor_status === "active");
-    if (selectedGroup) list = list.filter(d => d.blood_group === selectedGroup);
+    let list = donors.filter((d) => d.user_id !== user?.id);
+    if (activeOnly) list = list.filter((d) => d.donor_status === "active");
+    if (selectedGroup) list = list.filter((d) => d.blood_group === selectedGroup);
     if (search.trim()) {
       const q = search.toLowerCase().trim();
-      list = list.filter(d =>
+      list = list.filter((d) =>
         (d.full_name || "").toLowerCase().includes(q) ||
         (d.city || "").toLowerCase().includes(q)
       );
     }
-    // Sort by distance if location available
     if (userCoords) {
       list = [...list].sort((a, b) => {
         const distA = a.latitude && a.longitude ? calculateDistance(userCoords.latitude, userCoords.longitude, a.latitude, a.longitude) : 9999;
@@ -115,7 +119,7 @@ const BloodDonors = () => {
 
   const stats = useMemo(() => ({
     total: donors.length,
-    active: donors.filter(d => d.donor_status === "active").length,
+    active: donors.filter((d) => d.donor_status === "active").length,
   }), [donors]);
 
   if (authLoading) return (
@@ -128,6 +132,254 @@ const BloodDonors = () => {
 
   if (!user) return null;
 
+  // ============================== MOBILE LAYOUT ==============================
+  if (isMobile) {
+    return (
+      <AppLayout
+        title="Urgent Requests"
+        subtitle="Respond to nearby blood requests fast."
+        action={<BloodRequestDialog />}
+      >
+        {/* Stats card overlapping hero */}
+        <section className="-mt-12 grid grid-cols-3 gap-2 rounded-3xl bg-card p-3 shadow-premium">
+          <div className="rounded-2xl bg-destructive/10 p-3 text-center">
+            <p className="text-xl font-extrabold text-destructive leading-none">{openRequestsCount}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Open</p>
+          </div>
+          <div className="relative overflow-hidden rounded-2xl bg-hero text-hero-foreground p-3 text-center">
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "14px 14px" }} />
+            <p className="relative text-xl font-extrabold text-primary leading-none">{stats.active}</p>
+            <p className="relative mt-1 text-[10px] font-semibold uppercase tracking-wide text-hero-muted">Active</p>
+          </div>
+          <div className="rounded-2xl bg-muted p-3 text-center">
+            <p className="text-xl font-extrabold text-foreground leading-none">{stats.total}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Donors</p>
+          </div>
+        </section>
+
+        {/* Segmented tabs */}
+        <div className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+          <button
+            onClick={() => setTab("requests")}
+            className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-all ${
+              tab === "requests" ? "bg-destructive text-destructive-foreground shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            <Siren className="h-4 w-4" /> Requests
+            {openRequestsCount > 0 && (
+              <span className={`ml-0.5 rounded-full px-1.5 text-[10px] font-bold ${tab === "requests" ? "bg-white/20" : "bg-destructive text-destructive-foreground"}`}>
+                {openRequestsCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTab("donors")}
+            className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-all ${
+              tab === "donors" ? "bg-hero text-hero-foreground shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            <Users className="h-4 w-4" /> Donors
+            <span className={`ml-0.5 rounded-full px-1.5 text-[10px] font-bold ${tab === "donors" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
+              {stats.active}
+            </span>
+          </button>
+        </div>
+
+        {/* Tab content */}
+        <div className="mt-5">
+          {tab === "requests" ? (
+            <div>
+              {openRequestsCount === 0 ? (
+                <div className="rounded-3xl border border-dashed border-border bg-card p-8 text-center">
+                  <Siren className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+                  <p className="font-semibold text-foreground">No active requests</p>
+                  <p className="mt-1 text-sm text-muted-foreground">When someone needs blood nearby, you'll see it here.</p>
+                </div>
+              ) : (
+                <ActiveBloodRequests hideTitle />
+              )}
+            </div>
+          ) : (
+            <div>
+              {/* Sticky search + filters */}
+              <div className="sticky top-0 z-10 -mx-4 bg-background/95 px-4 pt-1 pb-3 backdrop-blur">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search name or city"
+                    className="h-11 rounded-full border-none bg-muted pl-10 text-sm"
+                  />
+                </div>
+
+                {/* Horizontal scroll filter chips */}
+                <div className="-mx-4 mt-3 flex gap-1.5 overflow-x-auto px-4 pb-1 [&::-webkit-scrollbar]:hidden">
+                  <button
+                    onClick={() => setActiveOnly(!activeOnly)}
+                    className={`flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                      activeOnly
+                        ? "border-success/30 bg-success/15 text-success"
+                        : "border-border bg-card text-muted-foreground"
+                    }`}
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full ${activeOnly ? "bg-success" : "bg-muted-foreground"}`} />
+                    Active only
+                  </button>
+                  <button
+                    onClick={() => setSelectedGroup("")}
+                    className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                      selectedGroup === "" ? "border-foreground bg-foreground text-background" : "border-border bg-card text-muted-foreground"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {BLOOD_GROUPS.map((bg) => (
+                    <button
+                      key={bg}
+                      onClick={() => setSelectedGroup(bg === selectedGroup ? "" : bg)}
+                      className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-all ${
+                        selectedGroup === bg
+                          ? "border-destructive bg-destructive text-destructive-foreground"
+                          : "border-border bg-card text-foreground"
+                      }`}
+                    >
+                      {bg}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <p className="mt-2 mb-3 text-xs font-medium text-muted-foreground">
+                {filtered.length} donor{filtered.length !== 1 ? "s" : ""} nearby
+              </p>
+
+              {/* Minimal chip-style donor rows */}
+              {isLoading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="h-14 rounded-2xl bg-muted animate-pulse" />
+                  ))}
+                </div>
+              ) : filtered.length > 0 ? (
+                <ul className="space-y-2">
+                  {filtered.map((donor, i) => {
+                    const distance = userCoords && donor.latitude && donor.longitude
+                      ? calculateDistance(userCoords.latitude, userCoords.longitude, donor.latitude, donor.longitude).toFixed(1)
+                      : null;
+                    const isActive = donor.donor_status === "active";
+                    const isOpen = expandedDonor === donor.user_id;
+
+                    return (
+                      <motion.li
+                        key={donor.user_id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(i * 0.02, 0.2) }}
+                        className="overflow-hidden rounded-2xl border border-border/60 bg-card"
+                      >
+                        <button
+                          onClick={() => setExpandedDonor(isOpen ? null : donor.user_id)}
+                          className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors active:bg-muted/50"
+                        >
+                          {/* Avatar */}
+                          <div className="relative shrink-0">
+                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-hero text-xs font-bold text-primary">
+                              {donor.avatar_url ? (
+                                <img src={donor.avatar_url} alt="" className="h-full w-full object-cover" />
+                              ) : (
+                                (donor.full_name || "?").slice(0, 2).toUpperCase()
+                              )}
+                            </div>
+                            {isActive && (
+                              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success" />
+                            )}
+                          </div>
+
+                          {/* Name + city */}
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-bold text-foreground leading-tight">
+                              {donor.full_name || "Anonymous"}
+                            </p>
+                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                              {donor.city && (
+                                <span className="inline-flex items-center gap-0.5 truncate">
+                                  <MapPin className="h-3 w-3 shrink-0" />
+                                  <span className="truncate">{donor.city}</span>
+                                </span>
+                              )}
+                              {distance && (
+                                <span className="inline-flex shrink-0 items-center gap-0.5">
+                                  <Heart className="h-2.5 w-2.5 text-destructive" />
+                                  {distance} km
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Blood badge */}
+                          <span className="flex h-9 min-w-[2.25rem] shrink-0 items-center justify-center rounded-lg bg-destructive/10 px-2 text-sm font-extrabold text-destructive ring-1 ring-destructive/20">
+                            {donor.blood_group || "?"}
+                          </span>
+
+                          <ChevronDown
+                            className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
+                        </button>
+
+                        {/* Expanded actions */}
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden border-t border-border/60 bg-muted/30"
+                            >
+                              <div className="space-y-2 p-3">
+                                <Button
+                                  size="sm"
+                                  className="w-full gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/chat/${donor.user_id}`);
+                                  }}
+                                >
+                                  <MessageSquare className="h-3.5 w-3.5" /> Message in-app
+                                </Button>
+                                {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
+                                  <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                                    <ContactMethodsBar
+                                      methods={donor.contact_methods_parsed}
+                                      variant="card"
+                                      className="!gap-1.5 [&>a]:!h-9 [&>a]:!w-9 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-border bg-card py-12 text-center">
+                  <Droplet className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+                  <p className="font-semibold text-foreground">No donors found</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Try adjusting your filters</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // ============================== DESKTOP LAYOUT (unchanged) ==============================
   return (
     <AppLayout
       title="Urgent Requests"
@@ -151,7 +403,7 @@ const BloodDonors = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or city..."
             className="pl-11 h-12 rounded-full border-none bg-muted"
           />
@@ -160,12 +412,6 @@ const BloodDonors = () => {
 
       <div className="py-6">
         <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Filters:</span>
-          </div>
-
-          {/* Blood group filter */}
           <div className="flex flex-wrap gap-1.5">
             <Badge
               variant={selectedGroup === "" ? "default" : "outline"}
@@ -174,7 +420,7 @@ const BloodDonors = () => {
             >
               All Groups
             </Badge>
-            {BLOOD_GROUPS.map(bg => (
+            {BLOOD_GROUPS.map((bg) => (
               <Badge
                 key={bg}
                 variant={selectedGroup === bg ? "default" : "outline"}
@@ -186,7 +432,6 @@ const BloodDonors = () => {
             ))}
           </div>
 
-          {/* Active only toggle */}
           <Button
             variant={activeOnly ? "default" : "outline"}
             size="sm"
@@ -200,10 +445,9 @@ const BloodDonors = () => {
 
         <p className="text-sm text-muted-foreground mb-4">{filtered.length} donor{filtered.length !== 1 ? "s" : ""} found</p>
 
-        {/* Donor cards */}
         {isLoading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map(i => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-56 rounded-3xl bg-card border animate-pulse" />
             ))}
           </div>
@@ -223,15 +467,10 @@ const BloodDonors = () => {
                   transition={{ delay: i * 0.05 }}
                   className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card p-5 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.08)] transition-all hover:-translate-y-0.5 hover:border-destructive/30 hover:shadow-premium"
                 >
-                  {/* Decorative blood-group watermark */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -right-3 -top-3 select-none text-[6rem] font-black leading-none text-destructive/[0.06] tracking-tighter"
-                  >
+                  <span aria-hidden className="pointer-events-none absolute -right-3 -top-3 select-none text-[6rem] font-black leading-none text-destructive/[0.06] tracking-tighter">
                     {donor.blood_group || "?"}
                   </span>
 
-                  {/* Top: avatar + name + blood badge */}
                   <div className="relative flex items-start gap-3">
                     <div className="relative shrink-0">
                       <div className="h-14 w-14 overflow-hidden rounded-2xl bg-hero flex items-center justify-center text-base font-bold text-primary ring-2 ring-background">
@@ -263,7 +502,6 @@ const BloodDonors = () => {
                     </div>
                   </div>
 
-                  {/* Meta row: city + distance */}
                   {(donor.city || distance) && (
                     <div className="relative mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                       {donor.city && (
@@ -281,10 +519,8 @@ const BloodDonors = () => {
                     </div>
                   )}
 
-                  {/* Divider */}
                   <div className="relative my-4 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                  {/* Primary in-app message CTA */}
                   <div className="relative">
                     <Button
                       size="sm"
@@ -294,7 +530,6 @@ const BloodDonors = () => {
                       <MessageSquare className="h-3.5 w-3.5" /> Message in-app
                     </Button>
 
-                    {/* Contact channels */}
                     {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
                       <>
                         <div className="mt-3 mb-2 flex items-center gap-2">
