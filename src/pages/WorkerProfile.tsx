@@ -220,32 +220,21 @@ const WorkerProfile = () => {
               </div>
             </div>
 
-            {/* Desktop actions */}
-            <div className="mt-5 hidden gap-2 md:flex md:flex-wrap">
+            {/* Contact options */}
+            <div className="mt-5 hidden md:block">
               {user ? (
-                <Button className="flex-1 gap-2" asChild onClick={() => void trackEvent("contact_click")}>
-                  <a href={callHref} target={callTarget} rel={callRel}><Phone className="h-4 w-4" /> {whatsappEnabled ? "WhatsApp Call" : "Call Now"}</a>
-                </Button>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <ContactMethodsBar methods={contactMethods} onInAppMessage={handleInAppMessage} onChannelClick={handleChannelClick} variant="card" />
+                  <BookingDialog workerId={worker.id} workerName={worker.name}>
+                    <Button variant="dark" className="gap-2" onClick={() => void trackEvent("conversion")}>
+                      <CalendarPlus className="h-4 w-4" /> Book Now
+                    </Button>
+                  </BookingDialog>
+                </div>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button className="flex-1 gap-2"><Phone className="h-4 w-4" /> Call Now</Button>
+                  <Button className="w-full gap-2"><CalendarPlus className="h-4 w-4" /> Log in to contact</Button>
                 </AuthRequiredDialog>
-              )}
-              {user ? (
-                <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground" onClick={() => { void trackEvent("contact_click"); handleMessage(); }}>
-                  <MessageSquare className="h-4 w-4" /> Message
-                </Button>
-              ) : (
-                <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button variant="outline" className="flex-1 gap-2 bg-secondary-foreground hover:bg-secondary-foreground/90 border-border text-foreground"><MessageSquare className="h-4 w-4" /> Message</Button>
-                </AuthRequiredDialog>
-              )}
-              {user && (
-                <BookingDialog workerId={worker.id} workerName={worker.name}>
-                  <Button variant="dark" className="flex-1 gap-2" onClick={() => void trackEvent("conversion")}>
-                    <CalendarPlus className="h-4 w-4" /> Book Now
-                  </Button>
-                </BookingDialog>
               )}
             </div>
           </div>
