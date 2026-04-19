@@ -200,6 +200,29 @@ const WorkerProfile = () => {
                 </div>
               </div>
             </div>
+
+            {/* Contact options inside hero banner (desktop) */}
+            <div className="relative mt-6 hidden md:block">
+              {user ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
+                  <ContactMethodsBar
+                    methods={contactMethods}
+                    onInAppMessage={handleInAppMessage}
+                    onChannelClick={handleChannelClick}
+                    variant="hero"
+                  />
+                  <BookingDialog workerId={worker.id} workerName={worker.name}>
+                    <Button className="gap-2" onClick={() => void trackEvent("conversion")}>
+                      <CalendarPlus className="h-4 w-4" /> Book Now
+                    </Button>
+                  </BookingDialog>
+                </div>
+              ) : (
+                <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
+                  <Button className="w-full gap-2"><CalendarPlus className="h-4 w-4" /> Log in to contact</Button>
+                </AuthRequiredDialog>
+              )}
+            </div>
           </div>
 
           {/* Body */}
