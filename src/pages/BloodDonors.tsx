@@ -198,17 +198,18 @@ const BloodDonors = () => {
 
         {/* Donor cards */}
         {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-48 rounded-2xl bg-card border animate-pulse" />
+              <div key={i} className="h-56 rounded-3xl bg-card border animate-pulse" />
             ))}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((donor, i) => {
               const distance = userCoords && donor.latitude && donor.longitude
                 ? calculateDistance(userCoords.latitude, userCoords.longitude, donor.latitude, donor.longitude).toFixed(1)
                 : null;
+              const isActive = donor.donor_status === "active";
 
               return (
                 <motion.div
@@ -216,53 +217,94 @@ const BloodDonors = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-card rounded-3xl p-5 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.08)] hover:shadow-premium transition-shadow"
+                  className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card p-5 shadow-[0_2px_12px_-4px_hsl(var(--foreground)/0.08)] transition-all hover:-translate-y-0.5 hover:border-destructive/30 hover:shadow-premium"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-hero flex items-center justify-center text-base font-bold text-primary shrink-0">
-                      {donor.avatar_url ? (
-                        <img src={donor.avatar_url} alt="" className="w-14 h-14 rounded-2xl object-cover" />
-                      ) : (
-                        (donor.full_name || "?").slice(0, 2).toUpperCase()
+                  {/* Decorative blood-group watermark */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-3 -top-3 select-none text-[6rem] font-black leading-none text-destructive/[0.06] tracking-tighter"
+                  >
+                    {donor.blood_group || "?"}
+                  </span>
+
+                  {/* Top: avatar + name + blood badge */}
+                  <div className="relative flex items-start gap-3">
+                    <div className="relative shrink-0">
+                      <div className="h-14 w-14 overflow-hidden rounded-2xl bg-hero flex items-center justify-center text-base font-bold text-primary ring-2 ring-background">
+                        {donor.avatar_url ? (
+                          <img src={donor.avatar_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          (donor.full_name || "?").slice(0, 2).toUpperCase()
+                        )}
+                      </div>
+                      {isActive && (
+                        <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-background">
+                          <span className="h-2.5 w-2.5 rounded-full bg-success animate-pulse" />
+                        </span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-card-foreground truncate">{donor.full_name || "Anonymous"}</p>
+
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <p className="font-bold text-card-foreground truncate leading-tight">{donor.full_name || "Anonymous"}</p>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${isActive ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-success" : "bg-muted-foreground"}`} />
+                          {isActive ? "Available" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-destructive/10 ring-1 ring-destructive/20">
+                      <span className="text-base font-extrabold text-destructive leading-none">{donor.blood_group || "?"}</span>
+                    </div>
+                  </div>
+
+                  {/* Meta row: city + distance */}
+                  {(donor.city || distance) && (
+                    <div className="relative mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                       {donor.city && (
-                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" /> {donor.city}
-                          {distance && <span className="ml-1">· {distance} km</span>}
-                        </p>
+                        <span className="inline-flex items-center gap-1 truncate">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{donor.city}</span>
+                        </span>
+                      )}
+                      {distance && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 font-medium text-foreground">
+                          <Heart className="h-3 w-3 text-destructive" />
+                          {distance} km
+                        </span>
                       )}
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground">
-                      {donor.blood_group || "?"}
-                    </span>
-                  </div>
+                  )}
 
-                  <div className="flex items-center gap-2 mt-4">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${donor.donor_status === "active" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${donor.donor_status === "active" ? "bg-hero" : "bg-muted-foreground"}`} />
-                      {donor.donor_status === "active" ? "Available" : "Inactive"}
-                    </span>
-                  </div>
+                  {/* Divider */}
+                  <div className="relative my-4 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                  <div className="flex gap-2 mt-4">
+                  {/* Actions */}
+                  <div className="relative flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 gap-1.5"
+                      className="flex-1 gap-1.5 rounded-xl"
                       onClick={() => navigate(`/chat/${donor.user_id}`)}
                     >
-                      <MessageSquare className="w-3.5 h-3.5" /> Help Now
+                      <MessageSquare className="h-3.5 w-3.5" /> Message
                     </Button>
-                    {donor.phone && (
+                    {donor.phone ? (
                       <Button
                         size="sm"
-                        className="gap-1.5"
+                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         onClick={() => window.open(`tel:${donor.phone}`, "_self")}
                       >
-                        <Phone className="w-3.5 h-3.5" /> Call
+                        <Phone className="h-3.5 w-3.5" /> Call
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="flex-1 gap-1.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={() => navigate(`/chat/${donor.user_id}`)}
+                      >
+                        <Heart className="h-3.5 w-3.5" /> Help
                       </Button>
                     )}
                   </div>
