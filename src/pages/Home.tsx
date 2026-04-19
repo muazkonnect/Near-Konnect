@@ -223,12 +223,13 @@ const Home = () => {
           </button>
           <button
             onClick={() => navigate("/blood-donors")}
-            className="tap-feedback group rounded-3xl bg-hero p-5 text-left text-hero-foreground transition-transform hover:-translate-y-0.5"
+            className="tap-feedback group relative overflow-hidden rounded-3xl bg-hero p-5 text-left text-hero-foreground transition-transform hover:-translate-y-0.5"
           >
-            <HeartPulse className="mb-3 h-6 w-6 text-primary" />
-            <p className="text-base font-bold">Urgent Help</p>
-            <p className="mt-0.5 text-xs text-hero-muted">Blood & emergency support</p>
-            <ArrowRight className="mt-3 h-4 w-4 text-hero-muted transition-transform group-hover:translate-x-1" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
+            <HeartPulse className="relative mb-3 h-6 w-6 text-primary" />
+            <p className="relative text-base font-bold">Urgent Help</p>
+            <p className="relative mt-0.5 text-xs text-hero-muted">Blood & emergency support</p>
+            <ArrowRight className="relative mt-3 h-4 w-4 text-hero-muted transition-transform group-hover:translate-x-1" />
           </button>
           <button
             onClick={() => navigate("/discover")}
