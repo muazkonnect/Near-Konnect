@@ -201,10 +201,10 @@ const WorkerProfile = () => {
               </div>
             </div>
 
-            {/* Contact options inside hero banner (desktop) */}
-            <div className="relative mt-6 hidden md:block">
+            {/* Contact options inside hero banner */}
+            <div className="relative mt-6">
               {user ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
+                <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <ContactMethodsBar
                     methods={contactMethods}
                     onInAppMessage={handleInAppMessage}
@@ -212,7 +212,7 @@ const WorkerProfile = () => {
                     variant="hero"
                   />
                   <BookingDialog workerId={worker.id} workerName={worker.name}>
-                    <Button className="gap-2" onClick={() => void trackEvent("conversion")}>
+                    <Button className="w-full gap-2 sm:w-auto" onClick={() => void trackEvent("conversion")}>
                       <CalendarPlus className="h-4 w-4" /> Book Now
                     </Button>
                   </BookingDialog>
