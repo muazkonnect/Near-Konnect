@@ -138,10 +138,15 @@ const WorkerDashboard = () => {
 
   const handleSave = async () => {
     if (!workerData || !user) return;
-    if (useWhatsapp && !phone.trim()) {
-      toast.error("Please add a phone number to enable WhatsApp.");
-      return;
-    }
+    const trimmed: ContactMethod[] = contactMethods.map((m) =>
+      m.type === "phone" ? { ...m, value: sanitizePhone(m.value) } : { ...m, value: m.value.trim() }
+    );
+    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
+    if (!phoneVal) { toast.error("A phone number is required."); return; }
+    const err = validateContactMethods(trimmed);
+    if (err) { toast.error(err); return; }
+    const hasWhatsapp = trimmed.some((m) => m.type === "whatsapp" && m.value);
+
     setSaving(true);
 
     const { error: workerError } = await supabase
@@ -156,7 +161,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone, use_whatsapp: useWhatsapp } as any)
+      .update({ phone: phoneVal, use_whatsapp: hasWhatsapp, contact_methods: trimmed } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
