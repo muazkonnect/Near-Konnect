@@ -145,8 +145,12 @@ const Register = () => {
 
       const identities = (data.user as { identities?: unknown[] } | null)?.identities;
       if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-        toast.error("Account already exists, please login");
-        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        if (role === "worker") {
+          setExistingAccountModal({ open: true, email: normalizedEmail });
+        } else {
+          toast.error("Account already exists, please login");
+          navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        }
         return;
       }
 
