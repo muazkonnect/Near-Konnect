@@ -17,12 +17,7 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import SignupFaceCapture from "@/components/SignupFaceCapture";
-import { detectFaceDescriptor } from "@/lib/faceApi";
-import { getFaceFunctionErrorDetails, isDuplicateFaceResult } from "@/lib/faceFunctionErrors";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
-
-const PENDING_FACE_KEY = "pending_face_verification_image";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -88,47 +83,11 @@ const Register = () => {
       toast.error("Please agree to the Terms & Conditions to continue.");
       return;
     }
-    if (!faceImage) {
-      toast.error("Please capture your face photo to complete signup.");
-      return;
-    }
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
 
     try {
-      const detection = await detectFaceDescriptor(faceImage);
-      if (detection.count === 0) {
-        toast.error("No face detected. Please capture again.");
-        setLoading(false);
-        return;
-      }
-      if (detection.count > 1) {
-        toast.error("Multiple faces detected. Only one person is allowed.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: duplicateResult, error: duplicateError } = await supabase.functions.invoke("check-face-duplicate", {
-        body: { image: faceImage, descriptor: detection.descriptor },
-      });
-
-      const duplicateDetails = await getFaceFunctionErrorDetails(duplicateError, duplicateResult);
-
-      if (isDuplicateFaceResult(duplicateDetails, duplicateResult)) {
-        toast.error("User Exists", {
-          description: "This person is already registered. Only one account is allowed per face.",
-          duration: 6000,
-        });
-        setFaceImage(null);
-        setLoading(false);
-        return;
-      }
-
-      if (duplicateDetails) {
-        throw new Error(duplicateDetails.message);
-      }
-
       const metadata: Record<string, string> = {
         full_name: normalizedName,
         phone: normalizedPhone,
@@ -172,22 +131,16 @@ const Register = () => {
         return;
       }
 
-      try {
-        sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
-      } catch {
-        /* storage may be unavailable; user will be prompted to recapture */
-      }
-
       if (data.session) {
-        toast.success("Account created! Verifying your face…");
-        navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        toast.success("Account created!");
+        navigate(redirect, { replace: true });
         return;
       }
       toast.success("An 8-digit OTP has been sent to your email.");
       navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
     } catch (error) {
       setLoading(false);
-      toast.error(error instanceof Error ? error.message : "Face verification failed. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Signup failed. Please try again.");
     }
   };
 
@@ -311,7 +264,6 @@ const Register = () => {
           </>
         )}
 
-        <SignupFaceCapture value={faceImage} onChange={setFaceImage} />
 
         <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
           <div>
@@ -348,7 +300,7 @@ const Register = () => {
           </label>
         </div>
 
-        <Button type="submit" disabled={loading || !agreedToTerms || !faceImage} variant="hero" size="lg" className="w-full">
+        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
