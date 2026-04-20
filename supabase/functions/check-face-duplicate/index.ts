@@ -17,6 +17,7 @@ const FACESET_OUTER_ID = "nearkonnect_users";
 const DUP_CONFIDENCE_FALLBACK = 73;
 const STORAGE_BUCKET = "face-verifications";
 const FALLBACK_COMPARE_LIMIT = 50;
+const FACEPP_BUSY_RETRY_MS = 1200;
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -30,13 +31,29 @@ function stripDataUrl(input: string): string {
   return input.startsWith("data:") && idx !== -1 ? input.slice(idx + 1) : input;
 }
 
-function bytesToBase64(bytes: Uint8Array): string {
+function bytesToBase64(bytes: Uint8Array) {
   let binary = "";
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
     binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
   }
   return btoa(binary);
+}
+
+function isFaceppBusyError(message: string) {
+  return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS/i.test(message);
+}
+
+function retryableFaceppResponse(message: string) {
+  return jsonResponse(
+    {
+      error: message,
+      fallback: true,
+      retryable: true,
+      retry_after_ms: FACEPP_BUSY_RETRY_MS,
+    },
+    200,
+  );
 }
 
 async function faceppCall(endpoint: string, form: FormData) {
@@ -75,7 +92,16 @@ Deno.serve(async (req) => {
 
     const detectForm = new FormData();
     detectForm.append("image_base64", base64);
-    const detect = await faceppCall("detect", detectForm);
+
+    let detect;
+    try {
+      detect = await faceppCall("detect", detectForm);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Face++ detect failed";
+      if (isFaceppBusyError(msg)) return retryableFaceppResponse(msg);
+      throw err;
+    }
+
     const faces = (detect.faces ?? []) as Array<{ face_token: string }>;
     if (faces.length === 0) {
       return jsonResponse({ error: "No face detected. Please face the camera clearly." }, 422);
@@ -89,7 +115,6 @@ Deno.serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Fast path: search FaceSet.
     try {
       const searchForm = new FormData();
       searchForm.append("face_token", newToken);
@@ -115,12 +140,12 @@ Deno.serve(async (req) => {
           }, 409);
         }
       }
-    } catch (e) {
-      const msg = (e as Error).message;
-      if (!/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) throw e;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Face++ search failed";
+      if (isFaceppBusyError(msg)) return retryableFaceppResponse(msg);
+      if (!/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) throw err;
     }
 
-    // Correctness fallback: compare against stored verified images.
     const { data: candidates, error: candidatesErr } = await admin
       .from("profiles")
       .select("user_id, face_image_path, face_verified_at")
@@ -152,7 +177,9 @@ Deno.serve(async (req) => {
           }, 409);
         }
       } catch (err) {
-        console.warn("fallback compare skipped:", (err as Error).message);
+        const msg = err instanceof Error ? err.message : "Face++ compare failed";
+        if (isFaceppBusyError(msg)) return retryableFaceppResponse(msg);
+        console.warn("fallback compare skipped:", msg);
       }
     }
 
