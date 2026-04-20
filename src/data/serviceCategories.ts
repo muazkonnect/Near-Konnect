@@ -49,7 +49,7 @@ export const SUBCATEGORIES_BY_MAIN: Record<MainServiceCategory, readonly string[
     "Marketing",
     "IT Support",
     "Accounting",
-    "Legal",
+    "Legal Support",
     "Real Estate",
   ],
   "Health, Education & Community": [
