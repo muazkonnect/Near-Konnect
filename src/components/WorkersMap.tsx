@@ -113,33 +113,41 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
 
     workers.forEach((w) => {
       const m = L.marker([w.latitude, w.longitude], { icon: workerIcon });
+      const initials = w.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
       const distanceHtml =
         w.distanceKm !== undefined
-          ? `<div style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;border-radius:9999px;background:hsl(var(--primary)/0.1);color:hsl(var(--primary));font-size:11px;font-weight:600;">${w.distanceKm.toFixed(2)} km away</div>`
+          ? `<span class="wm-chip"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${w.distanceKm.toFixed(2)} km</span>`
           : "";
       const professionHtml = w.profession
-        ? `<p style="margin:2px 0 0;font-size:12px;color:#475569;">${w.profession}</p>`
+        ? `<p class="wm-prof">${w.profession}</p>`
         : "";
-      const nameHtml = w.linkToProfile !== false
-        ? `<a href="/worker/${w.id}" data-worker-link="${w.id}" style="font-weight:700;margin:0;font-size:14px;color:hsl(var(--primary));text-decoration:none;cursor:pointer;">${w.name}</a>`
-        : `<p style="font-weight:700;margin:0;font-size:14px;color:#0f172a;">${w.name}</p>`;
+      const clickable = w.linkToProfile !== false;
+      const ctaHtml = clickable
+        ? `<button type="button" data-worker-link="${w.id}" class="wm-cta">View profile<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>`
+        : "";
       m.bindPopup(
-        `<div style="min-width:160px;font-family:inherit;">
-          ${nameHtml}
-          ${professionHtml}
-          ${distanceHtml}
+        `<div class="wm-card">
+          <div class="wm-row">
+            <div class="wm-avatar">${initials}</div>
+            <div class="wm-info">
+              <p class="wm-name">${w.name}</p>
+              ${professionHtml}
+            </div>
+          </div>
+          ${distanceHtml ? `<div class="wm-meta">${distanceHtml}</div>` : ""}
+          ${ctaHtml}
         </div>`,
-        { className: "wm-popup", closeButton: false }
+        { className: "wm-popup", closeButton: false, offset: [0, -6] }
       );
-      if (w.linkToProfile !== false) {
+      if (clickable) {
         m.on("popupopen", (e: any) => {
-          const el = e.popup.getElement()?.querySelector(`[data-worker-link="${w.id}"]`) as HTMLAnchorElement | null;
-          if (el) {
-            el.onclick = (ev) => {
-              ev.preventDefault();
-              navigate(`/worker/${w.id}`);
-            };
-          }
+          const root = e.popup.getElement();
+          const go = (ev: Event) => { ev.preventDefault(); navigate(`/worker/${w.id}`); };
+          root?.querySelector(`[data-worker-link="${w.id}"]`)?.addEventListener("click", go);
+          root?.querySelector(`.wm-card`)?.addEventListener("click", (ev: any) => {
+            if (ev.target.closest("button")) return;
+            navigate(`/worker/${w.id}`);
+          });
         });
       }
       m.addTo(layer);
