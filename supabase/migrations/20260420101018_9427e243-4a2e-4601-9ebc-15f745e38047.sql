@@ -1,0 +1,1 @@
+UPDATE public.profiles SET face_verified = false, face_verified_at = NULL WHERE face_verified = true AND face_descriptor IS NULL;
