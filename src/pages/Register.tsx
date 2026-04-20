@@ -18,6 +18,7 @@ import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import SignupFaceCapture from "@/components/SignupFaceCapture";
+import { detectFaceDescriptor } from "@/lib/faceApi";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const PENDING_FACE_KEY = "pending_face_verification_image";
@@ -93,63 +94,94 @@ const Register = () => {
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
-    const metadata: Record<string, string> = {
-      full_name: normalizedName,
-      phone: normalizedPhone,
-      role,
-      blood_group: bloodGroup,
-      is_blood_donor: willingToDonate ? "true" : "false",
-      use_whatsapp: hasWhatsapp ? "true" : "false",
-      contact_methods: JSON.stringify(trimmedMethods),
-    };
-    if (role === "worker") {
-      metadata.main_category = mainCategory;
-      metadata.sub_category = subCategory;
-      metadata.profession = subCategory;
-      metadata.experience = normalizedExperience;
-      metadata.latitude = String(workerCoords?.latitude ?? "");
-      metadata.longitude = String(workerCoords?.longitude ?? "");
-    }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: { data: metadata },
-    });
-
-    setLoading(false);
-    if (error) {
-      const msg = getAuthErrorMessage(error);
-      toast.error(msg);
-      if (/already registered|already exists|log in instead/i.test(msg)) {
-        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
-      }
-      return;
-    }
-    const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
-    const redirect = searchParams.get("redirect") || defaultRedirect;
-
-    const identities = (data.user as { identities?: unknown[] } | null)?.identities;
-    if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-      toast.error("This email is already registered. Please log in instead.");
-      navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
-      return;
-    }
-
-    // Stash the captured image so /verify-face (or post-OTP) can submit it once a session exists.
     try {
-      sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
-    } catch {
-      /* storage may be unavailable; user will be prompted to recapture */
-    }
+      const detection = await detectFaceDescriptor(faceImage);
+      if (detection.count === 0) {
+        toast.error("No face detected. Please capture again.");
+        setLoading(false);
+        return;
+      }
+      if (detection.count > 1) {
+        toast.error("Multiple faces detected. Only one person is allowed.");
+        setLoading(false);
+        return;
+      }
 
-    if (data.session) {
-      toast.success("Account created! Verifying your face…");
-      navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
-      return;
+      const { data: duplicateResult, error: duplicateError } = await supabase.functions.invoke("check-face-duplicate", {
+        body: { image: faceImage, descriptor: detection.descriptor },
+      });
+
+      if (duplicateError || (duplicateResult as { duplicate?: boolean })?.duplicate) {
+        toast.error("User Exists", {
+          description: "This person is already registered. Only one account is allowed per face.",
+          duration: 6000,
+        });
+        setFaceImage(null);
+        setLoading(false);
+        return;
+      }
+
+      const metadata: Record<string, string> = {
+        full_name: normalizedName,
+        phone: normalizedPhone,
+        role,
+        blood_group: bloodGroup,
+        is_blood_donor: willingToDonate ? "true" : "false",
+        use_whatsapp: hasWhatsapp ? "true" : "false",
+        contact_methods: JSON.stringify(trimmedMethods),
+      };
+      if (role === "worker") {
+        metadata.main_category = mainCategory;
+        metadata.sub_category = subCategory;
+        metadata.profession = subCategory;
+        metadata.experience = normalizedExperience;
+        metadata.latitude = String(workerCoords?.latitude ?? "");
+        metadata.longitude = String(workerCoords?.longitude ?? "");
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: { data: metadata },
+      });
+
+      setLoading(false);
+      if (error) {
+        const msg = getAuthErrorMessage(error);
+        toast.error(msg);
+        if (/already registered|already exists|log in instead/i.test(msg)) {
+          navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+        }
+        return;
+      }
+      const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
+      const redirect = searchParams.get("redirect") || defaultRedirect;
+
+      const identities = (data.user as { identities?: unknown[] } | null)?.identities;
+      if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
+        toast.error("This email is already registered. Please log in instead.");
+        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        return;
+      }
+
+      try {
+        sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
+      } catch {
+        /* storage may be unavailable; user will be prompted to recapture */
+      }
+
+      if (data.session) {
+        toast.success("Account created! Verifying your face…");
+        navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        return;
+      }
+      toast.success("An 8-digit OTP has been sent to your email.");
+      navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+    } catch (error) {
+      setLoading(false);
+      toast.error(error instanceof Error ? error.message : "Face verification failed. Please try again.");
     }
-    toast.success("An 8-digit OTP has been sent to your email.");
-    navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
