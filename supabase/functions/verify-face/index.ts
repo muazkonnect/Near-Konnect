@@ -5,7 +5,7 @@
 // - If the user already has a stored descriptor, requires it to match
 // - Stores image (private + public avatar) and updates the profile
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
