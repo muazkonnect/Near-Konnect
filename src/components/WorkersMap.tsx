@@ -172,13 +172,8 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       );
       if (clickable) {
         m.on("popupopen", (e: any) => {
-          const root = e.popup.getElement();
-          const go = (ev: Event) => { ev.preventDefault(); navigate(`/worker/${w.id}`); };
-          root?.querySelector(`[data-worker-link="${w.id}"]`)?.addEventListener("click", go);
-          root?.querySelector(`.wm-card`)?.addEventListener("click", (ev: any) => {
-            if (ev.target.closest("button")) return;
-            navigate(`/worker/${w.id}`);
-          });
+          e.popup.getElement()?.querySelector(`[data-worker-link="${w.id}"]`)
+            ?.addEventListener("click", () => navigate(`/worker/${w.id}`));
         });
       }
       m.addTo(layer);
