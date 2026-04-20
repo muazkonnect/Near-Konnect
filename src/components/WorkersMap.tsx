@@ -149,7 +149,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
     const points: [number, number][] = [];
 
     workers.forEach((w) => {
-      const m = L.marker([w.latitude, w.longitude], { icon: workerIcon });
+      const m = L.marker([w.latitude, w.longitude], { icon: buildWorkerIcon(w.profession) });
       const initials = w.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
       const distanceHtml =
         w.distanceKm !== undefined
