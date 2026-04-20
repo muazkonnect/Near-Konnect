@@ -94,31 +94,59 @@ const Register = () => {
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
-    const metadata: Record<string, string> = {
-      full_name: normalizedName,
-      phone: normalizedPhone,
-      role,
-      blood_group: bloodGroup,
-      is_blood_donor: willingToDonate ? "true" : "false",
-      use_whatsapp: hasWhatsapp ? "true" : "false",
-      contact_methods: JSON.stringify(trimmedMethods),
-    };
-    if (role === "worker") {
-      metadata.main_category = mainCategory;
-      metadata.sub_category = subCategory;
-      metadata.profession = subCategory;
-      metadata.experience = normalizedExperience;
-      metadata.latitude = String(workerCoords?.latitude ?? "");
-      metadata.longitude = String(workerCoords?.longitude ?? "");
-    }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: { data: metadata },
-    });
+    try {
+      const detection = await detectFaceDescriptor(faceImage);
+      if (detection.count === 0) {
+        toast.error("No face detected. Please capture again.");
+        setLoading(false);
+        return;
+      }
+      if (detection.count > 1) {
+        toast.error("Multiple faces detected. Only one person is allowed.");
+        setLoading(false);
+        return;
+      }
 
-    setLoading(false);
+      const { data: duplicateResult, error: duplicateError } = await supabase.functions.invoke("check-face-duplicate", {
+        body: { image: faceImage, descriptor: detection.descriptor },
+      });
+
+      if (duplicateError || (duplicateResult as { duplicate?: boolean })?.duplicate) {
+        toast.error("User Exists", {
+          description: "This person is already registered. Only one account is allowed per face.",
+          duration: 6000,
+        });
+        setFaceImage(null);
+        setLoading(false);
+        return;
+      }
+
+      const metadata: Record<string, string> = {
+        full_name: normalizedName,
+        phone: normalizedPhone,
+        role,
+        blood_group: bloodGroup,
+        is_blood_donor: willingToDonate ? "true" : "false",
+        use_whatsapp: hasWhatsapp ? "true" : "false",
+        contact_methods: JSON.stringify(trimmedMethods),
+      };
+      if (role === "worker") {
+        metadata.main_category = mainCategory;
+        metadata.sub_category = subCategory;
+        metadata.profession = subCategory;
+        metadata.experience = normalizedExperience;
+        metadata.latitude = String(workerCoords?.latitude ?? "");
+        metadata.longitude = String(workerCoords?.longitude ?? "");
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: { data: metadata },
+      });
+
+      setLoading(false);
     if (error) {
       const msg = getAuthErrorMessage(error);
       toast.error(msg);
