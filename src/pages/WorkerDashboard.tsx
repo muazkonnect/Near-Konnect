@@ -311,7 +311,7 @@ const WorkerDashboard = () => {
           </button>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="space-y-6">
           <DashboardNav
             items={[
               { value: "overview", label: "Overview", icon: LayoutDashboard },
