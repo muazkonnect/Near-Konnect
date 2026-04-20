@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShieldAlert, Droplet, X } from "lucide-react";
-import { Dialog, DialogContent, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
+import { ShieldAlert, Droplet } from "lucide-react";
+import { Dialog, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
-
-const STORAGE_KEY = "nk.disclosures.v1";
+import { supabase } from "@/integrations/supabase/client";
 
 type Step = "platform" | "blood" | "done";
 
@@ -33,22 +32,15 @@ const DisclosureModals = () => {
   const [step, setStep] = useState<Step>("done");
 
   useEffect(() => {
-    try {
-      const seen = localStorage.getItem(STORAGE_KEY);
-      if (!seen) setStep("platform");
-    } catch {
-      // ignore
-    }
+    // Show modals every time the user signs in or signs up.
+    // SIGNED_IN fires for both fresh logins and new signups (once a session exists).
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") setStep("platform");
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const finish = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, new Date().toISOString());
-    } catch {
-      // ignore
-    }
-    setStep("done");
-  };
+  const finish = () => setStep("done");
 
   return (
     <>
