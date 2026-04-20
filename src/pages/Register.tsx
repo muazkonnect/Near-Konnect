@@ -17,6 +17,7 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
+import FaceVerification from "@/components/FaceVerification";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const Register = () => {
