@@ -89,65 +89,66 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
         )}
       </div>
 
-      {/* DESKTOP: sidebar + dark hero card */}
-      <div className="mx-auto hidden max-w-[1200px] md:flex md:gap-6 md:px-4 md:py-6">
-        <aside className="sticky top-6 flex h-[calc(100vh-3rem)] w-64 flex-col rounded-3xl bg-hero text-hero-foreground p-4 py-[18px] my-0 relative overflow-hidden">
+      {/* DESKTOP: top navigation + dark hero card */}
+      <div className="mx-auto hidden max-w-[1200px] flex-col md:flex md:px-4 md:py-6 md:gap-5">
+        <header className="sticky top-4 z-30 flex items-center gap-4 rounded-full bg-hero text-hero-foreground px-4 py-2.5 shadow-premium relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-          <Link to="/" className="relative mb-7 flex items-center gap-2 px-2">
+          <Link to="/" className="relative flex shrink-0 items-center gap-2 pl-2 pr-3">
             <MapPin className="h-5 w-5 text-primary" />
             <span className="text-base font-bold">NearKonnect</span>
           </Link>
 
-          <nav className="relative flex-1 space-y-1.5">
+          <nav className="relative flex flex-1 items-center justify-center gap-1">
             {navItems.map((item) => {
               const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
               return (
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`flex items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all ${
+                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                     active
                       ? "bg-primary text-primary-foreground"
                       : "text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
-                  <span className="text-inherit bg-inherit">{item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {user && (
-            <button
-              onClick={handleSignOut}
-              className="relative mt-2 w-full gap-3 rounded-full px-4 text-sm font-semibold text-hero-muted transition-colors hover:bg-destructive hover:text-destructive-foreground py-[12px] my-[460px] flex items-center justify-start"
-            >
-              <LogOut className="h-4 w-4" /> Sign out
-            </button>
-          )}
-        </aside>
-
-        <div className="min-w-0 flex-1 space-y-5">
-          <div className="flex items-center gap-3 rounded-full bg-card px-3 py-2 shadow-premium">
-            <button
-              onClick={() => navigate("/discover")}
-              className="flex flex-1 items-center gap-2 rounded-full bg-muted px-4 py-2.5 text-left text-sm text-muted-foreground hover:bg-muted/80"
-            >
-              <Search className="h-4 w-4" /> Find help near you...
-            </button>
-
+          <div className="relative flex shrink-0 items-center gap-2">
             <button
               onClick={() => navigate(profilePath)}
-              className="inline-flex items-center gap-2 rounded-full bg-hero px-3 py-2 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero/90"
+              className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-hero-foreground transition-colors hover:bg-white/15"
               aria-label="Open dashboard"
             >
               <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-foreground text-xs">
                 {firstName.charAt(0).toUpperCase()}
               </span>
-              <span className="hidden sm:inline">{firstName}</span>
+              <span className="hidden lg:inline">{firstName}</span>
             </button>
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-hero-muted transition-colors hover:bg-destructive hover:text-destructive-foreground"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden lg:inline">Sign out</span>
+              </button>
+            )}
           </div>
+        </header>
+
+        <div className="min-w-0 flex-1 space-y-5">
+          <button
+            onClick={() => navigate("/discover")}
+            className="flex w-full items-center gap-2 rounded-full bg-card px-5 py-3 text-left text-sm text-muted-foreground shadow-premium hover:bg-muted/60"
+          >
+            <Search className="h-4 w-4" /> Find help near you...
+          </button>
 
           {title && (
             <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
