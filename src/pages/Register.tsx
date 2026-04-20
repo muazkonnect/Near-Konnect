@@ -28,6 +28,7 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [existingAccountModal, setExistingAccountModal] = useState<{ open: boolean; email: string }>({ open: false, email: "" });
   
 
   const [name, setName] = useState("");
