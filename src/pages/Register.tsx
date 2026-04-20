@@ -132,12 +132,24 @@ const Register = () => {
     }
 
     if (data.session) {
-      toast.success("Account created successfully!");
-      navigate(redirect, { replace: true });
+      toast.success("Account created! One more step: verify your face.");
+      setPostSignupRedirect(redirect);
+      setVerifyingFace(true);
       return;
     }
     toast.success("An 8-digit OTP has been sent to your email.");
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+  };
+
+  const handleFaceVerified = () => {
+    toast.success("Identity verified!");
+    navigate(postSignupRedirect, { replace: true });
+  };
+
+  const handleFaceSkip = async () => {
+    await supabase.auth.signOut();
+    setVerifyingFace(false);
+    toast.message("Signed out. Please register again to complete verification.");
   };
 
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
