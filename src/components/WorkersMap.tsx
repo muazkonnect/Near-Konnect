@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Sparkles } from "lucide-react";
@@ -44,9 +45,11 @@ const userIcon = L.divIcon({
 export interface WorkerPin {
   id: string;
   name: string;
+  profession?: string;
   latitude: number;
   longitude: number;
   distanceKm?: number;
+  linkToProfile?: boolean;
 }
 
 interface Props {
@@ -57,6 +60,7 @@ interface Props {
 }
 
 const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true }: Props) => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
@@ -113,13 +117,31 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         w.distanceKm !== undefined
           ? `<div style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;border-radius:9999px;background:hsl(var(--primary)/0.1);color:hsl(var(--primary));font-size:11px;font-weight:600;">${w.distanceKm.toFixed(2)} km away</div>`
           : "";
+      const professionHtml = w.profession
+        ? `<p style="margin:2px 0 0;font-size:12px;color:#475569;">${w.profession}</p>`
+        : "";
+      const nameHtml = w.linkToProfile !== false
+        ? `<a href="/worker/${w.id}" data-worker-link="${w.id}" style="font-weight:700;margin:0;font-size:14px;color:hsl(var(--primary));text-decoration:none;cursor:pointer;">${w.name}</a>`
+        : `<p style="font-weight:700;margin:0;font-size:14px;color:#0f172a;">${w.name}</p>`;
       m.bindPopup(
-        `<div style="min-width:140px;font-family:inherit;">
-          <p style="font-weight:700;margin:0;font-size:14px;color:#0f172a;">${w.name}</p>
+        `<div style="min-width:160px;font-family:inherit;">
+          ${nameHtml}
+          ${professionHtml}
           ${distanceHtml}
         </div>`,
         { className: "wm-popup", closeButton: false }
       );
+      if (w.linkToProfile !== false) {
+        m.on("popupopen", (e: any) => {
+          const el = e.popup.getElement()?.querySelector(`[data-worker-link="${w.id}"]`) as HTMLAnchorElement | null;
+          if (el) {
+            el.onclick = (ev) => {
+              ev.preventDefault();
+              navigate(`/worker/${w.id}`);
+            };
+          }
+        });
+      }
       m.addTo(layer);
       points.push([w.latitude, w.longitude]);
     });

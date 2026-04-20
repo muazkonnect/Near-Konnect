@@ -421,6 +421,7 @@ const Discover = () => {
                 return {
                   id: w.id,
                   name: w.name,
+                  profession: w.profession,
                   latitude: db.latitude,
                   longitude: db.longitude,
                   distanceKm: w.distance > 0 ? w.distance : undefined,
