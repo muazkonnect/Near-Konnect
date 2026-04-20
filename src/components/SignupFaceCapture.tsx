@@ -156,8 +156,12 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
         }
 
         if (isDup) {
-          setError(errMsg);
-          toast.error(errMsg);
+          const dupMsg = "This person is already registered. Only one account is allowed per face.";
+          setError(dupMsg);
+          toast.error("Account already exists", {
+            description: dupMsg,
+            duration: 6000,
+          });
           setPreview(null);
           onChange(null);
           setStatus("idle");
