@@ -162,10 +162,11 @@ const DisclosureModals = () => {
               <Button
                 variant="ghost"
                 size="lg"
+                disabled={turningOff}
                 className="w-full rounded-2xl text-base font-medium text-muted-foreground hover:text-foreground"
-                onClick={finish}
+                onClick={handleTurnOff}
               >
-                Turn Off Option
+                {turningOff ? "Turning off..." : "Turn Off Option"}
               </Button>
             </div>
           </div>
