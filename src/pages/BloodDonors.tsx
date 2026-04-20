@@ -87,7 +87,7 @@ const BloodDonors = () => {
   // Push viewer's live coords so other donors can see them in realtime
   useEffect(() => {
     if (!user || !userCoords) return;
-    supabase.rpc("set_worker_location", {
+    (supabase.rpc as any)("set_worker_location", {
       lat: userCoords.latitude,
       lng: userCoords.longitude,
     }).then(() => {
