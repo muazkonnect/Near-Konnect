@@ -27,6 +27,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
+import Footer from "@/components/Footer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
