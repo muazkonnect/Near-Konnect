@@ -147,38 +147,41 @@ const Register = () => {
       });
 
       setLoading(false);
-    if (error) {
-      const msg = getAuthErrorMessage(error);
-      toast.error(msg);
-      if (/already registered|already exists|log in instead/i.test(msg)) {
-        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+      if (error) {
+        const msg = getAuthErrorMessage(error);
+        toast.error(msg);
+        if (/already registered|already exists|log in instead/i.test(msg)) {
+          navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+        }
+        return;
       }
-      return;
-    }
-    const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
-    const redirect = searchParams.get("redirect") || defaultRedirect;
+      const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
+      const redirect = searchParams.get("redirect") || defaultRedirect;
 
-    const identities = (data.user as { identities?: unknown[] } | null)?.identities;
-    if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-      toast.error("This email is already registered. Please log in instead.");
-      navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
-      return;
-    }
+      const identities = (data.user as { identities?: unknown[] } | null)?.identities;
+      if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
+        toast.error("This email is already registered. Please log in instead.");
+        navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        return;
+      }
 
-    // Stash the captured image so /verify-face (or post-OTP) can submit it once a session exists.
-    try {
-      sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
-    } catch {
-      /* storage may be unavailable; user will be prompted to recapture */
-    }
+      try {
+        sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
+      } catch {
+        /* storage may be unavailable; user will be prompted to recapture */
+      }
 
-    if (data.session) {
-      toast.success("Account created! Verifying your face…");
-      navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
-      return;
+      if (data.session) {
+        toast.success("Account created! Verifying your face…");
+        navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+        return;
+      }
+      toast.success("An 8-digit OTP has been sent to your email.");
+      navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
+    } catch (error) {
+      setLoading(false);
+      toast.error(error instanceof Error ? error.message : "Face verification failed. Please try again.");
     }
-    toast.success("An 8-digit OTP has been sent to your email.");
-    navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
