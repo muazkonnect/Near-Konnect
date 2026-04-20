@@ -298,6 +298,33 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Failed to mark verification" }, 500);
     }
 
+    // 5) Add this token to the global FaceSet so future signups can be
+    // deduplicated against it. Best-effort — never fail the request on this.
+    const addToFaceSet = async () => {
+      const addForm = new FormData();
+      addForm.append("outer_id", FACESET_OUTER_ID);
+      addForm.append("face_tokens", newFaceToken);
+      await faceppCall("faceset/addface", addForm);
+    };
+    try {
+      await addToFaceSet();
+    } catch (e) {
+      const msg = (e as Error).message;
+      if (/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) {
+        try {
+          const createForm = new FormData();
+          createForm.append("outer_id", FACESET_OUTER_ID);
+          createForm.append("display_name", "NearKonnect Users");
+          await faceppCall("faceset/create", createForm);
+          await addToFaceSet();
+        } catch (retryErr) {
+          console.warn("FaceSet add (after create) failed:", (retryErr as Error).message);
+        }
+      } else {
+        console.warn("FaceSet addface failed (non-fatal):", msg);
+      }
+    }
+
     return jsonResponse({
       success: true,
       message: "Face verified successfully",
