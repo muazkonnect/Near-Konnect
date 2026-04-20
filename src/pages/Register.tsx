@@ -78,6 +78,10 @@ const Register = () => {
       toast.error("Please pick your fixed service location on the map.");
       return;
     }
+    if (!agreedToTerms) {
+      toast.error("Please agree to the Terms & Conditions to continue.");
+      return;
+    }
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
