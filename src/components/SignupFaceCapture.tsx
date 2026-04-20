@@ -11,12 +11,14 @@ interface SignupFaceCaptureProps {
   onChange: (dataUrl: string | null) => void;
 }
 
+const MAX_RETRIES = 3;
+const DEFAULT_RETRY_DELAY_MS = 1000;
+
 const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Local preview holds the just-captured image until the user confirms it.
   const [preview, setPreview] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>(value ? "confirmed" : "idle");
   const [error, setError] = useState<string | null>(null);
@@ -80,51 +82,90 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
     startCamera();
   }, [onChange, startCamera]);
 
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const confirmImage = useCallback(async () => {
     if (!preview) return;
     setChecking(true);
     setError(null);
+
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("check-face-duplicate", {
-        body: { image: preview },
-      });
-      // Parse non-2xx error body if present
-      let errMsg: string | null = null;
-      let isDup = false;
-      if (fnError) {
-        const ctx = (fnError as { context?: { response?: Response } }).context;
-        if (ctx?.response) {
-          try {
-            const body = await ctx.response.clone().json();
-            if (body?.error) errMsg = body.error;
-            if (body?.duplicate) isDup = true;
-          } catch { /* ignore */ }
+      let attempt = 0;
+      let delay = DEFAULT_RETRY_DELAY_MS;
+
+      while (attempt < MAX_RETRIES) {
+        const { data, error: fnError } = await supabase.functions.invoke("check-face-duplicate", {
+          body: { image: preview },
+        });
+
+        let errMsg: string | null = null;
+        let isDup = false;
+        let shouldRetry = false;
+        let retryAfterMs = delay;
+
+        if (fnError) {
+          const ctx = (fnError as { context?: { response?: Response } }).context;
+          if (ctx?.response) {
+            try {
+              const body = await ctx.response.clone().json();
+              if (body?.error) errMsg = body.error;
+              if (body?.duplicate) isDup = true;
+              if (body?.fallback) shouldRetry = true;
+              if (typeof body?.retry_after_ms === "number") retryAfterMs = body.retry_after_ms;
+            } catch {
+              /* ignore */
+            }
+          }
+          if (!errMsg) errMsg = fnError.message;
+        } else {
+          const res = (data ?? {}) as {
+            duplicate?: boolean;
+            error?: string;
+            fallback?: boolean;
+            retryable?: boolean;
+            retry_after_ms?: number;
+          };
+          if (res.duplicate) {
+            isDup = true;
+            errMsg = res.error ?? "This face is already registered with another account.";
+          } else if (res.fallback || res.retryable) {
+            shouldRetry = true;
+            errMsg = res.error ?? "Face verification is temporarily busy.";
+            if (typeof res.retry_after_ms === "number") retryAfterMs = res.retry_after_ms;
+          } else if (res.error) {
+            errMsg = res.error;
+          }
         }
-        if (!errMsg) errMsg = fnError.message;
-      } else {
-        const res = (data ?? {}) as { duplicate?: boolean; error?: string };
-        if (res.duplicate) {
-          isDup = true;
-          errMsg = res.error ?? "This face is already registered with another account.";
-        } else if (res.error) {
-          errMsg = res.error;
-        }
-      }
-      if (errMsg) {
-        setError(errMsg);
-        toast.error(errMsg);
+
         if (isDup) {
-          // Force a retake — duplicate face cannot proceed.
+          setError(errMsg);
+          toast.error(errMsg);
           setPreview(null);
           onChange(null);
           setStatus("idle");
+          return;
         }
+
+        if (!errMsg) {
+          onChange(preview);
+          setStatus("confirmed");
+          toast.success("Face check passed.");
+          return;
+        }
+
+        attempt += 1;
+        if (shouldRetry && attempt < MAX_RETRIES) {
+          const waitMs = Math.max(retryAfterMs, delay);
+          toast.message(`Face verification is busy. Retrying in ${Math.ceil(waitMs / 1000)}s…`);
+          await sleep(waitMs);
+          delay *= 2;
+          continue;
+        }
+
+        setError(errMsg);
+        toast.error(shouldRetry ? "Face verification is temporarily busy. Please try again." : errMsg);
         return;
       }
-      // Cleared — commit the image to the parent form.
-      onChange(preview);
-      setStatus("confirmed");
-      toast.success("Face check passed.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Face check failed";
       setError(msg);
@@ -134,7 +175,6 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
     }
   }, [preview, onChange]);
 
-  // What to display in the frame
   const displayed = preview ?? value;
 
   return (
