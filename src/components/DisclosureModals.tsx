@@ -33,8 +33,18 @@ const DisclosureModals = () => {
   const [turningOff, setTurningOff] = useState(false);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") setStep("platform");
+    let hadSession = false;
+    // Seed from current session so existing logged-in users don't trigger
+    supabase.auth.getSession().then(({ data }) => {
+      hadSession = !!data.session;
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only show on a real sign-in transition (no prior session) — not on token refresh or page reload
+      if (event === "SIGNED_IN" && !hadSession) {
+        setStep("platform");
+      }
+      hadSession = !!session;
     });
     return () => sub.subscription.unsubscribe();
   }, []);
