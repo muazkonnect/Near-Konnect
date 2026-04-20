@@ -272,6 +272,8 @@ const Register = () => {
           </>
         )}
 
+        <SignupFaceCapture value={faceImage} onChange={setFaceImage} />
+
         <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
           <div>
             <p className="text-sm font-semibold text-foreground">Platform Role — Communication Only</p>
