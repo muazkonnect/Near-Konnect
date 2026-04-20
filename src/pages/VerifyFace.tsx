@@ -11,12 +11,19 @@ const VerifyFace = () => {
   const [checking, setChecking] = useState(true);
   const redirect = params.get("redirect") || "/";
 
+  const force = params.get("force") === "1";
+
   useEffect(() => {
     let active = true;
     (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
         navigate(`/login?redirect=${encodeURIComponent(`/verify-face?redirect=${encodeURIComponent(redirect)}`)}`, { replace: true });
+        return;
+      }
+      if (force) {
+        // Always show the camera on login re-verification
+        if (active) setChecking(false);
         return;
       }
       const { data: profile } = await (supabase
@@ -40,7 +47,7 @@ const VerifyFace = () => {
     return () => {
       active = false;
     };
-  }, [navigate, redirect]);
+  }, [navigate, redirect, force]);
 
   const handleVerified = () => {
     toast.success("Identity verified!");
