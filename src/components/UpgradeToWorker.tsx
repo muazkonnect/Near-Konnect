@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Briefcase, ArrowRight, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
