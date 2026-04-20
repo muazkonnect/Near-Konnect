@@ -66,17 +66,17 @@ const buildWorkerIcon = (profession?: string) =>
 const userIcon = L.divIcon({
   className: "",
   html: `
-    <div style="position:relative;width:16px;height:16px;font-family:system-ui,-apple-system,sans-serif;">
-      <div style="position:absolute;inset:-6px;border-radius:9999px;background:rgba(0,0,0,0.3);animation:wm-blink 1.2s ease-in-out infinite;"></div>
-      <div style="position:relative;width:16px;height:16px;border-radius:9999px;background:#000;border:3px solid white;box-shadow:0 3px 8px -1px rgba(0,0,0,0.5);animation:wm-blink-dot 1.2s ease-in-out infinite;"></div>
+    <div style="position:relative;width:14px;height:14px;font-family:system-ui,-apple-system,sans-serif;">
+      <div style="position:absolute;inset:-6px;border-radius:9999px;background:hsl(var(--primary) / 0.35);animation:wm-blink 1.2s ease-in-out infinite;"></div>
+      <div style="position:relative;width:14px;height:14px;border-radius:9999px;background:hsl(var(--primary));box-shadow:0 0 0 2px hsl(var(--primary) / 0.25);animation:wm-blink-dot 1.2s ease-in-out infinite;"></div>
     </div>
     <style>
       @keyframes wm-blink{0%,100%{transform:scale(0.8);opacity:0.7}50%{transform:scale(1.6);opacity:0}}
-      @keyframes wm-blink-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+      @keyframes wm-blink-dot{0%,100%{opacity:1}50%{opacity:0.5}}
     </style>
   `,
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
 });
 
 export interface WorkerPin {
@@ -111,10 +111,9 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       zoomControl: false,
       attributionControl: false,
     });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      attribution: "&copy; OpenStreetMap &copy; CARTO",
-      subdomains: "abcd",
-      maxZoom: 19,
+    L.tileLayer("https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?lang=en&access-token=community", {
+      attribution: "&copy; Jawg Maps &copy; OpenStreetMap contributors",
+      maxZoom: 22,
     }).addTo(map);
     L.control.zoom({ position: "bottomright" }).addTo(map);
     L.control.attribution({ position: "bottomleft", prefix: false }).addTo(map);
