@@ -49,7 +49,7 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
           const Icon = app.icon;
           const isLockedPhone = requirePhone && m.type === "phone";
           return (
-            <div key={`${m.type}-${idx}`} className="flex items-start gap-2">
+            <div key={m.type} className="flex items-start gap-2">
               <span className={`mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-xl ${app.brandClass}`}>
                 <Icon className="h-5 w-5" />
               </span>
