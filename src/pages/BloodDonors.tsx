@@ -77,9 +77,23 @@ const BloodDonors = () => {
     ch.on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
       queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
     });
+    ch.on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
+      queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
+    });
     ch.subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [queryClient]);
+
+  // Push viewer's live coords so other donors can see them in realtime
+  useEffect(() => {
+    if (!user || !userCoords) return;
+    supabase.rpc("set_worker_location", {
+      lat: userCoords.latitude,
+      lng: userCoords.longitude,
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
+    });
+  }, [user, userCoords?.latitude, userCoords?.longitude, queryClient]);
 
   const { data: openRequestsCount = 0 } = useQuery({
     queryKey: ["blood_requests_open_count"],
