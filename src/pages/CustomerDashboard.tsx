@@ -211,8 +211,8 @@ const CustomerDashboard = () => {
 
         <div className="grid gap-3 md:grid-cols-3">
           <button onClick={() => navigate("/discover")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-2.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <Compass className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
+            <div className="mb-3 inline-flex rounded-2xl p-2.5 transition-colors text-secondary bg-muted">
+              <Compass className="h-5 w-5 text-secondary" />
             </div>
             <p className="font-bold text-card-foreground">Explore services</p>
             <p className="text-xs text-muted-foreground">Find trusted help nearby</p>
