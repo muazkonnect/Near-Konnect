@@ -16,6 +16,11 @@ const corsHeaders = {
 };
 
 const FACEPP_BASE = "https://api-us.faceplusplus.com/facepp/v3";
+// Single global FaceSet that holds every enrolled face token so we can
+// detect duplicate signups (one face = one account).
+const FACESET_OUTER_ID = "nearkonnect_users";
+// Strict 1-in-100,000 confidence threshold for duplicate detection.
+const DUP_CONFIDENCE_FALLBACK = 73;
 
 interface DetectFace {
   face_token: string;
