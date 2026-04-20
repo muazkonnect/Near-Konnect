@@ -57,8 +57,14 @@ const VerifyFace = () => {
         if (active) setChecking(false);
         return;
       }
-      const { data: profile } = await supabase
-        .from("profiles")
+      const { data: profile } = await (supabase
+        .from("profiles") as unknown as {
+          select: (cols: string) => {
+            eq: (col: string, val: string) => {
+              maybeSingle: () => Promise<{ data: { face_verified: boolean } | null }>;
+            };
+          };
+        })
         .select("face_verified")
         .eq("user_id", data.session.user.id)
         .maybeSingle();
