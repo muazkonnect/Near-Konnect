@@ -19,6 +19,7 @@ import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import SignupFaceCapture from "@/components/SignupFaceCapture";
 import { detectFaceDescriptor } from "@/lib/faceApi";
+import { getFaceFunctionErrorDetails, isDuplicateFaceResult } from "@/lib/faceFunctionErrors";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const PENDING_FACE_KEY = "pending_face_verification_image";
@@ -112,7 +113,9 @@ const Register = () => {
         body: { image: faceImage, descriptor: detection.descriptor },
       });
 
-      if (duplicateError || (duplicateResult as { duplicate?: boolean })?.duplicate) {
+      const duplicateDetails = await getFaceFunctionErrorDetails(duplicateError, duplicateResult);
+
+      if (isDuplicateFaceResult(duplicateDetails, duplicateResult)) {
         toast.error("User Exists", {
           description: "This person is already registered. Only one account is allowed per face.",
           duration: 6000,
@@ -120,6 +123,10 @@ const Register = () => {
         setFaceImage(null);
         setLoading(false);
         return;
+      }
+
+      if (duplicateDetails) {
+        throw new Error(duplicateDetails.message);
       }
 
       const metadata: Record<string, string> = {
