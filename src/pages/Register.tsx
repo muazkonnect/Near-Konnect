@@ -129,8 +129,12 @@ const Register = () => {
       if (error) {
         const msg = getAuthErrorMessage(error);
         if (/already registered|already exists|log in instead/i.test(msg)) {
-          toast.error("Account already exists, please login");
-          navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+          if (role === "worker") {
+            setExistingAccountModal({ open: true, email: normalizedEmail });
+          } else {
+            toast.error("Account already exists, please login");
+            navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+          }
         } else {
           toast.error(msg);
         }
