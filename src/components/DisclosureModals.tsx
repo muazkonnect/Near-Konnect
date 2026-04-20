@@ -30,10 +30,9 @@ const PlainDialogContent = ({ className, children }: { className?: string; child
 
 const DisclosureModals = () => {
   const [step, setStep] = useState<Step>("done");
+  const [turningOff, setTurningOff] = useState(false);
 
   useEffect(() => {
-    // Show modals every time the user signs in or signs up.
-    // SIGNED_IN fires for both fresh logins and new signups (once a session exists).
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") setStep("platform");
     });
@@ -41,6 +40,25 @@ const DisclosureModals = () => {
   }, []);
 
   const finish = () => setStep("done");
+
+  const handleTurnOff = async () => {
+    setTurningOff(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error } = await supabase
+          .from("profiles")
+          .update({ is_blood_donor: false, donor_status: "inactive" })
+          .eq("user_id", user.id);
+        if (error) throw error;
+      }
+    } catch (err) {
+      console.error("Failed to turn off blood donor option", err);
+    } finally {
+      setTurningOff(false);
+      finish();
+    }
+  };
 
   return (
     <>
