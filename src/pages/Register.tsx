@@ -232,6 +232,13 @@ const Register = () => {
 
         {role === "worker" && (
           <>
+            <div className="rounded-2xl border border-primary/30 bg-accent/40 p-3 text-xs leading-relaxed text-foreground">
+              Already have an account?{" "}
+              <Link to="/login" className="font-semibold text-primary hover:underline">
+                Log in
+              </Link>{" "}
+              and use <strong>Become a Service</strong> on your dashboard to upgrade — don't create a second account.
+            </div>
             <div>
               <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
               <select
