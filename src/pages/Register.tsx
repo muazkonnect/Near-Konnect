@@ -17,8 +17,10 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import FaceVerification from "@/components/FaceVerification";
+import SignupFaceCapture from "@/components/SignupFaceCapture";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
+
+const PENDING_FACE_KEY = "pending_face_verification_image";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,8 +30,7 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [verifyingFace, setVerifyingFace] = useState(false);
-  const [postSignupRedirect, setPostSignupRedirect] = useState<string>("/");
+  const [faceImage, setFaceImage] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -85,6 +86,10 @@ const Register = () => {
       toast.error("Please agree to the Terms & Conditions to continue.");
       return;
     }
+    if (!faceImage) {
+      toast.error("Please capture your face photo to complete signup.");
+      return;
+    }
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
@@ -131,37 +136,24 @@ const Register = () => {
       return;
     }
 
+    // Stash the captured image so /verify-face (or post-OTP) can submit it once a session exists.
+    try {
+      sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
+    } catch {
+      /* storage may be unavailable; user will be prompted to recapture */
+    }
+
     if (data.session) {
-      toast.success("Account created! One more step: verify your face.");
-      setPostSignupRedirect(redirect);
-      setVerifyingFace(true);
+      toast.success("Account created! Verifying your face…");
+      navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
       return;
     }
     toast.success("An 8-digit OTP has been sent to your email.");
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
-  const handleFaceVerified = () => {
-    toast.success("Identity verified!");
-    navigate(postSignupRedirect, { replace: true });
-  };
-
-  const handleFaceSkip = async () => {
-    await supabase.auth.signOut();
-    setVerifyingFace(false);
-    toast.message("Signed out. Please register again to complete verification.");
-  };
-
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
   const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
-
-  if (verifyingFace) {
-    return (
-      <AuthShell title="Verify your identity" subtitle="Quick face check to keep NearKonnect safe">
-        <FaceVerification onVerified={handleFaceVerified} onSkip={handleFaceSkip} />
-      </AuthShell>
-    );
-  }
 
   return (
     <AuthShell
@@ -280,6 +272,8 @@ const Register = () => {
           </>
         )}
 
+        <SignupFaceCapture value={faceImage} onChange={setFaceImage} />
+
         <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
           <div>
             <p className="text-sm font-semibold text-foreground">Platform Role — Communication Only</p>
@@ -315,7 +309,7 @@ const Register = () => {
           </label>
         </div>
 
-        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
+        <Button type="submit" disabled={loading || !agreedToTerms || !faceImage} variant="hero" size="lg" className="w-full">
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
