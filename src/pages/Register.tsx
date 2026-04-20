@@ -38,6 +38,7 @@ const Register = () => {
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const phoneEntry = contactMethods.find((m) => m.type === "phone");
   const phone = phoneEntry?.value ?? "";
