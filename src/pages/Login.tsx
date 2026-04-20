@@ -47,6 +47,32 @@ const Login = () => {
     setLoading(false);
     toast.success("Logged in successfully!");
     const redirect = searchParams.get("redirect") || "/";
+
+    // Gate behind face verification if not yet verified
+    try {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (uid) {
+        const { data: profile } = await (supabase
+          .from("profiles") as unknown as {
+            select: (cols: string) => {
+              eq: (col: string, val: string) => {
+                maybeSingle: () => Promise<{ data: { face_verified: boolean } | null }>;
+              };
+            };
+          })
+          .select("face_verified")
+          .eq("user_id", uid)
+          .maybeSingle();
+        if (!profile?.face_verified) {
+          navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
+          return;
+        }
+      }
+    } catch {
+      /* fall through to normal redirect */
+    }
+
     navigate(redirect, { replace: true });
   };
 
