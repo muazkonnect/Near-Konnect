@@ -16,6 +16,7 @@ import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategor
 const UpgradeToWorker = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mainCategory, setMainCategory] = useState<MainServiceCategory | "">("");
@@ -23,6 +24,16 @@ const UpgradeToWorker = () => {
   const [experience, setExperience] = useState("");
   const [location, setLocation] = useState<Coords | null>(null);
   const [capturingLocation, setCapturingLocation] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("upgrade") === "worker") {
+      setOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("upgrade");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
 
   const captureLocation = async () => {
     setCapturingLocation(true);
