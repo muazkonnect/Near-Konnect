@@ -113,33 +113,41 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
 
     workers.forEach((w) => {
       const m = L.marker([w.latitude, w.longitude], { icon: workerIcon });
+      const initials = w.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
       const distanceHtml =
         w.distanceKm !== undefined
-          ? `<div style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;border-radius:9999px;background:hsl(var(--primary)/0.1);color:hsl(var(--primary));font-size:11px;font-weight:600;">${w.distanceKm.toFixed(2)} km away</div>`
+          ? `<span class="wm-chip"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${w.distanceKm.toFixed(2)} km</span>`
           : "";
       const professionHtml = w.profession
-        ? `<p style="margin:2px 0 0;font-size:12px;color:#475569;">${w.profession}</p>`
+        ? `<p class="wm-prof">${w.profession}</p>`
         : "";
-      const nameHtml = w.linkToProfile !== false
-        ? `<a href="/worker/${w.id}" data-worker-link="${w.id}" style="font-weight:700;margin:0;font-size:14px;color:hsl(var(--primary));text-decoration:none;cursor:pointer;">${w.name}</a>`
-        : `<p style="font-weight:700;margin:0;font-size:14px;color:#0f172a;">${w.name}</p>`;
+      const clickable = w.linkToProfile !== false;
+      const ctaHtml = clickable
+        ? `<button type="button" data-worker-link="${w.id}" class="wm-cta">View profile<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>`
+        : "";
       m.bindPopup(
-        `<div style="min-width:160px;font-family:inherit;">
-          ${nameHtml}
-          ${professionHtml}
-          ${distanceHtml}
+        `<div class="wm-card">
+          <div class="wm-row">
+            <div class="wm-avatar">${initials}</div>
+            <div class="wm-info">
+              <p class="wm-name">${w.name}</p>
+              ${professionHtml}
+            </div>
+          </div>
+          ${distanceHtml ? `<div class="wm-meta">${distanceHtml}</div>` : ""}
+          ${ctaHtml}
         </div>`,
-        { className: "wm-popup", closeButton: false }
+        { className: "wm-popup", closeButton: false, offset: [0, -6] }
       );
-      if (w.linkToProfile !== false) {
+      if (clickable) {
         m.on("popupopen", (e: any) => {
-          const el = e.popup.getElement()?.querySelector(`[data-worker-link="${w.id}"]`) as HTMLAnchorElement | null;
-          if (el) {
-            el.onclick = (ev) => {
-              ev.preventDefault();
-              navigate(`/worker/${w.id}`);
-            };
-          }
+          const root = e.popup.getElement();
+          const go = (ev: Event) => { ev.preventDefault(); navigate(`/worker/${w.id}`); };
+          root?.querySelector(`[data-worker-link="${w.id}"]`)?.addEventListener("click", go);
+          root?.querySelector(`.wm-card`)?.addEventListener("click", (ev: any) => {
+            if (ev.target.closest("button")) return;
+            navigate(`/worker/${w.id}`);
+          });
         });
       }
       m.addTo(layer);
@@ -197,9 +205,20 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         .leaflet-control-zoom a { background: white !important; color: #000 !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 500 !important; }
         .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; backdrop-filter: blur(6px); font-size: 10px !important; padding: 2px 6px !important; border-radius: 6px !important; margin: 6px !important; }
-        .wm-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
-        .wm-popup .leaflet-popup-content { margin: 10px 12px; font-weight: 400; }
-        .wm-popup .leaflet-popup-tip { box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
+        .wm-popup .leaflet-popup-content-wrapper { border-radius: 18px; padding: 0; box-shadow: 0 20px 50px -16px rgba(0,0,0,0.35); border: 1px solid hsl(var(--border)); background: hsl(var(--card)); overflow: hidden; }
+        .wm-popup .leaflet-popup-content { margin: 0; font-weight: 400; width: 240px !important; }
+        .wm-popup .leaflet-popup-tip { background: hsl(var(--card)); box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
+        .wm-card { padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: background 0.15s; }
+        .wm-card:hover { background: hsl(var(--muted) / 0.5); }
+        .wm-row { display: flex; align-items: center; gap: 10px; }
+        .wm-avatar { width: 40px; height: 40px; border-radius: 12px; background: hsl(var(--hero)); color: hsl(var(--primary)); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex-shrink: 0; letter-spacing: 0.02em; }
+        .wm-info { min-width: 0; flex: 1; }
+        .wm-name { margin: 0; font-size: 14px; font-weight: 700; color: hsl(var(--card-foreground)); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-prof { margin: 2px 0 0; font-size: 12px; color: hsl(var(--muted-foreground)); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+        .wm-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 9999px; background: hsl(var(--primary) / 0.1); color: hsl(var(--primary)); font-size: 11px; font-weight: 600; }
+        .wm-cta { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px 12px; border-radius: 10px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.15s, transform 0.15s; }
+        .wm-cta:hover { opacity: 0.92; transform: translateY(-1px); }
       `}</style>
     </div>
   );
