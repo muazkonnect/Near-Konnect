@@ -83,19 +83,18 @@ export const normalizeContactValue = (type: ContactType, value: string): string 
   return raw.replace(/\s+/g, "");
 };
 
-/** Apply normalizeContactValue to every method. Use right before persisting to DB. */
+/** Apply normalizeContactValue to every method. Use right before persisting to DB.
+ *  Preserves entries; empty values are kept so validation can flag them. */
 export const normalizeContactMethods = (methods: ContactMethod[]): ContactMethod[] =>
-  methods
-    .map((m) => ({ type: m.type, value: normalizeContactValue(m.type, m.value) }))
-    .filter((m) => m.value.length > 0);
+  methods.map((m) => ({ type: m.type, value: normalizeContactValue(m.type, m.value) }));
 
 export const validateContactMethods = (methods: ContactMethod[]): string | null => {
   if (methods.length > 10) return "You can add at most 10 contact methods.";
   const seen = new Set<string>();
   for (const m of methods) {
     const app = CONTACT_APP_BY_TYPE[m.type];
-    if (!m.value.trim()) return `Please fill in your ${app.label}.`;
-    if (m.value.length > 64) return "Contact value too long.";
+    if (!m.value.trim()) return `Please fill in your ${app.label} or remove it.`;
+    if (m.value.length > 64) return `${app.label} value is too long.`;
     if (app.isPhone) {
       if (!isValidPhoneNumber(m.value)) {
         return `${app.label} number is invalid for the selected country.`;
