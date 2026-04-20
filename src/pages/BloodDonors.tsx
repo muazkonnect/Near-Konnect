@@ -28,7 +28,7 @@ const BloodDonors = () => {
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [activeOnly, setActiveOnly] = useState(true);
-  const [userCoords, setUserCoords] = useState<Coords | null>(null);
+  const { coords: userCoords } = useRealtimeLocation();
   const [tab, setTab] = useState<"requests" | "donors">("requests");
   const [expandedDonor, setExpandedDonor] = useState<string | null>(null);
 
@@ -39,10 +39,6 @@ const BloodDonors = () => {
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [authLoading, user, navigate]);
-
-  useEffect(() => {
-    getCurrentPosition().then(setUserCoords).catch(() => setUserCoords(null));
-  }, []);
 
   const { data: donors = [], isLoading } = useQuery({
     queryKey: ["blood_donors"],
