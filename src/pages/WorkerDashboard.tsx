@@ -39,7 +39,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchConversationSummaries } from "@/lib/messages";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone } from "@/lib/contactMethods";
+import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
@@ -138,9 +138,7 @@ const WorkerDashboard = () => {
 
   const handleSave = async () => {
     if (!workerData || !user) return;
-    const trimmed: ContactMethod[] = contactMethods.map((m) =>
-      m.type === "phone" ? { ...m, value: sanitizePhone(m.value) } : { ...m, value: m.value.trim() }
-    );
+    const trimmed: ContactMethod[] = normalizeContactMethods(contactMethods);
     const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
     if (!phoneVal) { toast.error("A phone number is required."); return; }
     const err = validateContactMethods(trimmed);

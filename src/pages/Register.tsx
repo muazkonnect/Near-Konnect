@@ -17,7 +17,7 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import { type ContactMethod, validateContactMethods, sanitizePhone } from "@/lib/contactMethods";
+import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -62,10 +62,8 @@ const Register = () => {
       toast.error("A phone number is required.");
       return;
     }
-    // Normalise phone in the contact list too
-    const trimmedMethods: ContactMethod[] = contactMethods.map((m) =>
-      m.type === "phone" ? { ...m, value: normalizedPhone } : { ...m, value: m.value.trim() }
-    );
+    // Normalise every contact method (phones → E.164 no spaces; others → no internal whitespace)
+    const trimmedMethods: ContactMethod[] = normalizeContactMethods(contactMethods);
     const contactErr = validateContactMethods(trimmedMethods);
     if (contactErr) {
       toast.error(contactErr);
