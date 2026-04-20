@@ -43,17 +43,8 @@ const VerifyFace = () => {
           let errMsg: string | null = null;
           let isDup = false;
           if (error) {
-            const ctx = (error as { context?: { response?: Response } }).context;
-            if (ctx?.response) {
-              try {
-                const body = await ctx.response.clone().json();
-                if (body?.error) {
-                  errMsg = body.error;
-                  isDup = body.code === "duplicate_face";
-                }
-              } catch { /* ignore parse */ }
-            }
-            if (!errMsg) errMsg = error.message;
+            errMsg = "User already exists. Only one account is allowed per person.";
+            isDup = true;
           } else if ((result as { error?: string })?.error) {
             errMsg = (result as { error: string }).error;
             isDup = (result as { code?: string }).code === "duplicate_face";
@@ -61,7 +52,7 @@ const VerifyFace = () => {
           if (errMsg) {
             sessionStorage.removeItem(PENDING_KEY);
             if (isDup) {
-              toast.error(errMsg);
+              toast.error("User Exists", { description: errMsg, duration: 6000 });
               await supabase.auth.signOut();
               navigate("/login", { replace: true });
               return;
