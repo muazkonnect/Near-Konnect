@@ -139,10 +139,10 @@ const WorkerDashboard = () => {
   const handleSave = async () => {
     if (!workerData || !user) return;
     const trimmed: ContactMethod[] = normalizeContactMethods(contactMethods);
-    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
-    if (!phoneVal) { toast.error("A phone number is required."); return; }
     const err = validateContactMethods(trimmed);
     if (err) { toast.error(err); return; }
+    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
+    if (!phoneVal) { toast.error("A phone number is required."); return; }
     const hasWhatsapp = trimmed.some((m) => m.type === "whatsapp" && m.value);
 
     setSaving(true);
@@ -164,8 +164,9 @@ const WorkerDashboard = () => {
 
     setSaving(false);
     if (workerError || profileError) {
-      toast.error("Failed to save changes");
+      toast.error(profileError?.message || workerError?.message || "Failed to save changes");
     } else {
+      setContactMethods(trimmed);
       toast.success("Profile updated!");
       queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
     }

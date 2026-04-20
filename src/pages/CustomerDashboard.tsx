@@ -110,13 +110,13 @@ const CustomerDashboard = () => {
   const handleSave = async () => {
     if (!user) return;
     const trimmed: ContactMethod[] = normalizeContactMethods(contactMethods);
+    const err = validateContactMethods(trimmed);
+    if (err) { toast.error(err); return; }
     const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
     if (!phoneVal) {
       toast.error("A phone number is required.");
       return;
     }
-    const err = validateContactMethods(trimmed);
-    if (err) { toast.error(err); return; }
     const hasWhatsapp = trimmed.some((m) => m.type === "whatsapp" && m.value);
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
@@ -127,8 +127,13 @@ const CustomerDashboard = () => {
       contact_methods: trimmed,
     } as any).eq("user_id", user.id);
     setSaving(false);
-    if (error) toast.error("Failed to save");
-    else { toast.success("Profile updated!"); queryClient.invalidateQueries({ queryKey: ["my_profile"] }); }
+    if (error) toast.error(error.message || "Failed to save");
+    else {
+      // Update local state to the persisted (normalized) list so the UI stays in sync
+      setContactMethods(trimmed);
+      toast.success("Profile updated!");
+      queryClient.invalidateQueries({ queryKey: ["my_profile"] });
+    }
   };
 
   const handleAvatarUpload = async (url: string) => {
