@@ -28,6 +28,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 import Footer from "@/components/Footer";
+import DisclosureModals from "@/components/DisclosureModals";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <UnverifiedEmailBanner />
+              <DisclosureModals />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/discover" element={<Discover />} />
