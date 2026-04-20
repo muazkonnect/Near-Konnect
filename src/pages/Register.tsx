@@ -17,8 +17,10 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import FaceVerification from "@/components/FaceVerification";
+import SignupFaceCapture from "@/components/SignupFaceCapture";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
+
+const PENDING_FACE_KEY = "pending_face_verification_image";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,8 +30,7 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [verifyingFace, setVerifyingFace] = useState(false);
-  const [postSignupRedirect, setPostSignupRedirect] = useState<string>("/");
+  const [faceImage, setFaceImage] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
