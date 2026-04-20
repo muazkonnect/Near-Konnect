@@ -52,8 +52,8 @@ const PhoneField = ({
     const digits = parsed ? parsed.nationalNumber : (value || "").replace(/^\+?\d{0,3}/, "").replace(/\D/g, "");
     if (!digits) return "";
     const formatter = new AsYouType(effectiveCountry);
-    formatter.input(digits);
-    return formatter.formattedOutput || digits;
+    const out = formatter.input(digits);
+    return out || digits;
   }, [value, effectiveCountry]);
 
   const examplePlaceholder = useMemo(() => {
