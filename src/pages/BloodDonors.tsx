@@ -10,7 +10,8 @@ import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCurrentPosition, calculateDistance, type Coords } from "@/lib/geolocation";
+import { calculateDistance } from "@/lib/geolocation";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import AppLayout from "@/components/AppLayout";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods } from "@/lib/contactMethods";
@@ -27,7 +28,7 @@ const BloodDonors = () => {
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [activeOnly, setActiveOnly] = useState(true);
-  const [userCoords, setUserCoords] = useState<Coords | null>(null);
+  const { coords: userCoords } = useRealtimeLocation();
   const [tab, setTab] = useState<"requests" | "donors">("requests");
   const [expandedDonor, setExpandedDonor] = useState<string | null>(null);
 
@@ -38,10 +39,6 @@ const BloodDonors = () => {
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [authLoading, user, navigate]);
-
-  useEffect(() => {
-    getCurrentPosition().then(setUserCoords).catch(() => setUserCoords(null));
-  }, []);
 
   const { data: donors = [], isLoading } = useQuery({
     queryKey: ["blood_donors"],
@@ -80,9 +77,23 @@ const BloodDonors = () => {
     ch.on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
       queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
     });
+    ch.on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
+      queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
+    });
     ch.subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [queryClient]);
+
+  // Push viewer's live coords so other donors can see them in realtime
+  useEffect(() => {
+    if (!user || !userCoords) return;
+    (supabase.rpc as any)("set_worker_location", {
+      lat: userCoords.latitude,
+      lng: userCoords.longitude,
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
+    });
+  }, [user, userCoords?.latitude, userCoords?.longitude, queryClient]);
 
   const { data: openRequestsCount = 0 } = useQuery({
     queryKey: ["blood_requests_open_count"],
