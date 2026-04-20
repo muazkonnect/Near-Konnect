@@ -319,7 +319,7 @@ const WorkerDashboard = () => {
               { value: "bookings", label: "Bookings", icon: Calendar, badge: pendingBookings.length },
               { value: "messages", label: "Messages", icon: MessageSquare, badge: conversations.length },
               { value: "reviews", label: "Reviews", icon: Star, badge: reviews.length },
-              { value: "blood", label: "Blood", icon: HeartPulse },
+              { value: "blood", label: "Blood Konnect", icon: HeartPulse },
             ]}
             active={activeTab}
             onChange={setActiveTab}
