@@ -17,6 +17,7 @@ import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
+import FaceVerification from "@/components/FaceVerification";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const Register = () => {
@@ -27,6 +28,8 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [verifyingFace, setVerifyingFace] = useState(false);
+  const [postSignupRedirect, setPostSignupRedirect] = useState<string>("/");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -129,16 +132,36 @@ const Register = () => {
     }
 
     if (data.session) {
-      toast.success("Account created successfully!");
-      navigate(redirect, { replace: true });
+      toast.success("Account created! One more step: verify your face.");
+      setPostSignupRedirect(redirect);
+      setVerifyingFace(true);
       return;
     }
     toast.success("An 8-digit OTP has been sent to your email.");
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
+  const handleFaceVerified = () => {
+    toast.success("Identity verified!");
+    navigate(postSignupRedirect, { replace: true });
+  };
+
+  const handleFaceSkip = async () => {
+    await supabase.auth.signOut();
+    setVerifyingFace(false);
+    toast.message("Signed out. Please register again to complete verification.");
+  };
+
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
   const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+
+  if (verifyingFace) {
+    return (
+      <AuthShell title="Verify your identity" subtitle="Quick face check to keep NearKonnect safe">
+        <FaceVerification onVerified={handleFaceVerified} onSkip={handleFaceSkip} />
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell
