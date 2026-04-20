@@ -42,7 +42,7 @@ function bytesToBase64(bytes: Uint8Array) {
 }
 
 function isFaceppBusyError(message: string) {
-  return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS/i.test(message);
+  return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS|FACE_VERIFICATION_UNAVAILABLE/i.test(message);
 }
 
 function retryableFaceppResponse(message: string = KNOWN_FACEPP_BUSY_ERROR) {
