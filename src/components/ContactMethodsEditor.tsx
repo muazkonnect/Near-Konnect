@@ -7,6 +7,8 @@ import {
   type ContactMethod,
   type ContactType,
 } from "@/lib/contactMethods";
+import PhoneField from "@/components/PhoneField";
+import { useDetectedCountry } from "@/hooks/useDetectedCountry";
 
 interface Props {
   value: ContactMethod[];
@@ -16,6 +18,7 @@ interface Props {
 }
 
 const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) => {
+  const detectedCountry = useDetectedCountry();
   const usedTypes = new Set(value.map((m) => m.type));
   const availableApps = CONTACT_APPS.filter((a) => !usedTypes.has(a.type));
 
@@ -46,18 +49,27 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
           const Icon = app.icon;
           const isLockedPhone = requirePhone && m.type === "phone";
           return (
-            <div key={`${m.type}-${idx}`} className="flex items-center gap-2">
-              <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${app.brandClass}`}>
+            <div key={`${m.type}-${idx}`} className="flex items-start gap-2">
+              <span className={`mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-xl ${app.brandClass}`}>
                 <Icon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">
-                <Input
-                  value={m.value}
-                  onChange={(e) => updateValue(idx, e.target.value)}
-                  placeholder={app.placeholder}
-                  aria-label={`${app.label} contact value`}
-                  className="h-11 rounded-xl"
-                />
+                {app.isPhone ? (
+                  <PhoneField
+                    value={m.value}
+                    onChange={(v) => updateValue(idx, v)}
+                    defaultCountry={detectedCountry}
+                    ariaLabel={`${app.label} number`}
+                  />
+                ) : (
+                  <Input
+                    value={m.value}
+                    onChange={(e) => updateValue(idx, e.target.value)}
+                    placeholder={app.placeholder}
+                    aria-label={`${app.label} contact value`}
+                    className="h-11 rounded-xl"
+                  />
+                )}
                 <p className="mt-0.5 px-1 text-[10px] uppercase tracking-wide text-muted-foreground">{app.label}</p>
               </div>
               <Button
@@ -67,7 +79,7 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
                 onClick={() => removeMethod(idx)}
                 disabled={isLockedPhone}
                 aria-label={`Remove ${app.label}`}
-                className="shrink-0 text-muted-foreground hover:text-destructive disabled:opacity-30"
+                className="mt-0.5 shrink-0 text-muted-foreground hover:text-destructive disabled:opacity-30"
               >
                 <X className="h-4 w-4" />
               </Button>
