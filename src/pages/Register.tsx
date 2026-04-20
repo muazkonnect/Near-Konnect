@@ -28,6 +28,8 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [verifyingFace, setVerifyingFace] = useState(false);
+  const [postSignupRedirect, setPostSignupRedirect] = useState<string>("/");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
