@@ -45,10 +45,9 @@ const Login = () => {
     }
 
     setLoading(false);
-    toast.success("Logged in. Please verify your face to continue.");
+    toast.success("Logged in successfully.");
     const redirect = searchParams.get("redirect") || "/";
-    // Always require face re-verification on every login (compares against stored image)
-    navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}&force=1`, { replace: true });
+    navigate(redirect, { replace: true });
   };
 
   return (
