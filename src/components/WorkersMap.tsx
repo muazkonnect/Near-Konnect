@@ -205,9 +205,20 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         .leaflet-control-zoom a { background: white !important; color: #000 !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 500 !important; }
         .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; backdrop-filter: blur(6px); font-size: 10px !important; padding: 2px 6px !important; border-radius: 6px !important; margin: 6px !important; }
-        .wm-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px 6px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.05); }
-        .wm-popup .leaflet-popup-content { margin: 10px 12px; font-weight: 400; }
-        .wm-popup .leaflet-popup-tip { box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
+        .wm-popup .leaflet-popup-content-wrapper { border-radius: 18px; padding: 0; box-shadow: 0 20px 50px -16px rgba(0,0,0,0.35); border: 1px solid hsl(var(--border)); background: hsl(var(--card)); overflow: hidden; }
+        .wm-popup .leaflet-popup-content { margin: 0; font-weight: 400; width: 240px !important; }
+        .wm-popup .leaflet-popup-tip { background: hsl(var(--card)); box-shadow: 0 4px 10px -4px rgba(0,0,0,0.2); }
+        .wm-card { padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: background 0.15s; }
+        .wm-card:hover { background: hsl(var(--muted) / 0.5); }
+        .wm-row { display: flex; align-items: center; gap: 10px; }
+        .wm-avatar { width: 40px; height: 40px; border-radius: 12px; background: hsl(var(--hero)); color: hsl(var(--primary)); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex-shrink: 0; letter-spacing: 0.02em; }
+        .wm-info { min-width: 0; flex: 1; }
+        .wm-name { margin: 0; font-size: 14px; font-weight: 700; color: hsl(var(--card-foreground)); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-prof { margin: 2px 0 0; font-size: 12px; color: hsl(var(--muted-foreground)); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+        .wm-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 9999px; background: hsl(var(--primary) / 0.1); color: hsl(var(--primary)); font-size: 11px; font-weight: 600; }
+        .wm-cta { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px 12px; border-radius: 10px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.15s, transform 0.15s; }
+        .wm-cta:hover { opacity: 0.92; transform: translateY(-1px); }
       `}</style>
     </div>
   );
