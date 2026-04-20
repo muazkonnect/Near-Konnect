@@ -46,15 +46,27 @@ const PhoneField = ({
 
   const countryEntry = getCountry(effectiveCountry) ?? getCountry(defaultCountry)!;
 
-  // Format national digits for display using AsYouType
+  // Pull the national digits out of whatever is stored. Works even for
+  // partial/incomplete numbers like "+923" where strict parsing returns null.
+  const nationalDigits = useMemo(() => {
+    const raw = value || "";
+    const parsed = parsePhoneNumberFromString(raw);
+    if (parsed) return parsed.nationalNumber;
+    const allDigits = raw.replace(/\D/g, "");
+    if (!allDigits) return "";
+    const dial = countryEntry.dialCode;
+    if (raw.startsWith("+") && allDigits.startsWith(dial)) {
+      return allDigits.slice(dial.length);
+    }
+    return allDigits;
+  }, [value, countryEntry.dialCode]);
+
   const displayNational = useMemo(() => {
-    const parsed = parsePhoneNumberFromString(value || "");
-    const digits = parsed ? parsed.nationalNumber : (value || "").replace(/^\+?\d{0,3}/, "").replace(/\D/g, "");
-    if (!digits) return "";
+    if (!nationalDigits) return "";
     const formatter = new AsYouType(effectiveCountry);
-    const out = formatter.input(digits);
-    return out || digits;
-  }, [value, effectiveCountry]);
+    const out = formatter.input(nationalDigits);
+    return out || nationalDigits;
+  }, [nationalDigits, effectiveCountry]);
 
   const examplePlaceholder = useMemo(() => {
     try {
@@ -65,7 +77,9 @@ const PhoneField = ({
     }
   }, [effectiveCountry]);
 
-  const isValid = !value || isValidPhoneNumber(value);
+  // Only flag invalid once the user has typed enough digits to plausibly
+  // complete a number (avoids "Invalid" warning on every keystroke).
+  const isValid = !nationalDigits || nationalDigits.length < 6 || isValidPhoneNumber(value);
 
   const handleNationalChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "");
