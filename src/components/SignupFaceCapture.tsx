@@ -3,6 +3,7 @@ import { Camera, RefreshCw, AlertCircle, CheckCircle2, Video, Loader2, Check } f
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { detectFaceDescriptor, loadFaceModels } from "@/lib/faceApi";
 
 type Status = "idle" | "starting" | "ready" | "preview" | "confirmed" | "error";
 
@@ -51,6 +52,8 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
   }, []);
 
   useEffect(() => {
+    // Warm up face-api models in the background so the first capture is faster.
+    loadFaceModels().catch(() => {/* ignore — will retry on confirm */});
     return () => stopStream();
   }, [stopStream]);
 
@@ -90,12 +93,27 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
     setError(null);
 
     try {
+      // Compute the face descriptor in the browser using face-api.js.
+      const detection = await detectFaceDescriptor(preview);
+      if (detection.count === 0) {
+        const msg = "No face detected. Please face the camera clearly.";
+        setError(msg);
+        toast.error(msg);
+        return;
+      }
+      if (detection.count > 1) {
+        const msg = "Multiple faces detected. Only you should be in frame.";
+        setError(msg);
+        toast.error(msg);
+        return;
+      }
+
       let attempt = 0;
       let delay = DEFAULT_RETRY_DELAY_MS;
 
       while (attempt < MAX_RETRIES) {
         const { data, error: fnError } = await supabase.functions.invoke("check-face-duplicate", {
-          body: { image: preview },
+          body: { image: preview, descriptor: detection.descriptor },
         });
 
         let errMsg: string | null = null;
