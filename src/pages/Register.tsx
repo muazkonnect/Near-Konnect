@@ -309,7 +309,7 @@ const Register = () => {
           </label>
         </div>
 
-        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
+        <Button type="submit" disabled={loading || !agreedToTerms || !faceImage} variant="hero" size="lg" className="w-full">
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
