@@ -157,17 +157,18 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
           ? `<span class="wm-chip">${w.distanceKm.toFixed(2)} km</span>`
           : "";
       const professionHtml = w.profession
-        ? `<p class="wm-prof">${w.profession}</p>`
+        ? `<span class="wm-prof">${w.profession}</span><span class="wm-dot">·</span>`
         : "";
       const clickable = w.linkToProfile !== false;
       m.bindPopup(
         `<div class="wm-card${clickable ? ' wm-card-clickable' : ''}" data-worker-link="${w.id}">
-          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
-          <div class="wm-info">
-            <p class="wm-name">${w.name}</p>
+          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
+          <div class="wm-row">
+            <span class="wm-name">${w.name}</span>
+            <span class="wm-dot">·</span>
             ${professionHtml}
+            ${distanceHtml}
           </div>
-          ${distanceHtml}
         </div>`,
         { className: "wm-popup", closeButton: false, offset: [0, -4] }
       );
@@ -235,17 +236,16 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         .wm-popup .leaflet-popup-content-wrapper { border-radius: 16px; padding: 0; box-shadow: 0 18px 40px -16px hsl(var(--hero) / 0.55); border: none; background: transparent; overflow: visible; }
         .wm-popup .leaflet-popup-content { margin: 0; font-weight: 400; width: auto !important; }
         .wm-popup .leaflet-popup-tip { background: hsl(var(--hero)); box-shadow: 0 4px 10px -4px hsl(var(--hero) / 0.5); }
-        .wm-card { position: relative; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; background: hsl(var(--hero)); color: hsl(var(--hero-foreground)); border-radius: 16px; overflow: hidden; min-width: 170px; max-width: 220px; font-family: 'Inter', system-ui, sans-serif; box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.1); }
-        .wm-card::before { content: ""; position: absolute; inset: 0; opacity: 0.06; background-image: radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px); background-size: 16px 16px; pointer-events: none; }
-        .wm-card::after { content: ""; position: absolute; right: -36px; top: -36px; width: 100px; height: 100px; border-radius: 9999px; background: hsl(var(--primary) / 0.2); filter: blur(28px); pointer-events: none; }
-        .wm-card-clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-        .wm-card-clickable:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.18), 0 12px 24px -12px hsl(var(--hero) / 0.6); }
-        .wm-pin { position: relative; width: 36px; height: 36px; border-radius: 9999px; background: hsl(0 0% 100% / 0.1); color: hsl(var(--primary)); display: grid; place-items: center; flex-shrink: 0; transition: background 0.2s; }
-        .wm-card-clickable:hover .wm-pin { background: hsl(0 0% 100% / 0.15); }
-        .wm-info { position: relative; min-width: 0; width: 100%; display: flex; flex-direction: column; line-height: 1.25; gap: 2px; }
-        .wm-name { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--hero-foreground)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .wm-prof { margin: 0; font-size: 11px; font-weight: 500; color: hsl(var(--hero-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .wm-chip { position: relative; align-self: flex-start; padding: 3px 8px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+        .wm-card { position: relative; padding: 6px 10px 6px 6px; display: inline-flex; align-items: center; gap: 8px; background: hsl(var(--hero)); color: hsl(var(--hero-foreground)); border-radius: 10px; overflow: hidden; font-family: 'Inter', system-ui, sans-serif; box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.1); white-space: nowrap; }
+        .wm-card::before { content: ""; position: absolute; inset: 0; opacity: 0.08; background-image: radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px); background-size: 10px 10px; pointer-events: none; }
+        .wm-card-clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+        .wm-card-clickable:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.2); }
+        .wm-pin { position: relative; width: 22px; height: 22px; border-radius: 6px; background: hsl(0 0% 100% / 0.1); color: hsl(var(--primary)); display: grid; place-items: center; flex-shrink: 0; }
+        .wm-row { position: relative; display: inline-flex; align-items: center; gap: 6px; line-height: 1; }
+        .wm-name { font-size: 12px; font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--hero-foreground)); }
+        .wm-prof { font-size: 11px; font-weight: 500; color: hsl(var(--hero-muted)); }
+        .wm-dot { font-size: 11px; color: hsl(var(--hero-muted)); opacity: 0.6; }
+        .wm-chip { position: relative; padding: 2px 6px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
       `}</style>
     </div>
   );
