@@ -382,8 +382,8 @@ const CustomerDashboard = () => {
             <div className="space-y-3">
               {myBookings.length === 0 ? (
                 <div className="rounded-3xl border bg-card p-12 text-center">
-                  <div className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4">
-                    <Calendar className="h-8 w-8 text-primary" />
+                  <div className="mx-auto mb-4 inline-flex rounded-2xl p-4 bg-muted">
+                    <Calendar className="h-8 w-8 text-secondary" />
                   </div>
                   <p className="font-semibold text-card-foreground">No bookings yet</p>
                   <p className="mt-1 text-sm text-muted-foreground">Find a service and book your first one!</p>
