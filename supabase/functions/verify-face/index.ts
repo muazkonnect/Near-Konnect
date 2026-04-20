@@ -196,24 +196,28 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2b) Duplicate-face check: search the global FaceSet to ensure this face
-    // is not already registered to a different account (one face = one account).
+    // 2b) Duplicate-face check: first search the global FaceSet, then fall back
+    // to direct image-vs-image compares against verified stored face photos.
     if (needsEnrollmentDedupCheck) {
-      const runSearch = async () => {
+      const duplicateError = {
+        error:
+          "This face is already registered with another account. Only one account per person is allowed.",
+        code: "duplicate_face",
+      };
+      let faceSetTokens: string[] = [];
+      try {
         const searchForm = new FormData();
         searchForm.append("face_token", newFaceToken);
         searchForm.append("outer_id", FACESET_OUTER_ID);
-        searchForm.append("return_result_count", "5");
-        return await faceppCall("search", searchForm);
-      };
-      let search: Record<string, unknown> | null = null;
-      try {
-        search = await runSearch();
+        searchForm.append("return_result_count", "10");
+        const search = await faceppCall("search", searchForm);
+        const results = (search.results ?? []) as Array<{ face_token: string; confidence: number }>;
+        const thresholds = (search.thresholds ?? {}) as Record<string, number>;
+        const threshold = thresholds["1e-5"] ?? DUP_CONFIDENCE_FALLBACK;
+        faceSetTokens = results.filter((r) => r.confidence >= threshold).map((r) => r.face_token);
       } catch (e) {
         const msg = (e as Error).message;
         if (/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) {
-          // FaceSet not yet created — create it and skip this duplicate check
-          // (no enrolled faces means no duplicates possible).
           const createForm = new FormData();
           createForm.append("outer_id", FACESET_OUTER_ID);
           createForm.append("display_name", "NearKonnect Users");
@@ -224,29 +228,57 @@ Deno.serve(async (req) => {
           console.warn("FaceSet search failed (non-fatal):", msg);
         }
       }
-      if (search) {
-        const results = (search.results ?? []) as Array<{ face_token: string; confidence: number }>;
-        const thresholds = (search.thresholds ?? {}) as Record<string, number>;
-        const threshold = thresholds["1e-5"] ?? DUP_CONFIDENCE_FALLBACK;
-        const matches = results.filter((r) => r.confidence >= threshold);
-        if (matches.length > 0) {
-          // Verify at least one match maps to a DIFFERENT user in our DB.
-          const tokens = matches.map((m) => m.face_token);
-          const { data: owners } = await adminClient
-            .from("profiles")
-            .select("user_id, face_token")
-            .in("face_token", tokens);
-          const conflict = (owners ?? []).find((o) => o.user_id !== userId);
-          if (conflict) {
-            return jsonResponse(
-              {
-                error:
-                  "This face is already registered with another account. Only one account per person is allowed.",
-                code: "duplicate_face",
-              },
-              409,
-            );
+
+      if (faceSetTokens.length > 0) {
+        const { data: owners } = await adminClient
+          .from("profiles")
+          .select("user_id, face_token")
+          .in("face_token", faceSetTokens);
+        const conflict = (owners ?? []).find((o) => o.user_id !== userId);
+        if (conflict) {
+          return jsonResponse(duplicateError, 409);
+        }
+      }
+
+      const bytesToBase64 = (bytes: Uint8Array) => {
+        let binary = "";
+        const chunk = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+        }
+        return btoa(binary);
+      };
+
+      const { data: candidates } = await adminClient
+        .from("profiles")
+        .select("user_id, face_image_path, face_verified_at")
+        .eq("face_verified", true)
+        .not("face_image_path", "is", null)
+        .neq("user_id", userId)
+        .order("face_verified_at", { ascending: false })
+        .limit(50);
+
+      for (const candidate of candidates ?? []) {
+        if (!candidate.face_image_path) continue;
+        try {
+          const { data: file, error: downloadErr } = await adminClient.storage
+            .from("face-verifications")
+            .download(candidate.face_image_path);
+          if (downloadErr || !file) continue;
+
+          const storedBytes = new Uint8Array(await file.arrayBuffer());
+          const storedBase64 = bytesToBase64(storedBytes);
+          const compareForm = new FormData();
+          compareForm.append("image_base64_1", base64);
+          compareForm.append("image_base64_2", storedBase64);
+          const compare = await faceppCall("compare", compareForm);
+          const confidence: number = compare.confidence ?? 0;
+          const threshold: number = compare.thresholds?.["1e-5"] ?? DUP_CONFIDENCE_FALLBACK;
+          if (confidence >= threshold) {
+            return jsonResponse(duplicateError, 409);
           }
+        } catch (err) {
+          console.warn("Fallback duplicate compare skipped:", (err as Error).message);
         }
       }
     }
