@@ -38,6 +38,7 @@ const Register = () => {
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const phoneEntry = contactMethods.find((m) => m.type === "phone");
   const phone = phoneEntry?.value ?? "";
@@ -75,6 +76,10 @@ const Register = () => {
     }
     if (role === "worker" && !workerCoords) {
       toast.error("Please pick your fixed service location on the map.");
+      return;
+    }
+    if (!agreedToTerms) {
+      toast.error("Please agree to the Terms & Conditions to continue.");
       return;
     }
 
@@ -252,7 +257,42 @@ const Register = () => {
           </>
         )}
 
-        <Button type="submit" disabled={loading} variant="hero" size="lg" className="w-full">
+        <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Platform Role — Communication Only</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              NearKonnect serves <strong>solely as a communication platform</strong> connecting customers with service workers.
+              We are <strong>not responsible</strong> for the quality, timing, or outcome of any work, payments, agreements, damages,
+              injuries, or disputes between parties. All dealings happen at your own risk.
+            </p>
+          </div>
+          <label htmlFor="agreeTerms" className="flex cursor-pointer items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              id="agreeTerms"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-primary"
+            />
+            <span className="text-foreground">
+              I have read and agree to the{" "}
+              <Link to="/terms" target="_blank" className="font-semibold text-primary hover:underline">
+                Terms & Conditions
+              </Link>
+              ,{" "}
+              <Link to="/privacy" target="_blank" className="font-semibold text-primary hover:underline">
+                Privacy Policy
+              </Link>{" "}
+              and{" "}
+              <Link to="/disclaimer" target="_blank" className="font-semibold text-primary hover:underline">
+                Disclaimer
+              </Link>
+              .
+            </span>
+          </label>
+        </div>
+
+        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
