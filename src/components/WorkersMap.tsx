@@ -111,9 +111,10 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       zoomControl: false,
       attributionControl: false,
     });
-    L.tileLayer("https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?lang=en&access-token=community", {
-      attribution: "&copy; Jawg Maps &copy; OpenStreetMap contributors",
-      maxZoom: 22,
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      attribution: "&copy; OpenStreetMap &copy; CARTO",
+      subdomains: "abcd",
+      maxZoom: 19,
     }).addTo(map);
     L.control.zoom({ position: "bottomright" }).addTo(map);
     L.control.attribution({ position: "bottomleft", prefix: false }).addTo(map);
