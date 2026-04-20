@@ -26,14 +26,14 @@ const Footer = () => {
         }}
       />
       <div className="relative px-6 py-10 md:px-10 md:py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:items-start">
-          {/* Left: Legal */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:items-center">
+          {/* Left: Explore */}
           <div className="md:text-left">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-hero-muted">
-              Legal
+              Explore
             </h4>
             <ul className="space-y-2.5 text-sm">
-              {legalLinks.map((l) => (
+              {appLinks.map((l) => (
                 <li key={l.to}>
                   <Link to={l.to} className="text-hero-muted transition-colors hover:text-hero-foreground">
                     {l.label}
@@ -44,7 +44,7 @@ const Footer = () => {
           </div>
 
           {/* Middle: Logo */}
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center justify-center text-center">
             <Link to="/" className="inline-flex items-center gap-2">
               <MapPin className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold">NearKonnect</span>
@@ -54,13 +54,13 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Right: App pages */}
+          {/* Right: Legal */}
           <div className="md:text-right">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-hero-muted">
-              Explore
+              Legal
             </h4>
             <ul className="space-y-2.5 text-sm">
-              {appLinks.map((l) => (
+              {legalLinks.map((l) => (
                 <li key={l.to}>
                   <Link to={l.to} className="text-hero-muted transition-colors hover:text-hero-foreground">
                     {l.label}
