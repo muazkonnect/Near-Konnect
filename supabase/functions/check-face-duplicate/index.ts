@@ -18,7 +18,6 @@ const DUP_CONFIDENCE_FALLBACK = 73;
 const STORAGE_BUCKET = "face-verifications";
 const FALLBACK_COMPARE_LIMIT = 50;
 const FACEPP_BUSY_RETRY_MS = 1200;
-const KNOWN_FACEPP_BUSY_ERROR = "Face++ search failed: CONCURRENCY_LIMIT_EXCEEDED";
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -45,7 +44,7 @@ function isFaceppBusyError(message: string) {
   return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS|FACE_VERIFICATION_UNAVAILABLE/i.test(message);
 }
 
-function retryableFaceppResponse(message: string = KNOWN_FACEPP_BUSY_ERROR) {
+function retryableFaceppResponse(message: string) {
   return jsonResponse(
     {
       error: message,
