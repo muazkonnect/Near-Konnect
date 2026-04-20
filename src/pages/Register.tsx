@@ -126,9 +126,11 @@ const Register = () => {
       setLoading(false);
       if (error) {
         const msg = getAuthErrorMessage(error);
-        toast.error(msg);
         if (/already registered|already exists|log in instead/i.test(msg)) {
+          toast.error("Account already exists, please login");
           navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+        } else {
+          toast.error(msg);
         }
         return;
       }
@@ -137,7 +139,7 @@ const Register = () => {
 
       const identities = (data.user as { identities?: unknown[] } | null)?.identities;
       if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-        toast.error("This email is already registered. Please log in instead.");
+        toast.error("Account already exists, please login");
         navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
         return;
       }
