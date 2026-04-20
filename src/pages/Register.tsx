@@ -155,6 +155,14 @@ const Register = () => {
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
   const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
 
+  if (verifyingFace) {
+    return (
+      <AuthShell title="Verify your identity" subtitle="Quick face check to keep NearKonnect safe">
+        <FaceVerification onVerified={handleFaceVerified} onSkip={handleFaceSkip} />
+      </AuthShell>
+    );
+  }
+
   return (
     <AuthShell
       title={t("register.title")}
