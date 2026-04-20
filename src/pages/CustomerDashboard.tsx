@@ -235,7 +235,7 @@ const CustomerDashboard = () => {
               { value: "profile", label: "Profile", icon: User },
               { value: "bookings", label: "Bookings", icon: Calendar, badge: myBookings.length },
               { value: "messages", label: "Messages", icon: MessageSquare, badge: conversations.length },
-              { value: "blood", label: "Blood", icon: HeartPulse },
+              { value: "blood", label: "Blood Konnect", icon: HeartPulse },
             ]}
             active={activeTab}
             onChange={setActiveTab}
