@@ -360,7 +360,7 @@ const Discover = () => {
                         key={subCategory}
                         type="button"
                         onClick={() => toggleSubCategory(subCategory)}
-                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors text-inherit bg-inherit ${
                           active
                             ? "bg-primary text-primary-foreground"
                             : "bg-white/10 text-hero-foreground hover:bg-white/15"

@@ -29,7 +29,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   const navItems = [
     { label: "Home", to: "/", icon: Home },
     { label: "Explore", to: "/discover", icon: Compass },
-    { label: "Requests", to: "/blood-donors", icon: HeartPulse, emphasis: true },
+    { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true },
     { label: "Messages", to: "/messages", icon: MessageSquare },
     { label: "Profile", to: profilePath, icon: UserRound },
   ];
@@ -105,7 +105,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
+                  <span className="text-inherit bg-inherit">{item.label}</span>
                 </Link>
               );
             })}
