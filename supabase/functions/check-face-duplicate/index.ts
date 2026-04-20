@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
         return jsonResponse({
           duplicate: true,
           error: "This face is already registered with another account. Only one account per person is allowed.",
-        }, 409);
+        });
       }
     }
 
