@@ -186,6 +186,10 @@ Deno.serve(async (req) => {
     return jsonResponse({ duplicate: false });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isFaceppBusyError(msg)) {
+      console.warn("check-face-duplicate busy:", msg);
+      return retryableFaceppResponse(msg);
+    }
     console.error("check-face-duplicate error:", msg);
     return jsonResponse({ error: msg }, 500);
   }
