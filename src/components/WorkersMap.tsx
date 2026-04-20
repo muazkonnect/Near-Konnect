@@ -5,26 +5,63 @@ import "leaflet/dist/leaflet.css";
 import { MapPin, Sparkles } from "lucide-react";
 import type { Coords } from "@/lib/geolocation";
 
-const workerIcon = L.divIcon({
-  className: "",
-  html: `
-    <div style="position:relative;display:flex;flex-direction:column;align-items:center;font-family:system-ui,-apple-system,sans-serif;">
-      <div style="
-        width:32px;height:32px;border-radius:9999px;
-        background:#000;
-        border:3px solid white;
-        box-shadow:0 4px 12px -2px rgba(0,0,0,0.5);
-        display:grid;place-items:center;color:white;
-      ">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+// Profession → SVG path (lucide). Falls back to MapPin.
+const PROFESSION_ICONS: { keywords: string[]; svg: string }[] = [
+  // Wrench (plumber, mechanic, repair)
+  { keywords: ["plumb", "mechanic", "repair", "fix", "handyman", "maint"], svg: `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>` },
+  // Zap (electrician)
+  { keywords: ["electric", "wire", "elect"], svg: `<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>` },
+  // Paintbrush (painter)
+  { keywords: ["paint"], svg: `<path d="M14.622 17.897 10.03 13.31"/><path d="M18.793 4.207a2.83 2.83 0 0 1 4 4L8.473 22.527l-5.656 1.414 1.414-5.657z"/>` },
+  // Scissors (barber, tailor, salon)
+  { keywords: ["barber", "hair", "salon", "tailor", "stylist"], svg: `<circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>` },
+  // ChefHat (cook, chef)
+  { keywords: ["chef", "cook", "kitchen"], svg: `<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>` },
+  // Truck (driver, mover)
+  { keywords: ["driver", "transport", "deliver", "mover", "haul"], svg: `<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>` },
+  // Sparkles (cleaner, maid)
+  { keywords: ["clean", "maid", "wash"], svg: `<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>` },
+  // Camera (photographer)
+  { keywords: ["photo", "camera", "video"], svg: `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>` },
+  // Stethoscope (doctor, medic, nurse)
+  { keywords: ["doctor", "medic", "nurse", "health"], svg: `<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>` },
+  // GraduationCap (teacher, tutor)
+  { keywords: ["teach", "tutor", "instructor", "lesson"], svg: `<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>` },
+  // Code (developer, programmer, IT)
+  { keywords: ["develop", "program", "code", "software", "web", "app", "it ", "tech"], svg: `<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>` },
+  // Hammer (carpenter, construction, mason)
+  { keywords: ["carpent", "wood", "construct", "mason", "builder"], svg: `<path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/>` },
+  // Flower (gardener)
+  { keywords: ["garden", "land", "plant"], svg: `<circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/><path d="m8 8 1.88 1.88"/><path d="M14.12 9.88 16 8"/><path d="m8 16 1.88-1.88"/><path d="M14.12 14.12 16 16"/>` },
+  // ShieldCheck (security, guard)
+  { keywords: ["security", "guard"], svg: `<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>` },
+  // Briefcase (default professional)
+  { keywords: ["consult", "advis", "agent", "manag"], svg: `<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>` },
+];
+const DEFAULT_PIN_SVG = `<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>`;
+const getProfessionSvg = (profession?: string) => {
+  if (!profession) return DEFAULT_PIN_SVG;
+  const p = profession.toLowerCase();
+  for (const entry of PROFESSION_ICONS) {
+    if (entry.keywords.some((k) => p.includes(k))) return entry.svg;
+  }
+  return DEFAULT_PIN_SVG;
+};
+const buildWorkerIcon = (profession?: string) =>
+  L.divIcon({
+    className: "",
+    html: `
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;font-family:system-ui,-apple-system,sans-serif;">
+        <div style="width:34px;height:34px;border-radius:9999px;background:#000;border:3px solid white;box-shadow:0 4px 12px -2px rgba(0,0,0,0.5);display:grid;place-items:center;color:white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${getProfessionSvg(profession)}</svg>
+        </div>
+        <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #000;margin-top:-2px;"></div>
       </div>
-      <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #000;margin-top:-2px;"></div>
-    </div>
-  `,
-  iconSize: [32, 42],
-  iconAnchor: [16, 42],
-  popupAnchor: [0, -40],
-});
+    `,
+    iconSize: [34, 44],
+    iconAnchor: [17, 44],
+    popupAnchor: [0, -42],
+  });
 
 const userIcon = L.divIcon({
   className: "",
