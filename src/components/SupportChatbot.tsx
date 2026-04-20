@@ -41,6 +41,13 @@ const SupportChatbot = () => {
     getCurrentPosition().then(setCoords).catch(() => {});
   }, []);
 
+  // Allow other parts of the app to open the chatbot via a custom event
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("open-support-chat", handler);
+    return () => window.removeEventListener("open-support-chat", handler);
+  }, []);
+
   // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {

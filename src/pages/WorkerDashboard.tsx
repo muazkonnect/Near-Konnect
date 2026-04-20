@@ -476,6 +476,20 @@ const WorkerDashboard = () => {
                         height="240px"
                       />
                     </div>
+                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-border bg-card/50 p-3">
+                      <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground">
+                        Need to change your fixed location?{" "}
+                        <button
+                          type="button"
+                          onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))}
+                          className="font-semibold text-primary underline-offset-2 hover:underline"
+                        >
+                          Contact us
+                        </button>{" "}
+                        and our team will help you update it.
+                      </p>
+                    </div>
                   </>
                 ) : (
                   <Button variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-11 gap-2 rounded-xl">
