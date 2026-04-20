@@ -264,7 +264,6 @@ const Register = () => {
           </>
         )}
 
-        <SignupFaceCapture value={faceImage} onChange={setFaceImage} />
 
         <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
           <div>
@@ -301,7 +300,7 @@ const Register = () => {
           </label>
         </div>
 
-        <Button type="submit" disabled={loading || !agreedToTerms || !faceImage} variant="hero" size="lg" className="w-full">
+        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
