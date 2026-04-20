@@ -1122,6 +1122,7 @@ export type Database = {
         }
         Returns: number
       }
+      phone_exists: { Args: { _phone: string }; Returns: boolean }
       populate_geometry_columns:
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
         | { Args: { use_typmod?: boolean }; Returns: string }
