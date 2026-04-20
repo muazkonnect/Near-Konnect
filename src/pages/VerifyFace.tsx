@@ -5,6 +5,7 @@ import AuthShell from "@/components/AuthShell";
 import FaceVerification from "@/components/FaceVerification";
 import { supabase } from "@/integrations/supabase/client";
 import { detectFaceDescriptor } from "@/lib/faceApi";
+import { getFaceFunctionErrorDetails, isDuplicateFaceResult } from "@/lib/faceFunctionErrors";
 import { Loader2 } from "lucide-react";
 
 const PENDING_KEY = "pending_face_verification_image";
@@ -40,15 +41,9 @@ const VerifyFace = () => {
           const { data: result, error } = await supabase.functions.invoke("verify-face", {
             body: { image: pending, descriptor: detection.descriptor },
           });
-          let errMsg: string | null = null;
-          let isDup = false;
-          if (error) {
-            errMsg = "User already exists. Only one account is allowed per person.";
-            isDup = true;
-          } else if ((result as { error?: string })?.error) {
-            errMsg = (result as { error: string }).error;
-            isDup = (result as { code?: string }).code === "duplicate_face";
-          }
+          const details = await getFaceFunctionErrorDetails(error, result);
+          const errMsg = details?.message ?? (result as { error?: string })?.error ?? null;
+          const isDup = isDuplicateFaceResult(details, result);
           if (errMsg) {
             sessionStorage.removeItem(PENDING_KEY);
             if (isDup) {

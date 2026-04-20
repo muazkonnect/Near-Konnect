@@ -51,8 +51,8 @@ const VerifyOtp = () => {
       toast.error(getAuthErrorMessage(error) || "Invalid or expired code.");
       return;
     }
-    toast.success("Email verified! Welcome.");
-    navigate(redirect, { replace: true });
+    toast.success("Email verified! Now verify your face.");
+    navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
   useEffect(() => {

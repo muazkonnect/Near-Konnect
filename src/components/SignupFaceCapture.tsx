@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { detectFaceDescriptor, loadFaceModels } from "@/lib/faceApi";
+import { getFaceFunctionErrorDetails, isDuplicateFaceResult } from "@/lib/faceFunctionErrors";
 
 type Status = "idle" | "starting" | "ready" | "preview" | "confirmed" | "error";
 
@@ -116,19 +117,18 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
           body: { image: preview, descriptor: detection.descriptor },
         });
 
+        const details = await getFaceFunctionErrorDetails(fnError, data);
+
         let errMsg: string | null = null;
         let isDup = false;
         let shouldRetry = false;
         let retryAfterMs = delay;
 
-        if (fnError) {
-          const dupMsg = "User already exists. Only one account is allowed per person.";
-          setError(dupMsg);
-          toast.error("User Exists", { description: dupMsg, duration: 6000 });
-          setPreview(null);
-          onChange(null);
-          setStatus("idle");
-          return;
+        if (isDuplicateFaceResult(details, data)) {
+          isDup = true;
+          errMsg = details?.message ?? "This face is already registered with another account.";
+        } else if (details) {
+          errMsg = details.message;
         } else {
           const res = (data ?? {}) as {
             duplicate?: boolean;

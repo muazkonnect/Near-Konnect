@@ -3,6 +3,7 @@ import { Camera, RefreshCw, ShieldCheck, Loader2, AlertCircle, CheckCircle2 } fr
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { detectFaceDescriptor, loadFaceModels } from "@/lib/faceApi";
+import { getFaceFunctionErrorDetails } from "@/lib/faceFunctionErrors";
 
 type Status = "idle" | "starting" | "ready" | "captured" | "submitting" | "success" | "error";
 
@@ -91,22 +92,9 @@ const FaceVerification = ({ onVerified, onSkip }: FaceVerificationProps) => {
       const { data, error: fnError } = await supabase.functions.invoke("verify-face", {
         body: { image: preview, descriptor: detection.descriptor },
       });
-      if (fnError) {
-        // Try to extract structured error message returned in body
-        let message = fnError.message;
-        try {
-          const ctx = (fnError as unknown as { context?: { json?: () => Promise<{ error?: string }> } }).context;
-          if (ctx?.json) {
-            const j = await ctx.json();
-            if (j?.error) message = j.error;
-          }
-        } catch {
-          /* ignore */
-        }
-        throw new Error(message);
-      }
-      if ((data as { error?: string })?.error) {
-        throw new Error((data as { error: string }).error);
+      const details = await getFaceFunctionErrorDetails(fnError, data);
+      if (details) {
+        throw new Error(details.message);
       }
       setStatus("success");
       setTimeout(() => onVerified(), 800);
