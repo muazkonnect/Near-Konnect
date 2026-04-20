@@ -162,9 +162,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       const clickable = w.linkToProfile !== false;
       m.bindPopup(
         `<div class="wm-card${clickable ? ' wm-card-clickable' : ''}" data-worker-link="${w.id}">
-          <div class="wm-dots"></div>
-          <div class="wm-glow"></div>
-          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
+          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
           <div class="wm-info">
             <p class="wm-name">${w.name}</p>
             ${professionHtml}
@@ -234,19 +232,20 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         .leaflet-control-zoom a { background: white !important; color: #000 !important; border: none !important; width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 18px !important; font-weight: 500 !important; }
         .leaflet-control-zoom a:hover { background: #f3f4f6 !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; backdrop-filter: blur(6px); font-size: 10px !important; padding: 2px 6px !important; border-radius: 6px !important; margin: 6px !important; }
-        .wm-popup .leaflet-popup-content-wrapper { border-radius: 14px; padding: 0; box-shadow: 0 18px 40px -16px hsl(var(--hero) / 0.55); border: 1px solid hsl(0 0% 100% / 0.08); background: hsl(var(--hero)); overflow: hidden; }
+        .wm-popup .leaflet-popup-content-wrapper { border-radius: 16px; padding: 0; box-shadow: 0 18px 40px -16px hsl(var(--hero) / 0.55); border: none; background: transparent; overflow: visible; }
         .wm-popup .leaflet-popup-content { margin: 0; font-weight: 400; width: auto !important; }
         .wm-popup .leaflet-popup-tip { background: hsl(var(--hero)); box-shadow: 0 4px 10px -4px hsl(var(--hero) / 0.5); }
-        .wm-card { position: relative; padding: 9px 11px; display: flex; align-items: center; gap: 9px; background: hsl(var(--hero)); color: hsl(var(--hero-foreground)); overflow: hidden; max-width: 230px; font-family: 'Inter', system-ui, sans-serif; }
-        .wm-card-clickable { cursor: pointer; transition: background 0.2s; }
-        .wm-card-clickable:hover { background: hsl(var(--hero) / 0.92); }
-        .wm-dots { position: absolute; inset: 0; opacity: 0.06; background-image: radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px); background-size: 12px 12px; pointer-events: none; }
-        .wm-glow { position: absolute; right: -28px; top: -28px; width: 80px; height: 80px; border-radius: 9999px; background: hsl(var(--primary) / 0.22); filter: blur(28px); pointer-events: none; }
-        .wm-pin { position: relative; width: 24px; height: 24px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); display: grid; place-items: center; flex-shrink: 0; box-shadow: 0 0 0 3px hsl(0 0% 100% / 0.06); }
-        .wm-info { position: relative; min-width: 0; flex: 1; display: flex; flex-direction: column; line-height: 1.2; }
-        .wm-name { margin: 0; font-size: 12.5px; font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--hero-foreground)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .wm-prof { margin: 1px 0 0; font-size: 10.5px; font-weight: 500; color: hsl(var(--hero-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .wm-chip { position: relative; flex-shrink: 0; padding: 3px 8px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+        .wm-card { position: relative; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; background: hsl(var(--hero)); color: hsl(var(--hero-foreground)); border-radius: 16px; overflow: hidden; min-width: 170px; max-width: 220px; font-family: 'Inter', system-ui, sans-serif; box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.1); }
+        .wm-card::before { content: ""; position: absolute; inset: 0; opacity: 0.06; background-image: radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px); background-size: 16px 16px; pointer-events: none; }
+        .wm-card::after { content: ""; position: absolute; right: -36px; top: -36px; width: 100px; height: 100px; border-radius: 9999px; background: hsl(var(--primary) / 0.2); filter: blur(28px); pointer-events: none; }
+        .wm-card-clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .wm-card-clickable:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.18), 0 12px 24px -12px hsl(var(--hero) / 0.6); }
+        .wm-pin { position: relative; width: 36px; height: 36px; border-radius: 9999px; background: hsl(0 0% 100% / 0.1); color: hsl(var(--primary)); display: grid; place-items: center; flex-shrink: 0; transition: background 0.2s; }
+        .wm-card-clickable:hover .wm-pin { background: hsl(0 0% 100% / 0.15); }
+        .wm-info { position: relative; min-width: 0; width: 100%; display: flex; flex-direction: column; line-height: 1.25; gap: 2px; }
+        .wm-name { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--hero-foreground)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-prof { margin: 0; font-size: 11px; font-weight: 500; color: hsl(var(--hero-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wm-chip { position: relative; align-self: flex-start; padding: 3px 8px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
       `}</style>
     </div>
   );
