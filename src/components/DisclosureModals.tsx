@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ShieldAlert, Droplet } from "lucide-react";
 import { Dialog, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+
+const HIDDEN_PATHS = ["/login", "/register", "/verify-otp", "/verify-face", "/forgot-password", "/reset-password"];
 
 type Step = "platform" | "blood" | "done";
 
@@ -31,6 +33,8 @@ const PlainDialogContent = ({ className, children }: { className?: string; child
 const DisclosureModals = () => {
   const [step, setStep] = useState<Step>("done");
   const [turningOff, setTurningOff] = useState(false);
+  const location = useLocation();
+  const onAuthRoute = HIDDEN_PATHS.some((p) => location.pathname.startsWith(p));
 
   useEffect(() => {
     let hadSession = false;
@@ -73,7 +77,7 @@ const DisclosureModals = () => {
   return (
     <>
       {/* Step 1 — Platform notice */}
-      <Dialog open={step === "platform"} onOpenChange={() => { /* controlled */ }}>
+      <Dialog open={step === "platform" && !onAuthRoute} onOpenChange={() => { /* controlled */ }}>
         <PlainDialogContent>
           {/* Hero strip */}
           <div className="relative overflow-hidden rounded-t-3xl bg-hero px-6 pt-7 pb-6 text-hero-foreground">
@@ -129,7 +133,7 @@ const DisclosureModals = () => {
       </Dialog>
 
       {/* Step 2 — Blood donation privacy */}
-      <Dialog open={step === "blood"} onOpenChange={() => { /* controlled */ }}>
+      <Dialog open={step === "blood" && !onAuthRoute} onOpenChange={() => { /* controlled */ }}>
         <PlainDialogContent>
           <div className="relative overflow-hidden rounded-t-3xl bg-hero px-6 pt-7 pb-6 text-hero-foreground">
             <div
