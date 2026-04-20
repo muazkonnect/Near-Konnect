@@ -352,6 +352,37 @@ const Register = () => {
         {t("register.hasAccount")}{" "}
         <Link to="/login" className="font-semibold text-foreground hover:underline">{t("nav.logIn")}</Link>
       </p>
+
+      <Dialog open={existingAccountModal.open} onOpenChange={(open) => setExistingAccountModal((s) => ({ ...s, open }))}>
+        <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Account already exists</DialogTitle>
+            <DialogDescription>
+              An account with this email is already registered. You don't need a separate worker account — log in and upgrade your existing profile to a Service in one step.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-primary/30 bg-accent/40 p-3 text-xs leading-relaxed text-foreground">
+            After logging in, the <strong>Become a Service</strong> form will pop up automatically so you can fill in the rest of your professional details.
+          </div>
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setExistingAccountModal({ open: false, email: "" })}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                const email = existingAccountModal.email;
+                setExistingAccountModal({ open: false, email: "" });
+                navigate(`/login?email=${encodeURIComponent(email)}&upgrade=worker&redirect=${encodeURIComponent("/dashboard?upgrade=worker")}`, { replace: true });
+              }}
+            >
+              Login & Upgrade to Worker
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AuthShell>
   );
 };
