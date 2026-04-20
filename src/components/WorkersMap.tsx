@@ -151,28 +151,22 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
     workers.forEach((w) => {
       const m = L.marker([w.latitude, w.longitude], { icon: buildWorkerIcon(w.profession) });
       const initials = w.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+      const pinSvg = getProfessionSvg(w.profession);
       const distanceHtml =
         w.distanceKm !== undefined
-          ? `<span class="wm-chip"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${w.distanceKm.toFixed(2)} km</span>`
+          ? `<span class="wm-chip">${w.distanceKm.toFixed(2)} km</span>`
           : "";
       const professionHtml = w.profession
         ? `<p class="wm-prof">${w.profession}</p>`
         : "";
       const clickable = w.linkToProfile !== false;
-      const ctaHtml = clickable
-        ? `<button type="button" data-worker-link="${w.id}" class="wm-cta">View profile<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>`
-        : "";
       m.bindPopup(
-        `<div class="wm-card">
-          <div class="wm-row">
-            <div class="wm-avatar">${initials}</div>
-            <div class="wm-info">
-              <p class="wm-name">${w.name}</p>
-              ${professionHtml}
-            </div>
-          </div>
+        `<div class="wm-card${clickable ? ' wm-card-clickable' : ''}" data-worker-link="${w.id}">
+          <div class="wm-dots"></div>
+          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
+          <p class="wm-name">${w.name}</p>
+          ${professionHtml}
           ${distanceHtml ? `<div class="wm-meta">${distanceHtml}</div>` : ""}
-          ${ctaHtml}
         </div>`,
         { className: "wm-popup", closeButton: false, offset: [0, -6] }
       );
