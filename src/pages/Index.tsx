@@ -27,7 +27,7 @@ const slides = [
 const actions = [
   { icon: Search, title: "Find a Service", subtitle: "I need to hire a local professional", to: "/discover", tone: "primary" as const },
   { icon: Briefcase, title: "Become a Worker", subtitle: "I want to offer my services & earn", to: "/register?role=worker", tone: "card" as const },
-  { icon: HeartPulse, title: "Urgent / Blood Help", subtitle: "Request or respond to emergencies", to: "/blood-donors", tone: "card" as const },
+  { icon: HeartPulse, title: "Blood Konnect", subtitle: "Request or respond to emergencies", to: "/blood-donors", tone: "card" as const },
 ];
 
 const trustPoints = [
