@@ -86,6 +86,10 @@ const Register = () => {
       toast.error("Please agree to the Terms & Conditions to continue.");
       return;
     }
+    if (!faceImage) {
+      toast.error("Please capture your face photo to complete signup.");
+      return;
+    }
 
     setLoading(true);
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
@@ -132,37 +136,24 @@ const Register = () => {
       return;
     }
 
+    // Stash the captured image so /verify-face (or post-OTP) can submit it once a session exists.
+    try {
+      sessionStorage.setItem(PENDING_FACE_KEY, faceImage);
+    } catch {
+      /* storage may be unavailable; user will be prompted to recapture */
+    }
+
     if (data.session) {
-      toast.success("Account created! One more step: verify your face.");
-      setPostSignupRedirect(redirect);
-      setVerifyingFace(true);
+      toast.success("Account created! Verifying your face…");
+      navigate(`/verify-face?redirect=${encodeURIComponent(redirect)}`, { replace: true });
       return;
     }
     toast.success("An 8-digit OTP has been sent to your email.");
     navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
   };
 
-  const handleFaceVerified = () => {
-    toast.success("Identity verified!");
-    navigate(postSignupRedirect, { replace: true });
-  };
-
-  const handleFaceSkip = async () => {
-    await supabase.auth.signOut();
-    setVerifyingFace(false);
-    toast.message("Signed out. Please register again to complete verification.");
-  };
-
   const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
   const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
-
-  if (verifyingFace) {
-    return (
-      <AuthShell title="Verify your identity" subtitle="Quick face check to keep NearKonnect safe">
-        <FaceVerification onVerified={handleFaceVerified} onSkip={handleFaceSkip} />
-      </AuthShell>
-    );
-  }
 
   return (
     <AuthShell
