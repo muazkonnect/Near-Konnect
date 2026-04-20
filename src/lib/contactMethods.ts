@@ -70,6 +70,25 @@ export const buildContactHref = (method: ContactMethod): string | null => {
   }
 };
 
+/** Normalize a contact value for storage: phones → E.164 with no spaces; others → trimmed, no internal whitespace. */
+export const normalizeContactValue = (type: ContactType, value: string): string => {
+  const app = CONTACT_APP_BY_TYPE[type];
+  const raw = (value || "").trim();
+  if (!raw) return "";
+  if (app.isPhone) {
+    // Strip ALL whitespace, keep only digits and a single leading +
+    return sanitizePhone(raw);
+  }
+  // For username-style contacts (e.g. Telegram), strip internal whitespace
+  return raw.replace(/\s+/g, "");
+};
+
+/** Apply normalizeContactValue to every method. Use right before persisting to DB. */
+export const normalizeContactMethods = (methods: ContactMethod[]): ContactMethod[] =>
+  methods
+    .map((m) => ({ type: m.type, value: normalizeContactValue(m.type, m.value) }))
+    .filter((m) => m.value.length > 0);
+
 export const validateContactMethods = (methods: ContactMethod[]): string | null => {
   if (methods.length > 10) return "You can add at most 10 contact methods.";
   const seen = new Set<string>();
