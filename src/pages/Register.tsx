@@ -88,6 +88,17 @@ const Register = () => {
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
 
     try {
+      // Pre-check: phone must be unique across all accounts (one user = one account)
+      const { data: phoneTaken, error: phoneCheckErr } = await (supabase.rpc as any)("phone_exists", { _phone: normalizedPhone });
+      if (phoneCheckErr) {
+        console.warn("phone_exists check failed", phoneCheckErr);
+      } else if (phoneTaken) {
+        setLoading(false);
+        toast.error("Account already exists, please login");
+        navigate(`/login?redirect=${encodeURIComponent(role === "worker" ? "/worker-dashboard" : "/dashboard")}`, { replace: true });
+        return;
+      }
+
       const metadata: Record<string, string> = {
         full_name: normalizedName,
         phone: normalizedPhone,
