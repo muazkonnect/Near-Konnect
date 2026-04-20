@@ -203,15 +203,33 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Failed to store image" }, 500);
     }
 
+    // 3b) Also upload to the public avatars bucket so it can be used as the profile picture
+    const avatarPath = `${userId}/face-${Date.now()}.jpg`;
+    let avatarUrl: string | null = null;
+    const { error: avatarUploadErr } = await adminClient.storage
+      .from("avatars")
+      .upload(avatarPath, bytes, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+    if (avatarUploadErr) {
+      console.warn("Avatar upload failed (non-fatal):", avatarUploadErr.message);
+    } else {
+      const { data: pub } = adminClient.storage.from("avatars").getPublicUrl(avatarPath);
+      avatarUrl = pub.publicUrl;
+    }
+
     // 4) Update profile
+    const updatePayload: Record<string, unknown> = {
+      face_verified: true,
+      face_verified_at: new Date().toISOString(),
+      face_token: newFaceToken,
+      face_image_path: path,
+    };
+    if (avatarUrl) updatePayload.avatar_url = avatarUrl;
     const { error: updateErr } = await adminClient
       .from("profiles")
-      .update({
-        face_verified: true,
-        face_verified_at: new Date().toISOString(),
-        face_token: newFaceToken,
-        face_image_path: path,
-      })
+      .update(updatePayload)
       .eq("user_id", userId);
     if (updateErr) {
       console.error("Profile update error:", updateErr);
