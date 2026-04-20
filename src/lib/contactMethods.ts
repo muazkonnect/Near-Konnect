@@ -2,6 +2,8 @@ import { Phone, Video } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { FaWhatsapp, FaViber, FaTelegram, FaSignalMessenger } from "react-icons/fa6";
 import type { IconType } from "react-icons";
+import { parsePhoneNumberFromString, isValidPhoneNumber } from "libphonenumber-js";
+import type { CountryCode } from "libphonenumber-js";
 
 export type ContactType = "phone" | "whatsapp" | "imo" | "botim" | "viber" | "telegram" | "signal";
 
@@ -72,13 +74,39 @@ export const validateContactMethods = (methods: ContactMethod[]): string | null 
   if (methods.length > 10) return "You can add at most 10 contact methods.";
   const seen = new Set<string>();
   for (const m of methods) {
-    if (!m.value.trim()) return `Please fill in your ${CONTACT_APP_BY_TYPE[m.type].label}.`;
-    const key = `${m.type}:${m.value.trim().toLowerCase()}`;
-    if (seen.has(key)) return `Duplicate ${CONTACT_APP_BY_TYPE[m.type].label} entry.`;
-    seen.add(key);
+    const app = CONTACT_APP_BY_TYPE[m.type];
+    if (!m.value.trim()) return `Please fill in your ${app.label}.`;
     if (m.value.length > 64) return "Contact value too long.";
+    if (app.isPhone) {
+      if (!isValidPhoneNumber(m.value)) {
+        return `${app.label} number is invalid for the selected country.`;
+      }
+    }
+    const key = `${m.type}:${m.value.trim().toLowerCase()}`;
+    if (seen.has(key)) return `Duplicate ${app.label} entry.`;
+    seen.add(key);
   }
   return null;
+};
+
+/** Parse an E.164 string back into { country, national }. */
+export const splitPhone = (
+  e164: string,
+  fallbackCountry: CountryCode = "PK",
+): { country: CountryCode; national: string } => {
+  const parsed = parsePhoneNumberFromString(e164 || "");
+  if (parsed && parsed.country) {
+    return { country: parsed.country, national: parsed.nationalNumber };
+  }
+  return { country: fallbackCountry, national: (e164 || "").replace(/\D/g, "") };
+};
+
+/** Build an E.164 string from a country + national digits. Returns "" if empty. */
+export const composePhone = (country: CountryCode, national: string): string => {
+  const digits = (national || "").replace(/\D/g, "");
+  if (!digits) return "";
+  const parsed = parsePhoneNumberFromString(digits, country);
+  return parsed ? parsed.number : `+${digits}`;
 };
 
 export const parseContactMethods = (raw: unknown): ContactMethod[] => {
