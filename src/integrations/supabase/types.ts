@@ -449,6 +449,7 @@ export type Database = {
           contact_methods: Json
           created_at: string
           donor_status: string
+          face_descriptor: number[] | null
           face_image_path: string | null
           face_token: string | null
           face_verified: boolean
@@ -468,6 +469,7 @@ export type Database = {
           contact_methods?: Json
           created_at?: string
           donor_status?: string
+          face_descriptor?: number[] | null
           face_image_path?: string | null
           face_token?: string | null
           face_verified?: boolean
@@ -487,6 +489,7 @@ export type Database = {
           contact_methods?: Json
           created_at?: string
           donor_status?: string
+          face_descriptor?: number[] | null
           face_image_path?: string | null
           face_token?: string | null
           face_verified?: boolean
