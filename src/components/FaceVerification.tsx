@@ -89,8 +89,7 @@ const FaceVerification = ({ onVerified, onSkip }: FaceVerificationProps) => {
         // Try to extract structured error message returned in body
         let message = fnError.message;
         try {
-          // @ts-expect-error context is added by supabase-js for FunctionsHttpError
-          const ctx = fnError.context;
+          const ctx = (fnError as unknown as { context?: { json?: () => Promise<{ error?: string }> } }).context;
           if (ctx?.json) {
             const j = await ctx.json();
             if (j?.error) message = j.error;
