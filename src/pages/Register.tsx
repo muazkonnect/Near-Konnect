@@ -27,7 +27,7 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [faceImage, setFaceImage] = useState<string | null>(null);
+  
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -88,6 +88,17 @@ const Register = () => {
     const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
 
     try {
+      // Pre-check: phone must be unique across all accounts (one user = one account)
+      const { data: phoneTaken, error: phoneCheckErr } = await (supabase.rpc as any)("phone_exists", { _phone: normalizedPhone });
+      if (phoneCheckErr) {
+        console.warn("phone_exists check failed", phoneCheckErr);
+      } else if (phoneTaken) {
+        setLoading(false);
+        toast.error("Account already exists, please login");
+        navigate(`/login?redirect=${encodeURIComponent(role === "worker" ? "/worker-dashboard" : "/dashboard")}`, { replace: true });
+        return;
+      }
+
       const metadata: Record<string, string> = {
         full_name: normalizedName,
         phone: normalizedPhone,
@@ -115,9 +126,11 @@ const Register = () => {
       setLoading(false);
       if (error) {
         const msg = getAuthErrorMessage(error);
-        toast.error(msg);
         if (/already registered|already exists|log in instead/i.test(msg)) {
+          toast.error("Account already exists, please login");
           navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
+        } else {
+          toast.error(msg);
         }
         return;
       }
@@ -126,7 +139,7 @@ const Register = () => {
 
       const identities = (data.user as { identities?: unknown[] } | null)?.identities;
       if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-        toast.error("This email is already registered. Please log in instead.");
+        toast.error("Account already exists, please login");
         navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
         return;
       }
@@ -219,6 +232,13 @@ const Register = () => {
 
         {role === "worker" && (
           <>
+            <div className="rounded-2xl border border-primary/30 bg-accent/40 p-3 text-xs leading-relaxed text-foreground">
+              Already have an account?{" "}
+              <Link to="/login" className="font-semibold text-primary hover:underline">
+                Log in
+              </Link>{" "}
+              and use <strong>Become a Service</strong> on your dashboard to upgrade — don't create a second account.
+            </div>
             <div>
               <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
               <select
