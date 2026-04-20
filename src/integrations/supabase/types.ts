@@ -449,6 +449,10 @@ export type Database = {
           contact_methods: Json
           created_at: string
           donor_status: string
+          face_image_path: string | null
+          face_token: string | null
+          face_verified: boolean
+          face_verified_at: string | null
           full_name: string
           id: string
           is_blood_donor: boolean
@@ -464,6 +468,10 @@ export type Database = {
           contact_methods?: Json
           created_at?: string
           donor_status?: string
+          face_image_path?: string | null
+          face_token?: string | null
+          face_verified?: boolean
+          face_verified_at?: string | null
           full_name?: string
           id?: string
           is_blood_donor?: boolean
@@ -479,6 +487,10 @@ export type Database = {
           contact_methods?: Json
           created_at?: string
           donor_status?: string
+          face_image_path?: string | null
+          face_token?: string | null
+          face_verified?: boolean
+          face_verified_at?: string | null
           full_name?: string
           id?: string
           is_blood_donor?: boolean
