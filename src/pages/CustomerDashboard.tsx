@@ -414,7 +414,7 @@ const CustomerDashboard = () => {
             <div className="rounded-3xl border bg-card p-6 sm:p-8">
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-card-foreground">Recent Chats</h2>
-                <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">{conversations.length}</span>
+                <span className="rounded-full px-2.5 py-1 text-xs font-semibold bg-primary text-secondary">{conversations.length}</span>
               </div>
               {conversations.length === 0 ? (
                 <div className="rounded-2xl bg-muted/40 p-10 text-center">
