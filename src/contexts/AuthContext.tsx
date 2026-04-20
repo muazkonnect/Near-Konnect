@@ -76,8 +76,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           ? rawSubCategory
           : null;
 
-      const { error: profileError } = await supabase.from("profiles").upsert(
-        {
+      // Check if profile already exists — if so, do NOT overwrite user-edited fields
+      // like contact_methods, phone, blood_group, etc. Only seed them on first creation.
+      const { data: existingProfile, error: existingProfileError } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", nextUser.id)
+        .maybeSingle();
+      if (existingProfileError) throw existingProfileError;
+
+      if (!existingProfile) {
+        const { error: profileError } = await supabase.from("profiles").insert({
           user_id: nextUser.id,
           full_name: fullName || nextUser.email?.split("@")[0] || "NearKonnect User",
           phone: phone || null,
@@ -85,10 +94,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           is_blood_donor: isBloodDonor,
           use_whatsapp: useWhatsapp,
           contact_methods: contactMethods,
-        } as any,
-        { onConflict: "user_id" }
-      );
-      if (profileError) throw profileError;
+        } as any);
+        if (profileError && !String(profileError.message).toLowerCase().includes("duplicate")) {
+          throw profileError;
+        }
+      }
 
       const { data: existingRole, error: existingRoleError } = await supabase
         .from("user_roles")
