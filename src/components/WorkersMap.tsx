@@ -163,7 +163,8 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       m.bindPopup(
         `<div class="wm-card${clickable ? ' wm-card-clickable' : ''}" data-worker-link="${w.id}">
           <div class="wm-dots"></div>
-          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
+          <div class="wm-glow"></div>
+          <div class="wm-pin"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${pinSvg}</svg></div>
           <div class="wm-info">
             <p class="wm-name">${w.name}</p>
             ${professionHtml}
