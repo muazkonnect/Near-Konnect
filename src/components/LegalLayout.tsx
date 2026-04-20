@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 
 interface LegalLayoutProps {
   title: string;
@@ -13,37 +11,35 @@ interface LegalLayoutProps {
 
 const LegalLayout = ({ title, subtitle, lastUpdated = "April 2026", children }: LegalLayoutProps) => (
   <div className="min-h-screen bg-background">
-    <Navbar />
-
-    {/* Hero header — same dark + dotted pattern as the rest of the app */}
-    <section className="relative overflow-hidden bg-hero text-hero-foreground">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
-      />
-      <div className="container relative mx-auto max-w-3xl px-5 py-14 md:py-20">
-        <Link
-          to="/"
-          className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-hero-muted transition-colors hover:text-hero-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to home
-        </Link>
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-hero-muted">
-          <MapPin className="h-3.5 w-3.5 text-primary" /> NearKonnect
+    <div className="container mx-auto max-w-3xl px-4 py-6 md:py-8">
+      {/* Hero header — rounded box with dotted pattern */}
+      <section className="relative overflow-hidden rounded-3xl bg-hero text-hero-foreground">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+        <div className="relative px-6 py-10 md:px-10 md:py-14">
+          <Link
+            to="/"
+            className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-hero-muted transition-colors hover:text-hero-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to home
+          </Link>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-hero-muted">
+            <MapPin className="h-3.5 w-3.5 text-primary" /> NearKonnect
+          </div>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">{title}</h1>
+          {subtitle && <p className="mt-3 max-w-2xl text-sm text-hero-muted md:text-base">{subtitle}</p>}
+          <p className="mt-5 text-xs text-hero-muted">Last updated: {lastUpdated}</p>
         </div>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">{title}</h1>
-        {subtitle && <p className="mt-3 max-w-2xl text-sm text-hero-muted md:text-base">{subtitle}</p>}
-        <p className="mt-5 text-xs text-hero-muted">Last updated: {lastUpdated}</p>
-      </div>
-    </section>
+      </section>
 
-    {/* Body */}
-    <div className="container mx-auto max-w-3xl px-5 py-12 md:py-16">
-      <article className="rounded-3xl border border-border bg-card p-6 shadow-sm md:p-10 space-y-8">
+      {/* Body */}
+      <article className="mt-6 rounded-3xl border border-border bg-card p-6 shadow-sm md:p-10 space-y-8">
         {children}
       </article>
 
@@ -55,8 +51,6 @@ const LegalLayout = ({ title, subtitle, lastUpdated = "April 2026", children }: 
         <Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link>
       </div>
     </div>
-
-    <Footer />
   </div>
 );
 
