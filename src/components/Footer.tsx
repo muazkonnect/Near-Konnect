@@ -16,7 +16,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-hero text-hero-foreground mt-12 hidden md:block md:mx-4 md:mb-4 md:rounded-3xl">
+    <footer className="relative overflow-hidden bg-hero text-hero-foreground mt-12 hidden md:block md:mx-auto md:mb-4 md:max-w-7xl md:rounded-3xl">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
