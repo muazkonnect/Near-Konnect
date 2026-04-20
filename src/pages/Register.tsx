@@ -18,6 +18,7 @@ import AuthShell from "@/components/AuthShell";
 import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import SignupFaceCapture from "@/components/SignupFaceCapture";
+import { detectFaceDescriptor } from "@/lib/faceApi";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
 const PENDING_FACE_KEY = "pending_face_verification_image";
