@@ -40,6 +40,8 @@ export const SUBCATEGORIES_BY_MAIN: Record<MainServiceCategory, readonly string[
     "Clothing",
     "Electronics",
     "Pet Store",
+    "Barber",
+    "Salon",
   ],
   "Professional & Business Services": [
     "Web/App Dev",
