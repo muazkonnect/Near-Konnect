@@ -70,6 +70,7 @@ const App = () => (
                 <Route path="/terms" element={<TermsAndConditions />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <Footer />
               <MobileBottomNav />
             </BrowserRouter>
           </TooltipProvider>
