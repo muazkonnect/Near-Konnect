@@ -61,18 +61,18 @@ const DashboardNav = ({ items, active, onChange }: DashboardNavProps) => {
                   key={item.value}
                   onClick={() => onChange(item.value)}
                   className={cn(
-                    "group relative flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all",
+                    "group relative flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors",
                     isActive
                       ? "bg-hero text-hero-foreground shadow-md"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground"
                   )}
                 >
                   {isActive && (
                     <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary" />
                   )}
                   <span className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-xl transition-colors",
-                    isActive ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground group-hover:bg-background"
+                    "flex h-8 w-8 items-center justify-center rounded-xl",
+                    isActive ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
                   )}>
                     <item.icon className="h-4 w-4" />
                   </span>
