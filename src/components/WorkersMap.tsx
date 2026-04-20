@@ -67,8 +67,8 @@ const userIcon = L.divIcon({
   className: "",
   html: `
     <div style="position:relative;width:14px;height:14px;font-family:system-ui,-apple-system,sans-serif;">
-      <div style="position:absolute;inset:-6px;border-radius:9999px;background:hsl(var(--primary) / 0.35);animation:wm-blink 1.2s ease-in-out infinite;"></div>
-      <div style="position:relative;width:14px;height:14px;border-radius:9999px;background:hsl(var(--primary));box-shadow:0 0 0 2px hsl(var(--primary) / 0.25);animation:wm-blink-dot 1.2s ease-in-out infinite;"></div>
+      <div style="position:absolute;inset:-6px;border-radius:9999px;background:rgba(0,0,0,0.35);animation:wm-blink 1.2s ease-in-out infinite;"></div>
+      <div style="position:relative;width:14px;height:14px;border-radius:9999px;background:#000;box-shadow:0 0 0 2px rgba(0,0,0,0.25);animation:wm-blink-dot 1.2s ease-in-out infinite;"></div>
     </div>
     <style>
       @keyframes wm-blink{0%,100%{transform:scale(0.8);opacity:0.7}50%{transform:scale(1.6);opacity:0}}
