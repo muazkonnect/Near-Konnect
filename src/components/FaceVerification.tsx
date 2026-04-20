@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, RefreshCw, ShieldCheck, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { detectFaceDescriptor, loadFaceModels } from "@/lib/faceApi";
 
 type Status = "idle" | "starting" | "ready" | "captured" | "submitting" | "success" | "error";
 
@@ -46,6 +47,7 @@ const FaceVerification = ({ onVerified, onSkip }: FaceVerificationProps) => {
   }, []);
 
   useEffect(() => {
+    loadFaceModels().catch(() => {/* will retry on submit */});
     startCamera();
     return () => stopStream();
   }, [startCamera, stopStream]);
@@ -82,8 +84,12 @@ const FaceVerification = ({ onVerified, onSkip }: FaceVerificationProps) => {
     setStatus("submitting");
     setError(null);
     try {
+      const detection = await detectFaceDescriptor(preview);
+      if (detection.count === 0) throw new Error("No face detected. Please retake.");
+      if (detection.count > 1) throw new Error("Multiple faces detected. Only you should be in frame.");
+
       const { data, error: fnError } = await supabase.functions.invoke("verify-face", {
-        body: { image: preview },
+        body: { image: preview, descriptor: detection.descriptor },
       });
       if (fnError) {
         // Try to extract structured error message returned in body

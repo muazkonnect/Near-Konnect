@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import AuthShell from "@/components/AuthShell";
 import FaceVerification from "@/components/FaceVerification";
 import { supabase } from "@/integrations/supabase/client";
+import { detectFaceDescriptor } from "@/lib/faceApi";
 import { Loader2 } from "lucide-react";
 
 const PENDING_KEY = "pending_face_verification_image";
@@ -32,8 +33,12 @@ const VerifyFace = () => {
         ranAuto.current = true;
         setAutoSubmitting(true);
         try {
+          const detection = await detectFaceDescriptor(pending);
+          if (detection.count !== 1) {
+            throw new Error(detection.count === 0 ? "No face detected in saved photo." : "Multiple faces in saved photo.");
+          }
           const { data: result, error } = await supabase.functions.invoke("verify-face", {
-            body: { image: pending },
+            body: { image: pending, descriptor: detection.descriptor },
           });
           let errMsg: string | null = null;
           let isDup = false;
