@@ -328,7 +328,7 @@ const CustomerDashboard = () => {
                   <h2 className="text-xl font-bold text-card-foreground">Edit Profile</h2>
                   <p className="text-sm text-muted-foreground">Update your personal details</p>
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-muted text-primary-foreground">
                   <User className="h-3 w-3" /> Personal info
                 </span>
               </div>
