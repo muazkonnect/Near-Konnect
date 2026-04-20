@@ -23,10 +23,10 @@ export const SUBCATEGORIES_BY_MAIN: Record<MainServiceCategory, readonly string[
     "Repair",
   ],
   "Automotive & Transport": [
-    "Car/Bike/Truck Repair",
-    "Tire",
+    "Mechanic",
+    "Puncture ",
     "Oil Change",
-    "Car Wash",
+    "Wash Service",
     "Driver",
     "Taxi",
     "Rental",
