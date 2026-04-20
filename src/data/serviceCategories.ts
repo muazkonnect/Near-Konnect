@@ -20,7 +20,6 @@ export const SUBCATEGORIES_BY_MAIN: Record<MainServiceCategory, readonly string[
     "Pest Control",
     "CCTV",
     "Solar",
-    "Repair",
   ],
   "Automotive & Transport": [
     "Mechanic",
