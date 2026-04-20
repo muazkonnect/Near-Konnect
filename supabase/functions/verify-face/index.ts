@@ -16,6 +16,11 @@ const corsHeaders = {
 };
 
 const FACEPP_BASE = "https://api-us.faceplusplus.com/facepp/v3";
+// Single global FaceSet that holds every enrolled face token so we can
+// detect duplicate signups (one face = one account).
+const FACESET_OUTER_ID = "nearkonnect_users";
+// Strict 1-in-100,000 confidence threshold for duplicate detection.
+const DUP_CONFIDENCE_FALLBACK = 73;
 
 interface DetectFace {
   face_token: string;
@@ -156,13 +161,15 @@ Deno.serve(async (req) => {
 
     const newFaceToken = face.face_token;
 
-    // 2) Compare against stored face if present
+    // 2) Compare against stored face if present (same-user re-verification)
     const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const { data: profile } = await adminClient
       .from("profiles")
       .select("face_token")
       .eq("user_id", userId)
       .maybeSingle();
+
+    let needsEnrollmentDedupCheck = !profile?.face_token;
 
     if (profile?.face_token) {
       const compareForm = new FormData();
@@ -172,7 +179,7 @@ Deno.serve(async (req) => {
         const compare = await faceppCall("compare", compareForm);
         const confidence: number = compare.confidence ?? 0;
         const threshold: number =
-          compare.thresholds?.["1e-5"] ?? 73; // strict
+          compare.thresholds?.["1e-5"] ?? DUP_CONFIDENCE_FALLBACK;
         if (confidence < threshold) {
           return jsonResponse(
             {
@@ -183,9 +190,64 @@ Deno.serve(async (req) => {
           );
         }
       } catch (e) {
-        // If the stored token expired (Face++ tokens expire after ~72h), fall through
-        // and treat this as a fresh enrollment.
+        // Stored token expired (~72h) — re-enroll AND re-check for duplicates.
         console.warn("Compare failed, re-enrolling:", (e as Error).message);
+        needsEnrollmentDedupCheck = true;
+      }
+    }
+
+    // 2b) Duplicate-face check: search the global FaceSet to ensure this face
+    // is not already registered to a different account (one face = one account).
+    if (needsEnrollmentDedupCheck) {
+      const runSearch = async () => {
+        const searchForm = new FormData();
+        searchForm.append("face_token", newFaceToken);
+        searchForm.append("outer_id", FACESET_OUTER_ID);
+        searchForm.append("return_result_count", "5");
+        return await faceppCall("search", searchForm);
+      };
+      let search: Record<string, unknown> | null = null;
+      try {
+        search = await runSearch();
+      } catch (e) {
+        const msg = (e as Error).message;
+        if (/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) {
+          // FaceSet not yet created — create it and skip this duplicate check
+          // (no enrolled faces means no duplicates possible).
+          const createForm = new FormData();
+          createForm.append("outer_id", FACESET_OUTER_ID);
+          createForm.append("display_name", "NearKonnect Users");
+          try { await faceppCall("faceset/create", createForm); } catch (ce) {
+            console.warn("FaceSet create failed:", (ce as Error).message);
+          }
+        } else {
+          console.warn("FaceSet search failed (non-fatal):", msg);
+        }
+      }
+      if (search) {
+        const results = (search.results ?? []) as Array<{ face_token: string; confidence: number }>;
+        const thresholds = (search.thresholds ?? {}) as Record<string, number>;
+        const threshold = thresholds["1e-5"] ?? DUP_CONFIDENCE_FALLBACK;
+        const matches = results.filter((r) => r.confidence >= threshold);
+        if (matches.length > 0) {
+          // Verify at least one match maps to a DIFFERENT user in our DB.
+          const tokens = matches.map((m) => m.face_token);
+          const { data: owners } = await adminClient
+            .from("profiles")
+            .select("user_id, face_token")
+            .in("face_token", tokens);
+          const conflict = (owners ?? []).find((o) => o.user_id !== userId);
+          if (conflict) {
+            return jsonResponse(
+              {
+                error:
+                  "This face is already registered with another account. Only one account per person is allowed.",
+                code: "duplicate_face",
+              },
+              409,
+            );
+          }
+        }
       }
     }
 
@@ -234,6 +296,33 @@ Deno.serve(async (req) => {
     if (updateErr) {
       console.error("Profile update error:", updateErr);
       return jsonResponse({ error: "Failed to mark verification" }, 500);
+    }
+
+    // 5) Add this token to the global FaceSet so future signups can be
+    // deduplicated against it. Best-effort — never fail the request on this.
+    const addToFaceSet = async () => {
+      const addForm = new FormData();
+      addForm.append("outer_id", FACESET_OUTER_ID);
+      addForm.append("face_tokens", newFaceToken);
+      await faceppCall("faceset/addface", addForm);
+    };
+    try {
+      await addToFaceSet();
+    } catch (e) {
+      const msg = (e as Error).message;
+      if (/INVALID_OUTER_ID|FACESET_NOT_FOUND|outer_id/i.test(msg)) {
+        try {
+          const createForm = new FormData();
+          createForm.append("outer_id", FACESET_OUTER_ID);
+          createForm.append("display_name", "NearKonnect Users");
+          await faceppCall("faceset/create", createForm);
+          await addToFaceSet();
+        } catch (retryErr) {
+          console.warn("FaceSet add (after create) failed:", (retryErr as Error).message);
+        }
+      } else {
+        console.warn("FaceSet addface failed (non-fatal):", msg);
+      }
     }
 
     return jsonResponse({

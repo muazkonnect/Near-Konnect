@@ -35,8 +35,34 @@ const VerifyFace = () => {
           const { data: result, error } = await supabase.functions.invoke("verify-face", {
             body: { image: pending },
           });
-          if (error) throw new Error(error.message);
-          if ((result as { error?: string })?.error) throw new Error((result as { error: string }).error);
+          let errMsg: string | null = null;
+          let isDup = false;
+          if (error) {
+            const ctx = (error as { context?: { response?: Response } }).context;
+            if (ctx?.response) {
+              try {
+                const body = await ctx.response.clone().json();
+                if (body?.error) {
+                  errMsg = body.error;
+                  isDup = body.code === "duplicate_face";
+                }
+              } catch { /* ignore parse */ }
+            }
+            if (!errMsg) errMsg = error.message;
+          } else if ((result as { error?: string })?.error) {
+            errMsg = (result as { error: string }).error;
+            isDup = (result as { code?: string }).code === "duplicate_face";
+          }
+          if (errMsg) {
+            sessionStorage.removeItem(PENDING_KEY);
+            if (isDup) {
+              toast.error(errMsg);
+              await supabase.auth.signOut();
+              navigate("/login", { replace: true });
+              return;
+            }
+            throw new Error(errMsg);
+          }
           sessionStorage.removeItem(PENDING_KEY);
           toast.success("Identity verified!");
           navigate(redirect, { replace: true });
