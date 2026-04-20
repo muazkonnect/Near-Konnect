@@ -25,8 +25,8 @@ const Footer = () => {
           backgroundSize: "20px 20px",
         }}
       />
-      <div className="relative px-6 py-10 md:px-10 md:py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:items-center">
+      <div className="relative px-6 py-6 md:px-10 md:py-7">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:items-center">
           {/* Left: Explore */}
           <div className="md:text-left">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-hero-muted">
@@ -71,11 +71,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="relative mt-10 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-5 sm:flex-row">
+        <div className="relative mt-6 flex items-center justify-center border-t border-white/10 pt-4">
           <p className="text-xs text-hero-muted">
             © {new Date().getFullYear()} NearKonnect. All rights reserved.
           </p>
-          <p className="text-xs text-hero-muted">Built with care for your community.</p>
         </div>
       </div>
     </footer>
