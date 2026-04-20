@@ -68,10 +68,7 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
             <p className="truncate text-xs text-muted-foreground md:text-sm">{worker.profession}</p>
           </div>
 
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
-              From PKR 1,500
-            </span>
+          <div className="mt-3 flex items-center justify-end gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-foreground">
               <Star className="h-3 w-3 fill-star text-star" />
               {worker.rating || "—"}
