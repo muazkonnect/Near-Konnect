@@ -259,7 +259,7 @@ const CustomerDashboard = () => {
             <div className="rounded-3xl border bg-gradient-to-br from-card to-muted/30 p-6">
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">
+                  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-secondary bg-primary">
                     <Sparkles className="h-3 w-3" /> Profile health
                   </span>
                   <p className="mt-2 text-xl font-bold text-card-foreground">{profile?.full_name ? "You're ready to hire" : "Complete your profile"}</p>
