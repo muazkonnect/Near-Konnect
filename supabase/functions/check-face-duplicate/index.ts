@@ -41,7 +41,7 @@ function bytesToBase64(bytes: Uint8Array) {
 }
 
 function isFaceppBusyError(message: string) {
-  return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS/i.test(message);
+  return /CONCURRENCY_LIMIT_EXCEEDED|RATE_LIMIT_EXCEEDED|TOO_MANY_REQUESTS|FACE_VERIFICATION_UNAVAILABLE/i.test(message);
 }
 
 function retryableFaceppResponse(message: string) {
@@ -186,6 +186,10 @@ Deno.serve(async (req) => {
     return jsonResponse({ duplicate: false });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isFaceppBusyError(msg)) {
+      console.warn("check-face-duplicate busy:", msg);
+      return retryableFaceppResponse(msg);
+    }
     console.error("check-face-duplicate error:", msg);
     return jsonResponse({ error: msg }, 500);
   }
