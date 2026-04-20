@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, RefreshCw, AlertCircle, CheckCircle2, Video } from "lucide-react";
+import { Camera, RefreshCw, AlertCircle, CheckCircle2, Video, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-type Status = "idle" | "starting" | "ready" | "captured" | "error";
+type Status = "idle" | "starting" | "ready" | "preview" | "confirmed" | "error";
 
 interface SignupFaceCaptureProps {
   value: string | null;
@@ -14,8 +16,11 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [status, setStatus] = useState<Status>(value ? "captured" : "idle");
+  // Local preview holds the just-captured image until the user confirms it.
+  const [preview, setPreview] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>(value ? "confirmed" : "idle");
   const [error, setError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const stopStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -62,29 +67,88 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
     ctx.scale(-1, 1);
     ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
     const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-    onChange(dataUrl);
-    setStatus("captured");
+    setPreview(dataUrl);
+    setStatus("preview");
     stopStream();
-  }, [onChange, stopStream]);
+  }, [stopStream]);
 
   const retake = useCallback(() => {
+    setPreview(null);
     onChange(null);
     setError(null);
+    setStatus("idle");
     startCamera();
   }, [onChange, startCamera]);
+
+  const confirmImage = useCallback(async () => {
+    if (!preview) return;
+    setChecking(true);
+    setError(null);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("check-face-duplicate", {
+        body: { image: preview },
+      });
+      // Parse non-2xx error body if present
+      let errMsg: string | null = null;
+      let isDup = false;
+      if (fnError) {
+        const ctx = (fnError as { context?: { response?: Response } }).context;
+        if (ctx?.response) {
+          try {
+            const body = await ctx.response.clone().json();
+            if (body?.error) errMsg = body.error;
+            if (body?.duplicate) isDup = true;
+          } catch { /* ignore */ }
+        }
+        if (!errMsg) errMsg = fnError.message;
+      } else {
+        const res = (data ?? {}) as { duplicate?: boolean; error?: string };
+        if (res.duplicate) {
+          isDup = true;
+          errMsg = res.error ?? "This face is already registered with another account.";
+        } else if (res.error) {
+          errMsg = res.error;
+        }
+      }
+      if (errMsg) {
+        setError(errMsg);
+        toast.error(errMsg);
+        if (isDup) {
+          // Force a retake — duplicate face cannot proceed.
+          setPreview(null);
+          onChange(null);
+          setStatus("idle");
+        }
+        return;
+      }
+      // Cleared — commit the image to the parent form.
+      onChange(preview);
+      setStatus("confirmed");
+      toast.success("Face check passed.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Face check failed";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setChecking(false);
+    }
+  }, [preview, onChange]);
+
+  // What to display in the frame
+  const displayed = preview ?? value;
 
   return (
     <div className="space-y-3 rounded-2xl border border-border bg-muted/40 p-4">
       <div>
         <p className="text-sm font-semibold text-foreground">Face verification *</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Required to complete signup. We use this only to confirm it's really you. This photo also becomes your profile picture.
+          Required to complete signup. We check this face isn't already registered. This photo also becomes your profile picture.
         </p>
       </div>
 
       <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl border border-border bg-background">
-        {value ? (
-          <img src={value} alt="Captured selfie" className="h-full w-full object-cover" />
+        {displayed ? (
+          <img src={displayed} alt="Captured selfie" className="h-full w-full object-cover" />
         ) : status === "ready" || status === "starting" ? (
           <>
             <video
@@ -111,6 +175,12 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
             Tap to start camera
           </button>
         )}
+        {checking && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/80 text-sm font-medium text-foreground">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            Checking face…
+          </div>
+        )}
       </div>
       <canvas ref={canvasRef} className="hidden" />
 
@@ -121,24 +191,35 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
         </div>
       )}
 
-      {value && (
+      {status === "confirmed" && value && (
         <div className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/5 p-2.5 text-xs font-medium text-success">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Photo captured. You can submit the form.
+          <CheckCircle2 className="h-3.5 w-3.5" /> Face check passed. You can submit the form.
         </div>
       )}
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        {!value && (status === "ready" || status === "starting") && (
+        {!displayed && (status === "ready" || status === "starting") && (
           <Button type="button" onClick={capture} disabled={status !== "ready"} variant="hero" size="sm" className="w-full">
             <Camera className="h-4 w-4" /> Capture Photo
           </Button>
         )}
-        {value && (
+        {status === "preview" && preview && (
+          <>
+            <Button type="button" onClick={confirmImage} disabled={checking} variant="hero" size="sm" className="w-full">
+              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {checking ? "Checking…" : "Use this image"}
+            </Button>
+            <Button type="button" onClick={retake} disabled={checking} variant="outline" size="sm" className="w-full">
+              <RefreshCw className="h-4 w-4" /> Retake
+            </Button>
+          </>
+        )}
+        {status === "confirmed" && value && (
           <Button type="button" onClick={retake} variant="outline" size="sm" className="w-full">
             <RefreshCw className="h-4 w-4" /> Retake
           </Button>
         )}
-        {status === "error" && !value && (
+        {status === "error" && !displayed && (
           <Button type="button" onClick={startCamera} variant="outline" size="sm" className="w-full">
             <RefreshCw className="h-4 w-4" /> Try Again
           </Button>
