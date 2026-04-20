@@ -44,9 +44,11 @@ const userIcon = L.divIcon({
 export interface WorkerPin {
   id: string;
   name: string;
+  profession?: string;
   latitude: number;
   longitude: number;
   distanceKm?: number;
+  linkToProfile?: boolean;
 }
 
 interface Props {
