@@ -96,8 +96,12 @@ const Register = () => {
         console.warn("phone_exists check failed", phoneCheckErr);
       } else if (phoneTaken) {
         setLoading(false);
-        toast.error("Account already exists, please login");
-        navigate(`/login?redirect=${encodeURIComponent(role === "worker" ? "/worker-dashboard" : "/dashboard")}`, { replace: true });
+        if (role === "worker") {
+          setExistingAccountModal({ open: true, email: normalizedEmail });
+        } else {
+          toast.error("Account already exists, please login");
+          navigate(`/login?redirect=${encodeURIComponent("/dashboard")}`, { replace: true });
+        }
         return;
       }
 
