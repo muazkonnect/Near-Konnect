@@ -27,7 +27,7 @@ const Register = () => {
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [faceImage, setFaceImage] = useState<string | null>(null);
+  
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
