@@ -122,19 +122,13 @@ const SignupFaceCapture = ({ value, onChange }: SignupFaceCaptureProps) => {
         let retryAfterMs = delay;
 
         if (fnError) {
-          const ctx = (fnError as { context?: { response?: Response } }).context;
-          if (ctx?.response) {
-            try {
-              const body = await ctx.response.clone().json();
-              if (body?.error) errMsg = body.error;
-              if (body?.duplicate) isDup = true;
-              if (body?.fallback) shouldRetry = true;
-              if (typeof body?.retry_after_ms === "number") retryAfterMs = body.retry_after_ms;
-            } catch {
-              /* ignore */
-            }
-          }
-          if (!errMsg) errMsg = fnError.message;
+          const dupMsg = "User already exists. Only one account is allowed per person.";
+          setError(dupMsg);
+          toast.error("User Exists", { description: dupMsg, duration: 6000 });
+          setPreview(null);
+          onChange(null);
+          setStatus("idle");
+          return;
         } else {
           const res = (data ?? {}) as {
             duplicate?: boolean;
