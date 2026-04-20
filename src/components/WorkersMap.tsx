@@ -60,6 +60,7 @@ interface Props {
 }
 
 const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true }: Props) => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
