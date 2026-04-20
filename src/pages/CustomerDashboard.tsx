@@ -109,9 +109,7 @@ const CustomerDashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
-    const trimmed: ContactMethod[] = contactMethods.map((m) =>
-      m.type === "phone" ? { ...m, value: sanitizePhone(m.value) } : { ...m, value: m.value.trim() }
-    );
+    const trimmed: ContactMethod[] = normalizeContactMethods(contactMethods);
     const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
     if (!phoneVal) {
       toast.error("A phone number is required.");
