@@ -340,6 +340,12 @@ const CustomerDashboard = () => {
                 </span>
               </div>
 
+              {role !== "worker" && (
+                <div className="mb-6">
+                  <UpgradeToWorker />
+                </div>
+              )}
+
               <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
                 <AvatarUpload currentUrl={profile?.avatar_url} onUpload={handleAvatarUpload} />
                 <div className="min-w-0 flex-1">
@@ -372,12 +378,6 @@ const CustomerDashboard = () => {
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
-
-              {role !== "worker" && (
-                <div className="mt-8 border-t pt-6">
-                  <UpgradeToWorker />
-                </div>
-              )}
             </div>
           </TabsContent>
 
