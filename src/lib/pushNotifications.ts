@@ -1,7 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const sb = supabase as any;
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+
+let cachedVapidKey: string | null = null;
+async function getVapidPublicKey(): Promise<string | null> {
+  if (cachedVapidKey) return cachedVapidKey;
+  try {
+    const { data, error } = await supabase.functions.invoke("vapid-public-key");
+    if (error || !data?.key) return null;
+    cachedVapidKey = data.key as string;
+    return cachedVapidKey;
+  } catch {
+    return null;
+  }
+}
 
 const isInIframe = (() => {
   try {
