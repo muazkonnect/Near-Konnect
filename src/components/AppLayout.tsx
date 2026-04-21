@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search, UserRound } from "lucide-react";
+import { Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,7 +33,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
     { label: "Explore", to: "/discover", icon: Compass },
     { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true },
     { label: "Messages", to: "/messages", icon: MessageSquare },
-    { label: "Profile", to: profilePath, icon: UserRound },
   ];
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "You";
