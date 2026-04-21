@@ -63,7 +63,7 @@
     </div>
     <div id="root"></div>
     <script>
-      // Hide splash as soon as the root has any child (React mounted) — checked frequently.
+      // Hide splash ONLY when React has actually painted real content — never on a blank root.
       (function () {
         var splash = document.getElementById('app-splash');
         var root = document.getElementById('root');
@@ -75,19 +75,28 @@
           splash.classList.add('is-hidden');
           setTimeout(function () { splash.parentNode && splash.parentNode.removeChild(splash); }, 200);
         }
-        // Use MutationObserver — fires the instant React appends ANYTHING to #root.
+        function hasRealContent() {
+          // Require at least one element child with measurable size — guards against empty Suspense fallbacks.
+          if (!root.firstElementChild) return false;
+          var rect = root.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && root.firstElementChild.children.length > 0;
+        }
+        function tryHide() {
+          if (hasRealContent()) { hide(); return true; }
+          return false;
+        }
         if (window.MutationObserver) {
           var mo = new MutationObserver(function () {
-            if (root.firstChild) { mo.disconnect(); hide(); }
+            if (tryHide()) mo.disconnect();
           });
-          mo.observe(root, { childList: true });
-        } else {
-          var interval = setInterval(function () {
-            if (root.firstChild) { clearInterval(interval); hide(); }
-          }, 16);
+          mo.observe(root, { childList: true, subtree: true });
         }
-        // Hard safety cap: 600ms.
-        setTimeout(hide, 600);
+        // Backup poll in case observer misses (very rare).
+        var poll = setInterval(function () {
+          if (tryHide()) clearInterval(poll);
+        }, 50);
+        // Hard safety cap: 8s — long enough for slow networks, but never traps the user forever.
+        setTimeout(function () { clearInterval(poll); hide(); }, 8000);
         window.__hideSplash = hide;
       })();
     </script>
