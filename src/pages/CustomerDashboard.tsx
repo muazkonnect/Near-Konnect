@@ -340,6 +340,12 @@ const CustomerDashboard = () => {
                 </span>
               </div>
 
+              {role !== "worker" && (
+                <div className="mb-6">
+                  <UpgradeToWorker />
+                </div>
+              )}
+
               <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
                 <AvatarUpload currentUrl={profile?.avatar_url} onUpload={handleAvatarUpload} />
                 <div className="min-w-0 flex-1">
