@@ -8,17 +8,14 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-const hideSplash = () => {
-  const fn = (window as any).__hideSplash;
-  if (typeof fn === "function") fn();
-};
-
+// Splash removal is fully owned by the inline script in index.html — it watches the DOM
+// and only hides once React has actually painted real content. We just mount.
 try {
   createRoot(rootElement).render(<App />);
-  requestAnimationFrame(hideSplash);
 } catch (err) {
   console.error("Failed to mount app", err);
-  hideSplash();
+  const fn = (window as any).__hideSplash;
+  if (typeof fn === "function") fn();
   throw err;
 }
 
