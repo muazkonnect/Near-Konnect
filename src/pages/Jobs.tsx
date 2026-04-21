@@ -391,7 +391,7 @@ function ApplicationsDialog({ job, onClose }: { job: Job | null; onClose: () => 
         .in("user_id", ids);
       const map = new Map((profiles || []).map((p: any) => [p.user_id, p]));
       list.forEach((a) => {
-        const p = map.get(a.applicant_id);
+        const p = map.get(a.applicant_id) as any;
         if (p) a.applicant = { full_name: p.full_name, city: p.city, contact_methods: parseContactMethods(p.contact_methods) };
       });
     }
