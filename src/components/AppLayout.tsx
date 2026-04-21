@@ -98,6 +98,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
       <div className="mx-auto hidden max-w-[1200px] flex-col md:flex md:px-4 md:py-6 md:gap-5">
         <header className="sticky top-4 z-30 flex items-center gap-4 rounded-full bg-hero text-hero-foreground px-4 py-2.5 shadow-premium relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+          <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-4 top-1/2 -translate-y-1/2 h-16 w-auto opacity-[0.06] select-none rotate-[-8deg]" />
           <Link to="/" className="relative flex shrink-0 items-center pl-2 pr-3">
             <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
           </Link>
