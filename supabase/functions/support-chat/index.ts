@@ -67,12 +67,13 @@ serve(async (req) => {
     const userCoords = normalizeCoords((payload as any)?.userCoords);
     if (messages.length === 0) return json(400, { error: "messages is required" });
 
-    // Fetch available workers with profiles and average ratings
-    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-    const { data: userData, error: userError } = await authClient.auth.getUser();
-    if (userError || !userData.user) return json(401, { error: "Invalid or expired token" });
+    // Validate JWT using getClaims (signing-keys compatible)
+    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      console.error("Auth error:", claimsError);
+      return json(401, { error: "Invalid or expired token" });
+    }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
