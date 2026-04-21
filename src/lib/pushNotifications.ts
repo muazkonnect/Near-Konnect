@@ -72,7 +72,7 @@ export async function subscribeWebPush(userId: string): Promise<boolean> {
   }
 
   const json = sub.toJSON();
-  await supabase.from("push_subscriptions").upsert(
+  await (supabase.from("push_subscriptions") as any).upsert(
     {
       user_id: userId,
       platform: "web",
@@ -91,7 +91,10 @@ export async function unsubscribeWebPush(userId: string) {
   const reg = await navigator.serviceWorker.getRegistration();
   const sub = await reg?.pushManager.getSubscription();
   if (sub) {
-    await supabase.from("push_subscriptions").delete().eq("user_id", userId).eq("endpoint", sub.endpoint);
+    await (supabase.from("push_subscriptions") as any)
+      .delete()
+      .eq("user_id", userId)
+      .eq("endpoint", sub.endpoint);
     await sub.unsubscribe();
   }
 }
