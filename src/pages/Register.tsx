@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import MapLocationPicker from "@/components/MapLocationPicker";
+const MapLocationPicker = lazy(() => import("@/components/MapLocationPicker"));
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -293,7 +293,9 @@ const Register = () => {
             <div className="space-y-2 rounded-2xl border border-border bg-muted/40 p-4">
               <p className="text-sm font-semibold text-foreground">Pick your fixed service location *</p>
               <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
-              <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
+              <Suspense fallback={<div className="h-64 rounded-2xl bg-muted/40 animate-pulse" />}>
+                <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
+              </Suspense>
             </div>
           </>
         )}
