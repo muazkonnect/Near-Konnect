@@ -58,8 +58,9 @@ export async function registerServiceWorker() {
 
 export async function subscribeWebPush(userId: string): Promise<boolean> {
   if (!canUseWebPush()) return false;
-  if (!VAPID_PUBLIC_KEY) {
-    console.warn("Missing VITE_VAPID_PUBLIC_KEY env var. Add it to enable web push.");
+  const vapidKey = await getVapidPublicKey();
+  if (!vapidKey) {
+    console.warn("VAPID public key unavailable. Make sure VAPID_PUBLIC_KEY secret is set.");
     return false;
   }
 
@@ -74,7 +75,7 @@ export async function subscribeWebPush(userId: string): Promise<boolean> {
   if (!sub) {
     sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      applicationServerKey: urlBase64ToUint8Array(vapidKey),
     });
   }
 
