@@ -14,6 +14,7 @@ createRoot(rootElement).render(<App />);
 // Hide splash once React has rendered
 requestAnimationFrame(() => {
   setTimeout(() => {
+    void 0;
     const splash = document.getElementById("app-splash");
     if (splash) {
       splash.classList.add("is-hidden");
