@@ -5,6 +5,7 @@ import { ArrowRight, Briefcase, Globe, HeartPulse, MapPin, Search, ShieldCheck, 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
+import logoImg from "@/assets/logo.svg";
 
 const slides = [
   {
