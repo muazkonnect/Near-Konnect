@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
 
 interface AuthShellProps {
   title: string;
@@ -38,9 +39,8 @@ const AuthShell = ({ title, subtitle, brand = "NearKonnect", showBack = true, he
               <span className="h-10 w-10" />
             )}
 
-            <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>{brand}</span>
+            <Link to="/" className="inline-flex items-center">
+              <img src={logoImg} alt={brand} className="h-8 object-contain" />
             </Link>
 
             <span className="h-10 w-10" />

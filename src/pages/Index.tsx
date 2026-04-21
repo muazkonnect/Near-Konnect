@@ -73,11 +73,8 @@ const Index = () => {
             }} />
 
             <div className="relative flex items-center justify-between">
-              <div className="inline-flex items-center gap-1.5 text-sm font-semibold">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground">
-                  <MapPin className="h-3.5 w-3.5" />
-                </span>
-                <span>NearKonnect</span>
+              <div className="inline-flex items-center">
+                <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
               </div>
               <button className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-hero-foreground hover:bg-white/15">
                 <Globe className="h-3.5 w-3.5" /> EN
