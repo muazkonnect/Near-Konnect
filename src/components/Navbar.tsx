@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut, LayoutDashboard, MessageSquare, Heart } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard, MessageSquare, Heart, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -38,6 +38,11 @@ const Navbar = () => {
               <Link to={dashboardLink}>
                 <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
                   <LayoutDashboard className="w-4 h-4" /> {t("nav.dashboard")}
+                </Button>
+              </Link>
+              <Link to="/jobs">
+                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+                  <Briefcase className="w-4 h-4" /> Jobs
                 </Button>
               </Link>
               <Link to="/blood-donors">
@@ -88,6 +93,9 @@ const Navbar = () => {
             <>
               <Link to={dashboardLink} className="block py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
                 {t("nav.dashboard")}
+              </Link>
+              <Link to="/jobs" className="block py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
+                Jobs
               </Link>
               <Link to="/blood-donors" className="block py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
                 Blood Donors
