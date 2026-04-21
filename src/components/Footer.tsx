@@ -25,6 +25,7 @@ const Footer = () => {
           backgroundSize: "20px 20px",
         }}
       />
+      <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-16 -bottom-12 h-56 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
       <div className="relative px-6 py-3 md:px-10 md:py-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:items-center">
           {/* Left: Explore */}
