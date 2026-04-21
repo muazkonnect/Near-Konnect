@@ -36,20 +36,55 @@
     }
     #app-splash .splash-inner {
       display: flex; flex-direction: column; align-items: center; gap: 18px;
-      animation: splash-pop 600ms cubic-bezier(.2,.8,.2,1) both;
     }
-    #app-splash img { width: 168px; max-width: 60vw; height: auto; filter: drop-shadow(0 12px 32px hsl(75 100% 62% / 0.25)); }
+    #app-splash .splash-logo-wrap {
+      position: relative; width: 200px; height: 96px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #app-splash .splash-logo-wrap img {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      opacity: 0;
+      filter: drop-shadow(0 12px 32px hsl(75 100% 62% / 0.25));
+    }
+    #app-splash #splash-mark {
+      width: 84px; height: 84px;
+      animation:
+        splash-mark-in 400ms cubic-bezier(.2,.8,.2,1) both,
+        splash-mark-out 500ms cubic-bezier(.4,0,.6,1) 400ms both;
+    }
+    #app-splash #splash-full {
+      width: 200px; max-width: 60vw; height: auto;
+      animation: splash-full-in 500ms cubic-bezier(.2,.8,.2,1) 400ms both;
+    }
     #app-splash .splash-ring {
       width: 36px; height: 36px; border-radius: 999px;
       border: 2.5px solid hsl(75 100% 62% / 0.25);
       border-top-color: hsl(75 100% 62%);
-      animation: splash-spin 0.9s linear infinite;
+      animation: splash-spin 0.9s linear infinite, splash-glow 1.6s ease-in-out 900ms infinite;
     }
     #app-splash.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     @keyframes splash-spin { to { transform: rotate(360deg); } }
-    @keyframes splash-pop { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+    @keyframes splash-mark-in {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    @keyframes splash-mark-out {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
+    }
+    @keyframes splash-full-in {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    @keyframes splash-glow {
+      0%, 100% { box-shadow: 0 0 0 0 hsl(75 100% 62% / 0); }
+      50% { box-shadow: 0 0 24px 4px hsl(75 100% 62% / 0.35); }
+    }
     @media (prefers-reduced-motion: reduce) {
-      #app-splash .splash-inner, #app-splash .splash-ring { animation: none; }
+      #app-splash #splash-mark { display: none; }
+      #app-splash #splash-full { animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      #app-splash .splash-ring { animation: splash-spin 0.9s linear infinite; }
     }
   </style>
 </head>
@@ -57,7 +92,10 @@
   <body>
     <div id="app-splash" aria-hidden="true">
       <div class="splash-inner">
-        <img src="/favicon.svg" alt="Near Konnect" />
+        <div class="splash-logo-wrap">
+          <img id="splash-mark" src="/favicon.svg" alt="" />
+          <img id="splash-full" src="/logo.svg" alt="Near Konnect" />
+        </div>
         <div class="splash-ring"></div>
       </div>
     </div>
