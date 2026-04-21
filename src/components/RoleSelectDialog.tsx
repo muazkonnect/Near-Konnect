@@ -22,7 +22,7 @@ const RoleSelectDialog = ({ children, redirect }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl sm:max-w-lg">
+      <DialogContent className="rounded-3xl border-2 border-dashed border-foreground sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl">How do you want to join?</DialogTitle>
           <DialogDescription>
@@ -34,7 +34,7 @@ const RoleSelectDialog = ({ children, redirect }: Props) => {
           <button
             type="button"
             onClick={() => choose("customer")}
-            className="group flex flex-col items-start gap-3 rounded-2xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg"
+            className="group flex flex-col items-start gap-3 rounded-2xl border-2 border-dashed border-foreground bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg"
           >
             <div className="inline-flex rounded-2xl bg-primary/10 p-3">
               <UserRound className="h-6 w-6 text-primary" />
@@ -53,7 +53,7 @@ const RoleSelectDialog = ({ children, redirect }: Props) => {
           <button
             type="button"
             onClick={() => choose("worker")}
-            className="group flex flex-col items-start gap-3 rounded-2xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg"
+            className="group flex flex-col items-start gap-3 rounded-2xl border-2 border-dashed border-foreground bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg"
           >
             <div className="inline-flex rounded-2xl bg-accent p-3">
               <Briefcase className="h-6 w-6 text-foreground" />
