@@ -63,17 +63,7 @@ const SupportChatbot = () => {
     }
   }, [open, location.pathname, historyLoaded]);
 
-  // Auto-open after 10 seconds on first visit
-  useEffect(() => {
-    if (hasAutoGreeted) return;
-    const timer = setTimeout(() => {
-      if (!open) {
-        setOpen(true);
-        setHasAutoGreeted(true);
-      }
-    }, 10000);
-    return () => clearTimeout(timer);
-  }, [open, hasAutoGreeted]);
+  // Auto-open removed — button is always visible and pulses to attract attention.
 
   const send = useCallback(async (overrideText?: string) => {
     const text = (overrideText || input).trim();
