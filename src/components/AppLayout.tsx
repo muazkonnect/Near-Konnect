@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import logoImg from "@/assets/logo.svg";
 import logoDarkImg from "@/assets/logo-dark.svg";
+import SupportChatbot from "@/components/SupportChatbot";
 
 interface AppLayoutProps {
   title?: string;
@@ -166,6 +167,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           <main className={title ? "rounded-3xl bg-card p-6" : ""}>{children}</main>
         </div>
       </div>
+      {user && <SupportChatbot />}
     </div>
   );
 };

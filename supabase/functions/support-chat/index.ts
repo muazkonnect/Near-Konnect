@@ -130,7 +130,7 @@ ${workerList || "No workers currently available."}
 When recommending workers:
 - Prioritize by relevance to the problem, then by rating, then by proximity.
 - Mention the worker's name, profession, rating, and distance if available.
-- Include a link like: [View Profile](/worker/USER_ID)
+- Always include BOTH links for each recommendation: [View Profile](/worker/USER_ID) and [Message](/messages?to=USER_ID)
 - Recommend 1-3 workers max.
 
 If the user's problem is something they can fix themselves, provide DIY steps first, then offer to recommend a professional if they need one.`;
