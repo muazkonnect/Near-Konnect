@@ -46,24 +46,10 @@ export function useChatHistory() {
           .order("updated_at", { ascending: false })
           .limit(20);
 
-        if (data && data.length > 0) {
-          setConversations(data as Conversation[]);
-          // Load most recent conversation
-          const latest = data[0];
-          setActiveConversationId(latest.id);
-          const { data: msgs } = await supabase
-            .from("chatbot_messages")
-            .select("*")
-            .eq("conversation_id", latest.id)
-            .order("created_at", { ascending: true });
-          if (msgs) {
-            setMessages(msgs.map((m: any) => ({ role: m.role as "user" | "assistant", content: m.content })));
-          }
-        } else {
-          setConversations([]);
-          setActiveConversationId(null);
-          setMessages([]);
-        }
+        // Always start with a fresh chat on login; past conversations remain accessible via history.
+        setConversations((data as Conversation[]) || []);
+        setActiveConversationId(null);
+        setMessages([]);
       } catch (error) {
         console.error("Failed loading chatbot conversations", error);
         setConversations([]);
