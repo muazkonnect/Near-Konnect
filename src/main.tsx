@@ -1,15 +1,12 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { registerServiceWorker, isPreview } from "./lib/pushNotifications";
 
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
   throw new Error("Root element not found");
 }
-
-createRoot(rootElement).render(<App />);
 
 // Hide splash as soon as React commits its first paint.
 const hideSplash = () => {
@@ -19,18 +16,35 @@ const hideSplash = () => {
   setTimeout(() => splash.remove(), 200);
 };
 
-// Hide on the very next paint after React mounts
-requestAnimationFrame(hideSplash);
+try {
+  createRoot(rootElement).render(<App />);
+  // Hide on the very next paint after React mounts
+  requestAnimationFrame(hideSplash);
+} catch (err) {
+  // If the app fails to mount, never trap the user behind the splash
+  console.error("Failed to mount app", err);
+  hideSplash();
+  throw err;
+}
 
-// Safety net: hard cap at 1.5s even if something stalls
-setTimeout(hideSplash, 1500);
+// Safety net: hard cap at 1.2s even if something stalls
+setTimeout(hideSplash, 1200);
 
-// Register service worker only outside preview/iframe contexts
-if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-  if (isPreview()) {
-    // Clean up any leftover SWs in preview/iframe
-    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
-  } else {
-    registerServiceWorker();
-  }
+// Defer service worker registration until the browser is idle so it doesn't
+// compete with the initial paint.
+const registerSW = () => {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+  import("./lib/pushNotifications").then(({ registerServiceWorker, isPreview }) => {
+    if (isPreview()) {
+      navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+    } else {
+      registerServiceWorker();
+    }
+  });
+};
+
+if (typeof (window as any).requestIdleCallback === "function") {
+  (window as any).requestIdleCallback(registerSW, { timeout: 2500 });
+} else {
+  setTimeout(registerSW, 1500);
 }
