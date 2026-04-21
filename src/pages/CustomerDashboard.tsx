@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useNotifications, markRead } from "@/hooks/useNotifications";
 import { fetchConversationSummaries } from "@/lib/messages";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
@@ -85,6 +86,12 @@ const CustomerDashboard = () => {
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const { unreadByType } = useNotifications();
+
+  useEffect(() => {
+    if (activeTab === "messages") markRead((n) => n.type === "message");
+    if (activeTab === "bookings") markRead((n) => n.type === "booking");
+  }, [activeTab]);
 
   useEffect(() => {
     if (profile) {
@@ -193,8 +200,8 @@ const CustomerDashboard = () => {
           {/* Stats inside hero */}
           <div className="relative mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
             {[
-              { label: "Messages", value: String(conversations.length), icon: MessageSquare, accent: true },
-              { label: "Bookings", value: String(myBookings.length), icon: Calendar },
+              { label: "New messages", value: String(unreadByType.message), icon: MessageSquare, accent: unreadByType.message > 0 },
+              { label: "New bookings", value: String(unreadByType.booking), icon: Calendar, accent: unreadByType.booking > 0 },
               { label: "Reviews", value: String(myReviews.length), icon: Star },
               { label: "Profile", value: profile?.full_name ? "Ready" : "Setup", icon: User },
             ].map((s) => (
@@ -238,8 +245,8 @@ const CustomerDashboard = () => {
             items={[
               { value: "overview", label: "Overview", icon: LayoutDashboard },
               { value: "profile", label: "Profile", icon: User },
-              { value: "bookings", label: "Bookings", icon: Calendar, badge: myBookings.length },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: conversations.length },
+              { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
+              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message },
               { value: "blood", label: "Blood Konnect", icon: HeartPulse },
             ]}
             active={activeTab}
