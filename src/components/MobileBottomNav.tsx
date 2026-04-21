@@ -28,7 +28,7 @@ const MobileBottomNav = () => {
 
   const { unreadByType } = useNotifications();
 
-  const items = [
+  const items: { label: string; to: string; icon: typeof Home; hasDot: boolean; urgent?: boolean }[] = [
     { label: "Home", to: "/", icon: Home, hasDot: false },
     { label: "Explore", to: "/discover", icon: Compass, hasDot: false },
     { label: "Jobs", to: "/jobs", icon: Briefcase, hasDot: false },
