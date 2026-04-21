@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
 import logoImg from "@/assets/logo.svg";
+import RoleSelectDialog from "@/components/RoleSelectDialog";
 
 const slides = [
   {
@@ -204,7 +205,9 @@ const Index = () => {
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Already a member?</p>
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => navigate("/login")}>Log In</Button>
-                <Button className="flex-1" onClick={() => navigate("/register")}>Sign Up</Button>
+                <RoleSelectDialog>
+                  <Button className="flex-1">Sign Up</Button>
+                </RoleSelectDialog>
               </div>
             </div>
           </section>
@@ -275,7 +278,9 @@ const Index = () => {
                 Join thousands using NearKonnect to find trusted help, offer services, and respond to urgent local needs.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <Button onClick={() => navigate("/register")}>Create free account</Button>
+                <RoleSelectDialog>
+                  <Button>Create free account</Button>
+                </RoleSelectDialog>
                 <Button variant="outline" className="border-white/20 bg-transparent text-hero-foreground hover:bg-white/10" onClick={() => navigate("/discover")}>
                   Browse services
                 </Button>
