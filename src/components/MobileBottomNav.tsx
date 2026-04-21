@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Home, Compass, Briefcase, MessageSquare, User } from "lucide-react";
+import { Home, Compass, Briefcase, MessageSquare, Heart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -18,22 +18,14 @@ const MobileBottomNav = () => {
     return () => document.body.classList.remove("has-mobile-bottom-nav");
   }, []);
 
-  const profilePath = !user
-    ? "/login"
-    : role === "worker"
-      ? "/worker-dashboard"
-      : role === "admin"
-        ? "/admin"
-        : "/dashboard";
-
   const { unreadByType } = useNotifications();
 
   const items: { label: string; to: string; icon: typeof Home; hasDot: boolean; urgent?: boolean }[] = [
     { label: "Home", to: "/", icon: Home, hasDot: false },
     { label: "Explore", to: "/discover", icon: Compass, hasDot: false },
     { label: "Jobs", to: "/jobs", icon: Briefcase, hasDot: false },
+    { label: "Donors", to: "/blood-donors", icon: Heart, hasDot: false },
     { label: "Messages", to: "/messages", icon: MessageSquare, hasDot: unreadByType.message > 0 },
-    { label: "Profile", to: profilePath, icon: User, hasDot: false },
   ];
 
   if (shouldHide) return null;
