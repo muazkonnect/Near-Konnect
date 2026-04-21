@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
 import type { ReactNode } from "react";
 
 interface LegalLayoutProps {
@@ -29,8 +30,8 @@ const LegalLayout = ({ title, subtitle, lastUpdated = "April 2026", children }: 
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to home
           </Link>
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-hero-muted">
-            <MapPin className="h-3.5 w-3.5 text-primary" /> NearKonnect
+          <div className="inline-flex items-center">
+            <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
           </div>
           <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">{title}</h1>
           {subtitle && <p className="mt-3 max-w-2xl text-sm text-hero-muted md:text-base">{subtitle}</p>}
