@@ -142,18 +142,18 @@ const SupportChatbot = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-28 left-4 md:bottom-6 md:right-6 md:left-auto z-[60] h-12 rounded-2xl border bg-card px-4 text-foreground shadow-premium hover:bg-muted flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] group"
-          aria-label="Open support chat"
+          className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[60] h-14 md:h-12 rounded-full bg-primary px-5 text-primary-foreground shadow-premium hover:bg-primary/90 flex items-center justify-center gap-2 transition-transform hover:scale-[1.03] ring-4 ring-primary/20"
+          aria-label="Open AI assistant"
         >
           <Bot className="h-5 w-5" />
-          <span className="text-xs font-semibold">AI Assistant</span>
+          <span className="text-sm font-semibold hidden sm:inline">AI Assistant</span>
           <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-background animate-pulse" />
         </button>
       )}
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-28 left-4 w-[calc(100vw-2rem)] md:w-[380px] md:bottom-6 md:right-6 md:left-auto z-[60] h-[70vh] md:h-[520px] max-h-[calc(100vh-7rem)] md:max-h-[calc(100vh-4rem)] bg-card border rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-24 right-4 w-[calc(100vw-2rem)] md:w-[380px] md:bottom-6 md:right-6 z-[60] h-[70vh] md:h-[520px] max-h-[calc(100vh-7rem)] md:max-h-[calc(100vh-4rem)] bg-card border rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b bg-primary text-primary-foreground rounded-t-2xl">
             <div className="flex items-center gap-2">
