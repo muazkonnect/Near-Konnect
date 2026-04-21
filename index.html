@@ -62,6 +62,28 @@
       </div>
     </div>
     <div id="root"></div>
+    <script>
+      // Hide splash as soon as the root has any child (React mounted) — checked frequently.
+      (function () {
+        var splash = document.getElementById('app-splash');
+        var root = document.getElementById('root');
+        if (!splash || !root) return;
+        var hidden = false;
+        function hide() {
+          if (hidden) return;
+          hidden = true;
+          splash.classList.add('is-hidden');
+          setTimeout(function () { splash.parentNode && splash.parentNode.removeChild(splash); }, 200);
+        }
+        // Poll the root every 30ms until React commits its first child.
+        var interval = setInterval(function () {
+          if (root.firstChild) { clearInterval(interval); hide(); }
+        }, 30);
+        // Hard cap: never trap user behind splash for more than 800ms.
+        setTimeout(function () { clearInterval(interval); hide(); }, 800);
+        window.__hideSplash = hide;
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
