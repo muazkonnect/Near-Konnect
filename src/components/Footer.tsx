@@ -46,7 +46,7 @@ const Footer = () => {
           {/* Middle: Logo */}
           <div className="flex flex-col items-center justify-center text-center">
             <Link to="/" className="inline-flex items-center">
-              <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
+              <img src={logoImg} alt="Near Konnect" className="h-16 object-contain" />
             </Link>
             <p className="mt-1 max-w-xs text-xs text-hero-muted">
               Connecting you with trusted local professionals near your location.
