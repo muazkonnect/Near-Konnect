@@ -13,16 +13,18 @@ export interface AppNotification {
   read: boolean;
 }
 
-// Module-scoped singleton state — shared across every consumer
+const sb = supabase as any;
+
+// Module-scoped singleton state
 let store: AppNotification[] = [];
-let readIds = new Set<string>();
+let readKeys = new Set<string>();
 let subs: ((n: AppNotification[]) => void)[] = [];
 let channel: ReturnType<typeof supabase.channel> | null = null;
 let initUserId: string | null = null;
 let initializing = false;
 
 const broadcast = () => {
-  const snapshot = store.map((n) => ({ ...n, read: readIds.has(n.id) }));
+  const snapshot = store.map((n) => ({ ...n, read: readKeys.has(n.id) }));
   subs.forEach((fn) => fn(snapshot));
 };
 
@@ -31,10 +33,17 @@ const upsert = (n: AppNotification) => {
   broadcast();
 };
 
+const loadReadKeys = async (userId: string) => {
+  const { data } = await sb.from("notification_reads").select("notification_key").eq("user_id", userId);
+  readKeys = new Set((data || []).map((r: any) => r.notification_key as string));
+};
+
 const init = async (userId: string) => {
   if (initializing || initUserId === userId) return;
   initializing = true;
   initUserId = userId;
+
+  await loadReadKeys(userId);
 
   const list: AppNotification[] = [];
 
@@ -199,22 +208,41 @@ const init = async (userId: string) => {
   channel = ch;
 };
 
-export const markRead = (predicate: (n: AppNotification) => boolean) => {
-  store.forEach((n) => {
-    if (predicate(n)) readIds.add(n.id);
-  });
+// DB-synced read state
+export const markRead = async (predicate: (n: AppNotification) => boolean) => {
+  if (!initUserId) return;
+  const toMark = store.filter((n) => predicate(n) && !readKeys.has(n.id));
+  if (!toMark.length) return;
+  toMark.forEach((n) => readKeys.add(n.id));
   broadcast();
+  const rows = toMark.map((n) => ({ user_id: initUserId!, notification_key: n.id }));
+  await sb.from("notification_reads").upsert(rows, { onConflict: "user_id,notification_key", ignoreDuplicates: true });
 };
 
-export const markAllRead = () => {
-  store.forEach((n) => readIds.add(n.id));
+export const markOneRead = async (notificationId: string) => {
+  if (!initUserId || readKeys.has(notificationId)) return;
+  readKeys.add(notificationId);
   broadcast();
+  await sb.from("notification_reads").upsert(
+    { user_id: initUserId, notification_key: notificationId },
+    { onConflict: "user_id,notification_key", ignoreDuplicates: true }
+  );
+};
+
+export const markAllRead = async () => {
+  if (!initUserId) return;
+  const unread = store.filter((n) => !readKeys.has(n.id));
+  if (!unread.length) return;
+  unread.forEach((n) => readKeys.add(n.id));
+  broadcast();
+  const rows = unread.map((n) => ({ user_id: initUserId!, notification_key: n.id }));
+  await sb.from("notification_reads").upsert(rows, { onConflict: "user_id,notification_key", ignoreDuplicates: true });
 };
 
 export const useNotifications = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<AppNotification[]>(() =>
-    store.map((n) => ({ ...n, read: readIds.has(n.id) }))
+    store.map((n) => ({ ...n, read: readKeys.has(n.id) }))
   );
 
   useEffect(() => {
@@ -229,7 +257,7 @@ export const useNotifications = () => {
         channel = null;
         initUserId = null;
         store = [];
-        readIds = new Set();
+        readKeys = new Set();
       }
     };
   }, [user]);
