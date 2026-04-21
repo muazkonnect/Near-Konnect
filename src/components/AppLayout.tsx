@@ -45,9 +45,8 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <div className="relative flex items-center justify-between">
-              <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>NearKonnect</span>
+              <Link to="/" className="inline-flex items-center">
+                <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
               </Link>
             </div>
 
@@ -61,9 +60,8 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           </div>
         ) : (
           <div className="flex items-center justify-between px-5 pt-5 pb-2">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>NearKonnect</span>
+            <Link to="/" className="inline-flex items-center">
+              <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
             </Link>
           </div>
         )}
