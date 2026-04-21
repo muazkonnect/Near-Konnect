@@ -14,13 +14,12 @@ createRoot(rootElement).render(<App />);
 // Hide splash once React has rendered
 requestAnimationFrame(() => {
   setTimeout(() => {
-    void 0;
     const splash = document.getElementById("app-splash");
     if (splash) {
       splash.classList.add("is-hidden");
       setTimeout(() => splash.remove(), 500);
     }
-  }, 350);
+  }, 1400);
 });
 
 // Register service worker only outside preview/iframe contexts
