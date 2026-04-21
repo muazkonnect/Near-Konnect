@@ -16,21 +16,14 @@ const hideSplash = () => {
   const splash = document.getElementById("app-splash");
   if (!splash || splash.classList.contains("is-hidden")) return;
   splash.classList.add("is-hidden");
-  setTimeout(() => splash.remove(), 500);
+  setTimeout(() => splash.remove(), 200);
 };
 
-// Primary: hide on next paint after mount
-requestAnimationFrame(() => requestAnimationFrame(hideSplash));
+// Hide on the very next paint after React mounts
+requestAnimationFrame(hideSplash);
 
-// Safety net: never let the splash stick longer than 4s, even if something throws
-setTimeout(hideSplash, 4000);
-
-// Extra safety: hide once the window finishes loading
-if (document.readyState === "complete") {
-  hideSplash();
-} else {
-  window.addEventListener("load", hideSplash, { once: true });
-}
+// Safety net: hard cap at 1.5s even if something stalls
+setTimeout(hideSplash, 1500);
 
 // Register service worker only outside preview/iframe contexts
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
