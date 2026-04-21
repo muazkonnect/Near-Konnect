@@ -75,12 +75,19 @@
           splash.classList.add('is-hidden');
           setTimeout(function () { splash.parentNode && splash.parentNode.removeChild(splash); }, 200);
         }
-        // Poll the root every 30ms until React commits its first child.
-        var interval = setInterval(function () {
-          if (root.firstChild) { clearInterval(interval); hide(); }
-        }, 30);
-        // Hard cap: never trap user behind splash for more than 800ms.
-        setTimeout(function () { clearInterval(interval); hide(); }, 800);
+        // Use MutationObserver — fires the instant React appends ANYTHING to #root.
+        if (window.MutationObserver) {
+          var mo = new MutationObserver(function () {
+            if (root.firstChild) { mo.disconnect(); hide(); }
+          });
+          mo.observe(root, { childList: true });
+        } else {
+          var interval = setInterval(function () {
+            if (root.firstChild) { clearInterval(interval); hide(); }
+          }, 16);
+        }
+        // Hard safety cap: 600ms.
+        setTimeout(hide, 600);
         window.__hideSplash = hide;
       })();
     </script>

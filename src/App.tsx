@@ -7,13 +7,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/i18n";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import Index from "./pages/Index";
-import MobileBottomNav from "@/components/MobileBottomNav";
-import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
-import Footer from "@/components/Footer";
-import DisclosureModals from "@/components/DisclosureModals";
 
-// Lazy-load route pages to keep the initial bundle small.
+// Lazy-load EVERYTHING route-related (including Index) to keep initial bundle minimal.
+const Index = lazy(() => import("./pages/Index"));
 const Discover = lazy(() => import("./pages/Discover"));
 const WorkerProfile = lazy(() => import("./pages/WorkerProfile"));
 const Login = lazy(() => import("./pages/Login"));
@@ -31,6 +27,12 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+
+// Lazy-load chrome (non-critical for first paint)
+const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
+const UnverifiedEmailBanner = lazy(() => import("@/components/UnverifiedEmailBanner"));
+const Footer = lazy(() => import("@/components/Footer"));
+const DisclosureModals = lazy(() => import("@/components/DisclosureModals"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,8 +59,12 @@ const App = () => (
           <TooltipProvider>
             <Sonner />
             <BrowserRouter>
-              <UnverifiedEmailBanner />
-              <DisclosureModals />
+              <Suspense fallback={null}>
+                <UnverifiedEmailBanner />
+              </Suspense>
+              <Suspense fallback={null}>
+                <DisclosureModals />
+              </Suspense>
               <Suspense fallback={<RouteFallback />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -81,8 +87,12 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-              <Footer />
-              <MobileBottomNav />
+              <Suspense fallback={null}>
+                <Footer />
+              </Suspense>
+              <Suspense fallback={null}>
+                <MobileBottomNav />
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
