@@ -65,6 +65,19 @@ const SupportChatbot = () => {
     }
   }, [open, location.pathname, historyLoaded]);
 
+  // One-time welcome message per login session, shown the first time the user opens the assistant.
+  useEffect(() => {
+    if (!open || !user || !historyLoaded) return;
+    const key = `nk_welcome_shown_${user.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    const welcome: Msg = {
+      role: "assistant",
+      content: `👋 Welcome to Near Konnect! I'm your AI Assistant — here to help you find trusted local workers, post jobs, manage bookings, or answer any question about the platform. How can I help you today?`,
+    };
+    setMessages((prev) => (prev.length === 0 ? [welcome] : [welcome, ...prev]));
+  }, [open, user, historyLoaded, setMessages]);
+
   // Auto-open removed — button is always visible and pulses to attract attention.
 
   const send = useCallback(async (overrideText?: string) => {
