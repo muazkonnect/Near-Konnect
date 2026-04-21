@@ -19,6 +19,7 @@ import WorkerDashboard from "./pages/WorkerDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import BloodDonors from "./pages/BloodDonors";
+import Jobs from "./pages/Jobs";
 import Chat from "./pages/Chat";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
@@ -65,6 +66,7 @@ const App = () => (
                 <Route path="/worker-dashboard" element={<ProtectedRoute><WorkerDashboard /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/blood-donors" element={<ProtectedRoute><BloodDonors /></ProtectedRoute>} />
+                <Route path="/jobs" element={<Jobs />} />
                 <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
                 <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
                 <Route path="/disclaimer" element={<Disclaimer />} />
