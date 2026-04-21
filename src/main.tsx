@@ -8,30 +8,21 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-// Hide splash as soon as React commits its first paint.
 const hideSplash = () => {
-  const splash = document.getElementById("app-splash");
-  if (!splash || splash.classList.contains("is-hidden")) return;
-  splash.classList.add("is-hidden");
-  setTimeout(() => splash.remove(), 200);
+  const fn = (window as any).__hideSplash;
+  if (typeof fn === "function") fn();
 };
 
 try {
   createRoot(rootElement).render(<App />);
-  // Hide on the very next paint after React mounts
   requestAnimationFrame(hideSplash);
 } catch (err) {
-  // If the app fails to mount, never trap the user behind the splash
   console.error("Failed to mount app", err);
   hideSplash();
   throw err;
 }
 
-// Safety net: hard cap at 1.2s even if something stalls
-setTimeout(hideSplash, 1200);
-
-// Defer service worker registration until the browser is idle so it doesn't
-// compete with the initial paint.
+// Defer service worker registration until the browser is idle.
 const registerSW = () => {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
   import("./lib/pushNotifications").then(({ registerServiceWorker, isPreview }) => {
