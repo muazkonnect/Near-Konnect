@@ -7,3 +7,7 @@ project_id = "lxghuqiheaoinytrwhac"
     verify_jwt = true
   [functions.check-face-duplicate]
     verify_jwt = false
+  [functions.vapid-public-key]
+    verify_jwt = false
+  [functions.send-push]
+    verify_jwt = false
