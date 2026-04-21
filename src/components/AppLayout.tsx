@@ -158,6 +158,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           {title && (
             <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
               <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-10 -bottom-8 h-44 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
               <div className="relative min-w-0">
                 <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}
