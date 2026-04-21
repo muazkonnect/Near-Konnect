@@ -14,10 +14,16 @@ const Messages = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [loading, user, navigate]);
+
+  useEffect(() => {
+    const to = searchParams.get("to");
+    if (to && user) navigate(`/chat/${to}`, { replace: true });
+  }, [searchParams, user, navigate]);
 
   useEffect(() => {
     markRead((n) => n.type === "message");
