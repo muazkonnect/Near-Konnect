@@ -144,14 +144,11 @@ const SupportChatbot = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[60] h-14 md:h-12 rounded-full bg-primary px-5 text-primary-foreground shadow-premium hover:bg-primary/90 flex items-center justify-center gap-2 transition-transform hover:scale-[1.03] ring-4 ring-primary/20"
+          className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[60] h-20 w-20 md:h-24 md:w-24 p-0 rounded-full bg-transparent flex items-center justify-center transition-transform hover:scale-[1.05] drop-shadow-[0_8px_24px_hsl(var(--primary)/0.45)]"
           aria-label="Open AI assistant"
         >
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-primary-foreground/15 p-1">
-            <img src={logoImg} alt="" className="h-full w-full object-contain" />
-          </span>
-          <span className="text-sm font-semibold hidden sm:inline">AI Assistant</span>
-          <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-background animate-pulse" />
+          <img src={logoAiImg} alt="AI Assistant" className="h-full w-full object-contain" />
+          <span className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-background animate-pulse" />
         </button>
       )}
 
