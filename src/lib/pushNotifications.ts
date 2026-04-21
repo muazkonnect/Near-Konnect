@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
+const sb = supabase as any;
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
 
 const isInIframe = (() => {
@@ -13,8 +14,7 @@ const isInIframe = (() => {
 const isPreviewHost =
   typeof window !== "undefined" &&
   (window.location.hostname.includes("id-preview--") ||
-    window.location.hostname.includes("lovableproject.com") ||
-    window.location.hostname.includes("lovable.app"));
+    window.location.hostname.includes("lovableproject.com"));
 
 export const canUseWebPush = () =>
   typeof window !== "undefined" &&
@@ -44,15 +44,10 @@ export async function registerServiceWorker() {
   }
 }
 
-export async function getNotificationPermission(): Promise<NotificationPermission> {
-  if (!("Notification" in window)) return "denied";
-  return Notification.permission;
-}
-
 export async function subscribeWebPush(userId: string): Promise<boolean> {
   if (!canUseWebPush()) return false;
   if (!VAPID_PUBLIC_KEY) {
-    console.warn("Missing VITE_VAPID_PUBLIC_KEY");
+    console.warn("Missing VITE_VAPID_PUBLIC_KEY env var. Add it to enable web push.");
     return false;
   }
 
@@ -72,7 +67,7 @@ export async function subscribeWebPush(userId: string): Promise<boolean> {
   }
 
   const json = sub.toJSON();
-  await (supabase.from("push_subscriptions") as any).upsert(
+  await sb.from("push_subscriptions").upsert(
     {
       user_id: userId,
       platform: "web",
@@ -91,10 +86,7 @@ export async function unsubscribeWebPush(userId: string) {
   const reg = await navigator.serviceWorker.getRegistration();
   const sub = await reg?.pushManager.getSubscription();
   if (sub) {
-    await (supabase.from("push_subscriptions") as any)
-      .delete()
-      .eq("user_id", userId)
-      .eq("endpoint", sub.endpoint);
+    await sb.from("push_subscriptions").delete().eq("user_id", userId).eq("endpoint", sub.endpoint);
     await sub.unsubscribe();
   }
 }
@@ -106,14 +98,14 @@ export async function isSubscribed(): Promise<boolean> {
   return !!sub;
 }
 
-// Native (Capacitor) — lazy-loaded so web bundles don't break
+// Native (Capacitor) — opt-in. Plugin is dynamically imported so web builds don't need it.
 export async function registerNativePush(userId: string) {
   try {
     const cap = (window as any).Capacitor;
     if (!cap?.isNativePlatform?.()) return false;
-    const { PushNotifications } = await import(
-      /* @vite-ignore */ "@capacitor/push-notifications"
-    );
+    const moduleName = "@capacitor/push-notifications";
+    const mod: any = await import(/* @vite-ignore */ moduleName);
+    const PushNotifications = mod.PushNotifications;
 
     const perm = await PushNotifications.checkPermissions();
     if (perm.receive !== "granted") {
@@ -125,7 +117,7 @@ export async function registerNativePush(userId: string) {
 
     PushNotifications.addListener("registration", async (token: { value: string }) => {
       const platform: "ios" | "android" = cap.getPlatform() === "ios" ? "ios" : "android";
-      await supabase.from("push_subscriptions").upsert(
+      await sb.from("push_subscriptions").upsert(
         {
           user_id: userId,
           platform,
@@ -141,8 +133,7 @@ export async function registerNativePush(userId: string) {
     });
 
     return true;
-  } catch (e) {
-    // Plugin not installed / not native build — silently ignore
+  } catch {
     return false;
   }
 }
