@@ -1252,6 +1252,17 @@ export type Database = {
             }
             Returns: boolean
           }
+      invoke_send_push: {
+        Args: {
+          _body: string
+          _tag: string
+          _title: string
+          _urgent: boolean
+          _url: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       longtransactionsenabled: { Args: never; Returns: boolean }
       move_to_dlq: {
         Args: {
