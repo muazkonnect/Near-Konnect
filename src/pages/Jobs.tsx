@@ -11,10 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as typedSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ContactMethodsBar } from "@/components/ContactMethodsBar";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
+
+// Supabase types are auto-generated and don't yet include the new `jobs` /
+// `job_applications` tables. Cast the client to bypass the typed table list.
+const supabase = typedSupabase as any;
 
 type Job = {
   id: string;
