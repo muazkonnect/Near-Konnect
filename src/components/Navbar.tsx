@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useI18n } from "@/i18n";
 import logoImg from "@/assets/logo.svg";
+import RoleSelectDialog from "@/components/RoleSelectDialog";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -70,9 +71,9 @@ const Navbar = () => {
               <Link to="/login">
                 <Button variant="ghost" size="sm">{t("nav.logIn")}</Button>
               </Link>
-              <Link to="/register">
+              <RoleSelectDialog>
                 <Button size="sm" className="bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-md">{t("nav.signUp")}</Button>
-              </Link>
+              </RoleSelectDialog>
             </>
           )}
         </div>
@@ -107,9 +108,11 @@ const Navbar = () => {
                 <Link to="/login" className="flex-1" onClick={() => setOpen(false)}>
                   <Button variant="outline" className="w-full" size="sm">{t("nav.logIn")}</Button>
                 </Link>
-                <Link to="/register" className="flex-1" onClick={() => setOpen(false)}>
-                  <Button className="w-full bg-gradient-brand text-primary-foreground" size="sm">{t("nav.signUp")}</Button>
-                </Link>
+                <div className="flex-1" onClick={() => setOpen(false)}>
+                  <RoleSelectDialog>
+                    <Button className="w-full bg-gradient-brand text-primary-foreground" size="sm">{t("nav.signUp")}</Button>
+                  </RoleSelectDialog>
+                </div>
               </>
             )}
           </div>
