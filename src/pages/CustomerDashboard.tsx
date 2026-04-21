@@ -378,12 +378,6 @@ const CustomerDashboard = () => {
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
-
-              {role !== "worker" && (
-                <div className="mt-8 border-t pt-6">
-                  <UpgradeToWorker />
-                </div>
-              )}
             </div>
           </TabsContent>
 
