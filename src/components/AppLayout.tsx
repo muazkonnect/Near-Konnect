@@ -167,6 +167,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           <main className={title ? "rounded-3xl bg-card p-6" : ""}>{children}</main>
         </div>
       </div>
+      {user && <SupportChatbot />}
     </div>
   );
 };
