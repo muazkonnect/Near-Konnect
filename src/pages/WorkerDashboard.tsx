@@ -38,6 +38,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchConversationSummaries } from "@/lib/messages";
+import { useNotifications, markRead } from "@/hooks/useNotifications";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 
