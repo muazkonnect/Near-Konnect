@@ -45,7 +45,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
         {title ? (
           <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-8 -bottom-6 h-32 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
             <div className="relative items-center justify-between text-center flex flex-col">
               <Link to="/" className="inline-flex items-center">
                 <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
@@ -63,7 +62,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
         ) : (
           <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-8 -bottom-6 h-32 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
             <div className="relative items-center justify-between text-center flex flex-col">
               <Link to="/" className="inline-flex items-center">
                 <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
@@ -98,7 +96,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
       <div className="mx-auto hidden max-w-[1200px] flex-col md:flex md:px-4 md:py-6 md:gap-5">
         <header className="sticky top-4 z-30 flex items-center gap-4 rounded-full bg-hero text-hero-foreground px-4 py-2.5 shadow-premium relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-          <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-4 top-1/2 -translate-y-1/2 h-16 w-auto opacity-[0.06] select-none rotate-[-8deg]" />
           <Link to="/" className="relative flex shrink-0 items-center pl-2 pr-3">
             <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
           </Link>
@@ -158,7 +155,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           {title && (
             <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
               <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-              <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-10 -bottom-8 h-44 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
               <div className="relative min-w-0">
                 <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-2 text-sm text-hero-muted">{subtitle}</p>}

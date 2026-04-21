@@ -23,7 +23,6 @@ const LegalLayout = ({ title, subtitle, lastUpdated = "April 2026", children }: 
             backgroundSize: "20px 20px",
           }}
         />
-        <img aria-hidden src={logoImg} alt="" className="pointer-events-none absolute -right-12 -bottom-10 h-52 w-auto opacity-[0.05] select-none rotate-[-8deg]" />
         <div className="relative px-6 py-10 md:px-10 md:py-14">
           <Link
             to="/"
