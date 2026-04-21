@@ -70,7 +70,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           </div>
         )}
 
-        <main className="px-4 pt-5 my-[50px]">{children}</main>
+        <main className="px-4 pt-5 my-[2px]">{children}</main>
 
         {user && showSignOut && (
           <div className="px-4 pb-32 pt-6 flex flex-col items-center gap-4">
