@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
 
 const Footer = () => {
   const legalLinks = [
