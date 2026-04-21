@@ -19,7 +19,7 @@ requestAnimationFrame(() => {
       splash.classList.add("is-hidden");
       setTimeout(() => splash.remove(), 500);
     }
-  }, 350);
+  }, 1400);
 });
 
 // Register service worker only outside preview/iframe contexts
