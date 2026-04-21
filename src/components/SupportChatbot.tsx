@@ -12,6 +12,7 @@ import { useChatHistory } from "./chatbot/useChatHistory";
 import ChatMessage from "./chatbot/ChatMessage";
 import QuickReplies from "./chatbot/QuickReplies";
 import ChatHistory from "./chatbot/ChatHistory";
+import logoImg from "@/assets/logo.svg";
 
 const SupportChatbot = () => {
   const [open, setOpen] = useState(false);
