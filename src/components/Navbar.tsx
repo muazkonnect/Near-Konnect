@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useI18n } from "@/i18n";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/logo.svg";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
