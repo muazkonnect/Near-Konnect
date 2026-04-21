@@ -56,6 +56,12 @@ const WorkerDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const { unreadByType } = useNotifications();
+
+  useEffect(() => {
+    if (activeTab === "messages") markRead((n) => n.type === "message");
+    if (activeTab === "bookings") markRead((n) => n.type === "booking");
+  }, [activeTab]);
 
   useEffect(() => {
     if (workerData) {
@@ -274,8 +280,8 @@ const WorkerDashboard = () => {
             {[
               { label: "Rating", value: avgRating, icon: Star, accent: true },
               { label: "Reviews", value: String(reviews.length), icon: UserCheck },
-              { label: "Bookings", value: String(bookings.length), icon: Calendar },
-              { label: "Messages", value: String(conversations.length), icon: MessageSquare },
+              { label: "New bookings", value: String(unreadByType.booking), icon: Calendar },
+              { label: "New messages", value: String(unreadByType.message), icon: MessageSquare },
               { label: "Pending", value: String(pendingBookings.length), icon: Clock },
             ].map((s) => (
               <div key={s.label} className={`rounded-2xl p-3 ${s.accent ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-sm"}`}>
@@ -318,9 +324,9 @@ const WorkerDashboard = () => {
             items={[
               { value: "overview", label: "Overview", icon: LayoutDashboard },
               { value: "profile", label: "Profile", icon: UserCheck },
-              { value: "bookings", label: "Bookings", icon: Calendar, badge: pendingBookings.length },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: conversations.length },
-              { value: "reviews", label: "Reviews", icon: Star, badge: reviews.length },
+              { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
+              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message },
+              { value: "reviews", label: "Reviews", icon: Star },
               { value: "blood", label: "Blood Konnect", icon: HeartPulse },
             ]}
             active={activeTab}
