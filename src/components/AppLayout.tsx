@@ -60,7 +60,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
             </div>
           </div>
         ) : (
-          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8">
+          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
@@ -70,7 +70,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
           </div>
         )}
 
-        <main className="px-4 pt-5 my-[2px]">{children}</main>
+        <main className="px-4 pt-5 my-[58px]">{children}</main>
 
         {user && showSignOut && (
           <div className="px-4 pb-32 pt-6 flex flex-col items-center gap-4">
