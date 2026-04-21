@@ -1,11 +1,11 @@
-import { useState, useMemo, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
-const WorkersMap = lazy(() => import("@/components/WorkersMap"));
+import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -413,7 +413,6 @@ const Discover = () => {
 
         <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
         {showMapView ? (
-          <Suspense fallback={<div className="h-[500px] rounded-2xl bg-muted/40 animate-pulse" />}>
           <WorkersMap
             workers={sorted
               .filter((w) => (dbWorkers.find((d: any) => d.id === w.id)?.latitude) && (dbWorkers.find((d: any) => d.id === w.id)?.longitude))
@@ -431,7 +430,6 @@ const Discover = () => {
             userCoords={userCoords}
             height="500px"
           />
-          </Suspense>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((w, i) => (

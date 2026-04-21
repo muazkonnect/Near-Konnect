@@ -32,7 +32,7 @@
         radial-gradient(hsl(0 0% 100% / 0.05) 1px, transparent 1px);
       background-size: 28px 28px, 14px 14px;
       background-position: 0 0, 7px 7px;
-      transition: opacity 180ms ease, visibility 180ms ease;
+      transition: opacity 420ms ease, visibility 420ms ease;
     }
     #app-splash .splash-inner {
       display: flex; flex-direction: column; align-items: center; gap: 18px;
@@ -62,44 +62,6 @@
       </div>
     </div>
     <div id="root"></div>
-    <script>
-      // Hide splash ONLY when React has actually painted real content — never on a blank root.
-      (function () {
-        var splash = document.getElementById('app-splash');
-        var root = document.getElementById('root');
-        if (!splash || !root) return;
-        var hidden = false;
-        function hide() {
-          if (hidden) return;
-          hidden = true;
-          splash.classList.add('is-hidden');
-          setTimeout(function () { splash.parentNode && splash.parentNode.removeChild(splash); }, 200);
-        }
-        function hasRealContent() {
-          // Require at least one element child with measurable size — guards against empty Suspense fallbacks.
-          if (!root.firstElementChild) return false;
-          var rect = root.getBoundingClientRect();
-          return rect.width > 0 && rect.height > 0 && root.firstElementChild.children.length > 0;
-        }
-        function tryHide() {
-          if (hasRealContent()) { hide(); return true; }
-          return false;
-        }
-        if (window.MutationObserver) {
-          var mo = new MutationObserver(function () {
-            if (tryHide()) mo.disconnect();
-          });
-          mo.observe(root, { childList: true, subtree: true });
-        }
-        // Backup poll in case observer misses (very rare).
-        var poll = setInterval(function () {
-          if (tryHide()) clearInterval(poll);
-        }, 50);
-        // Hard safety cap: 8s — long enough for slow networks, but never traps the user forever.
-        setTimeout(function () { clearInterval(poll); hide(); }, 8000);
-        window.__hideSplash = hide;
-      })();
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

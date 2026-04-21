@@ -30,8 +30,7 @@ import BloodDonationCard from "@/components/BloodDonationCard";
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
 import DashboardNav from "@/components/DashboardNav";
-import { lazy, Suspense } from "react";
-const WorkersMap = lazy(() => import("@/components/WorkersMap"));
+import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { getCurrentPosition } from "@/lib/geolocation";
@@ -475,7 +474,6 @@ const WorkerDashboard = () => {
                       {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
                     </div>
                     <div className="overflow-hidden rounded-2xl">
-                      <Suspense fallback={<div className="h-[240px] bg-muted/40 animate-pulse" />}>
                       <WorkersMap
                         workers={[{
                           id: workerData.id,
@@ -485,7 +483,6 @@ const WorkerDashboard = () => {
                         }]}
                         height="240px"
                       />
-                      </Suspense>
                     </div>
                     <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-border bg-card/50 p-3">
                       <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
