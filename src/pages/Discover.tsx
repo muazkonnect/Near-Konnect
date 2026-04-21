@@ -413,6 +413,7 @@ const Discover = () => {
 
         <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
         {showMapView ? (
+          <Suspense fallback={<div className="h-[500px] rounded-2xl bg-muted/40 animate-pulse" />}>
           <WorkersMap
             workers={sorted
               .filter((w) => (dbWorkers.find((d: any) => d.id === w.id)?.latitude) && (dbWorkers.find((d: any) => d.id === w.id)?.longitude))
@@ -430,6 +431,7 @@ const Discover = () => {
             userCoords={userCoords}
             height="500px"
           />
+          </Suspense>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((w, i) => (

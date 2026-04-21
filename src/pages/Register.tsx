@@ -293,7 +293,9 @@ const Register = () => {
             <div className="space-y-2 rounded-2xl border border-border bg-muted/40 p-4">
               <p className="text-sm font-semibold text-foreground">Pick your fixed service location *</p>
               <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
-              <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
+              <Suspense fallback={<div className="h-64 rounded-2xl bg-muted/40 animate-pulse" />}>
+                <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
+              </Suspense>
             </div>
           </>
         )}
