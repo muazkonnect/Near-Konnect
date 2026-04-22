@@ -285,9 +285,21 @@ const Home = () => {
             </div>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {nearbyWorkers.map((w, i) => (
-                <WorkerCard key={`nearby-${w.id}-${i}`} worker={w} index={i} />
-              ))}
+              {[...nearbyWorkers]
+                .sort((a, b) => Number(featuredIds.has(b.id)) - Number(featuredIds.has(a.id)))
+                .map((w, i) => (
+                  <WorkerCard
+                    key={`nearby-${w.id}-${i}`}
+                    worker={w}
+                    index={i}
+                    sponsored={featuredIds.has(w.id)}
+                  />
+                ))}
+              {feedAds[0] && (
+                <div className="md:col-span-2 xl:col-span-3">
+                  <NativeAdCard ad={feedAds[0]} variant="feed" />
+                </div>
+              )}
             </div>
           )}
         </motion.section>
