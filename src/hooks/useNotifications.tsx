@@ -122,7 +122,31 @@ const init = async (userId: string) => {
     }
   }
 
-  list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  // Pending contact-reveal requests where current user is the worker
+  const { data: reveals } = await sb
+    .from("contact_reveals")
+    .select("id, client_user_id, created_at, status")
+    .eq("worker_user_id", userId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  for (const r of reveals || []) {
+    const { data: cp } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("user_id", r.client_user_id)
+      .maybeSingle();
+    list.push({
+      id: `reveal-${r.id}`,
+      type: "contact_request",
+      title: "Contact request",
+      body: `${cp?.full_name || "Someone"} wants your contact info`,
+      created_at: r.created_at,
+      link: `/chat/${r.client_user_id}`,
+      read: false,
+    });
+  }
   store = list.slice(0, 25);
   broadcast();
   initializing = false;
