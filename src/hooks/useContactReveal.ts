@@ -44,13 +44,26 @@ export function useContactReveal(workerUserId: string | undefined) {
   const requestMutation = useMutation({
     mutationFn: async (message?: string) => {
       if (!user || !workerUserId) throw new Error("Not signed in");
-      const { error } = await (supabase as any).from("contact_reveals").insert({
-        worker_user_id: workerUserId,
-        client_user_id: user.id,
-        request_message: message ?? null,
-        status: "pending",
-      });
-      if (error) throw error;
+      // If a previous (denied) row exists, reset it to pending; otherwise insert new
+      if (reveal?.id) {
+        const { error } = await (supabase as any)
+          .from("contact_reveals")
+          .update({
+            status: "pending",
+            request_message: message ?? null,
+            decided_at: null,
+          })
+          .eq("id", reveal.id);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from("contact_reveals").insert({
+          worker_user_id: workerUserId,
+          client_user_id: user.id,
+          request_message: message ?? null,
+          status: "pending",
+        });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast.success("Contact request sent");
