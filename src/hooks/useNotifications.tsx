@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export interface AppNotification {
   id: string;
-  type: "message" | "booking" | "blood_request";
+  type: "message" | "booking" | "blood_request" | "contact_request";
   title: string;
   body: string;
   created_at: string;
@@ -122,7 +122,31 @@ const init = async (userId: string) => {
     }
   }
 
-  list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  // Pending contact-reveal requests where current user is the worker
+  const { data: reveals } = await sb
+    .from("contact_reveals")
+    .select("id, client_user_id, created_at, status")
+    .eq("worker_user_id", userId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  for (const r of reveals || []) {
+    const { data: cp } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("user_id", r.client_user_id)
+      .maybeSingle();
+    list.push({
+      id: `reveal-${r.id}`,
+      type: "contact_request",
+      title: "Contact request",
+      body: `${cp?.full_name || "Someone"} wants your contact info`,
+      created_at: r.created_at,
+      link: `/chat/${r.client_user_id}`,
+      read: false,
+    });
+  }
   store = list.slice(0, 25);
   broadcast();
   initializing = false;
@@ -204,6 +228,29 @@ const init = async (userId: string) => {
     }
   );
 
+  ch.on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "contact_reveals", filter: `worker_user_id=eq.${userId}` },
+    async (payload: any) => {
+      const { data: cp } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", payload.new.client_user_id)
+        .maybeSingle();
+      const name = cp?.full_name || "Someone";
+      upsert({
+        id: `reveal-${payload.new.id}`,
+        type: "contact_request",
+        title: "Contact request",
+        body: `${name} wants your contact info`,
+        created_at: payload.new.created_at,
+        link: `/chat/${payload.new.client_user_id}`,
+        read: false,
+      });
+      toast.info("🔒 Contact request", { description: `${name} wants your contact info` });
+    }
+  );
+
   ch.subscribe();
   channel = ch;
 };
@@ -266,6 +313,7 @@ export const useNotifications = () => {
     message: items.filter((n) => !n.read && n.type === "message").length,
     booking: items.filter((n) => !n.read && n.type === "booking").length,
     blood_request: items.filter((n) => !n.read && n.type === "blood_request").length,
+    contact_request: items.filter((n) => !n.read && n.type === "contact_request").length,
   };
 
   return {

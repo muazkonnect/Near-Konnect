@@ -1,15 +1,22 @@
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import ChatWindow from "@/components/ChatWindow";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { markRead } from "@/hooks/useNotifications";
 import AppLayout from "@/components/AppLayout";
 
 const Chat = () => {
   const { userId } = useParams();
   const { user } = useAuth();
   const { role } = useUserRole();
+
+  useEffect(() => {
+    if (!user || !userId) return;
+    markRead((n) => (n.type === "message" || n.type === "contact_request") && n.link === `/chat/${userId}`);
+  }, [user, userId]);
 
   const { data: otherProfile } = useQuery({
     queryKey: ["profile", userId],
