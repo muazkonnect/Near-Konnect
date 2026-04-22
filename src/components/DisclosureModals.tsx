@@ -89,6 +89,9 @@ const DisclosureModals = () => {
                 We are <strong>not responsible</strong> for payments, service quality, safety, or disputes between users and workers.
               </p>
               <p>Please verify and proceed at your own discretion.</p>
+              <p>
+                Your contact will only be visible to those clients you <strong>approve</strong> to show.
+              </p>
             </div>
 
             <div className="flex flex-col gap-2 pt-1">
