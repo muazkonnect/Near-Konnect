@@ -13,6 +13,7 @@ import { calculateDistance } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
+import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | null;
@@ -32,6 +33,7 @@ const Discover = () => {
   const [showMapView, setShowMapView] = useState(false);
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const featuredIds = useFeaturedWorkerIds();
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
@@ -235,6 +237,9 @@ const Discover = () => {
   });
 
   const sorted = [...filteredWithAdvanced].sort((a, b) => {
+    const aF = featuredIds.has(a.id) ? 1 : 0;
+    const bF = featuredIds.has(b.id) ? 1 : 0;
+    if (aF !== bF) return bF - aF;
     if (sort === "distance") return a.distance - b.distance;
     if (sort === "rating") return b.rating - a.rating;
     if (sort === "experience") return b.experience - a.experience;
@@ -433,7 +438,7 @@ const Discover = () => {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((w, i) => (
-              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} />
+              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={featuredIds.has(w.id)} />
             ))}
           </div>
         )}

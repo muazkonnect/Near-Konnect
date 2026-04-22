@@ -15,6 +15,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
+import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
+import NativeAdCard from "@/components/NativeAdCard";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -31,6 +33,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { coords: browsingCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const featuredIds = useFeaturedWorkerIds();
+  const feedAds = useNativeAds("home_feed");
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
@@ -281,9 +285,21 @@ const Home = () => {
             </div>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {nearbyWorkers.map((w, i) => (
-                <WorkerCard key={`nearby-${w.id}-${i}`} worker={w} index={i} />
-              ))}
+              {[...nearbyWorkers]
+                .sort((a, b) => Number(featuredIds.has(b.id)) - Number(featuredIds.has(a.id)))
+                .map((w, i) => (
+                  <WorkerCard
+                    key={`nearby-${w.id}-${i}`}
+                    worker={w}
+                    index={i}
+                    sponsored={featuredIds.has(w.id)}
+                  />
+                ))}
+              {feedAds[0] && (
+                <div className="md:col-span-2 xl:col-span-3">
+                  <NativeAdCard ad={feedAds[0]} variant="feed" />
+                </div>
+              )}
             </div>
           )}
         </motion.section>

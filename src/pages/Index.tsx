@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
+import NativeAdCard from "@/components/NativeAdCard";
+import { useNativeAds } from "@/hooks/useSponsored";
 
 const slides = [
   {
@@ -45,6 +47,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const [slideIndex, setSlideIndex] = useState(0);
   const [search, setSearch] = useState("");
+  const bannerAds = useNativeAds("home_banner");
 
   useEffect(() => {
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
@@ -228,6 +231,12 @@ const Index = () => {
             <HeartPulse className="h-4 w-4 text-destructive" /> Live urgent feed
           </div>
         </section>
+
+        {bannerAds[0] && (
+          <section className="mx-6 mt-4 md:mx-0">
+            <NativeAdCard ad={bannerAds[0]} variant="banner" />
+          </section>
+        )}
 
         {/* HOW IT WORKS */}
         <section className="px-6 py-10 md:px-0 md:py-16">
