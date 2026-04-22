@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useNotifications } from "@/hooks/useNotifications";
+import NotificationBell from "@/components/NotificationBell";
 import logoImg from "@/assets/logo.svg";
 import logoDarkImg from "@/assets/logo-dark.svg";
 
@@ -20,6 +22,8 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { role } = useUserRole();
+  const { unreadByType } = useNotifications();
+  const messagesBadge = unreadByType.message + unreadByType.contact_request;
 
   const profilePath = role === "worker" ? "/worker-dashboard" : role === "admin" ? "/admin" : "/dashboard";
 
@@ -29,10 +33,10 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   };
 
   const navItems = [
-    { label: "Home", to: "/", icon: Home },
-    { label: "Explore", to: "/discover", icon: Compass },
-    { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true },
-    { label: "Messages", to: "/messages", icon: MessageSquare },
+    { label: "Home", to: "/", icon: Home, badge: 0 },
+    { label: "Explore", to: "/discover", icon: Compass, badge: 0 },
+    { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true, badge: 0 },
+    { label: "Messages", to: "/messages", icon: MessageSquare, badge: messagesBadge },
   ];
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "You";
@@ -106,7 +110,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                  className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                     active
                       ? "bg-primary text-primary-foreground"
                       : "text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
@@ -114,12 +118,18 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
                 >
                   <item.icon className="h-4 w-4" />
                   <span>{item.label}</span>
+                  {item.badge > 0 && (
+                    <span className="ml-0.5 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold leading-none text-destructive-foreground">
+                      {item.badge > 9 ? "9+" : item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
           </nav>
 
           <div className="relative flex shrink-0 items-center gap-2">
+            {user && <NotificationBell />}
             <button
               onClick={() => navigate(profilePath)}
               className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-hero-foreground transition-colors hover:bg-white/15"
