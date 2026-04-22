@@ -86,11 +86,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
               <Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <ChangePasswordDialog>
-                <Button variant="outline" className="gap-2 rounded-full">
-                  <KeyRound className="h-4 w-4" /> Change password
-                </Button>
-              </ChangePasswordDialog>
               <Button
                 variant="outline"
                 onClick={handleSignOut}

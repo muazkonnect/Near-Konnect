@@ -806,20 +806,31 @@ export type Database = {
           icon: string
           id: string
           name: string
+          parent_id: string | null
         }
         Insert: {
           created_at?: string
           icon?: string
           id?: string
           name: string
+          parent_id?: string | null
         }
         Update: {
           created_at?: string
           icon?: string
           id?: string
           name?: string
+          parent_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "service_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       spatial_ref_sys: {
         Row: {

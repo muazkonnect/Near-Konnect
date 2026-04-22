@@ -9,6 +9,7 @@ import {
   HeartPulse,
   LayoutDashboard,
   Lock,
+  KeyRound,
   MapPin,
   MessageSquare,
   Navigation,
@@ -26,6 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
@@ -341,114 +343,132 @@ const WorkerDashboard = () => {
               <TabsTrigger value="reviews" />
             </TabsList>
 
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-3xl border bg-card p-6">
-                <div className="mb-4 flex items-center justify-between">
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-3xl border bg-card p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">
+                        <Clock className="h-3 w-3" /> Pending
+                      </span>
+                      <h3 className="mt-2 font-bold text-card-foreground">Awaiting your reply ({pendingBookings.length})</h3>
+                    </div>
+                  </div>
+                  {pendingBookings.length === 0 ? (
+                    <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                      <p className="text-sm text-muted-foreground">No pending requests right now.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {pendingBookings.slice(0, 3).map((b: any) => (
+                        <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
+                          <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                          <p className="truncate text-xs text-muted-foreground">{b.service_description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="rounded-3xl border bg-card p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-success">
+                        <CheckCircle className="h-3 w-3" /> Confirmed
+                      </span>
+                      <h3 className="mt-2 font-bold text-card-foreground">Upcoming jobs ({confirmedBookings.length})</h3>
+                    </div>
+                  </div>
+                  {confirmedBookings.length === 0 ? (
+                    <div className="rounded-2xl bg-muted/40 p-6 text-center">
+                      <p className="text-sm text-muted-foreground">No upcoming confirmed jobs.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {confirmedBookings.slice(0, 3).map((b: any) => (
+                        <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
+                          <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(b.booking_date).toLocaleDateString()} · {b.booking_time}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="profile">
+              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">
-                      <Clock className="h-3 w-3" /> Pending
-                    </span>
-                    <h3 className="mt-2 font-bold text-card-foreground">Awaiting your reply ({pendingBookings.length})</h3>
+                    <h2 className="text-xl font-bold text-card-foreground">Service profile</h2>
+                    <p className="text-sm text-muted-foreground">How clients see you</p>
+                  </div>
+                  {workerData.verified && (
+                    <Badge className="gap-1 rounded-full bg-success px-3 py-1 text-success-foreground">
+                      <CheckCircle className="h-3 w-3" /> Verified
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
+                  <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
+                    <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
                   </div>
                 </div>
-                {pendingBookings.length === 0 ? (
-                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
-                    <p className="text-sm text-muted-foreground">No pending requests right now.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {pendingBookings.slice(0, 3).map((b: any) => (
-                      <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
-                        <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                        <p className="truncate text-xs text-muted-foreground">{b.service_description}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="rounded-3xl border bg-card p-6">
-                <div className="mb-4 flex items-center justify-between">
+
+                <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-success">
-                      <CheckCircle className="h-3 w-3" /> Confirmed
-                    </span>
-                    <h3 className="mt-2 font-bold text-card-foreground">Upcoming jobs ({confirmedBookings.length})</h3>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession</Label>
+                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
+                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
+                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact options</Label>
+                    <p className="mb-2 mt-1 text-xs text-muted-foreground">Phone is required. Add any other apps so clients can reach you.</p>
+                    <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
                   </div>
                 </div>
-                {confirmedBookings.length === 0 ? (
-                  <div className="rounded-2xl bg-muted/40 p-6 text-center">
-                    <p className="text-sm text-muted-foreground">No upcoming confirmed jobs.</p>
+
+                <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">
+                  <div>
+                    <p className="font-semibold text-foreground">Availability</p>
+                    <p className="text-xs text-muted-foreground">{available ? "You are visible to clients" : "You are hidden from search"}</p>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    {confirmedBookings.slice(0, 3).map((b: any) => (
-                      <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
-                        <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(b.booking_date).toLocaleDateString()} · {b.booking_time}</p>
-                      </div>
-                    ))}
+                  <Switch checked={available} onCheckedChange={setAvailable} />
+                </div>
+
+                <Button onClick={handleSave} disabled={saving} className="mt-5 h-11 gap-2 rounded-xl px-6">
+                  <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+                </Button>
+              </div>
+
+              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                  <KeyRound className="h-4 w-4" /> Security
+                </h3>
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-muted/30 p-4">
+                  <div className="min-w-[200px]">
+                    <p className="font-semibold text-card-foreground">Password</p>
+                    <p className="text-xs text-muted-foreground">Change your account password regularly to stay secure.</p>
                   </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="profile">
-            <div className="rounded-3xl border bg-card p-6 sm:p-8">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold text-card-foreground">Service profile</h2>
-                  <p className="text-sm text-muted-foreground">How clients see you</p>
-                </div>
-                {workerData.verified && (
-                  <Badge className="gap-1 rounded-full bg-success px-3 py-1 text-success-foreground">
-                    <CheckCircle className="h-3 w-3" /> Verified
-                  </Badge>
-                )}
-              </div>
-
-              <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
-                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
-                  <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
+                  <ChangePasswordDialog>
+                    <Button variant="outline" className="gap-2 rounded-xl h-10">
+                      <KeyRound className="h-3.5 w-3.5" /> Change Password
+                    </Button>
+                  </ChangePasswordDialog>
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession</Label>
-                  <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
-                </div>
-                <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
-                  <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
-                </div>
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
-                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
-                </div>
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact options</Label>
-                  <p className="mb-2 mt-1 text-xs text-muted-foreground">Phone is required. Add any other apps so clients can reach you.</p>
-                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
-                </div>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">
-                <div>
-                  <p className="font-semibold text-foreground">Availability</p>
-                  <p className="text-xs text-muted-foreground">{available ? "You are visible to clients" : "You are hidden from search"}</p>
-                </div>
-                <Switch checked={available} onCheckedChange={setAvailable} />
-              </div>
-
-              <Button onClick={handleSave} disabled={saving} className="mt-5 h-11 gap-2 rounded-xl px-6">
-                <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
-              </Button>
-
-              <div className="mt-6 rounded-2xl border bg-gradient-to-br from-muted/60 to-muted/20 p-5">
+              <div className="rounded-3xl border bg-card p-6 sm:p-8">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
                     <p className="font-semibold text-foreground">Fixed service location</p>
@@ -504,134 +524,133 @@ const WorkerDashboard = () => {
                   </Button>
                 )}
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="bookings" className="space-y-4">
-            {pendingBookings.length > 0 && (
+            <TabsContent value="bookings" className="space-y-4">
+              {pendingBookings.length > 0 && (
+                <div className="rounded-3xl border bg-card p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-bold text-card-foreground">Pending requests</h3>
+                    <span className="rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">{pendingBookings.length}</span>
+                  </div>
+                  <div className="space-y-3">
+                    {pendingBookings.map((b: any) => (
+                      <div key={b.id} className="rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 to-transparent p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                            <p className="mt-1 text-sm text-muted-foreground">{b.service_description}</p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
+                              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Clock className="h-3 w-3" /> {b.booking_time}</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => handleBookingAction(b.id, "confirmed")} className="h-9 gap-1 rounded-xl">
+                              <CheckCircle className="h-3.5 w-3.5" /> Accept
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleBookingAction(b.id, "rejected")} className="h-9 gap-1 rounded-xl">
+                              <XCircle className="h-3.5 w-3.5" /> Decline
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="rounded-3xl border bg-card p-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="font-bold text-card-foreground">Pending requests</h3>
-                  <span className="rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">{pendingBookings.length}</span>
-                </div>
-                <div className="space-y-3">
-                  {pendingBookings.map((b: any) => (
-                    <div key={b.id} className="rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 to-transparent p-4">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
+                <h3 className="mb-4 font-bold text-card-foreground">All bookings</h3>
+                {bookings.length === 0 ? (
+                  <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                    <Calendar className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">No bookings yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {bookings.map((b: any) => (
+                      <div key={b.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 p-4 transition-colors hover:bg-muted">
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                          <p className="mt-1 text-sm text-muted-foreground">{b.service_description}</p>
-                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Clock className="h-3 w-3" /> {b.booking_time}</span>
+                          <p className="font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
+                          <p className="truncate text-sm text-muted-foreground">{b.service_description}</p>
+                        </div>
+                        <Badge className={`shrink-0 ${b.status === "confirmed" ? "bg-success text-success-foreground" : b.status === "rejected" ? "bg-destructive text-destructive-foreground" : "bg-muted-foreground/20 text-muted-foreground"}`}>{b.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="messages">
+              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-card-foreground">Messages</h2>
+                  <span className="rounded-full px-2.5 py-1 text-xs font-semibold text-primary bg-secondary">{conversations.length}</span>
+                </div>
+                {conversations.length === 0 ? (
+                  <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                    <MessageSquare className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">No conversations yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {conversations.map((c: any) => (
+                      <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-2xl bg-muted/40 p-4 transition-all hover:bg-muted hover:translate-x-1">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-sm font-bold text-primary-foreground">
+                          {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-card-foreground">{c.name}</p>
+                          <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
+                        </div>
+                        <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="reviews">
+              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+                <div className="mb-5 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-card-foreground">Client reviews</h2>
+                    <p className="text-sm text-muted-foreground">{avgRating} average · {reviews.length} total</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1.5">
+                    <Star className="h-4 w-4 fill-primary text-primary" />
+                    <span className="text-sm font-bold text-primary">{avgRating}</span>
+                  </div>
+                </div>
+                {reviews.length === 0 ? (
+                  <div className="rounded-2xl bg-muted/40 p-10 text-center">
+                    <Star className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">No reviews yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((r: any) => (
+                      <div key={r.id} className="rounded-2xl border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                        <div className="mb-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                              {(r.profiles?.full_name || "A").split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                            </div>
+                            <span className="font-semibold text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
                           </div>
+                          <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
                         </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleBookingAction(b.id, "confirmed")} className="h-9 gap-1 rounded-xl">
-                            <CheckCircle className="h-3.5 w-3.5" /> Accept
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleBookingAction(b.id, "rejected")} className="h-9 gap-1 rounded-xl">
-                            <XCircle className="h-3.5 w-3.5" /> Decline
-                          </Button>
-                        </div>
+                        <StarRating rating={r.rating} size={14} />
+                        {r.review_text && <p className="mt-2 text-sm text-muted-foreground">{r.review_text}</p>}
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-
-            <div className="rounded-3xl border bg-card p-6">
-              <h3 className="mb-4 font-bold text-card-foreground">All bookings</h3>
-              {bookings.length === 0 ? (
-                <div className="rounded-2xl bg-muted/40 p-10 text-center">
-                  <Calendar className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">No bookings yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {bookings.map((b: any) => (
-                    <div key={b.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 p-4 transition-colors hover:bg-muted">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                        <p className="truncate text-sm text-muted-foreground">{b.service_description}</p>
-                      </div>
-                      <Badge className={`shrink-0 ${b.status === "confirmed" ? "bg-success text-success-foreground" : b.status === "rejected" ? "bg-destructive text-destructive-foreground" : "bg-muted-foreground/20 text-muted-foreground"}`}>{b.status}</Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="messages">
-            <div className="rounded-3xl border bg-card p-6 sm:p-8">
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-card-foreground">Messages</h2>
-                <span className="rounded-full px-2.5 py-1 text-xs font-semibold text-primary bg-secondary">{conversations.length}</span>
-              </div>
-              {conversations.length === 0 ? (
-                <div className="rounded-2xl bg-muted/40 p-10 text-center">
-                  <MessageSquare className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">No conversations yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {conversations.map((c: any) => (
-                    <Link key={c.userId} to={`/chat/${c.userId}`} className="flex items-center gap-4 rounded-2xl bg-muted/40 p-4 transition-all hover:bg-muted hover:translate-x-1">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-sm font-bold text-primary-foreground">
-                        {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-card-foreground">{c.name}</p>
-                        <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
-                      </div>
-                      <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="reviews">
-            <div className="rounded-3xl border bg-card p-6 sm:p-8">
-              <div className="mb-5 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-card-foreground">Client reviews</h2>
-                  <p className="text-sm text-muted-foreground">{avgRating} average · {reviews.length} total</p>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1.5">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                  <span className="text-sm font-bold text-primary">{avgRating}</span>
-                </div>
-              </div>
-              {reviews.length === 0 ? (
-                <div className="rounded-2xl bg-muted/40 p-10 text-center">
-                  <Star className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">No reviews yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {reviews.map((r: any) => (
-                    <div key={r.id} className="rounded-2xl border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-                      <div className="mb-2 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                            {(r.profiles?.full_name || "A").split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
-                          </div>
-                          <span className="font-semibold text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <StarRating rating={r.rating} size={14} />
-                      {r.review_text && <p className="mt-2 text-sm text-muted-foreground">{r.review_text}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
+            </TabsContent>
           </Tabs>
         </div>
       </section>

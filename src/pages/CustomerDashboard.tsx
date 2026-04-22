@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MessageSquare, Star, User, Search, Calendar, Clock, HeartPulse, Compass, Sparkles, LayoutDashboard } from "lucide-react";
+import { MessageSquare, Star, User, Search, Calendar, Clock, HeartPulse, Compass, Sparkles, LayoutDashboard, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AvatarUpload from "@/components/AvatarUpload";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
 
 import AppLayout from "@/components/AppLayout";
@@ -376,6 +377,23 @@ const CustomerDashboard = () => {
               <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 rounded-xl px-6">
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
+            </div>
+
+            <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                <KeyRound className="h-4 w-4" /> Security
+              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-muted/30 p-4">
+                <div className="min-w-[200px]">
+                  <p className="font-semibold text-card-foreground">Password</p>
+                  <p className="text-xs text-muted-foreground">Change your account password regularly to stay secure.</p>
+                </div>
+                <ChangePasswordDialog>
+                  <Button variant="outline" className="gap-2 rounded-xl h-10">
+                    <KeyRound className="h-3.5 w-3.5" /> Change Password
+                  </Button>
+                </ChangePasswordDialog>
+              </div>
             </div>
           </TabsContent>
 

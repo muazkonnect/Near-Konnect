@@ -11,19 +11,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
-import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
+import { useCategories } from "@/hooks/useCategories";
 
 const UpgradeToWorker = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { mainCategories, getSubCategories } = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [mainCategory, setMainCategory] = useState<MainServiceCategory | "">("");
+  const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [location, setLocation] = useState<Coords | null>(null);
   const [capturingLocation, setCapturingLocation] = useState(false);
+
+  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
 
   useEffect(() => {
     if (searchParams.get("upgrade") === "worker") {
@@ -140,37 +143,37 @@ const UpgradeToWorker = () => {
           Fill in your professional details to start appearing in search results. Your existing account info will be kept.
         </p>
         <div className="space-y-4">
-          <div>
-            <Label>Main Category *</Label>
+          <div className="space-y-2">
+            <Label>Main Category</Label>
             <select
+              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               value={mainCategory}
               onChange={(e) => {
-                const nextMainCategory = e.target.value as MainServiceCategory | "";
-                setMainCategory(nextMainCategory);
+                setMainCategory(e.target.value);
                 setSubCategory("");
               }}
-              className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="">Select main category</option>
-              {MAIN_SERVICE_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              <option value="">Select a main category</option>
+              {mainCategories.map((cat) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
                 </option>
               ))}
             </select>
           </div>
-          <div>
-            <Label>Subcategory *</Label>
+
+          <div className="space-y-2">
+            <Label>Profession (Subcategory)</Label>
             <select
+              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={subCategory}
               onChange={(e) => setSubCategory(e.target.value)}
               disabled={!mainCategory}
-              className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="">Select subcategory</option>
-              {(mainCategory ? SUBCATEGORIES_BY_MAIN[mainCategory] : []).map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              <option value="">Select your profession</option>
+              {subCategories.map((sub) => (
+                <option key={sub.id} value={sub.name}>
+                  {sub.name}
                 </option>
               ))}
             </select>

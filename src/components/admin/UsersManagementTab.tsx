@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +62,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
   const [invitePassword, setInvitePassword] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("manager");
   const [busy, setBusy] = useState(false);
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
 
   const rolesByUser = useMemo(() => {
     const m = new Map<string, AppRole[]>();
@@ -100,6 +102,42 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
     qc.invalidateQueries({ queryKey: ["admin_profiles"] });
   };
 
+  // Mutations for real-time updates
+  const roleMutation = useMutation({
+    mutationFn: async ({ userId, role, action }: { userId: string; role: AppRole; action: "assign_role" | "remove_role" }) => {
+      setUpdatingUserId(userId);
+      return callAdmin(action, { userId, role });
+    },
+    onSuccess: (_, variables) => {
+      const actionLabel = variables.action === "assign_role" ? "Assigned" : "Removed";
+      toast.success(`${actionLabel} ${ROLE_META[variables.role].label}`);
+      refresh();
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update role");
+    },
+    onSettled: () => {
+      setUpdatingUserId(null);
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      setUpdatingUserId(userId);
+      return callAdmin("delete_user", { userId });
+    },
+    onSuccess: () => {
+      toast.success("User deleted");
+      refresh();
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+    },
+    onSettled: () => {
+      setUpdatingUserId(null);
+    },
+  });
+
   const handleInvite = async () => {
     if (!inviteEmail.trim()) return toast.error("Email required");
     if (inviteMode === "create" && invitePassword.length < 8) {
@@ -127,35 +165,17 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
     }
   };
 
-  const assignRole = async (userId: string, role: AppRole) => {
-    try {
-      await callAdmin("assign_role", { userId, role });
-      toast.success(`Assigned ${ROLE_META[role].label}`);
-      refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
-    }
+  const assignRole = (userId: string, role: AppRole) => {
+    roleMutation.mutate({ userId, role, action: "assign_role" });
   };
 
-  const removeRole = async (userId: string, role: AppRole) => {
-    try {
-      await callAdmin("remove_role", { userId, role });
-      toast.success(`Removed ${ROLE_META[role].label}`);
-      refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
-    }
+  const removeRole = (userId: string, role: AppRole) => {
+    roleMutation.mutate({ userId, role, action: "remove_role" });
   };
 
-  const deleteUser = async (userId: string) => {
+  const deleteUser = (userId: string) => {
     if (!confirm("Delete this user permanently? This cannot be undone.")) return;
-    try {
-      await callAdmin("delete_user", { userId });
-      toast.success("User deleted");
-      refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
-    }
+    deleteUserMutation.mutate(userId);
   };
 
   return (
@@ -290,17 +310,26 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
         {visible.map((p) => {
           const roles = rolesByUser.get(p.user_id) ?? [];
           const availableToAdd = ASSIGNABLE_ROLES.filter((r) => !roles.includes(r));
+          const isUpdating = updatingUserId === p.user_id;
+
           return (
             <div
               key={p.user_id}
-              className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:items-center"
+              className={`flex flex-col gap-3 rounded-2xl border bg-card p-4 transition-opacity sm:flex-row sm:items-center ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
             >
               <div className="flex flex-1 items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent text-sm font-bold text-accent-foreground">
-                  {p.avatar_url ? (
-                    <img src={p.avatar_url} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    (p.full_name ?? "??").slice(0, 2).toUpperCase()
+                <div className="relative">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent text-sm font-bold text-accent-foreground">
+                    {p.avatar_url ? (
+                      <img src={p.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      (p.full_name ?? "??").slice(0, 2).toUpperCase()
+                    )}
+                  </div>
+                  {isUpdating && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/40">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    </div>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -323,7 +352,8 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                         {ROLE_META[r as AppRole]?.icon} {ROLE_META[r as AppRole]?.label ?? r}
                         <button
                           onClick={() => removeRole(p.user_id, r as AppRole)}
-                          className="ml-0.5 opacity-70 hover:opacity-100"
+                          className="ml-0.5 opacity-70 hover:opacity-100 disabled:cursor-not-allowed"
+                          disabled={isUpdating}
                           aria-label={`Remove ${r}`}
                         >
                           <X className="h-3 w-3" />
@@ -335,7 +365,10 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 {availableToAdd.length > 0 && (
-                  <Select onValueChange={(v) => assignRole(p.user_id, v as AppRole)}>
+                  <Select
+                    onValueChange={(v) => assignRole(p.user_id, v as AppRole)}
+                    disabled={isUpdating}
+                  >
                     <SelectTrigger className="w-[150px]">
                       <Plus className="mr-1 h-3.5 w-3.5" />
                       <SelectValue placeholder="Add role" />
@@ -353,6 +386,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                   size="icon"
                   variant="ghost"
                   onClick={() => deleteUser(p.user_id)}
+                  disabled={isUpdating}
                   className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   aria-label="Delete user"
                 >

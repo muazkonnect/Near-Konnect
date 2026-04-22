@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
 import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import { workers as mockWorkers } from "@/data/mockData";
-import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { useCategories } from "@/hooks/useCategories";
 import type { Worker } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
@@ -125,14 +126,27 @@ const Home = () => {
       .slice(0, 8);
   }, [search, workers, browsingCoords]);
 
-  const mainCategoryMeta = [
-    { name: "Home & Local Services", icon: HomeIcon, accent: "from-primary/20 to-primary/5" },
-    { name: "Automotive & Transport", icon: Car, accent: "from-blue-500/20 to-blue-500/5" },
-    { name: "Shops, Food & Daily Needs", icon: ShoppingBag, accent: "from-orange-500/20 to-orange-500/5" },
-    { name: "Professional & Business Services", icon: Briefcase, accent: "from-purple-500/20 to-purple-500/5" },
-    { name: "Health, Education & Community", icon: HeartPulse, accent: "from-destructive/20 to-destructive/5" },
-    { name: "Events & Lifestyle", icon: Sparkles, accent: "from-pink-500/20 to-pink-500/5" },
-  ] as const;
+  const { mainCategories, isLoading: categoriesLoading } = useCategories();
+
+  const mainCategoryMeta = useMemo(() => {
+    const defaults = [
+      { name: "Home & Local Services", icon: HomeIcon, emoji: "🏠" },
+      { name: "Automotive & Transport", icon: Car, emoji: "🚗" },
+      { name: "Shops, Food & Daily Needs", icon: ShoppingBag, emoji: "🛍️" },
+      { name: "Professional & Business Services", icon: Briefcase, emoji: "💼" },
+      { name: "Health, Education & Community", icon: HeartPulse, emoji: "🏥" },
+      { name: "Events & Lifestyle", icon: Sparkles, emoji: "✨" },
+    ];
+
+    return mainCategories.map((cat) => {
+      const found = defaults.find((d) => d.name === cat.name);
+      return {
+        name: cat.name,
+        icon: found ? found.icon : Compass,
+        emoji: cat.icon || (found ? found.emoji : "🔧"),
+      };
+    });
+  }, [mainCategories]);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -343,7 +357,11 @@ const Home = () => {
                       className="tap-feedback group flex flex-col items-start gap-2.5 rounded-2xl bg-white/5 p-3 text-left text-hero-foreground ring-1 ring-white/10 transition-all hover:bg-white/10"
                     >
                       <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-primary transition-colors group-hover:bg-white/15">
-                        <Icon className="h-4 w-4" />
+                        {category.emoji ? (
+                          <span className="text-base">{category.emoji}</span>
+                        ) : (
+                          <Icon className="h-4 w-4" />
+                        )}
                       </span>
                       <span className="text-xs font-semibold leading-tight">{category.name}</span>
                     </button>

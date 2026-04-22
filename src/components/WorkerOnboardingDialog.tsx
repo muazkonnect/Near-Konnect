@@ -10,11 +10,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { type Coords } from "@/lib/geolocation";
-import {
-  MAIN_SERVICE_CATEGORIES,
-  SUBCATEGORIES_BY_MAIN,
-  type MainServiceCategory,
-} from "@/data/serviceCategories";
+import { useCategories } from "@/hooks/useCategories";
 
 const STORAGE_KEY = "nk_oauth_intent";
 const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hero-muted";
@@ -24,10 +20,11 @@ const selectClass = `${inputClass} w-full px-3 focus-visible:outline-none focus-
 const WorkerOnboardingDialog = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const { mainCategories, getSubCategories } = useCategories();
 
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [mainCategory, setMainCategory] = useState<MainServiceCategory | "">("");
+  const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [coords, setCoords] = useState<Coords | null>(null);
@@ -35,6 +32,8 @@ const WorkerOnboardingDialog = () => {
   const [bloodGroup, setBloodGroup] = useState("");
 
   const [adminAssigned, setAdminAssigned] = useState(false);
+
+  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -207,14 +206,16 @@ const WorkerOnboardingDialog = () => {
                 <select
                   value={mainCategory}
                   onChange={(e) => {
-                    setMainCategory(e.target.value as MainServiceCategory | "");
+                    setMainCategory(e.target.value);
                     setSubCategory("");
                   }}
                   className={selectClass}
                 >
                   <option value="" className="text-foreground">Select main category</option>
-                  {MAIN_SERVICE_CATEGORIES.map((c) => (
-                    <option key={c} value={c} className="text-foreground">{c}</option>
+                  {mainCategories.map((cat) => (
+                    <option key={cat.id} value={cat.name} className="text-foreground">
+                      {cat.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -228,8 +229,10 @@ const WorkerOnboardingDialog = () => {
                   className={`${selectClass} disabled:cursor-not-allowed disabled:opacity-50`}
                 >
                   <option value="" className="text-foreground">Select subcategory</option>
-                  {(mainCategory ? SUBCATEGORIES_BY_MAIN[mainCategory] : []).map((c) => (
-                    <option key={c} value={c} className="text-foreground">{c}</option>
+                  {subCategories.map((sub) => (
+                    <option key={sub.id} value={sub.name} className="text-foreground">
+                      {sub.name}
+                    </option>
                   ))}
                 </select>
               </div>

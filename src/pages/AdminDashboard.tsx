@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -18,6 +18,7 @@ import {
   LogOut,
   Crown,
   UserCog,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
 import UsersManagementTab from "@/components/admin/UsersManagementTab";
 import AdminProfileTab from "@/components/admin/AdminProfileTab";
+import CategoriesManagementTab from "@/components/admin/CategoriesManagementTab";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
 
@@ -108,12 +110,20 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-2 space-y-1">
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="text-muted-foreground hover:bg-muted">
+              <Link to="/">
+                <Home className="h-4 w-4" />
+                <span>Back to Home</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={onSignOut} className="text-muted-foreground hover:bg-muted">
               <LogOut className="h-4 w-4" />
-              <span>Exit admin</span>
+              <span>Sign out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -154,8 +164,6 @@ const AdminDashboard = () => {
   const { role, isStaff, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<TabKey>("overview");
-  const [newCatName, setNewCatName] = useState("");
-  const [newCatIcon, setNewCatIcon] = useState("");
   const [featureWorkerId, setFeatureWorkerId] = useState("");
   const [featurePriority, setFeaturePriority] = useState("100");
   const [adTitle, setAdTitle] = useState("");
@@ -169,6 +177,7 @@ const AdminDashboard = () => {
   const [adRadiusKm, setAdRadiusKm] = useState("3");
   const [donorFilter, setDonorFilter] = useState("");
   const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
+  const [editingAdId, setEditingAdId] = useState<string | null>(null);
 
   const setAdTargetCoords = (c: Coords | null) => {
     setAdTargetCoordsState(c);
@@ -210,6 +219,9 @@ const AdminDashboard = () => {
       .on("postgres_changes", { event: "*", schema: "public", table: "user_roles" }, () => {
         queryClient.invalidateQueries({ queryKey: ["admin_user_roles"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "service_categories" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin_categories"] });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -241,7 +253,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase.from("service_categories").select("*").order("name");
       if (error) throw error;
-      return data;
+      return data as { id: string; name: string; icon: string; parent_id: string | null; created_at: string }[];
     },
     enabled: isStaff,
   });
@@ -360,6 +372,45 @@ const AdminDashboard = () => {
     });
     if (error) return toast.error("Failed to create ad");
     toast.success(adTargetCoords ? "Geo-targeted ad created" : "Global ad created");
+    resetAdForm();
+    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
+  };
+
+  const updateAd = async () => {
+    if (!editingAdId) return;
+    if (!adTitle.trim() || !adLink.trim()) {
+      toast.error("Ad title and link are required");
+      return;
+    }
+    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
+    if (adTargetCoords && (!radius || radius <= 0)) {
+      toast.error("Set a radius (km) for geo-targeted ads");
+      return;
+    }
+    const { error } = await (supabase as any)
+      .from("native_ads")
+      .update({
+        title: adTitle.trim(),
+        description: adDescription.trim() || null,
+        image_url: adImageUrl.trim() || null,
+        cta_url: adLink.trim(),
+        cta_label: adCtaLabel.trim() || "Learn More",
+        placement: adPlacement,
+        ad_type: adPlacement === "home_banner" ? "banner" : "in_feed",
+        priority: Number(adPriority) || 100,
+        target_latitude: adTargetCoords?.latitude ?? null,
+        target_longitude: adTargetCoords?.longitude ?? null,
+        target_radius_km: adTargetCoords ? radius : null,
+      })
+      .eq("id", editingAdId);
+
+    if (error) return toast.error("Failed to update ad");
+    toast.success("Ad updated successfully");
+    resetAdForm();
+    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
+  };
+
+  const resetAdForm = () => {
     setAdTitle("");
     setAdDescription("");
     setAdImageUrl("");
@@ -368,7 +419,27 @@ const AdminDashboard = () => {
     setAdPriority("100");
     setAdTargetCoordsState(null);
     setAdRadiusKm("3");
-    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
+    setEditingAdId(null);
+  };
+
+  const startEditingAd = (ad: any) => {
+    setEditingAdId(ad.id);
+    setAdTitle(ad.title || "");
+    setAdDescription(ad.description || "");
+    setAdImageUrl(ad.image_url || "");
+    setAdLink(ad.cta_url || "");
+    setAdCtaLabel(ad.cta_label || "Learn More");
+    setAdPlacement(ad.placement);
+    setAdPriority(String(ad.priority || "100"));
+    if (ad.target_latitude && ad.target_longitude) {
+      setAdTargetCoordsState({ latitude: ad.target_latitude, longitude: ad.target_longitude });
+      setAdRadiusKm(String(ad.target_radius_km || "3"));
+    } else {
+      setAdTargetCoordsState(null);
+      setAdRadiusKm("3");
+    }
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const toggleAdActive = async (id: string, active: boolean) => {
@@ -383,25 +454,6 @@ const AdminDashboard = () => {
     if (error) return toast.error("Failed to delete ad");
     toast.success("Ad deleted");
     queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
-  };
-
-  const addCategory = async () => {
-    if (!newCatName.trim()) return;
-    const { error } = await supabase.from("service_categories").insert({
-      name: newCatName.trim(),
-      icon: newCatIcon || "🔧",
-    });
-    if (error) return toast.error("Failed to add category");
-    toast.success("Category added!");
-    setNewCatName("");
-    setNewCatIcon("");
-    queryClient.invalidateQueries({ queryKey: ["admin_categories"] });
-  };
-
-  const deleteCategory = async (id: string) => {
-    await supabase.from("service_categories").delete().eq("id", id);
-    queryClient.invalidateQueries({ queryKey: ["admin_categories"] });
-    toast.success("Category deleted");
   };
 
   const toggleDonorStatus = async (userId: string, currentStatus: string) => {
@@ -593,42 +645,7 @@ const AdminDashboard = () => {
 
             {/* CATEGORIES */}
             {tab === "categories" && (
-              <div>
-                <SectionHeader title="Categories" subtitle="Service taxonomy used across the app." />
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <Input
-                    placeholder="Category name"
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                    className="max-w-xs"
-                  />
-                  <Input
-                    placeholder="Icon emoji"
-                    value={newCatIcon}
-                    onChange={(e) => setNewCatIcon(e.target.value)}
-                    className="w-24"
-                  />
-                  <Button onClick={addCategory} className="gap-1">
-                    <Plus className="h-4 w-4" /> Add
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {categories.map((c: any) => (
-                    <div key={c.id} className="flex items-center gap-4 rounded-2xl border bg-card p-3">
-                      <span className="text-xl">{c.icon}</span>
-                      <span className="flex-1 font-medium text-card-foreground">{c.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteCategory(c.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <CategoriesManagementTab categories={categories as any} />
             )}
 
             {/* DONORS */}
@@ -768,9 +785,16 @@ const AdminDashboard = () => {
 
                 {/* Create ad */}
                 <div className="rounded-2xl border bg-card p-5">
-                  <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                    Create Ad
-                  </h3>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                      {editingAdId ? "Edit Ad" : "Create Ad"}
+                    </h3>
+                    {editingAdId && (
+                      <Button variant="ghost" size="sm" onClick={resetAdForm}>
+                        Cancel Edit
+                      </Button>
+                    )}
+                  </div>
                   <div className="grid gap-3 md:grid-cols-2">
                     <Input placeholder="Ad title" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} />
                     <Input placeholder="CTA link" value={adLink} onChange={(e) => setAdLink(e.target.value)} />
@@ -798,9 +822,15 @@ const AdminDashboard = () => {
                         className="w-28"
                       />
                     </div>
-                    <Button onClick={addAd} className="gap-1">
-                      <Plus className="h-4 w-4" /> Add Ad
-                    </Button>
+                    {editingAdId ? (
+                      <Button onClick={updateAd} className="gap-1 bg-primary">
+                        <CheckCircle className="h-4 w-4" /> Save Changes
+                      </Button>
+                    ) : (
+                      <Button onClick={addAd} className="gap-1">
+                        <Plus className="h-4 w-4" /> Add Ad
+                      </Button>
+                    )}
                   </div>
 
                   {/* Geo-targeting */}
@@ -1027,6 +1057,9 @@ const AdminDashboard = () => {
                       )}
                       <Button size="sm" variant="outline" onClick={() => toggleAdActive(ad.id, ad.is_active)}>
                         {ad.is_active ? "Disable" : "Enable"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => startEditingAd(ad)}>
+                        Edit
                       </Button>
                       <Button
                         size="sm"

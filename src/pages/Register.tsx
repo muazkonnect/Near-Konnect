@@ -12,7 +12,7 @@ import PasswordStrength from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/passwordValidation";
 import { useI18n } from "@/i18n";
 import { type Coords } from "@/lib/geolocation";
-import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN, type MainServiceCategory } from "@/data/serviceCategories";
+import { useCategories } from "@/hooks/useCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import SocialAuthButtons from "@/components/SocialAuthButtons";
 import AuthShell from "@/components/AuthShell";
@@ -24,6 +24,7 @@ const Register = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
   const [searchParams] = useSearchParams();
+  const { mainCategories, getSubCategories } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
   const [showPw, setShowPw] = useState(false);
@@ -34,7 +35,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mainCategory, setMainCategory] = useState<MainServiceCategory | "">("");
+  const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
@@ -42,6 +43,8 @@ const Register = () => {
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
 
   const phoneEntry = contactMethods.find((m) => m.type === "phone");
   const phone = phoneEntry?.value ?? "";
@@ -259,25 +262,26 @@ const Register = () => {
               and use <strong>Become a Service</strong> on your dashboard to upgrade — don't create a second account.
             </div>
             <div>
-              <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
+              <Label htmlFor="mainCategory" className={labelClass}>{t("register.mainCategory")} *</Label>
               <select
                 id="mainCategory"
                 value={mainCategory}
                 onChange={(e) => {
-                  const next = e.target.value as MainServiceCategory | "";
-                  setMainCategory(next);
+                  setMainCategory(e.target.value);
                   setSubCategory("");
                 }}
                 className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">Select main category</option>
-                {MAIN_SERVICE_CATEGORIES.map((category) => (
-                  <option key={category} value={category}>{category}</option>
+                <option value="">{t("register.selectMainCategory")}</option>
+                {mainCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <Label htmlFor="subCategory" className={labelClass}>Subcategory *</Label>
+              <Label htmlFor="subCategory" className={labelClass}>{t("register.subCategory")} *</Label>
               <select
                 id="subCategory"
                 value={subCategory}
@@ -285,9 +289,11 @@ const Register = () => {
                 disabled={!mainCategory}
                 className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">Select subcategory</option>
-                {(mainCategory ? SUBCATEGORIES_BY_MAIN[mainCategory] : []).map((category) => (
-                  <option key={category} value={category}>{category}</option>
+                <option value="">{t("register.selectSubCategory")}</option>
+                {subCategories.map((sub) => (
+                  <option key={sub.id} value={sub.name}>
+                    {sub.name}
+                  </option>
                 ))}
               </select>
             </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles } from "lucide-react";
+import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles, Compass } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
-import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
 import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
+import { useCategories } from "@/hooks/useCategories";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | null;
@@ -54,6 +54,17 @@ const Discover = () => {
     staleTime: 30_000,
   });
 
+  const { categories, mainCategories, getSubCategories } = useCategories();
+
+  const categoriesToUse = useMemo(() => {
+    return mainCategories.map(c => c.name);
+  }, [mainCategories]);
+
+  const subCategoriesToUse = useMemo(() => {
+    if (!expandedMainCategory) return [];
+    return getSubCategories(expandedMainCategory).map(c => c.name);
+  }, [expandedMainCategory, getSubCategories]);
+ 
   const { data: dbWorkers = [] } = useQuery({
     queryKey: ["workers"],
     queryFn: async () => {
@@ -71,7 +82,7 @@ const Discover = () => {
     retry: 1,
   });
 
-  useEffect(() => {
+   useEffect(() => {
     const channelName = `workers-rt-${Math.random().toString(36).slice(2)}`;
     const channel = supabase.channel(channelName);
     channel.on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
@@ -318,8 +329,13 @@ const Discover = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-              {MAIN_SERVICE_CATEGORIES.map((mainCategory) => {
+              {categoriesToUse.map((mainCategory) => {
                 const isSelected = selectedMainCategory === mainCategory;
+                
+                // Try to find matching icon or emoji
+                const dbCat = categories.find(c => c.name === mainCategory);
+                const emoji = dbCat?.icon;
+                
                 const Icon = ({
                   "Home & Local Services": HomeIcon,
                   "Automotive & Transport": Car,
@@ -327,7 +343,8 @@ const Discover = () => {
                   "Professional & Business Services": Briefcase,
                   "Health, Education & Community": HeartPulse,
                   "Events & Lifestyle": Sparkles,
-                } as const)[mainCategory];
+                } as any)[mainCategory] || Compass;
+
                 return (
                   <button
                     key={mainCategory}
@@ -344,7 +361,11 @@ const Discover = () => {
                         isSelected ? "bg-primary-foreground/15 text-primary-foreground" : "bg-white/10 text-primary group-hover:bg-white/15"
                       }`}
                     >
-                      <Icon className="h-4 w-4" />
+                      {emoji ? (
+                        <span className="text-base">{emoji}</span>
+                      ) : (
+                        <Icon className="h-4 w-4" />
+                      )}
                     </span>
                     <span className="text-xs font-semibold leading-tight">{mainCategory}</span>
                   </button>
@@ -358,7 +379,7 @@ const Discover = () => {
                   {expandedMainCategory}
                 </p>
                 <div className="-mx-1 flex flex-wrap gap-1.5 px-1">
-                  {SUBCATEGORIES_BY_MAIN[expandedMainCategory as keyof typeof SUBCATEGORIES_BY_MAIN].map((subCategory) => {
+                  {subCategoriesToUse.map((subCategory) => {
                     const active = selectedSubCategory === subCategory;
                     return (
                       <button

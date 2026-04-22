@@ -216,7 +216,9 @@ const WorkerProfile = () => {
                 />
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button className="w-full gap-2"><CalendarPlus className="h-4 w-4" /> Log in to contact</Button>
+                  <Button className="w-full h-11 rounded-xl gap-2 shadow-sm">
+                    <CalendarPlus className="h-4 w-4" /> Log in to contact
+                  </Button>
                 </AuthRequiredDialog>
               )}
             </div>
@@ -324,7 +326,6 @@ const WorkerProfile = () => {
             </div>
           </div>
         </motion.div>
-
       </div>
     </AppLayout>
   );
