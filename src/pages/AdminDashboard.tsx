@@ -45,6 +45,7 @@ import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
+import UsersManagementTab from "@/components/admin/UsersManagementTab";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads";
 
@@ -147,7 +148,7 @@ const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { role, isLoading: roleLoading } = useUserRole();
+  const { role, isStaff, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<TabKey>("overview");
   const [newCatName, setNewCatName] = useState("");
@@ -172,11 +173,11 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    if (!authLoading && !roleLoading && role !== "admin") {
-      toast.error("Access denied. Admin only.");
+    if (!authLoading && !roleLoading && !isStaff) {
+      toast.error("Access denied. Staff only.");
       navigate("/");
     }
-  }, [authLoading, roleLoading, role, navigate]);
+  }, [authLoading, roleLoading, isStaff, navigate]);
 
   const { data: workers = [] } = useQuery({
     queryKey: ["admin_workers"],
@@ -188,7 +189,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: allProfiles = [] } = useQuery({
@@ -198,7 +199,17 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
+  });
+
+  const { data: allUserRoles = [] } = useQuery({
+    queryKey: ["admin_user_roles"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("user_roles").select("user_id, role");
+      if (error) throw error;
+      return data as { user_id: string; role: string }[];
+    },
+    enabled: isStaff,
   });
 
   const { data: categories = [] } = useQuery({
@@ -208,7 +219,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: bloodDonors = [] } = useQuery({
@@ -218,7 +229,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: featuredServices = [] } = useQuery({
@@ -231,7 +242,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: nativeAds = [] } = useQuery({
@@ -246,7 +257,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const featuredMap = useMemo(
@@ -429,7 +440,7 @@ const AdminDashboard = () => {
       </div>
     );
   }
-  if (role !== "admin") return null;
+  if (!isStaff) return null;
 
   return (
     <SidebarProvider>
@@ -550,25 +561,7 @@ const AdminDashboard = () => {
 
             {/* USERS */}
             {tab === "users" && (
-              <div>
-                <SectionHeader title="Users" subtitle="Everyone who signed up." />
-                <div className="space-y-3">
-                  {allProfiles.map((p: any) => (
-                    <div key={p.id} className="flex items-center gap-4 rounded-2xl border bg-card p-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-foreground">
-                        {p.full_name?.slice(0, 2).toUpperCase() || "??"}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-card-foreground">{p.full_name || "Unnamed"}</p>
-                        <p className="text-xs text-muted-foreground">{p.phone || "No phone"}</p>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(p.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
             )}
 
             {/* CATEGORIES */}

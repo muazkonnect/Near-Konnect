@@ -22,11 +22,11 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { role } = useUserRole();
+  const { role, isStaff } = useUserRole();
   const { unreadByType } = useNotifications();
   const messagesBadge = unreadByType.message + unreadByType.contact_request;
 
-  const profilePath = role === "worker" ? "/worker-dashboard" : role === "admin" ? "/admin" : "/dashboard";
+  const profilePath = isStaff ? "/admin" : role === "worker" ? "/worker-dashboard" : "/dashboard";
 
   const handleSignOut = async () => {
     await signOut();

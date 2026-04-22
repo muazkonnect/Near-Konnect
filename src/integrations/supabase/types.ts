@@ -1329,6 +1329,7 @@ export type Database = {
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
+      has_any_admin_role: { Args: { _user_id: string }; Returns: boolean }
       has_role:
         | {
             Args: {
@@ -1355,6 +1356,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
       move_to_dlq: {
         Args: {
@@ -2017,7 +2019,13 @@ export type Database = {
         | "contact_click"
         | "message_received"
         | "conversion"
-      app_role: "customer" | "worker" | "admin"
+      app_role:
+        | "customer"
+        | "worker"
+        | "admin"
+        | "manager"
+        | "ads_manager"
+        | "moderator"
       boost_status: "pending" | "active" | "expired" | "rejected"
       boost_type: "featured_listing" | "priority_ranking" | "urgent_boost"
       message_status: "sent" | "delivered" | "seen" | "failed"
@@ -2162,7 +2170,14 @@ export const Constants = {
         "message_received",
         "conversion",
       ],
-      app_role: ["customer", "worker", "admin"],
+      app_role: [
+        "customer",
+        "worker",
+        "admin",
+        "manager",
+        "ads_manager",
+        "moderator",
+      ],
       boost_status: ["pending", "active", "expired", "rejected"],
       boost_type: ["featured_listing", "priority_ranking", "urgent_boost"],
       message_status: ["sent", "delivered", "seen", "failed"],

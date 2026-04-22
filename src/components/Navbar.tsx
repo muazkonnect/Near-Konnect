@@ -14,15 +14,15 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { role } = useUserRole();
+  const { role, isStaff } = useUserRole();
   const { unreadByType } = useNotifications();
   const messagesBadge = unreadByType.message + unreadByType.contact_request;
   const { t } = useI18n();
 
-  const dashboardLink = role === "worker"
-    ? "/worker-dashboard"
-    : role === "admin"
+  const dashboardLink = isStaff
     ? "/admin"
+    : role === "worker"
+    ? "/worker-dashboard"
     : "/dashboard";
 
   const handleSignOut = async () => {
