@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,10 +20,17 @@ const GoogleIcon = () => (
 
 export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsProps) => {
   const [loading, setLoading] = useState<"google" | null>(null);
+  const [searchParams] = useSearchParams();
+  const isWorkerIntent = searchParams.get("role") === "worker";
 
   const handle = async () => {
     setLoading("google");
     try {
+      // Persist worker intent across the OAuth round trip so the post-login
+      // onboarding modal can pop up to collect professional details.
+      if (isWorkerIntent) {
+        sessionStorage.setItem("nk_oauth_intent", "worker");
+      }
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
