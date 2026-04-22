@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { ArrowLeft, CheckCircle2, FileText, Paperclip, Send } from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileText, Paperclip, Send, Lock, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useContactReveal, usePendingRevealFromClient } from "@/hooks/useContactReveal";
 
 interface Props {
   otherUserId: string;
