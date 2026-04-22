@@ -429,7 +429,7 @@ const AdminDashboard = () => {
       </div>
     );
   }
-  if (role !== "admin") return null;
+  if (!isStaff) return null;
 
   return (
     <SidebarProvider>
