@@ -204,6 +204,39 @@ export type Database = {
           },
         ]
       }
+      contact_reveals: {
+        Row: {
+          client_user_id: string
+          created_at: string
+          decided_at: string | null
+          id: string
+          request_message: string | null
+          status: string
+          updated_at: string
+          worker_user_id: string
+        }
+        Insert: {
+          client_user_id: string
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          request_message?: string | null
+          status?: string
+          updated_at?: string
+          worker_user_id: string
+        }
+        Update: {
+          client_user_id?: string
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          request_message?: string | null
+          status?: string
+          updated_at?: string
+          worker_user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1074,6 +1107,10 @@ export type Database = {
             }
             Returns: string
           }
+      can_view_contact: {
+        Args: { _owner: string; _viewer: string }
+        Returns: boolean
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
