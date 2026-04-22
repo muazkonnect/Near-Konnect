@@ -228,6 +228,29 @@ const init = async (userId: string) => {
     }
   );
 
+  ch.on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "contact_reveals", filter: `worker_user_id=eq.${userId}` },
+    async (payload: any) => {
+      const { data: cp } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", payload.new.client_user_id)
+        .maybeSingle();
+      const name = cp?.full_name || "Someone";
+      upsert({
+        id: `reveal-${payload.new.id}`,
+        type: "contact_request",
+        title: "Contact request",
+        body: `${name} wants your contact info`,
+        created_at: payload.new.created_at,
+        link: `/chat/${payload.new.client_user_id}`,
+        read: false,
+      });
+      toast.info("🔒 Contact request", { description: `${name} wants your contact info` });
+    }
+  );
+
   ch.subscribe();
   channel = ch;
 };
