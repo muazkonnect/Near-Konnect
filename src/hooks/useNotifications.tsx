@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export interface AppNotification {
   id: string;
-  type: "message" | "booking" | "blood_request";
+  type: "message" | "booking" | "blood_request" | "contact_request";
   title: string;
   body: string;
   created_at: string;
