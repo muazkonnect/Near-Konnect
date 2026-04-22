@@ -39,6 +39,15 @@ const WorkerOnboardingDialog = () => {
     const intent = sessionStorage.getItem(STORAGE_KEY);
     if (intent !== "worker") return;
 
+    // Only show for fresh signups: if the user account is older than 5 minutes,
+    // this isn't a brand-new worker OAuth signup — clear stale intent and skip.
+    const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
+    const isFreshSignup = createdAt > 0 && Date.now() - createdAt < 5 * 60 * 1000;
+    if (!isFreshSignup) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return;
+    }
+
     let cancelled = false;
     (async () => {
       const { data, error } = await supabase
