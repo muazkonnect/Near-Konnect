@@ -1329,6 +1329,7 @@ export type Database = {
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
+      has_any_admin_role: { Args: { _user_id: string }; Returns: boolean }
       has_role:
         | {
             Args: {
@@ -1355,6 +1356,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
       move_to_dlq: {
         Args: {
