@@ -147,7 +147,7 @@ const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { role, isLoading: roleLoading } = useUserRole();
+  const { role, isStaff, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<TabKey>("overview");
   const [newCatName, setNewCatName] = useState("");
@@ -172,11 +172,11 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    if (!authLoading && !roleLoading && role !== "admin") {
-      toast.error("Access denied. Admin only.");
+    if (!authLoading && !roleLoading && !isStaff) {
+      toast.error("Access denied. Staff only.");
       navigate("/");
     }
-  }, [authLoading, roleLoading, role, navigate]);
+  }, [authLoading, roleLoading, isStaff, navigate]);
 
   const { data: workers = [] } = useQuery({
     queryKey: ["admin_workers"],
