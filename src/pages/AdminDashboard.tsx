@@ -104,7 +104,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("native_ads")
-        .select("id, title, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at")
+        .select("id, title, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at, target_latitude, target_longitude, target_radius_km")
         .order("priority", { ascending: false });
       if (error) throw error;
       return data;
@@ -527,6 +527,49 @@ const AdminDashboard = () => {
                 <Button onClick={addAd} className="gap-1">
                   <Plus className="w-4 h-4" /> Add Ad
                 </Button>
+              </div>
+
+              {/* Geo-targeting */}
+              <div className="mt-5 rounded-lg border bg-muted/20 p-3">
+                <div className="mb-2 flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <p className="text-sm font-semibold text-card-foreground">Geo-targeting (optional)</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pin a center on the map and set a radius. Leave empty to show globally.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Radius (km)"
+                      type="number"
+                      min="1"
+                      value={adRadiusKm}
+                      onChange={(e) => setAdRadiusKm(e.target.value)}
+                      className="w-32"
+                    />
+                    {adTargetCoords && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAdTargetCoords(null);
+                          setAdRadiusKm("");
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="overflow-hidden rounded-md border" style={{ height: 280 }}>
+                  <MapLocationPicker value={adTargetCoords} onChange={setAdTargetCoords} />
+                </div>
+                {adTargetCoords && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Target: {adTargetCoords.latitude.toFixed(4)}, {adTargetCoords.longitude.toFixed(4)}
+                    {adRadiusKm ? ` · within ${adRadiusKm} km` : " · set a radius"}
+                  </p>
+                )}
               </div>
             </div>
 
