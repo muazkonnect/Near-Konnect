@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useNotifications } from "@/hooks/useNotifications";
+import NotificationBell from "@/components/NotificationBell";
 import logoImg from "@/assets/logo.svg";
 import logoDarkImg from "@/assets/logo-dark.svg";
 
