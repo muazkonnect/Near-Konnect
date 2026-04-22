@@ -9,6 +9,7 @@ import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
 import NativeAdCard from "@/components/NativeAdCard";
 import { useNativeAds } from "@/hooks/useSponsored";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 
 const slides = [
   {
@@ -47,7 +48,8 @@ const Index = () => {
   const { user, loading } = useAuth();
   const [slideIndex, setSlideIndex] = useState(0);
   const [search, setSearch] = useState("");
-  const bannerAds = useNativeAds("home_banner");
+  const { coords: browsingCoords } = useRealtimeLocation();
+  const bannerAds = useNativeAds("home_banner", browsingCoords);
 
   useEffect(() => {
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);

@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import type { Coords } from "@/lib/geolocation";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +34,8 @@ const AdminDashboard = () => {
   const [adCtaLabel, setAdCtaLabel] = useState("Learn More");
   const [adPlacement, setAdPlacement] = useState<"home_banner" | "home_feed">("home_banner");
   const [adPriority, setAdPriority] = useState("100");
+  const [adTargetCoords, setAdTargetCoords] = useState<Coords | null>(null);
+  const [adRadiusKm, setAdRadiusKm] = useState("");
 
   useEffect(() => {
     if (!authLoading && !roleLoading && role !== "admin") {
@@ -100,7 +104,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("native_ads")
-        .select("id, title, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at")
+        .select("id, title, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at, target_latitude, target_longitude, target_radius_km")
         .order("priority", { ascending: false });
       if (error) throw error;
       return data;
@@ -165,6 +169,12 @@ const AdminDashboard = () => {
       return;
     }
 
+    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
+    if (adTargetCoords && (!radius || radius <= 0)) {
+      toast.error("Set a radius (km) for geo-targeted ads");
+      return;
+    }
+
     const { error } = await (supabase as any).from("native_ads").insert({
       title: adTitle.trim(),
       description: adDescription.trim() || null,
@@ -175,6 +185,9 @@ const AdminDashboard = () => {
       ad_type: adPlacement === "home_banner" ? "banner" : "in_feed",
       is_active: true,
       priority: Number(adPriority) || 100,
+      target_latitude: adTargetCoords?.latitude ?? null,
+      target_longitude: adTargetCoords?.longitude ?? null,
+      target_radius_km: adTargetCoords ? radius : null,
       created_by: user?.id || null,
     });
 
@@ -183,13 +196,15 @@ const AdminDashboard = () => {
       return;
     }
 
-    toast.success("Ad created successfully");
+    toast.success(adTargetCoords ? "Geo-targeted ad created" : "Global ad created");
     setAdTitle("");
     setAdDescription("");
     setAdImageUrl("");
     setAdLink("");
     setAdCtaLabel("Learn More");
     setAdPriority("100");
+    setAdTargetCoords(null);
+    setAdRadiusKm("");
     queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
   };
 
@@ -513,6 +528,49 @@ const AdminDashboard = () => {
                   <Plus className="w-4 h-4" /> Add Ad
                 </Button>
               </div>
+
+              {/* Geo-targeting */}
+              <div className="mt-5 rounded-lg border bg-muted/20 p-3">
+                <div className="mb-2 flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <p className="text-sm font-semibold text-card-foreground">Geo-targeting (optional)</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pin a center on the map and set a radius. Leave empty to show globally.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Radius (km)"
+                      type="number"
+                      min="1"
+                      value={adRadiusKm}
+                      onChange={(e) => setAdRadiusKm(e.target.value)}
+                      className="w-32"
+                    />
+                    {adTargetCoords && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAdTargetCoords(null);
+                          setAdRadiusKm("");
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="overflow-hidden rounded-md border" style={{ height: 280 }}>
+                  <MapLocationPicker value={adTargetCoords} onChange={setAdTargetCoords} />
+                </div>
+                {adTargetCoords && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Target: {adTargetCoords.latitude.toFixed(4)}, {adTargetCoords.longitude.toFixed(4)}
+                    {adRadiusKm ? ` · within ${adRadiusKm} km` : " · set a radius"}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Live preview of the ad currently being composed */}
@@ -582,6 +640,9 @@ const AdminDashboard = () => {
                     <p className="font-medium text-card-foreground truncate">{ad.title}</p>
                     <p className="text-sm text-muted-foreground">
                       {ad.placement} · Priority {ad.priority} · {ad.is_active ? "Active" : "Disabled"}
+                      {ad.target_latitude != null && ad.target_longitude != null && ad.target_radius_km
+                        ? ` · 📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} (${ad.target_radius_km} km)`
+                        : " · 🌍 Global"}
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => toggleAdActive(ad.id, ad.is_active)}>
