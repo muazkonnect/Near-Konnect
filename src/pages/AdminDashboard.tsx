@@ -207,8 +207,8 @@ const AdminDashboard = () => {
     setAdLink("");
     setAdCtaLabel("Learn More");
     setAdPriority("100");
-    setAdTargetCoords(null);
-    setAdRadiusKm("");
+    setAdTargetCoordsState(null);
+    setAdRadiusKm("3");
     queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
   };
 
