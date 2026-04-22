@@ -62,7 +62,7 @@ export function useContactReveal(workerUserId: string | undefined) {
 
   const decideMutation = useMutation({
     mutationFn: async ({ id, approve }: { id: string; approve: boolean }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("contact_reveals")
         .update({ status: approve ? "approved" : "denied", decided_at: new Date().toISOString() })
         .eq("id", id);
