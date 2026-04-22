@@ -1,30 +1,40 @@
 
 
-## Mount AI Assistant globally + brand polish
+## Goal
+Replace the Lovable branding (logo + "Continue to Lovable" text) shown on the Google/Apple OAuth consent screen with NearKonnect's logo and name.
 
-**1. Mount globally**
-- Import and render `<SupportChatbot />` in `src/components/AppLayout.tsx` so it appears on every authenticated page (Home, Discover, Dashboards, Messages, Blood Donors, Worker Profile).
+## Why this happens
+OAuth sign-in currently uses Lovable's managed OAuth (`@lovable.dev/cloud-auth-js` via `src/integrations/lovable/index.ts`). Because the OAuth app shown to the user belongs to Lovable, the consent screen shows Lovable's logo and "Continue to Lovable". This branding is controlled by the OAuth provider (Google / Apple), not by app code — it cannot be changed by editing files in this project.
 
-**2. Brand the floating button (logo green)**
-- Replace the current neutral `bg-card` button with the logo's green (`hsl(var(--primary))` already maps to the brand green in this project — verified via `tailwind.config.ts` / `index.css` tokens).
-- White bot icon, white "AI Assistant" label, soft green glow ring, pulsing accent dot retained.
-- Slightly larger tap target on mobile (h-14 round pill).
+To show **your logo and "Continue to NearKonnect"**, the OAuth flow must go through **your own** Google and Apple OAuth apps, registered under your NearKonnect branding.
 
-**3. Optimal placement**
-- **Mobile**: bottom-right, `bottom-24 right-4` (sits above the mobile bottom nav at h-16, below the safe area). Currently it's bottom-left which collides with the leftmost nav item — moving to bottom-right is cleaner.
-- **Desktop**: bottom-right, `bottom-6 right-6` (unchanged — standard chat widget position, doesn't collide with footer or content).
-- Chat panel anchors to the same corner so open/close feels natural.
+## Plan
 
-**4. UX polish (carry-over from prior plan)**
-- Remove the auto-open-after-10-seconds behavior (intrusive on every page load).
-- Extend `support-chat` system prompt so worker recommendations include both `[View Profile](/worker/USER_ID)` and `[Message](/messages?to=USER_ID)` links.
-- Ensure `src/pages/Messages.tsx` reads `?to=USER_ID` and opens that conversation on mount (add small effect if missing).
+### 1. Switch from Lovable-managed OAuth to direct Supabase OAuth
+Replace `lovable.auth.signInWithOAuth(...)` in `src/components/SocialAuthButtons.tsx` with `supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })`. This routes sign-in through the Supabase Auth project directly, which uses whatever OAuth credentials are configured in the backend.
 
-**5. No new tools, tables, or deps**
-- Chatbot, edge function, history tables, markdown rendering — all already exist. This is a mount + style + 2 small tweaks.
+### 2. Configure Google OAuth (you do this, outside the app)
+- Go to Google Cloud Console → create an OAuth 2.0 Client ID for a Web application.
+- On the OAuth consent screen: set **App name = NearKonnect**, upload the **NearKonnect logo**, set support email and homepage. This is what makes the consent screen say "Continue to NearKonnect" with your logo.
+- Add authorized redirect URI: `https://lxghuqiheaoinytrwhac.supabase.co/auth/v1/callback`
+- Copy the Client ID and Client Secret.
+- In Lovable Cloud → Auth → Providers → Google: paste the Client ID and Secret, enable the provider.
 
-### Technical notes
-- Files touched: `src/components/AppLayout.tsx` (mount), `src/components/SupportChatbot.tsx` (button styling, position, remove auto-open), `supabase/functions/support-chat/index.ts` (add Message link to prompt), `src/pages/Messages.tsx` (handle `?to=` param if not already).
-- Z-index: keep `z-[60]` so it sits above bottom nav (`z-50`) but below modals (`z-[100]`).
-- Edge function will be redeployed after the prompt change.
+### 3. Configure Apple OAuth (you do this, outside the app)
+- In Apple Developer → create a Services ID for NearKonnect, configure Sign in with Apple, set the same Supabase callback URL as the return URL.
+- Apple shows your Services ID app name on the consent sheet.
+- In Lovable Cloud → Auth → Providers → Apple: paste the Services ID, Team ID, Key ID, and the private key.
+
+### 4. Verify
+After credentials are saved, click "Continue with Google" / "Continue with Apple" in the app. The consent screen should now show the NearKonnect logo and "Continue to NearKonnect".
+
+## What I will change in code
+- `src/components/SocialAuthButtons.tsx` — swap `lovable.auth.signInWithOAuth` for `supabase.auth.signInWithOAuth`, keep the same UI and loading states.
+
+## What only you can do
+- Create the Google OAuth app with NearKonnect branding + logo.
+- Create the Apple Services ID with NearKonnect branding.
+- Paste both sets of credentials into Lovable Cloud's Auth provider settings.
+
+Without step 2 and 3, the consent screen branding cannot change — it is set by Google and Apple based on the OAuth app, not by anything in the codebase.
 
