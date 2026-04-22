@@ -253,18 +253,7 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
             <p className="text-xs text-primary">● Online</p>
           </div>
         </div>
-        <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-xs text-hero-muted">
-          <p className="font-semibold text-hero-foreground">Service Summary</p>
-          <p>Discuss scope, share timeline, then confirm booking in one tap.</p>
-          <div className="mt-2 flex gap-2">
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
-              <FileText className="h-3 w-3" /> Send Offer
-            </button>
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-hero-foreground">
-              <CheckCircle2 className="h-3 w-3" /> Confirm Booking
-            </button>
-          </div>
-        </div>
+        <ContactRevealStrip otherUserId={otherUserId} />
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/30">
