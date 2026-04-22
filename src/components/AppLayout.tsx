@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Compass, HeartPulse, Home, LogOut, MapPin, MessageSquare, Search } from "lucide-react";
+import { Compass, HeartPulse, Home, KeyRound, LogOut, MapPin, MessageSquare, Search } from "lucide-react";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -84,13 +85,20 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
               <span aria-hidden>·</span>
               <Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link>
             </div>
-            <Button
-              variant="outline"
-              onClick={handleSignOut}
-              className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <LogOut className="h-4 w-4" /> Sign out
-            </Button>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <ChangePasswordDialog>
+                <Button variant="outline" className="gap-2 rounded-full">
+                  <KeyRound className="h-4 w-4" /> Change password
+                </Button>
+              </ChangePasswordDialog>
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </Button>
+            </div>
           </div>
         )}
       </div>
