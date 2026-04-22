@@ -38,6 +38,22 @@ const Messages = () => {
     retry: 1,
   });
 
+  const { data: pendingReveals = [] } = useQuery({
+    queryKey: ["pending_reveals_inbox", user?.id],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("contact_reveals")
+        .select("client_user_id")
+        .eq("worker_user_id", user!.id)
+        .eq("status", "pending");
+      if (error) throw error;
+      return (data || []).map((r: any) => r.client_user_id as string);
+    },
+    enabled: !!user,
+    staleTime: 15_000,
+  });
+  const pendingSet = useMemo(() => new Set(pendingReveals), [pendingReveals]);
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
