@@ -47,6 +47,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const [slideIndex, setSlideIndex] = useState(0);
   const [search, setSearch] = useState("");
+  const bannerAds = useNativeAds("home_banner");
 
   useEffect(() => {
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
