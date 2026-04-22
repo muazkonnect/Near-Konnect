@@ -50,17 +50,6 @@ const WorkerOnboardingDialog = () => {
 
     let cancelled = false;
     (async () => {
-      // If the user already has ANY role assigned, they've completed onboarding before — skip.
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id);
-      if (cancelled) return;
-      if (roles && roles.length > 0) {
-        sessionStorage.removeItem(STORAGE_KEY);
-        return;
-      }
-
       const { data, error } = await supabase
         .from("workers")
         .select("id")
