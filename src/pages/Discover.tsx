@@ -33,6 +33,7 @@ const Discover = () => {
   const [showMapView, setShowMapView] = useState(false);
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const featuredIds = useFeaturedWorkerIds();
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
