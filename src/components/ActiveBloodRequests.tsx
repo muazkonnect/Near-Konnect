@@ -33,7 +33,13 @@ const ActiveBloodRequests = ({ compact = false, hideTitle = false }: ActiveBlood
         .select("*")
         .eq("status", "open")
         .order("created_at", { ascending: false })
-        .limit(6);
+        .limit(12);
+
+      // Sort: critical → urgent → normal, then newest first
+      const urgencyRank: Record<string, number> = { critical: 0, urgent: 1, normal: 2 };
+      (data || []).sort((a: any, b: any) =>
+        (urgencyRank[a.urgency] ?? 3) - (urgencyRank[b.urgency] ?? 3)
+      );
 
       if (!data || data.length === 0) return [];
 

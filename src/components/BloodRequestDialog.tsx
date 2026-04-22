@@ -10,6 +10,7 @@ import { AlertTriangle, Droplet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getCurrentPosition } from "@/lib/geolocation";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -33,18 +34,43 @@ const BloodRequestDialog = ({ trigger }: Props) => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("blood_requests").insert({
-      requester_id: user.id,
-      blood_group: bloodGroup,
-      urgency,
-      city: city || null,
-      message: message || null,
-    });
+
+    // Try to capture geolocation so nearby donors can be matched
+    let lat: number | null = null;
+    let lng: number | null = null;
+    try {
+      const pos = await getCurrentPosition();
+      lat = pos.latitude;
+      lng = pos.longitude;
+    } catch {
+      // Permission denied or unavailable — proceed without location
+    }
+
+    const { data: inserted, error } = await supabase
+      .from("blood_requests")
+      .insert({
+        requester_id: user.id,
+        blood_group: bloodGroup,
+        urgency,
+        city: city || null,
+        message: message || null,
+        latitude: lat,
+        longitude: lng,
+      } as any)
+      .select("id")
+      .maybeSingle();
     setLoading(false);
     if (error) {
       toast.error("Failed to submit request");
     } else {
       toast.success("Blood request submitted! Matching donors will be notified.");
+
+      // Fan out push notifications to nearby donors for urgent/critical
+      if ((urgency === "urgent" || urgency === "critical") && inserted?.id && lat != null && lng != null) {
+        supabase.functions
+          .invoke("notify-nearby-donors", { body: { request_id: inserted.id } })
+          .catch((e) => console.warn("notify-nearby-donors failed", e));
+      }
       setOpen(false);
       setStep(1);
       setBloodGroup("");
