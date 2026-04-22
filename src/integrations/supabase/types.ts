@@ -56,6 +56,8 @@ export type Database = {
           city: string | null
           created_at: string
           id: string
+          latitude: number | null
+          longitude: number | null
           message: string | null
           requester_id: string
           status: string
@@ -67,6 +69,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           message?: string | null
           requester_id: string
           status?: string
@@ -78,6 +82,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           message?: string | null
           requester_id?: string
           status?: string
@@ -583,6 +589,8 @@ export type Database = {
           full_name: string
           id: string
           is_blood_donor: boolean
+          latitude: number | null
+          longitude: number | null
           phone: string | null
           updated_at: string
           use_whatsapp: boolean
@@ -598,6 +606,8 @@ export type Database = {
           full_name?: string
           id?: string
           is_blood_donor?: boolean
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           updated_at?: string
           use_whatsapp?: boolean
@@ -613,6 +623,8 @@ export type Database = {
           full_name?: string
           id?: string
           is_blood_donor?: boolean
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           updated_at?: string
           use_whatsapp?: boolean
@@ -1250,6 +1262,40 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_nearby_blood_donors: {
+        Args: {
+          radius_km?: number
+          req_blood_group: string
+          req_lat: number
+          req_lng: number
+        }
+        Returns: {
+          blood_group: string
+          city: string
+          distance_km: number
+          full_name: string
+          user_id: string
+        }[]
+      }
+      get_nearby_blood_requests: {
+        Args: {
+          donor_blood_group: string
+          donor_lat: number
+          donor_lng: number
+          radius_km?: number
+        }
+        Returns: {
+          blood_group: string
+          city: string
+          created_at: string
+          distance_km: number
+          id: string
+          message: string
+          requester_id: string
+          requester_name: string
+          urgency: string
+        }[]
+      }
       get_nearby_workers: {
         Args: {
           lat: number

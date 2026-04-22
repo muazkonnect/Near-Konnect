@@ -13,7 +13,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import AppLayout from "@/components/AppLayout";
-import ContactMethodsBar from "@/components/ContactMethodsBar";
+import DonorContactReveal from "@/components/DonorContactReveal";
+import NearbyBloodRequestsForDonor from "@/components/NearbyBloodRequestsForDonor";
 import { parseContactMethods } from "@/lib/contactMethods";
 import { markRead } from "@/hooks/useNotifications";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -177,9 +178,6 @@ const BloodDonors = () => {
             }`}
           >
             <Users className="h-4 w-4" /> Donors
-            <span className={`ml-0.5 rounded-full px-1.5 text-[10px] font-bold ${tab === "donors" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
-              {stats.active}
-            </span>
           </button>
           <button
             onClick={() => setTab("requests")}
@@ -359,14 +357,11 @@ const BloodDonors = () => {
                                 >
                                   <MessageSquare className="h-3.5 w-3.5" /> Message in-app
                                 </Button>
-                                {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
-                                  <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
-                                    <ContactMethodsBar
-                                      methods={donor.contact_methods_parsed}
-                                      variant="card"
-                                      className="!gap-1.5 [&>a]:!h-9 [&>a]:!w-9 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
-                                    />
-                                  </div>
+                                {donor.contact_methods_parsed && (
+                                  <DonorContactReveal
+                                    donorUserId={donor.user_id}
+                                    contactMethods={donor.contact_methods_parsed}
+                                  />
                                 )}
                               </div>
                             </motion.div>
@@ -397,16 +392,18 @@ const BloodDonors = () => {
       subtitle="Respond to nearby blood donation requests quickly and safely."
       action={<BloodRequestDialog />}
     >
+      <NearbyBloodRequestsForDonor />
+
       <section className="-mt-12 rounded-3xl bg-card p-5 shadow-premium">
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="relative overflow-hidden rounded-2xl bg-hero text-hero-foreground p-4">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
-            <p className="relative text-3xl font-bold text-primary text-center">{stats.total}</p>
-            <p className="relative text-xs text-hero-muted text-center">Total Donors</p>
+            <p className="relative text-3xl font-bold text-destructive text-center">{openRequestsCount}</p>
+            <p className="relative text-xs text-hero-muted text-center">Open requests</p>
           </div>
           <div className="rounded-2xl bg-primary text-primary-foreground p-4">
-            <p className="text-3xl font-bold text-center">{stats.active}</p>
-            <p className="text-xs opacity-80 text-center">Active Now</p>
+            <p className="text-3xl font-bold text-center">Private</p>
+            <p className="text-xs opacity-80 text-center">Donor identity protected</p>
           </div>
         </div>
 
@@ -541,21 +538,13 @@ const BloodDonors = () => {
                       <MessageSquare className="h-3.5 w-3.5" /> Message in-app
                     </Button>
 
-                    {donor.contact_methods_parsed && donor.contact_methods_parsed.length > 0 && (
-                      <>
-                        <div className="mt-3 mb-2 flex items-center gap-2">
-                          <span className="h-px flex-1 bg-border" />
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Reach out via</span>
-                          <span className="h-px flex-1 bg-border" />
-                        </div>
-                        <div className="flex-wrap gap-1.5 flex items-center justify-center">
-                          <ContactMethodsBar
-                            methods={donor.contact_methods_parsed}
-                            variant="card"
-                            className="!gap-1.5 [&>a]:!h-9 [&>a]:!w-9 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
-                          />
-                        </div>
-                      </>
+                    {donor.contact_methods_parsed && (
+                      <div className="mt-1">
+                        <DonorContactReveal
+                          donorUserId={donor.user_id}
+                          contactMethods={donor.contact_methods_parsed}
+                        />
+                      </div>
                     )}
                   </div>
                 </motion.div>
