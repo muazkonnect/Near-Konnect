@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import type { Coords } from "@/lib/geolocation";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +34,8 @@ const AdminDashboard = () => {
   const [adCtaLabel, setAdCtaLabel] = useState("Learn More");
   const [adPlacement, setAdPlacement] = useState<"home_banner" | "home_feed">("home_banner");
   const [adPriority, setAdPriority] = useState("100");
+  const [adTargetCoords, setAdTargetCoords] = useState<Coords | null>(null);
+  const [adRadiusKm, setAdRadiusKm] = useState("");
 
   useEffect(() => {
     if (!authLoading && !roleLoading && role !== "admin") {
@@ -165,6 +169,12 @@ const AdminDashboard = () => {
       return;
     }
 
+    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
+    if (adTargetCoords && (!radius || radius <= 0)) {
+      toast.error("Set a radius (km) for geo-targeted ads");
+      return;
+    }
+
     const { error } = await (supabase as any).from("native_ads").insert({
       title: adTitle.trim(),
       description: adDescription.trim() || null,
@@ -175,6 +185,9 @@ const AdminDashboard = () => {
       ad_type: adPlacement === "home_banner" ? "banner" : "in_feed",
       is_active: true,
       priority: Number(adPriority) || 100,
+      target_latitude: adTargetCoords?.latitude ?? null,
+      target_longitude: adTargetCoords?.longitude ?? null,
+      target_radius_km: adTargetCoords ? radius : null,
       created_by: user?.id || null,
     });
 
@@ -183,13 +196,15 @@ const AdminDashboard = () => {
       return;
     }
 
-    toast.success("Ad created successfully");
+    toast.success(adTargetCoords ? "Geo-targeted ad created" : "Global ad created");
     setAdTitle("");
     setAdDescription("");
     setAdImageUrl("");
     setAdLink("");
     setAdCtaLabel("Learn More");
     setAdPriority("100");
+    setAdTargetCoords(null);
+    setAdRadiusKm("");
     queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
   };
 
