@@ -2017,7 +2017,13 @@ export type Database = {
         | "contact_click"
         | "message_received"
         | "conversion"
-      app_role: "customer" | "worker" | "admin"
+      app_role:
+        | "customer"
+        | "worker"
+        | "admin"
+        | "manager"
+        | "ads_manager"
+        | "moderator"
       boost_status: "pending" | "active" | "expired" | "rejected"
       boost_type: "featured_listing" | "priority_ranking" | "urgent_boost"
       message_status: "sent" | "delivered" | "seen" | "failed"
@@ -2162,7 +2168,14 @@ export const Constants = {
         "message_received",
         "conversion",
       ],
-      app_role: ["customer", "worker", "admin"],
+      app_role: [
+        "customer",
+        "worker",
+        "admin",
+        "manager",
+        "ads_manager",
+        "moderator",
+      ],
       boost_status: ["pending", "active", "expired", "rejected"],
       boost_type: ["featured_listing", "priority_ranking", "urgent_boost"],
       message_status: ["sent", "delivered", "seen", "failed"],
