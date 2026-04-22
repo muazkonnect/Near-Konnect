@@ -68,6 +68,17 @@ const Messages = () => {
             queryClient.invalidateQueries({ queryKey: ["conversations", user.id] });
           }
         },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "contact_reveals" },
+        (payload: any) => {
+          const r = payload.new || payload.old;
+          if (!r) return;
+          if (r.worker_user_id === user.id) {
+            queryClient.invalidateQueries({ queryKey: ["pending_reveals_inbox", user.id] });
+          }
+        },
       );
     channel.subscribe();
 
