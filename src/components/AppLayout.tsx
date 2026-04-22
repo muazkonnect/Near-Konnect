@@ -22,6 +22,8 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { role } = useUserRole();
+  const { unreadByType } = useNotifications();
+  const messagesBadge = unreadByType.message + unreadByType.contact_request;
 
   const profilePath = role === "worker" ? "/worker-dashboard" : role === "admin" ? "/admin" : "/dashboard";
 
@@ -31,10 +33,10 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
   };
 
   const navItems = [
-    { label: "Home", to: "/", icon: Home },
-    { label: "Explore", to: "/discover", icon: Compass },
-    { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true },
-    { label: "Messages", to: "/messages", icon: MessageSquare },
+    { label: "Home", to: "/", icon: Home, badge: 0 },
+    { label: "Explore", to: "/discover", icon: Compass, badge: 0 },
+    { label: "Blood Konnect", to: "/blood-donors", icon: HeartPulse, emphasis: true, badge: 0 },
+    { label: "Messages", to: "/messages", icon: MessageSquare, badge: messagesBadge },
   ];
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "You";
