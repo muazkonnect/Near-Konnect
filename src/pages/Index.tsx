@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
+import NativeAdCard from "@/components/NativeAdCard";
+import { useNativeAds } from "@/hooks/useSponsored";
 
 const slides = [
   {
