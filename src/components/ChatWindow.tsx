@@ -352,10 +352,36 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
  */
 const ContactRevealStrip = ({ otherUserId }: { otherUserId: string }) => {
   const { user } = useAuth();
+  const qc = useQueryClient();
   // Try as client viewing a worker
   const asClient = useContactReveal(otherUserId);
   // Try as worker receiving a request from this client
   const { data: incoming } = usePendingRevealFromClient(user?.id, otherUserId);
+
+  // Realtime: refresh reveal status for both client and worker views
+  useEffect(() => {
+    if (!user || !otherUserId) return;
+    const channel = supabase
+      .channel(`reveal-${user.id}-${otherUserId}-${Math.random().toString(36).slice(2)}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "contact_reveals" },
+        (payload) => {
+          const row: any = payload.new ?? payload.old;
+          if (!row) return;
+          const involvesPair =
+            (row.client_user_id === user.id && row.worker_user_id === otherUserId) ||
+            (row.worker_user_id === user.id && row.client_user_id === otherUserId);
+          if (!involvesPair) return;
+          qc.invalidateQueries({ queryKey: ["contact_reveal", otherUserId, user.id] });
+          qc.invalidateQueries({ queryKey: ["contact_reveals_inbox", user.id, otherUserId] });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, otherUserId, qc]);
 
   // Worker receiving a pending request
   if (incoming && incoming.status === "pending") {
