@@ -33,6 +33,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { coords: browsingCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const featuredIds = useFeaturedWorkerIds();
+  const feedAds = useNativeAds("home_feed");
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
