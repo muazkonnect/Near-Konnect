@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Home, Compass, Siren, MessageSquare, User } from "lucide-react";
+import { Home, Compass, HeartPulse, MessageSquare, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -31,7 +31,7 @@ const MobileBottomNav = () => {
   const items = [
     { label: "Home", to: "/", icon: Home, hasDot: false },
     { label: "Explore", to: "/discover", icon: Compass, hasDot: false },
-    { label: "Requests", to: "/blood-donors", icon: Siren, urgent: true, hasDot: unreadByType.blood_request > 0 || unreadByType.booking > 0 },
+    { label: "BLood  Bank", to: "/blood-donors", icon: HeartPulse, urgent: true, hasDot: unreadByType.blood_request > 0 || unreadByType.booking > 0 },
     { label: "Messages", to: "/messages", icon: MessageSquare, hasDot: unreadByType.message > 0 },
     { label: "Profile", to: profilePath, icon: User, hasDot: false },
   ];
