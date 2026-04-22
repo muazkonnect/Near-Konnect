@@ -201,6 +201,16 @@ const AdminDashboard = () => {
     enabled: isStaff,
   });
 
+  const { data: allUserRoles = [] } = useQuery({
+    queryKey: ["admin_user_roles"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("user_roles").select("user_id, role");
+      if (error) throw error;
+      return data as { user_id: string; role: string }[];
+    },
+    enabled: isStaff,
+  });
+
   const { data: categories = [] } = useQuery({
     queryKey: ["admin_categories"],
     queryFn: async () => {
