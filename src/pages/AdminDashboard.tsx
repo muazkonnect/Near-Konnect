@@ -45,6 +45,7 @@ import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
+import UsersManagementTab from "@/components/admin/UsersManagementTab";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads";
 
@@ -560,25 +561,7 @@ const AdminDashboard = () => {
 
             {/* USERS */}
             {tab === "users" && (
-              <div>
-                <SectionHeader title="Users" subtitle="Everyone who signed up." />
-                <div className="space-y-3">
-                  {allProfiles.map((p: any) => (
-                    <div key={p.id} className="flex items-center gap-4 rounded-2xl border bg-card p-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-foreground">
-                        {p.full_name?.slice(0, 2).toUpperCase() || "??"}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-card-foreground">{p.full_name || "Unnamed"}</p>
-                        <p className="text-xs text-muted-foreground">{p.phone || "No phone"}</p>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(p.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
             )}
 
             {/* CATEGORIES */}
