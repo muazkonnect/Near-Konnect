@@ -188,7 +188,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: allProfiles = [] } = useQuery({
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: categories = [] } = useQuery({
@@ -208,7 +208,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: bloodDonors = [] } = useQuery({
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: featuredServices = [] } = useQuery({
@@ -231,7 +231,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const { data: nativeAds = [] } = useQuery({
@@ -246,7 +246,7 @@ const AdminDashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: role === "admin",
+    enabled: isStaff,
   });
 
   const featuredMap = useMemo(
