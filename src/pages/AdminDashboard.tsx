@@ -17,6 +17,7 @@ import {
   MapPin,
   LogOut,
   Crown,
+  UserCog,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,8 +47,9 @@ import type { NativeAd } from "@/hooks/useSponsored";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
 import UsersManagementTab from "@/components/admin/UsersManagementTab";
+import AdminProfileTab from "@/components/admin/AdminProfileTab";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -57,6 +59,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
   { key: "ads", label: "Ads & Geo", icon: Megaphone },
+  { key: "profile", label: "My Profile", icon: UserCog },
 ];
 
 const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void }) => {
@@ -563,6 +566,9 @@ const AdminDashboard = () => {
             {tab === "users" && (
               <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
             )}
+
+            {/* PROFILE */}
+            {tab === "profile" && <AdminProfileTab />}
 
             {/* CATEGORIES */}
             {tab === "categories" && (
