@@ -91,6 +91,19 @@ Deno.serve(async (req) => {
       if (!userId || !role) throw new Error("userId and role required");
       const { error } = await admin.from("user_roles").insert({ user_id: userId, role });
       if (error && !String(error.message).toLowerCase().includes("duplicate")) throw error;
+
+      // If switching to customer-only, demote from worker: remove worker role + delete worker record
+      if (role === "customer") {
+        const { data: existingRoles } = await admin
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId);
+        const roleSet = new Set((existingRoles ?? []).map((r: { role: string }) => r.role));
+        if (roleSet.has("worker")) {
+          await admin.from("user_roles").delete().eq("user_id", userId).eq("role", "worker");
+          await admin.from("workers").delete().eq("user_id", userId);
+        }
+      }
       return ok({ ok: true });
     }
 
@@ -105,6 +118,16 @@ Deno.serve(async (req) => {
       }
       const { error } = await admin.from("user_roles").delete().eq("user_id", userId).eq("role", role);
       if (error) throw error;
+
+      // When worker role is removed, also delete the worker profile so the account becomes a regular customer
+      if (role === "worker") {
+        await admin.from("workers").delete().eq("user_id", userId);
+        // Ensure they have at least the customer role
+        await admin
+          .from("user_roles")
+          .insert({ user_id: userId, role: "customer" })
+          .then(() => {});
+      }
       return ok({ ok: true });
     }
 
