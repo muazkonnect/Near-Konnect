@@ -195,6 +195,27 @@ const AdminDashboard = () => {
     enabled: isStaff,
   });
 
+  // Realtime: refresh workers/profiles/roles lists when records change
+  useEffect(() => {
+    if (!isStaff) return;
+    const channel = supabase
+      .channel("admin-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+        queryClient.invalidateQueries({ queryKey: ["admin_profiles"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_roles" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin_user_roles"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isStaff, queryClient]);
+
   const { data: allProfiles = [] } = useQuery({
     queryKey: ["admin_profiles"],
     queryFn: async () => {
