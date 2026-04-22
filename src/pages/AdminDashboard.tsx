@@ -34,8 +34,12 @@ const AdminDashboard = () => {
   const [adCtaLabel, setAdCtaLabel] = useState("Learn More");
   const [adPlacement, setAdPlacement] = useState<"home_banner" | "home_feed">("home_banner");
   const [adPriority, setAdPriority] = useState("100");
-  const [adTargetCoords, setAdTargetCoords] = useState<Coords | null>(null);
-  const [adRadiusKm, setAdRadiusKm] = useState("");
+  const [adTargetCoords, setAdTargetCoordsState] = useState<Coords | null>(null);
+  const [adRadiusKm, setAdRadiusKm] = useState("3");
+  const setAdTargetCoords = (c: Coords | null) => {
+    setAdTargetCoordsState(c);
+    if (c && !adRadiusKm.trim()) setAdRadiusKm("3");
+  };
 
   useEffect(() => {
     if (!authLoading && !roleLoading && role !== "admin") {
