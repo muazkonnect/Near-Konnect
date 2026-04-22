@@ -436,7 +436,18 @@ const ContactRevealStrip = ({ otherUserId }: { otherUserId: string }) => {
       ) : asClient.status === "pending" ? (
         <p className="mt-1">Your contact request is pending approval.</p>
       ) : asClient.status === "denied" ? (
-        <p className="mt-1">Your contact request was declined.</p>
+        <>
+          <p className="mt-1">Your previous request was declined. You can ask again.</p>
+          <div className="mt-2">
+            <button
+              onClick={() => asClient.request()}
+              disabled={asClient.requesting}
+              className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground disabled:opacity-60"
+            >
+              <Lock className="h-3 w-3" /> {asClient.requesting ? "Sending..." : "Request again"}
+            </button>
+          </div>
+        </>
       ) : (
         <>
           <p className="mt-1">Need their phone or WhatsApp? Send a request and they can approve.</p>
