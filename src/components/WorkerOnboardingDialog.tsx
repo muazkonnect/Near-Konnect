@@ -190,8 +190,14 @@ const WorkerOnboardingDialog = () => {
                 <Briefcase className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="text-xl font-bold tracking-tight">Complete your service profile</h2>
-                <p className="text-sm text-hero-muted">A few details so customers can find and trust you.</p>
+                <h2 className="text-xl font-bold tracking-tight">
+                  {adminAssigned ? "You're now a worker on NearKonnect" : "Complete your service profile"}
+                </h2>
+                <p className="text-sm text-hero-muted">
+                  {adminAssigned
+                    ? "An admin granted you worker access. Add a few details so customers can find and trust you."
+                    : "A few details so customers can find and trust you."}
+                </p>
               </div>
             </div>
 
