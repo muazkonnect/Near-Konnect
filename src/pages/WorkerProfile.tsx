@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles, Lock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
