@@ -518,6 +518,9 @@ export type Database = {
           placement: string
           priority: number
           starts_at: string | null
+          target_latitude: number | null
+          target_longitude: number | null
+          target_radius_km: number | null
           title: string
           updated_at: string
         }
@@ -535,6 +538,9 @@ export type Database = {
           placement?: string
           priority?: number
           starts_at?: string | null
+          target_latitude?: number | null
+          target_longitude?: number | null
+          target_radius_km?: number | null
           title: string
           updated_at?: string
         }
@@ -552,6 +558,9 @@ export type Database = {
           placement?: string
           priority?: number
           starts_at?: string | null
+          target_latitude?: number | null
+          target_longitude?: number | null
+          target_radius_km?: number | null
           title?: string
           updated_at?: string
         }
