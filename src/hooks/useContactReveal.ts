@@ -65,10 +65,13 @@ export function useContactReveal(workerUserId: string | undefined) {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Contact request sent");
-      qc.invalidateQueries({ queryKey: ["contact_reveal", workerUserId, user?.id] });
-      qc.invalidateQueries({ queryKey: ["contact_reveals_inbox", workerUserId] });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["contact_reveal", workerUserId, user?.id] }),
+        qc.invalidateQueries({ queryKey: ["contact_reveals_inbox", workerUserId] }),
+        qc.refetchQueries({ queryKey: ["contact_reveal", workerUserId, user?.id] }),
+      ]);
     },
     onError: (e: any) => toast.error(e?.message || "Could not send request"),
   });
