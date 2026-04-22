@@ -567,6 +567,9 @@ const AdminDashboard = () => {
               <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
             )}
 
+            {/* PROFILE */}
+            {tab === "profile" && <AdminProfileTab />}
+
             {/* CATEGORIES */}
             {tab === "categories" && (
               <div>
