@@ -1,5 +1,5 @@
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { MessageSquare, Search } from "lucide-react";
+import { MessageSquare, Search, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
