@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { ArrowLeft, CheckCircle2, FileText, Paperclip, Send } from "lucide-react";
+import { ArrowLeft, Paperclip, Send, Lock, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useContactReveal, usePendingRevealFromClient } from "@/hooks/useContactReveal";
 
 interface Props {
   otherUserId: string;
@@ -252,18 +253,7 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
             <p className="text-xs text-primary">● Online</p>
           </div>
         </div>
-        <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-xs text-hero-muted">
-          <p className="font-semibold text-hero-foreground">Service Summary</p>
-          <p>Discuss scope, share timeline, then confirm booking in one tap.</p>
-          <div className="mt-2 flex gap-2">
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
-              <FileText className="h-3 w-3" /> Send Offer
-            </button>
-            <button className="tap-feedback inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-hero-foreground">
-              <CheckCircle2 className="h-3 w-3" /> Confirm Booking
-            </button>
-          </div>
-        </div>
+        <ContactRevealStrip otherUserId={otherUserId} />
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/30">
@@ -351,6 +341,90 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
           </Button>
         </form>
       </div>
+    </div>
+  );
+};
+
+/**
+ * In-chat strip that gates worker contact info.
+ * - Client side: shows "Request contact" / pending / approved status.
+ * - Worker side: shows Approve / Deny buttons when client has a pending request.
+ */
+const ContactRevealStrip = ({ otherUserId }: { otherUserId: string }) => {
+  const { user } = useAuth();
+  // Try as client viewing a worker
+  const asClient = useContactReveal(otherUserId);
+  // Try as worker receiving a request from this client
+  const { data: incoming } = usePendingRevealFromClient(user?.id, otherUserId);
+
+  // Worker receiving a pending request
+  if (incoming && incoming.status === "pending") {
+    return (
+      <div className="mt-3 rounded-2xl bg-white/10 px-3 py-2 text-xs">
+        <div className="flex items-center gap-2 text-hero-foreground">
+          <Lock className="h-3.5 w-3.5 text-primary" />
+          <span className="font-semibold">Contact request</span>
+        </div>
+        <p className="mt-1 text-hero-muted">
+          This person is asking for your contact details. Approve to share, or deny.
+        </p>
+        <div className="mt-2 flex gap-2">
+          <button
+            onClick={() => asClient.decide(incoming.id, true)}
+            className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground"
+          >
+            <Check className="h-3 w-3" /> Approve
+          </button>
+          <button
+            onClick={() => asClient.decide(incoming.id, false)}
+            className="tap-feedback inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-hero-foreground"
+          >
+            <X className="h-3 w-3" /> Deny
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Worker side, already decided
+  if (incoming && (incoming.status === "approved" || incoming.status === "denied")) {
+    return (
+      <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-xs text-hero-muted">
+        Contact request {incoming.status === "approved" ? "approved" : "declined"}.
+      </div>
+    );
+  }
+
+  // If we are looking at our own profile or admin, nothing to show here.
+  if (asClient.isOwner) return null;
+
+  // Client side
+  return (
+    <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-xs text-hero-muted">
+      <div className="flex items-center gap-2 text-hero-foreground">
+        <Lock className="h-3.5 w-3.5 text-primary" />
+        <span className="font-semibold">Contact privacy</span>
+      </div>
+      {asClient.status === "approved" ? (
+        <p className="mt-1">Contact details are unlocked. Open their profile to view.</p>
+      ) : asClient.status === "pending" ? (
+        <p className="mt-1">Your contact request is pending approval.</p>
+      ) : asClient.status === "denied" ? (
+        <p className="mt-1">Your contact request was declined.</p>
+      ) : (
+        <>
+          <p className="mt-1">Need their phone or WhatsApp? Send a request and they can approve.</p>
+          <div className="mt-2">
+            <button
+              onClick={() => asClient.request()}
+              disabled={asClient.requesting}
+              className="tap-feedback inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground disabled:opacity-60"
+            >
+              <Lock className="h-3 w-3" /> {asClient.requesting ? "Sending..." : "Request contact"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
