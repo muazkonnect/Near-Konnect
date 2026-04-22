@@ -4,6 +4,7 @@ import { Menu, X, LogOut, LayoutDashboard, MessageSquare, Heart } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useI18n } from "@/i18n";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
@@ -13,6 +14,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { role } = useUserRole();
+  const { unreadByType } = useNotifications();
+  const messagesBadge = unreadByType.message + unreadByType.contact_request;
   const { t } = useI18n();
 
   const dashboardLink = role === "worker"
@@ -47,8 +50,13 @@ const Navbar = () => {
                 </Button>
               </Link>
               <Link to="/messages">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" className="relative gap-1.5 text-muted-foreground hover:text-foreground">
                   <MessageSquare className="w-4 h-4" /> {t("nav.messages")}
+                  {messagesBadge > 0 && (
+                    <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold leading-none text-destructive-foreground">
+                      {messagesBadge > 9 ? "9+" : messagesBadge}
+                    </span>
+                  )}
                 </Button>
               </Link>
             </>
@@ -93,8 +101,13 @@ const Navbar = () => {
               <Link to="/blood-donors" className="block py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
                 Blood Donors
               </Link>
-              <Link to="/messages" className="block py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
-                {t("nav.messages")}
+              <Link to="/messages" className="flex items-center justify-between py-2 text-sm font-medium text-muted-foreground hover:text-primary" onClick={() => setOpen(false)}>
+                <span>{t("nav.messages")}</span>
+                {messagesBadge > 0 && (
+                  <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold leading-none text-destructive-foreground">
+                    {messagesBadge > 9 ? "9+" : messagesBadge}
+                  </span>
+                )}
               </Link>
             </>
           )}

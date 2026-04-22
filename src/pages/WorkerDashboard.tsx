@@ -26,7 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
-import BloodDonationCard from "@/components/BloodDonationCard";
+
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
 import DashboardNav from "@/components/DashboardNav";
@@ -325,9 +325,8 @@ const WorkerDashboard = () => {
               { value: "overview", label: "Overview", icon: LayoutDashboard },
               { value: "profile", label: "Profile", icon: UserCheck },
               { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message },
+              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message + unreadByType.contact_request },
               { value: "reviews", label: "Reviews", icon: Star },
-              { value: "blood", label: "Blood Konnect", icon: HeartPulse },
             ]}
             active={activeTab}
             onChange={setActiveTab}
@@ -340,7 +339,6 @@ const WorkerDashboard = () => {
               <TabsTrigger value="bookings" />
               <TabsTrigger value="messages" />
               <TabsTrigger value="reviews" />
-              <TabsTrigger value="blood" />
             </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -633,10 +631,6 @@ const WorkerDashboard = () => {
                 </div>
               )}
             </div>
-          </TabsContent>
-
-          <TabsContent value="blood">
-            <BloodDonationCard />
           </TabsContent>
           </Tabs>
         </div>
