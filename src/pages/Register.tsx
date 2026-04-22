@@ -223,26 +223,31 @@ const Register = () => {
           <PasswordStrength password={password} />
         </div>
 
-        <div>
-          <Label htmlFor="bloodGroup" className={labelClass}>Blood Group</Label>
-          <select id="bloodGroup" value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <option value="">Select blood group</option>
-            {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
-              <option key={bg} value={bg}>{bg}</option>
-            ))}
-          </select>
-        </div>
-
         <label htmlFor="willingToDonate" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
           <input
             type="checkbox"
             id="willingToDonate"
             checked={willingToDonate}
-            onChange={e => setWillingToDonate(e.target.checked)}
+            onChange={e => {
+              setWillingToDonate(e.target.checked);
+              if (!e.target.checked) setBloodGroup("");
+            }}
             className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
           />
           I am willing to donate blood
         </label>
+
+        {willingToDonate && (
+          <div>
+            <Label htmlFor="bloodGroup" className={labelClass}>Blood Group *</Label>
+            <select id="bloodGroup" value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <option value="">Select blood group</option>
+              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
+                <option key={bg} value={bg}>{bg}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {role === "worker" && (
           <>

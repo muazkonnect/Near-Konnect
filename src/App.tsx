@@ -29,6 +29,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 import Footer from "@/components/Footer";
 import DisclosureModals from "@/components/DisclosureModals";
+import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,7 @@ const App = () => (
             <BrowserRouter>
               <UnverifiedEmailBanner />
               <DisclosureModals />
+              <WorkerOnboardingDialog />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/discover" element={<Discover />} />
