@@ -95,9 +95,29 @@ const Messages = () => {
 
   if (loading) return null;
 
+  const pendingRevealCount = pendingReveals.length;
+
   return (
     <AppLayout title="Messages" subtitle="Chat with nearby helpers and confirm work quickly.">
       <div className="space-y-4">
+        {pendingRevealCount > 0 && (
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+                <Lock className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">
+                  {pendingRevealCount} pending contact request{pendingRevealCount === 1 ? "" : "s"}
+                </p>
+                <p className="text-xs text-muted-foreground">Review and approve from the conversations below.</p>
+              </div>
+            </div>
+            <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-destructive px-2 text-xs font-bold text-destructive-foreground">
+              {pendingRevealCount > 9 ? "9+" : pendingRevealCount}
+            </span>
+          </div>
+        )}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations..." className="h-12 rounded-full border-none bg-muted pl-11" />

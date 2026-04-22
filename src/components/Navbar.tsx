@@ -8,6 +8,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useI18n } from "@/i18n";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
+import NotificationBell from "@/components/NotificationBell";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -67,6 +68,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-2 min-w-[220px] justify-end">
           {user ? (
             <>
+              <NotificationBell />
               <span className="text-sm text-muted-foreground truncate max-w-[120px]">
                 {user.user_metadata?.full_name || user.email}
               </span>
@@ -86,9 +88,12 @@ const Navbar = () => {
           )}
         </div>
 
-        <button className="md:hidden ml-auto flex items-center gap-2" onClick={() => setOpen(!open)}>
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="md:hidden ml-auto flex items-center gap-1">
+          {user && <NotificationBell />}
+          <button className="flex items-center gap-2" onClick={() => setOpen(!open)}>
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {open && (
