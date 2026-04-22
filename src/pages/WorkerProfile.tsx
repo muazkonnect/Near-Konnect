@@ -330,4 +330,84 @@ const WorkerProfile = () => {
   );
 };
 
+interface ContactRevealBlockProps {
+  workerUserId: string;
+  contactMethods: ContactMethod[];
+  onInAppMessage: () => void;
+  onChannelClick: () => void;
+  workerId: string;
+  workerName: string;
+  trackConversion: () => void;
+}
+
+const ContactRevealBlock = ({
+  workerUserId,
+  contactMethods,
+  onInAppMessage,
+  onChannelClick,
+  workerId,
+  workerName,
+  trackConversion,
+}: ContactRevealBlockProps) => {
+  const { canView, status, isOwner, request, requesting } = useContactReveal(workerUserId);
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
+      {canView ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <ContactMethodsBar
+            methods={contactMethods}
+            onInAppMessage={isOwner ? undefined : onInAppMessage}
+            onChannelClick={onChannelClick}
+            variant="hero"
+          />
+          <BookingDialog workerId={workerId} workerName={workerName}>
+            <Button className="w-full gap-2 sm:w-auto" onClick={trackConversion}>
+              <CalendarPlus className="h-4 w-4" /> Book Now
+            </Button>
+          </BookingDialog>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start gap-2 rounded-xl bg-white/5 p-3 text-xs text-hero-muted">
+            <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <p>
+              Contact details are private. Start a chat first — you can request the worker to share
+              their phone, WhatsApp, or other contacts.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <Button onClick={onInAppMessage} className="w-full gap-2 sm:w-auto">
+              <MessageSquare className="h-4 w-4" /> Message in app
+            </Button>
+            {status === "pending" ? (
+              <Button variant="outline" disabled className="w-full gap-2 sm:w-auto">
+                <Lock className="h-4 w-4" /> Request pending
+              </Button>
+            ) : status === "denied" ? (
+              <Button variant="outline" disabled className="w-full gap-2 sm:w-auto">
+                <Lock className="h-4 w-4" /> Request declined
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => request()}
+                disabled={requesting}
+                className="w-full gap-2 sm:w-auto bg-white/5 text-hero-foreground hover:bg-white/10"
+              >
+                <Lock className="h-4 w-4" /> {requesting ? "Sending..." : "Request contact"}
+              </Button>
+            )}
+            <BookingDialog workerId={workerId} workerName={workerName}>
+              <Button variant="secondary" className="w-full gap-2 sm:w-auto" onClick={trackConversion}>
+                <CalendarPlus className="h-4 w-4" /> Book Now
+              </Button>
+            </BookingDialog>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default WorkerProfile;
