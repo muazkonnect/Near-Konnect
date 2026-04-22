@@ -384,10 +384,6 @@ const ContactRevealBlock = ({
               <Button variant="outline" disabled className="w-full gap-2 sm:w-auto">
                 <Lock className="h-4 w-4" /> Request pending
               </Button>
-            ) : status === "denied" ? (
-              <Button variant="outline" disabled className="w-full gap-2 sm:w-auto">
-                <Lock className="h-4 w-4" /> Request declined
-              </Button>
             ) : (
               <Button
                 variant="outline"
