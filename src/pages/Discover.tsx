@@ -237,6 +237,9 @@ const Discover = () => {
   });
 
   const sorted = [...filteredWithAdvanced].sort((a, b) => {
+    const aF = featuredIds.has(a.id) ? 1 : 0;
+    const bF = featuredIds.has(b.id) ? 1 : 0;
+    if (aF !== bF) return bF - aF;
     if (sort === "distance") return a.distance - b.distance;
     if (sort === "rating") return b.rating - a.rating;
     if (sort === "experience") return b.experience - a.experience;
