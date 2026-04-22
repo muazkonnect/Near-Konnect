@@ -34,36 +34,61 @@ const WorkerOnboardingDialog = () => {
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
 
+  const [adminAssigned, setAdminAssigned] = useState(false);
+
   useEffect(() => {
     if (authLoading || !user) return;
-    const intent = sessionStorage.getItem(STORAGE_KEY);
-    if (intent !== "worker") return;
-
-    // Only show for fresh signups: if the user account is older than 5 minutes,
-    // this isn't a brand-new worker OAuth signup — clear stale intent and skip.
-    const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
-    const isFreshSignup = createdAt > 0 && Date.now() - createdAt < 5 * 60 * 1000;
-    if (!isFreshSignup) {
-      sessionStorage.removeItem(STORAGE_KEY);
-      return;
-    }
 
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase
+      // Always check if a worker row already exists — if yes, no onboarding needed.
+      const { data: workerRow, error: workerErr } = await supabase
         .from("workers")
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
       if (cancelled) return;
-      if (error) {
-        console.warn("Worker check failed", error);
+      if (workerErr) {
+        console.warn("Worker check failed", workerErr);
         return;
       }
-      if (!data) {
-        setOpen(true);
-      } else {
+      if (workerRow) {
         sessionStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+
+      // Path 1: fresh OAuth worker signup
+      const intent = sessionStorage.getItem(STORAGE_KEY);
+      const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
+      const isFreshSignup = createdAt > 0 && Date.now() - createdAt < 5 * 60 * 1000;
+      if (intent === "worker" && isFreshSignup) {
+        setAdminAssigned(false);
+        setOpen(true);
+        return;
+      }
+      if (intent === "worker" && !isFreshSignup) {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+
+      // Path 2: admin assigned the worker role but the user hasn't completed onboarding yet
+      const { data: roleRow, error: roleErr } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "worker" as never)
+        .maybeSingle();
+      if (cancelled) return;
+      if (roleErr) {
+        console.warn("Role check failed", roleErr);
+        return;
+      }
+      if (roleRow) {
+        setAdminAssigned(true);
+        setOpen(true);
+        toast.info("You've been assigned as a worker", {
+          description: "Please complete your service profile to start receiving requests.",
+          duration: 6000,
+        });
       }
     })();
     return () => {
