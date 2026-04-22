@@ -19,6 +19,7 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
+import { useContactReveal } from "@/hooks/useContactReveal";
 
 const WorkerProfile = () => {
   const { id } = useParams();
