@@ -25,14 +25,14 @@ export function useContactReveal(workerUserId: string | undefined) {
   const { data: reveal, isLoading } = useQuery({
     queryKey: ["contact_reveal", workerUserId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("contact_reveals")
         .select("*")
         .eq("worker_user_id", workerUserId!)
         .eq("client_user_id", user!.id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as { id: string; status: RevealStatus; request_message: string | null } | null;
     },
     enabled,
     staleTime: 30_000,
@@ -44,7 +44,7 @@ export function useContactReveal(workerUserId: string | undefined) {
   const requestMutation = useMutation({
     mutationFn: async (message?: string) => {
       if (!user || !workerUserId) throw new Error("Not signed in");
-      const { error } = await supabase.from("contact_reveals").insert({
+      const { error } = await (supabase as any).from("contact_reveals").insert({
         worker_user_id: workerUserId,
         client_user_id: user.id,
         request_message: message ?? null,
