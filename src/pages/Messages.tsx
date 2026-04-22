@@ -111,22 +111,32 @@ const Messages = () => {
           </div>
         ) : (
           <div className="space-y-2">
-            {filteredConversations.map((c: any) => (
-              <Link
-                key={c.userId}
-                to={`/chat/${c.userId}`}
-                className="tap-feedback flex items-center gap-4 rounded-2xl bg-card p-4 transition-all hover:bg-muted"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-hero text-sm font-bold text-primary">
-                  {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-bold text-card-foreground">{c.name}</p>
-                  <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
-                </div>
-                <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
-              </Link>
-            ))}
+            {filteredConversations.map((c: any) => {
+              const hasReveal = pendingSet.has(c.userId);
+              return (
+                <Link
+                  key={c.userId}
+                  to={`/chat/${c.userId}`}
+                  className="tap-feedback flex items-center gap-4 rounded-2xl bg-card p-4 transition-all hover:bg-muted"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-hero text-sm font-bold text-primary">
+                    {c.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-card-foreground truncate">{c.name}</p>
+                      {hasReveal && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                          <Lock className="h-2.5 w-2.5" /> Contact request
+                        </span>
+                      )}
+                    </div>
+                    <p className="truncate text-sm text-muted-foreground">{c.lastMessage}</p>
+                  </div>
+                  <span className="shrink-0 text-xs text-muted-foreground">{new Date(c.time).toLocaleDateString()}</span>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
