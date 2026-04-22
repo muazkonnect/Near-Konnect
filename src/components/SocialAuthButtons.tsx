@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { lovable } from "@/integrations/lovable";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SocialAuthButtonsProps {
   redirectTo?: string;
@@ -29,15 +29,18 @@ export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsPro
   const handle = async (provider: "google" | "apple") => {
     setLoading(provider);
     try {
-      const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: redirectTo ?? window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectTo ?? window.location.origin,
+        },
       });
-      if (result.error) {
+      if (error) {
         toast.error(`Could not sign in with ${provider === "google" ? "Google" : "Apple"}.`);
         setLoading(null);
         return;
       }
-      // result.redirected → browser is navigating away, do nothing
+      // Browser is navigating away to the OAuth provider, do nothing
     } catch {
       toast.error("Sign-in failed. Please try again.");
       setLoading(null);
