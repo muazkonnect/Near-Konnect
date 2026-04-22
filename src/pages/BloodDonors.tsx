@@ -29,7 +29,7 @@ const BloodDonors = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [activeOnly, setActiveOnly] = useState(true);
   const { coords: userCoords } = useRealtimeLocation();
-  const [tab, setTab] = useState<"requests" | "donors">("requests");
+  const [tab, setTab] = useState<"requests" | "donors">("donors");
   const [expandedDonor, setExpandedDonor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -147,8 +147,8 @@ const BloodDonors = () => {
   if (isMobile) {
     return (
       <AppLayout
-        title="Urgent Requests"
-        subtitle="Respond to nearby blood requests fast."
+        title="Blood Donors"
+        subtitle="Find verified donors near you. Requests are listed below."
         action={<BloodRequestDialog />}
       >
         {/* Stats card overlapping hero */}
@@ -168,8 +168,19 @@ const BloodDonors = () => {
           </div>
         </section>
 
-        {/* Segmented tabs */}
+        {/* Segmented tabs — Donors primary */}
         <div className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+          <button
+            onClick={() => setTab("donors")}
+            className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-all ${
+              tab === "donors" ? "bg-hero text-hero-foreground shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            <Users className="h-4 w-4" /> Donors
+            <span className={`ml-0.5 rounded-full px-1.5 text-[10px] font-bold ${tab === "donors" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
+              {stats.active}
+            </span>
+          </button>
           <button
             onClick={() => setTab("requests")}
             className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-all ${
@@ -182,17 +193,6 @@ const BloodDonors = () => {
                 {openRequestsCount}
               </span>
             )}
-          </button>
-          <button
-            onClick={() => setTab("donors")}
-            className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-all ${
-              tab === "donors" ? "bg-hero text-hero-foreground shadow-sm" : "text-muted-foreground"
-            }`}
-          >
-            <Users className="h-4 w-4" /> Donors
-            <span className={`ml-0.5 rounded-full px-1.5 text-[10px] font-bold ${tab === "donors" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
-              {stats.active}
-            </span>
           </button>
         </div>
 
