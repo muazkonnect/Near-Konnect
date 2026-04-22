@@ -12,6 +12,8 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import NativeAdCard from "@/components/NativeAdCard";
+import type { NativeAd } from "@/hooks/useSponsored";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -512,6 +514,63 @@ const AdminDashboard = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Live preview of the ad currently being composed */}
+            <div className="rounded-xl border bg-muted/30 p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="font-semibold text-card-foreground">Live Preview (draft)</h3>
+                <Badge variant="outline" className="text-xs">
+                  {adPlacement === "home_banner" ? "Banner" : "Feed"}
+                </Badge>
+              </div>
+              {adTitle.trim() && adLink.trim() ? (
+                <div className={adPlacement === "home_banner" ? "max-w-3xl" : "max-w-md"}>
+                  <NativeAdCard
+                    variant={adPlacement === "home_banner" ? "banner" : "feed"}
+                    ad={{
+                      id: "preview",
+                      title: adTitle.trim(),
+                      description: adDescription.trim() || null,
+                      image_url: adImageUrl.trim() || null,
+                      cta_url: adLink.trim() || "#",
+                      cta_label: adCtaLabel.trim() || "Learn More",
+                      placement: adPlacement,
+                      ad_type: "in_feed",
+                      priority: Number(adPriority) || 100,
+                    }}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Fill in title and CTA link above to preview.</p>
+              )}
+            </div>
+
+            {/* Per-placement preview of what's currently active on the live site */}
+            {(["home_banner", "home_feed"] as const).map((placement) => {
+              const activeForPlacement = (nativeAds as any[])
+                .filter((a) => a.is_active && a.placement === placement)
+                .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+                .slice(0, 3) as NativeAd[];
+              return (
+                <div key={placement} className="rounded-xl border bg-card p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-semibold text-card-foreground">
+                      Active on site — {placement === "home_banner" ? "Home Banner" : "Home Feed"}
+                    </h3>
+                    <Badge variant="outline" className="text-xs">{activeForPlacement.length} live</Badge>
+                  </div>
+                  {activeForPlacement.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No active ads in this placement.</p>
+                  ) : (
+                    <div className={placement === "home_banner" ? "space-y-3" : "grid gap-3 md:grid-cols-2"}>
+                      {activeForPlacement.map((ad) => (
+                        <NativeAdCard key={ad.id} ad={ad} variant={placement === "home_banner" ? "banner" : "feed"} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             <div className="space-y-2">
               {(nativeAds as any[]).map((ad) => (
