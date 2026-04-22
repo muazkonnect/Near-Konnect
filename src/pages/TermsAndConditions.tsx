@@ -38,6 +38,11 @@ const TermsAndConditions = () => (
               All dealings, negotiations, payments, and service agreements between customers and workers are
               conducted at your own risk and responsibility.
             </p>
+            <p>
+              <strong className="text-foreground">Contact Privacy:</strong> Your contact information will only be
+              visible to clients you explicitly approve. No one can view your phone number or other contact details
+              without your consent.
+            </p>
           </div>
         </div>
       </div>
