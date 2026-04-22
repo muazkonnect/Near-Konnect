@@ -232,6 +232,12 @@ const Index = () => {
           </div>
         </section>
 
+        {bannerAds[0] && (
+          <section className="mx-6 mt-4 md:mx-0">
+            <NativeAdCard ad={bannerAds[0]} variant="banner" />
+          </section>
+        )}
+
         {/* HOW IT WORKS */}
         <section className="px-6 py-10 md:px-0 md:py-16">
           <div className="mb-6 max-w-2xl">
