@@ -27,10 +27,15 @@ const PrivacyPolicy = () => (
       </p>
     </LegalSection>
 
-    <LegalSection index={4} title="Data Sharing">
+    <LegalSection index={4} title="Data Sharing & Contact Visibility">
       <p>
-        We do not sell your personal information. We share your profile information only with other clients as
-        necessary to facilitate the connection between customers and workers on the platform.
+        We do not sell your personal information. Your profile (name, profession, city) is visible to other users
+        to facilitate connections.
+      </p>
+      <p className="mt-3">
+        <strong className="text-foreground">Your contact details (phone, WhatsApp, email) are private by default.</strong>{" "}
+        They are only revealed to a client after you explicitly approve their contact request. You may deny or
+        revoke approval at any time.
       </p>
     </LegalSection>
 
