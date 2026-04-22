@@ -15,6 +15,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
+import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
+import NativeAdCard from "@/components/NativeAdCard";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
