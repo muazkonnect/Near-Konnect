@@ -438,7 +438,7 @@ const Discover = () => {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((w, i) => (
-              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} />
+              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={featuredIds.has(w.id)} />
             ))}
           </div>
         )}
