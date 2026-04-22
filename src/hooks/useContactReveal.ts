@@ -98,14 +98,14 @@ export function usePendingRevealFromClient(workerUserId: string | undefined, cli
   return useQuery({
     queryKey: ["contact_reveals_inbox", workerUserId, clientUserId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("contact_reveals")
         .select("*")
         .eq("worker_user_id", workerUserId!)
         .eq("client_user_id", clientUserId!)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as { id: string; status: RevealStatus } | null;
     },
     enabled,
     staleTime: 15_000,
