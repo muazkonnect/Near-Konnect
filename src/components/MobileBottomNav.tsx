@@ -28,11 +28,13 @@ const MobileBottomNav = () => {
 
   const { unreadByType } = useNotifications();
 
+  const messagesBadge = unreadByType.message + unreadByType.contact_request;
+
   const items = [
     { label: "Home", to: "/", icon: Home, hasDot: false },
     { label: "Explore", to: "/discover", icon: Compass, hasDot: false },
     { label: "BLood  Bank", to: "/blood-donors", icon: HeartPulse, urgent: true, hasDot: unreadByType.blood_request > 0 || unreadByType.booking > 0 },
-    { label: "Messages", to: "/messages", icon: MessageSquare, hasDot: unreadByType.message > 0 },
+    { label: "Messages", to: "/messages", icon: MessageSquare, hasDot: messagesBadge > 0 },
     { label: "Profile", to: profilePath, icon: User, hasDot: false },
   ];
 

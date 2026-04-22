@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AvatarUpload from "@/components/AvatarUpload";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
-import BloodDonationCard from "@/components/BloodDonationCard";
+
 import AppLayout from "@/components/AppLayout";
 import DashboardNav from "@/components/DashboardNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -246,8 +246,7 @@ const CustomerDashboard = () => {
               { value: "overview", label: "Overview", icon: LayoutDashboard },
               { value: "profile", label: "Profile", icon: User },
               { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message },
-              { value: "blood", label: "Blood Konnect", icon: HeartPulse },
+              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message + unreadByType.contact_request },
             ]}
             active={activeTab}
             onChange={setActiveTab}
@@ -259,7 +258,6 @@ const CustomerDashboard = () => {
               <TabsTrigger value="profile" />
               <TabsTrigger value="bookings" />
               <TabsTrigger value="messages" />
-              <TabsTrigger value="blood" />
             </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -379,10 +377,6 @@ const CustomerDashboard = () => {
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
-          </TabsContent>
-
-          <TabsContent value="blood">
-            <BloodDonationCard />
           </TabsContent>
 
           <TabsContent value="bookings">
