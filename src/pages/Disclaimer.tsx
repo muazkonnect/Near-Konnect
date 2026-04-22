@@ -28,6 +28,10 @@ const Disclaimer = () => (
         between customers and service workers. Any reliance you place on such information is strictly at your own
         risk.
       </p>
+      <p className="mt-3">
+        Contact information of workers is only shared with clients they have explicitly approved. NearKonnect does
+        not disclose private contact details without the owner's consent.
+      </p>
     </LegalSection>
 
     <LegalSection index={4} title="Limitation of Liability">
