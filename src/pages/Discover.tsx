@@ -13,6 +13,7 @@ import { calculateDistance } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { MAIN_SERVICE_CATEGORIES, SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
+import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | null;
