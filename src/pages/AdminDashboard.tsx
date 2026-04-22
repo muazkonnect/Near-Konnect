@@ -640,6 +640,9 @@ const AdminDashboard = () => {
                     <p className="font-medium text-card-foreground truncate">{ad.title}</p>
                     <p className="text-sm text-muted-foreground">
                       {ad.placement} · Priority {ad.priority} · {ad.is_active ? "Active" : "Disabled"}
+                      {ad.target_latitude != null && ad.target_longitude != null && ad.target_radius_km
+                        ? ` · 📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} (${ad.target_radius_km} km)`
+                        : " · 🌍 Global"}
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => toggleAdActive(ad.id, ad.is_active)}>
