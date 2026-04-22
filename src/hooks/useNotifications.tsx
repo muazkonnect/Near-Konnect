@@ -313,6 +313,7 @@ export const useNotifications = () => {
     message: items.filter((n) => !n.read && n.type === "message").length,
     booking: items.filter((n) => !n.read && n.type === "booking").length,
     blood_request: items.filter((n) => !n.read && n.type === "blood_request").length,
+    contact_request: items.filter((n) => !n.read && n.type === "contact_request").length,
   };
 
   return {
