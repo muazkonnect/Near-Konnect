@@ -22,7 +22,7 @@ const MobileBottomNav = () => {
     ? "/login"
     : role === "worker"
       ? "/worker-dashboard"
-      : role === "admin"
+      : role === "admin" || role === "manager" || role === "ads_manager" || role === "moderator"
         ? "/admin"
         : "/dashboard";
 
