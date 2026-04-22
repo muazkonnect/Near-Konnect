@@ -17,30 +17,23 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const AppleIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-    <path d="M16.365 1.43c0 1.14-.42 2.22-1.27 3.04-.84.85-2.21 1.5-3.32 1.4-.13-1.09.43-2.23 1.21-3.02C13.83 1.96 15.27 1.36 16.365 1.43zm3.85 16.2c-.62 1.41-.92 2.04-1.72 3.28-1.12 1.74-2.7 3.91-4.66 3.93-1.74.02-2.18-1.13-4.54-1.12-2.36.01-2.85 1.14-4.59 1.12-1.96-.02-3.46-1.99-4.58-3.73C-2.2 16.7-2.51 11 .42 8.05c1.12-1.13 2.7-1.85 4.36-1.88 1.84-.04 3.59 1.24 4.54 1.24.95 0 3.07-1.53 5.16-1.31.88.04 3.34.36 4.92 2.7-4.31 2.36-3.61 8.49-1.18 10.83z"/>
-  </svg>
-);
-
 export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsProps) => {
-  const [loading, setLoading] = useState<"google" | "apple" | null>(null);
+  const [loading, setLoading] = useState<"google" | null>(null);
 
-  const handle = async (provider: "google" | "apple") => {
-    setLoading(provider);
+  const handle = async () => {
+    setLoading("google");
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
           redirectTo: redirectTo ?? window.location.origin,
         },
       });
       if (error) {
-        toast.error(`Could not sign in with ${provider === "google" ? "Google" : "Apple"}.`);
+        toast.error("Could not sign in with Google.");
         setLoading(null);
         return;
       }
-      // Browser is navigating away to the OAuth provider, do nothing
     } catch {
       toast.error("Sign-in failed. Please try again.");
       setLoading(null);
@@ -61,7 +54,7 @@ export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsPro
         type="button"
         variant="outline"
         className="h-12 w-full gap-2 rounded-2xl border-border text-base"
-        onClick={() => handle("google")}
+        onClick={handle}
         disabled={disabled || loading !== null}
       >
         {loading === "google" ? (
@@ -70,20 +63,6 @@ export const SocialAuthButtons = ({ redirectTo, disabled }: SocialAuthButtonsPro
           <GoogleIcon />
         )}
         Google
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className="h-12 w-full gap-2 rounded-2xl border-border text-base"
-        onClick={() => handle("apple")}
-        disabled={disabled || loading !== null}
-      >
-        {loading === "apple" ? (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        ) : (
-          <AppleIcon />
-        )}
-        Apple
       </Button>
     </div>
   );
