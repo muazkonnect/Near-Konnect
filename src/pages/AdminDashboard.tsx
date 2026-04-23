@@ -51,6 +51,7 @@ import UsersManagementTab from "@/components/admin/UsersManagementTab";
 import AdminProfileTab from "@/components/admin/AdminProfileTab";
 import CategoriesManagementTab from "@/components/admin/CategoriesManagementTab";
 import AdsManagementTab from "@/components/admin/AdsManagementTab";
+import FeaturedManagementTab from "@/components/admin/FeaturedManagementTab";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
 
@@ -716,63 +717,8 @@ const AdminDashboard = () => {
             {/* FEATURED */}
             {tab === "featured" && (
               <div>
-                <SectionHeader title="Featured Workers" subtitle="Promote workers to the top of the feed." />
-                <div className="rounded-2xl border bg-card p-4">
-                  <div className="grid gap-3 md:grid-cols-4">
-                    <select
-                      value={featureWorkerId}
-                      onChange={(e) => setFeatureWorkerId(e.target.value)}
-                      className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    >
-                      <option value="">Select worker</option>
-                      {(workers as any[]).map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.profiles?.full_name || "Unnamed"} — {w.profession}
-                        </option>
-                      ))}
-                    </select>
-                    <Input
-                      placeholder="Priority (100)"
-                      value={featurePriority}
-                      onChange={(e) => setFeaturePriority(e.target.value)}
-                    />
-                    <Button onClick={() => addFeatured()} className="gap-1 md:col-span-2">
-                      <Plus className="h-4 w-4" /> Add to Featured
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mt-4 space-y-2">
-                  {(featuredServices as any[]).map((f) => {
-                    const linkedWorker = (workers as any[]).find((w) => w.id === f.service_id);
-                    return (
-                      <div key={f.id} className="flex items-center gap-3 rounded-2xl border bg-card p-3">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-card-foreground">
-                            {linkedWorker?.profiles?.full_name || linkedWorker?.profession || "Service"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Priority: {f.priority} · {f.is_active ? "Active" : "Disabled"}
-                          </p>
-                        </div>
-                        <Button size="sm" variant="outline" onClick={() => toggleFeaturedActive(f.id, f.is_active)}>
-                          {f.is_active ? "Disable" : "Enable"}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive"
-                          onClick={() => removeFeatured(f.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    );
-                  })}
-                  {featuredServices.length === 0 && (
-                    <p className="py-8 text-center text-muted-foreground">No featured workers yet.</p>
-                  )}
-                </div>
+                <SectionHeader title="Featured Workers" subtitle="Promote, schedule, and review featured listings." />
+                <FeaturedManagementTab />
               </div>
             )}
 
