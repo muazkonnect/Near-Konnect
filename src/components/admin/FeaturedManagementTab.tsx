@@ -103,7 +103,7 @@ const FeaturedManagementTab = () => {
     const { error } = await (supabase as any).from("featured_services").insert({
       service_id: wId,
       owner_user_id: worker?.user_id || null,
-      priority: priorityParam ?? Number(priority) || 100,
+      priority: priorityParam ?? (Number(priority) || 100),
       is_active: true,
       starts_at: startsAt ? startsAt.toISOString() : null,
       ends_at: endsAt ? endsAt.toISOString() : null,
