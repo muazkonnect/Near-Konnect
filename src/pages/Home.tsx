@@ -18,6 +18,7 @@ import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
 import NativeAdCard from "@/components/NativeAdCard";
+import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -281,6 +282,10 @@ const Home = () => {
             <NativeAdCard ad={inlineAds[0]} variant="inline" viewerCoords={browsingCoords} />
           </motion.section>
         )}
+
+        <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.8}>
+          <FeaturedWorkersCarousel />
+        </motion.section>
 
         {/* NEARBY */}
         <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={3}>

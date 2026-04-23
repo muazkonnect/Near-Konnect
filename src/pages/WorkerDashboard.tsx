@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
+import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
@@ -271,6 +272,7 @@ const WorkerDashboard = () => {
                 {available ? "Visible" : "Hidden"}
                 <Switch checked={available} onCheckedChange={(v) => { setAvailable(v); supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })); }} className="ml-1" />
               </div>
+              <RequestFeaturedDialog workerId={workerData.id} />
               <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
                 <Search className="h-4 w-4" /> Explore
               </Button>
