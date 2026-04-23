@@ -50,6 +50,8 @@ const Index = () => {
   const [search, setSearch] = useState("");
   const { coords: browsingCoords } = useRealtimeLocation();
   const bannerAds = useNativeAds("home_banner", browsingCoords);
+  const midAds = useNativeAds("landing_mid", browsingCoords);
+  const finalAds = useNativeAds("landing_final", browsingCoords);
 
   useEffect(() => {
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
@@ -236,7 +238,7 @@ const Index = () => {
 
         {bannerAds[0] && (
           <section className="mx-6 mt-4 md:mx-0">
-            <NativeAdCard ad={bannerAds[0]} variant="banner" />
+            <NativeAdCard ad={bannerAds[0]} variant="banner" viewerCoords={browsingCoords} />
           </section>
         )}
 
