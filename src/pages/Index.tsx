@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
 import NativeAdCard from "@/components/NativeAdCard";
+import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useNativeAds } from "@/hooks/useSponsored";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 
@@ -268,6 +269,10 @@ const Index = () => {
             <NativeAdCard ad={midAds[0]} variant="inline" viewerCoords={browsingCoords} />
           </section>
         )}
+
+        <section className="mx-6 mt-6 md:mx-0">
+          <FeaturedWorkersCarousel subtitle="Top providers picked by our team" />
+        </section>
 
         {/* WHY US */}
         <section className="px-6 pb-10 md:px-0 md:pb-16">

@@ -262,7 +262,7 @@ const Register = () => {
               and use <strong>Become a Service</strong> on your dashboard to upgrade — don't create a second account.
             </div>
             <div>
-              <Label htmlFor="mainCategory" className={labelClass}>{t("register.mainCategory")} *</Label>
+              <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
               <select
                 id="mainCategory"
                 value={mainCategory}
@@ -272,7 +272,7 @@ const Register = () => {
                 }}
                 className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">{t("register.selectMainCategory")}</option>
+                <option value="">Select main category</option>
                 {mainCategories.map((cat) => (
                   <option key={cat.id} value={cat.name}>
                     {cat.name}
@@ -281,7 +281,7 @@ const Register = () => {
               </select>
             </div>
             <div>
-              <Label htmlFor="subCategory" className={labelClass}>{t("register.subCategory")} *</Label>
+              <Label htmlFor="subCategory" className={labelClass}>Sub Category *</Label>
               <select
                 id="subCategory"
                 value={subCategory}
@@ -289,7 +289,7 @@ const Register = () => {
                 disabled={!mainCategory}
                 className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">{t("register.selectSubCategory")}</option>
+                <option value="">Select sub category</option>
                 {subCategories.map((sub) => (
                   <option key={sub.id} value={sub.name}>
                     {sub.name}

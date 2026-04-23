@@ -2,21 +2,55 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
 
-export function useFeaturedWorkerIds() {
-  const { data } = useQuery({
-    queryKey: ["featured_worker_ids"],
+export type FeaturedRow = {
+  service_id: string;
+  priority: number;
+  starts_at: string | null;
+  ends_at: string | null;
+};
+
+/**
+ * Returns active featured rows (filtered by schedule on the server).
+ */
+export function useFeaturedServices() {
+  return useQuery({
+    queryKey: ["featured_services_active"],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("featured_services")
-        .select("service_id, priority")
+        .select("service_id, priority, starts_at, ends_at")
         .eq("is_active", true)
         .order("priority", { ascending: false });
       if (error) throw error;
-      return new Set<string>((data || []).map((r: any) => r.service_id as string));
+      return (data || []) as FeaturedRow[];
     },
     staleTime: 5 * 60_000,
   });
-  return data ?? new Set<string>();
+}
+
+export function useFeaturedWorkerIds() {
+  const { data } = useFeaturedServices();
+  return new Set<string>((data ?? []).map((r) => r.service_id));
+}
+
+/**
+ * Track an impression or contact_click for a featured worker.
+ * Fire-and-forget; failures are silent.
+ */
+export async function trackFeaturedEvent(
+  workerId: string,
+  eventType: "impression" | "contact_click",
+  viewerUserId?: string | null
+) {
+  try {
+    await (supabase as any).from("featured_events").insert({
+      worker_id: workerId,
+      event_type: eventType,
+      viewer_user_id: viewerUserId ?? null,
+    });
+  } catch {
+    /* ignore */
+  }
 }
 
 export type NativeAd = {

@@ -374,6 +374,69 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          featured_id: string | null
+          id: string
+          viewer_user_id: string | null
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          featured_id?: string | null
+          id?: string
+          viewer_user_id?: string | null
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          featured_id?: string | null
+          id?: string
+          viewer_user_id?: string | null
+          worker_id?: string
+        }
+        Relationships: []
+      }
+      featured_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          message: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
       featured_services: {
         Row: {
           created_at: string
@@ -1333,6 +1396,15 @@ export type Database = {
           clicks: number
           ctr: number
           impressions: number
+        }[]
+      }
+      get_featured_stats: {
+        Args: { _days?: number }
+        Returns: {
+          clicks: number
+          ctr: number
+          impressions: number
+          worker_id: string
         }[]
       }
       get_nearby_blood_donors: {
