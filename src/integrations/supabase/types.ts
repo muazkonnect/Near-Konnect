@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_events: {
+        Row: {
+          ad_id: string
+          created_at: string
+          event_type: string
+          id: string
+          placement: string | null
+          user_agent: string | null
+          viewer_latitude: number | null
+          viewer_longitude: number | null
+          viewer_user_id: string | null
+        }
+        Insert: {
+          ad_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          placement?: string | null
+          user_agent?: string | null
+          viewer_latitude?: number | null
+          viewer_longitude?: number | null
+          viewer_user_id?: string | null
+        }
+        Update: {
+          ad_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          placement?: string | null
+          user_agent?: string | null
+          viewer_latitude?: number | null
+          viewer_longitude?: number | null
+          viewer_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_events_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "native_ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ad_placement_settings: {
         Row: {
           config: Json
@@ -1282,6 +1326,15 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_ad_stats: {
+        Args: { _days?: number }
+        Returns: {
+          ad_id: string
+          clicks: number
+          ctr: number
+          impressions: number
+        }[]
+      }
       get_nearby_blood_donors: {
         Args: {
           radius_km?: number

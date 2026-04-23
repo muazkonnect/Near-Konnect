@@ -50,6 +50,8 @@ const Index = () => {
   const [search, setSearch] = useState("");
   const { coords: browsingCoords } = useRealtimeLocation();
   const bannerAds = useNativeAds("home_banner", browsingCoords);
+  const midAds = useNativeAds("landing_mid", browsingCoords);
+  const finalAds = useNativeAds("landing_final", browsingCoords);
 
   useEffect(() => {
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5500);
@@ -236,7 +238,7 @@ const Index = () => {
 
         {bannerAds[0] && (
           <section className="mx-6 mt-4 md:mx-0">
-            <NativeAdCard ad={bannerAds[0]} variant="banner" />
+            <NativeAdCard ad={bannerAds[0]} variant="banner" viewerCoords={browsingCoords} />
           </section>
         )}
 
@@ -261,6 +263,12 @@ const Index = () => {
           </div>
         </section>
 
+        {midAds[0] && (
+          <section className="mx-6 mt-2 md:mx-0">
+            <NativeAdCard ad={midAds[0]} variant="inline" viewerCoords={browsingCoords} />
+          </section>
+        )}
+
         {/* WHY US */}
         <section className="px-6 pb-10 md:px-0 md:pb-16">
           <div className="mb-6 max-w-2xl">
@@ -279,6 +287,12 @@ const Index = () => {
             ))}
           </div>
         </section>
+
+        {finalAds[0] && (
+          <section className="mx-6 mb-6 md:mx-0">
+            <NativeAdCard ad={finalAds[0]} variant="feed" viewerCoords={browsingCoords} />
+          </section>
+        )}
 
         {/* FINAL CTA */}
         <section className="mx-6 mb-12 overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground md:mx-0 md:p-10">

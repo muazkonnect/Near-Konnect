@@ -36,6 +36,7 @@ const Home = () => {
   const { coords: browsingCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const featuredIds = useFeaturedWorkerIds();
   const feedAds = useNativeAds("home_feed", browsingCoords);
+  const inlineAds = useNativeAds("home_inline", browsingCoords);
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
@@ -274,6 +275,13 @@ const Home = () => {
           <ActiveBloodRequests compact hideTitle />
         </motion.section>
 
+        {/* INLINE AD (subtle, between sections) */}
+        {inlineAds[0] && (
+          <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.5}>
+            <NativeAdCard ad={inlineAds[0]} variant="inline" viewerCoords={browsingCoords} />
+          </motion.section>
+        )}
+
         {/* NEARBY */}
         <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={3}>
           <div className="mb-3 flex items-center justify-between">
@@ -311,7 +319,7 @@ const Home = () => {
                 ))}
               {feedAds[0] && (
                 <div className="md:col-span-2 xl:col-span-3">
-                  <NativeAdCard ad={feedAds[0]} variant="feed" />
+                  <NativeAdCard ad={feedAds[0]} variant="feed" viewerCoords={browsingCoords} />
                 </div>
               )}
             </div>
