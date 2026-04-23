@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import logoImg from "@/assets/logo.svg";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
 import NativeAdCard from "@/components/NativeAdCard";
+import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useNativeAds } from "@/hooks/useSponsored";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 
