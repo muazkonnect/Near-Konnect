@@ -85,5 +85,28 @@
         }, 1500); // 👈 yahan timing control karo (ms)
       });
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const splash = document.getElementById("app-splash");
+
+        // Minimum display time
+        const MIN_TIME = 1200; // 1.2 sec
+        const startTime = Date.now();
+
+        window.addEventListener("load", () => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(0, MIN_TIME - elapsed);
+
+          setTimeout(() => {
+            splash.classList.add("is-hidden");
+
+            // Capacitor splash hide
+            if (window.Capacitor) {
+              navigator.splashscreen?.hide();
+            }
+          }, remaining);
+        });
+      });
+    </script>
   </body>
 </html>
