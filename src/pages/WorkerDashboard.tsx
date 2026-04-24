@@ -55,6 +55,7 @@ const WorkerDashboard = () => {
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
+  const [showContact, setShowContact] = useState(true);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
@@ -72,6 +73,7 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
+      setShowContact((workerData as any).profiles?.show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
