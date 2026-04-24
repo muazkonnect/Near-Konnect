@@ -19,7 +19,6 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
-import BookingDialog from "@/components/BookingDialog";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -205,8 +204,9 @@ const WorkerProfile = () => {
             {/* Contact options inside hero banner */}
             <div className="relative mt-6">
               {user ? (
-                <ContactRevealBlock
-                  workerUserId={worker.userId}
+                <ContactBlock
+                  isOwner={user.id === worker.userId}
+                  showContact={(dbWorker as any).profiles?.show_contact ?? true}
                   contactMethods={contactMethods}
                   onInAppMessage={handleInAppMessage}
                   onChannelClick={handleChannelClick}
@@ -331,8 +331,9 @@ const WorkerProfile = () => {
   );
 };
 
-interface ContactRevealBlockProps {
-  workerUserId: string;
+interface ContactBlockProps {
+  isOwner: boolean;
+  showContact: boolean;
   contactMethods: ContactMethod[];
   onInAppMessage: () => void;
   onChannelClick: () => void;
@@ -341,16 +342,17 @@ interface ContactRevealBlockProps {
   trackConversion: () => void;
 }
 
-const ContactRevealBlock = ({
-  workerUserId,
+const ContactBlock = ({
+  isOwner,
+  showContact,
   contactMethods,
   onInAppMessage,
   onChannelClick,
   workerId,
   workerName,
   trackConversion,
-}: ContactRevealBlockProps) => {
-  const { canView, status, isOwner, request, requesting } = useContactReveal(workerUserId);
+}: ContactBlockProps) => {
+  const canView = isOwner || showContact;
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
@@ -371,30 +373,16 @@ const ContactRevealBlock = ({
       ) : (
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2 rounded-xl bg-white/5 p-3 text-xs text-hero-muted">
-            <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <EyeOff className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <p>
-              Contact details are private. Start a chat first — you can request the worker to share
-              their phone, WhatsApp, or other contacts.
+              This service pro has chosen to keep their direct contact details private. You can still
+              message them in the app or book a slot.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button onClick={onInAppMessage} className="w-full gap-2 sm:w-auto">
               <MessageSquare className="h-4 w-4" /> Message in app
             </Button>
-            {status === "pending" ? (
-              <Button variant="outline" disabled className="w-full gap-2 sm:w-auto">
-                <Lock className="h-4 w-4" /> Request pending
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => request()}
-                disabled={requesting}
-                className="w-full gap-2 sm:w-auto bg-white/5 text-hero-foreground hover:bg-white/10"
-              >
-                <Lock className="h-4 w-4" /> {requesting ? "Sending..." : "Request contact"}
-              </Button>
-            )}
             <BookingDialog workerId={workerId} workerName={workerName}>
               <Button variant="secondary" className="w-full gap-2 sm:w-auto" onClick={trackConversion}>
                 <CalendarPlus className="h-4 w-4" /> Book Now
@@ -406,5 +394,6 @@ const ContactRevealBlock = ({
     </div>
   );
 };
+
 
 export default WorkerProfile;
