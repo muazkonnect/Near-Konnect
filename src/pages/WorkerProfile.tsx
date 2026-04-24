@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles, Lock, MessageSquare } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles, EyeOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,7 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
-import { useContactReveal } from "@/hooks/useContactReveal";
+import BookingDialog from "@/components/BookingDialog";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -46,7 +46,7 @@ const WorkerProfile = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods)")
+        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
