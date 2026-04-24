@@ -310,6 +310,29 @@ const AdminDashboard = () => {
     toast.success(`Worker ${!current ? "verified" : "unverified"}`);
   };
 
+  const toggleAvailable = async (workerId: string, current: boolean) => {
+    const { error } = await supabase.from("workers").update({ available: !current }).eq("id", workerId);
+    if (error) {
+      toast.error("Failed to update worker visibility");
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+    queryClient.invalidateQueries({ queryKey: ["workers"] });
+    toast.success(!current ? "Worker is now visible" : "Worker is now hidden");
+  };
+
+  const deleteWorker = async (workerId: string) => {
+    if (!confirm("Permanently remove this worker profile? The user account stays, but their worker listing will be deleted.")) return;
+    const { error } = await supabase.from("workers").delete().eq("id", workerId);
+    if (error) {
+      toast.error("Failed to delete worker");
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+    queryClient.invalidateQueries({ queryKey: ["workers"] });
+    toast.success("Worker removed");
+  };
+
   const addFeatured = async (workerId?: string) => {
     const targetWorkerId = workerId || featureWorkerId;
     if (!targetWorkerId) {
@@ -606,8 +629,17 @@ const AdminDashboard = () => {
                         variant={w.available ? "default" : "secondary"}
                         className={w.available ? "bg-success text-success-foreground" : ""}
                       >
-                        {w.available ? "Available" : "Offline"}
+                        {w.available ? "Visible" : "Hidden"}
                       </Badge>
+                      <Button
+                        variant={w.available ? "outline" : "default"}
+                        size="sm"
+                        onClick={() => toggleAvailable(w.id, w.available)}
+                        title={w.available ? "Hide from listings" : "Show in listings"}
+                      >
+                        {w.available ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
+                        {w.available ? "Hide" : "Unhide"}
+                      </Button>
                       <Button
                         variant={featuredMap.has(w.id) ? "secondary" : "outline"}
                         size="sm"
@@ -627,6 +659,15 @@ const AdminDashboard = () => {
                       >
                         {w.verified ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
                         {w.verified ? "Unverify" : "Verify"}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteWorker(w.id)}
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        title="Delete worker profile"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
