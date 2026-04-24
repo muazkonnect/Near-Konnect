@@ -708,6 +708,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           phone: string | null
+          show_contact: boolean
           updated_at: string
           use_whatsapp: boolean
           user_id: string
@@ -725,6 +726,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
+          show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
           user_id: string
@@ -742,6 +744,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
+          show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
           user_id?: string
