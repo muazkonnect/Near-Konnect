@@ -268,11 +268,26 @@ const WorkerDashboard = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
                 <span className={`h-2 w-2 rounded-full ${available ? "bg-primary" : "bg-destructive"}`} />
                 {available ? "Visible" : "Hidden"}
                 <Switch checked={available} onCheckedChange={(v) => { setAvailable(v); supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })); }} className="ml-1" />
+              </div>
+              <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
+                <Lock className="h-3.5 w-3.5 opacity-80" />
+                {showContact ? "Contact public" : "Contact hidden"}
+                <Switch
+                  checked={showContact}
+                  onCheckedChange={async (v) => {
+                    setShowContact(v);
+                    const { error } = await supabase.from("profiles").update({ show_contact: v } as any).eq("user_id", user!.id);
+                    if (error) { toast.error("Could not update contact visibility"); setShowContact(!v); return; }
+                    toast.success(v ? "Contact is now public" : "Contact is now hidden");
+                    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
+                  }}
+                  className="ml-1"
+                />
               </div>
               <RequestFeaturedDialog workerId={workerData.id} />
               <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
