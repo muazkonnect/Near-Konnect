@@ -23,13 +23,39 @@ const Discover = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [sort, setSort] = useState<SortKey>("distance");
   const [priceBand, setPriceBand] = useState<"all" | "budget" | "mid" | "premium">("all");
   const [minRating, setMinRating] = useState(0);
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
+
+  // Sync search input when URL param changes (e.g. arriving from Home with ?search=...)
+  useEffect(() => {
+    const urlSearch = searchParams.get("search") || "";
+    setSearch(urlSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("search")]);
+
+  // Reflect typed search into the URL (debounced) so it's shareable and consistent
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const next = new URLSearchParams(searchParams);
+      const current = next.get("search") || "";
+      if (search.trim()) {
+        if (current !== search) {
+          next.set("search", search);
+          setSearchParams(next, { replace: true });
+        }
+      } else if (current) {
+        next.delete("search");
+        setSearchParams(next, { replace: true });
+      }
+    }, 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
   const [showMapView, setShowMapView] = useState(false);
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
