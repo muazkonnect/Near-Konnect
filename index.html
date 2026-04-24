@@ -89,23 +89,16 @@
       document.addEventListener("DOMContentLoaded", () => {
         const splash = document.getElementById("app-splash");
 
-        // Minimum display time
-        const MIN_TIME = 1200; // 1.2 sec
-        const startTime = Date.now();
+        // Wait for UI to render properly
+        setTimeout(() => {
+          // Hide HTML splash
+          splash.classList.add("is-hidden");
 
-        window.addEventListener("load", () => {
-          const elapsed = Date.now() - startTime;
-          const remaining = Math.max(0, MIN_TIME - elapsed);
-
-          setTimeout(() => {
-            splash.classList.add("is-hidden");
-
-            // Capacitor splash hide
-            if (window.Capacitor) {
-              navigator.splashscreen?.hide();
-            }
-          }, remaining);
-        });
+          // Hide Android splash AFTER HTML is ready
+          if (window.Capacitor) {
+            navigator.splashscreen?.hide();
+          }
+        }, 1500); // 👈 adjust (1000–2000 best)
       });
     </script>
   </body>
