@@ -147,6 +147,38 @@ const init = async (userId: string) => {
       read: false,
     });
   }
+  // Featured-request notifications for admins
+  const { data: adminRole } = await sb
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  const isAdmin = !!adminRole;
+  if (isAdmin) {
+    const { data: freqs } = await sb
+      .from("featured_requests")
+      .select("id, user_id, message, status, created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    for (const r of freqs || []) {
+      const { data: rp } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", r.user_id)
+        .maybeSingle();
+      list.push({
+        id: `featreq-${r.id}`,
+        type: "featured_request",
+        title: "Featured request",
+        body: `${rp?.full_name || "A worker"} requested to be featured`,
+        created_at: r.created_at,
+        link: "/admin",
+        read: false,
+      });
+    }
+  }
   store = list.slice(0, 25);
   broadcast();
   initializing = false;
