@@ -309,9 +309,12 @@ const AdminDashboard = () => {
 
   // ===== Mutations =====
   const toggleVerified = async (workerId: string, current: boolean) => {
-    await supabase.from("workers").update({ verified: !current }).eq("id", workerId);
+    const { error } = await supabase.from("workers").update({ verified: !current }).eq("id", workerId);
+    if (error) return toast.error("Failed to update verification");
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+    queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success(`Worker ${!current ? "verified" : "unverified"}`);
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: !current ? "worker.verify" : "worker.unverify", targetType: "worker", targetId: workerId });
   };
 
   const toggleAvailable = async (workerId: string, current: boolean) => {
@@ -323,6 +326,7 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
     queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success(!current ? "Worker is now visible" : "Worker is now hidden");
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: !current ? "worker.unhide" : "worker.hide", targetType: "worker", targetId: workerId });
   };
 
   const deleteWorker = async (workerId: string) => {
@@ -335,6 +339,7 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
     queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success("Worker removed");
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: "worker.delete", targetType: "worker", targetId: workerId });
   };
 
   const addFeatured = async (workerId?: string) => {
