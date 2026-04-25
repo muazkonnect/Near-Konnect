@@ -52,6 +52,9 @@ import AdminProfileTab from "@/components/admin/AdminProfileTab";
 import CategoriesManagementTab from "@/components/admin/CategoriesManagementTab";
 import AdsManagementTab from "@/components/admin/AdsManagementTab";
 import FeaturedManagementTab from "@/components/admin/FeaturedManagementTab";
+import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
+import { Pencil } from "lucide-react";
+import { logAdminAction } from "@/lib/adminAudit";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
 
@@ -180,6 +183,7 @@ const AdminDashboard = () => {
   const [donorFilter, setDonorFilter] = useState("");
   const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
   const [editingAdId, setEditingAdId] = useState<string | null>(null);
+  const [editingWorker, setEditingWorker] = useState<any | null>(null);
 
   const setAdTargetCoords = (c: Coords | null) => {
     setAdTargetCoordsState(c);
@@ -305,9 +309,12 @@ const AdminDashboard = () => {
 
   // ===== Mutations =====
   const toggleVerified = async (workerId: string, current: boolean) => {
-    await supabase.from("workers").update({ verified: !current }).eq("id", workerId);
+    const { error } = await supabase.from("workers").update({ verified: !current }).eq("id", workerId);
+    if (error) return toast.error("Failed to update verification");
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
+    queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success(`Worker ${!current ? "verified" : "unverified"}`);
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: !current ? "worker.verify" : "worker.unverify", targetType: "worker", targetId: workerId });
   };
 
   const toggleAvailable = async (workerId: string, current: boolean) => {
@@ -319,6 +326,7 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
     queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success(!current ? "Worker is now visible" : "Worker is now hidden");
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: !current ? "worker.unhide" : "worker.hide", targetType: "worker", targetId: workerId });
   };
 
   const deleteWorker = async (workerId: string) => {
@@ -331,6 +339,7 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
     queryClient.invalidateQueries({ queryKey: ["workers"] });
     toast.success("Worker removed");
+    if (user?.id) logAdminAction({ adminUserId: user.id, action: "worker.delete", targetType: "worker", targetId: workerId });
   };
 
   const addFeatured = async (workerId?: string) => {
@@ -661,6 +670,15 @@ const AdminDashboard = () => {
                         {w.verified ? "Unverify" : "Verify"}
                       </Button>
                       <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingWorker(w)}
+                        title="Edit profession & category"
+                      >
+                        <Pencil className="mr-1 h-3 w-3" />
+                        Edit
+                      </Button>
+                      <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => deleteWorker(w.id)}
@@ -675,6 +693,11 @@ const AdminDashboard = () => {
                     <p className="py-8 text-center text-muted-foreground">No workers registered.</p>
                   )}
                 </div>
+                <EditWorkerDialog
+                  worker={editingWorker}
+                  open={!!editingWorker}
+                  onOpenChange={(o) => { if (!o) setEditingWorker(null); }}
+                />
               </div>
             )}
 

@@ -14,6 +14,7 @@ import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
 import { useCategories } from "@/hooks/useCategories";
+import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | null;
@@ -60,6 +61,7 @@ const Discover = () => {
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const featuredIds = useFeaturedWorkerIds();
+  const adminUserIds = useAdminUserIds();
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
@@ -191,6 +193,10 @@ const Discover = () => {
     if (ownWorkerUserId) {
       list = list.filter((w) => w.userId !== ownWorkerUserId);
     }
+    // Admins are never treated as workers — hide them from the explore list
+    if (adminUserIds.size > 0) {
+      list = list.filter((w) => !adminUserIds.has(w.userId));
+    }
     if (selectedMainCategory) {
       list = list.filter(w => w.mainCategory === selectedMainCategory);
     }
@@ -230,7 +236,7 @@ const Discover = () => {
       return b.experience - a.experience;
     });
     return list;
-  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds]);
+  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds, adminUserIds]);
 
 
 

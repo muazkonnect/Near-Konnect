@@ -19,6 +19,7 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
 import NativeAdCard from "@/components/NativeAdCard";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
+import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -38,6 +39,7 @@ const Home = () => {
   const featuredIds = useFeaturedWorkerIds();
   const feedAds = useNativeAds("home_feed", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
+  const adminUserIds = useAdminUserIds();
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
@@ -91,15 +93,17 @@ const Home = () => {
       };
 
       // Only include workers who completed category setup (no placeholders)
+      // and exclude any users who hold the admin role.
       const mapped = workerData
         .filter((w) => w.user_id !== user?.id)
+        .filter((w) => !adminUserIds.has(w.user_id))
         .filter((w) => !!w.main_category && !!w.sub_category)
         .map(mapDbWorker);
       setWorkers(mapped);
       setLoading(false);
     };
     fetchWorkers();
-  }, [user?.id]);
+  }, [user?.id, adminUserIds]);
 
   const workerSuggestions = useMemo(() => {
     const cityList = [...new Set(workers.map((w) => w.city).filter(Boolean))].slice(0, 3);
