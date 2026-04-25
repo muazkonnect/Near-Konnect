@@ -283,6 +283,31 @@ const init = async (userId: string) => {
     }
   );
 
+  if (isAdmin) {
+    ch.on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "featured_requests" },
+      async (payload: any) => {
+        const { data: rp } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("user_id", payload.new.user_id)
+          .maybeSingle();
+        const name = rp?.full_name || "A worker";
+        upsert({
+          id: `featreq-${payload.new.id}`,
+          type: "featured_request",
+          title: "Featured request",
+          body: `${name} requested to be featured`,
+          created_at: payload.new.created_at,
+          link: "/admin",
+          read: false,
+        });
+        toast.info("⭐ Featured request", { description: `${name} requested to be featured` });
+      }
+    );
+  }
+
   ch.subscribe();
   channel = ch;
 };
