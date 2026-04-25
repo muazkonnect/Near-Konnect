@@ -87,6 +87,20 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
             {worker.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" />}
           </div>
           <p className="truncate text-xs text-muted-foreground">{worker.profession}</p>
+          {(worker.mainCategory || worker.subCategory) && (
+            <div className="mt-0.5 flex flex-wrap items-center gap-1">
+              {worker.mainCategory && (
+                <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                  {worker.mainCategory}
+                </span>
+              )}
+              {worker.subCategory && worker.subCategory !== worker.profession && (
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  {worker.subCategory}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-0.5 font-semibold text-foreground">
