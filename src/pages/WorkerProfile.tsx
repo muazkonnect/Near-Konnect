@@ -98,6 +98,8 @@ const WorkerProfile = () => {
     userId: dbWorker.user_id,
     name: (dbWorker as any).profiles?.full_name || "Unknown",
     profession: dbWorker.profession,
+    mainCategory: (dbWorker as any).main_category || "",
+    subCategory: (dbWorker as any).sub_category || "",
     experience: dbWorker.experience,
     available: dbWorker.available,
     verified: dbWorker.verified,
@@ -188,6 +190,20 @@ const WorkerProfile = () => {
                   {worker.verified && <CheckCircle className="h-5 w-5 text-primary" />}
                 </div>
                 <p className="text-sm text-hero-muted">{worker.profession}</p>
+                {(worker.mainCategory || worker.subCategory) && (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {worker.mainCategory && (
+                      <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[11px] font-semibold text-primary-foreground ring-1 ring-primary/40">
+                        {worker.mainCategory}
+                      </span>
+                    )}
+                    {worker.subCategory && worker.subCategory !== worker.profession && (
+                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-hero-foreground">
+                        {worker.subCategory}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                   <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-hero-foreground backdrop-blur-sm">
                     <Star className="h-3 w-3 fill-star text-star" />
