@@ -52,6 +52,9 @@ import AdminProfileTab from "@/components/admin/AdminProfileTab";
 import CategoriesManagementTab from "@/components/admin/CategoriesManagementTab";
 import AdsManagementTab from "@/components/admin/AdsManagementTab";
 import FeaturedManagementTab from "@/components/admin/FeaturedManagementTab";
+import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
+import { Pencil } from "lucide-react";
+import { logAdminAction } from "@/lib/adminAudit";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
 
