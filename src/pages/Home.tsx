@@ -84,10 +84,17 @@ const Home = () => {
           city: w.city || "",
           latitude: w.latitude ?? undefined,
           longitude: w.longitude ?? undefined,
+          mainCategory: w.main_category || "",
+          subCategory: w.sub_category || "",
+          userId: w.user_id,
         };
       };
 
-      const mapped = workerData.filter((w) => w.user_id !== user?.id).map(mapDbWorker);
+      // Only include workers who completed category setup (no placeholders)
+      const mapped = workerData
+        .filter((w) => w.user_id !== user?.id)
+        .filter((w) => !!w.main_category && !!w.sub_category)
+        .map(mapDbWorker);
       setWorkers(mapped);
       setLoading(false);
     };
