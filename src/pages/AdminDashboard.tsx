@@ -670,6 +670,15 @@ const AdminDashboard = () => {
                         {w.verified ? "Unverify" : "Verify"}
                       </Button>
                       <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingWorker(w)}
+                        title="Edit profession & category"
+                      >
+                        <Pencil className="mr-1 h-3 w-3" />
+                        Edit
+                      </Button>
+                      <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => deleteWorker(w.id)}
@@ -684,6 +693,11 @@ const AdminDashboard = () => {
                     <p className="py-8 text-center text-muted-foreground">No workers registered.</p>
                   )}
                 </div>
+                <EditWorkerDialog
+                  worker={editingWorker}
+                  open={!!editingWorker}
+                  onOpenChange={(o) => { if (!o) setEditingWorker(null); }}
+                />
               </div>
             )}
 
