@@ -193,6 +193,10 @@ const Discover = () => {
     if (ownWorkerUserId) {
       list = list.filter((w) => w.userId !== ownWorkerUserId);
     }
+    // Admins are never treated as workers — hide them from the explore list
+    if (adminUserIds.size > 0) {
+      list = list.filter((w) => !adminUserIds.has(w.userId));
+    }
     if (selectedMainCategory) {
       list = list.filter(w => w.mainCategory === selectedMainCategory);
     }
@@ -232,7 +236,7 @@ const Discover = () => {
       return b.experience - a.experience;
     });
     return list;
-  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds]);
+  }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds, adminUserIds]);
 
 
 
