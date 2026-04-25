@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { type Coords } from "@/lib/geolocation";
 import { useCategories } from "@/hooks/useCategories";
 
+import { useUserRole } from "@/hooks/useUserRole";
+
 const STORAGE_KEY = "nk_oauth_intent";
 const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hero-muted";
 const inputClass = "h-12 rounded-2xl border-white/15 bg-white/5 text-base text-hero-foreground placeholder:text-hero-muted/70 focus-visible:ring-primary/40";
@@ -19,6 +21,7 @@ const selectClass = `${inputClass} w-full px-3 focus-visible:outline-none focus-
 
 const WorkerOnboardingDialog = () => {
   const { user, loading: authLoading } = useAuth();
+  const { roles, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
   const { mainCategories, getSubCategories } = useCategories();
 
@@ -36,7 +39,13 @@ const WorkerOnboardingDialog = () => {
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
 
   useEffect(() => {
-    if (authLoading || !user) return;
+    if (authLoading || roleLoading || !user) return;
+
+    // Do not show onboarding to admins or staff members
+    if (roles.includes("admin") || roles.includes("manager")) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return;
+    }
 
     let cancelled = false;
     (async () => {
@@ -93,7 +102,7 @@ const WorkerOnboardingDialog = () => {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading]);
+  }, [user, authLoading, roleLoading, roles]);
 
   const handleSubmit = async () => {
     if (!user) return;

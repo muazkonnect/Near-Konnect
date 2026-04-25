@@ -20,11 +20,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  MAIN_SERVICE_CATEGORIES,
-  SUBCATEGORIES_BY_MAIN,
-  type MainServiceCategory,
-} from "@/data/serviceCategories";
+import { useCategories } from "@/hooks/useCategories";
 import { useAuth } from "@/contexts/AuthContext";
 import { logAdminAction } from "@/lib/adminAudit";
 
@@ -37,6 +33,7 @@ interface Props {
 export default function EditWorkerDialog({ worker, open, onOpenChange }: Props) {
   const qc = useQueryClient();
   const { user } = useAuth();
+  const { mainCategories, getSubCategories } = useCategories();
   const [profession, setProfession] = useState("");
   const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState<string>("");
@@ -53,9 +50,9 @@ export default function EditWorkerDialog({ worker, open, onOpenChange }: Props) 
   }, [worker]);
 
   const subOptions = useMemo(() => {
-    if (!mainCategory) return [] as readonly string[];
-    return (SUBCATEGORIES_BY_MAIN as any)[mainCategory] || [];
-  }, [mainCategory]);
+    if (!mainCategory) return [];
+    return getSubCategories(mainCategory).map((c) => c.name);
+  }, [mainCategory, getSubCategories]);
 
   const save = async () => {
     if (!worker) return;
@@ -138,9 +135,9 @@ export default function EditWorkerDialog({ worker, open, onOpenChange }: Props) 
                 <SelectValue placeholder="Select a main category" />
               </SelectTrigger>
               <SelectContent>
-                {MAIN_SERVICE_CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
+                {mainCategories.map((c) => (
+                  <SelectItem key={c.id} value={c.name}>
+                    {c.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -151,7 +148,10 @@ export default function EditWorkerDialog({ worker, open, onOpenChange }: Props) 
             <Label>Sub category *</Label>
             <Select
               value={subCategory}
-              onValueChange={setSubCategory}
+              onValueChange={(v) => {
+                setSubCategory(v);
+                if (v) setProfession(v);
+              }}
               disabled={!mainCategory}
             >
               <SelectTrigger>

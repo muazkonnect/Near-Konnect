@@ -86,11 +86,11 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
             <h3 className="truncate text-sm font-bold text-card-foreground">{worker.name}</h3>
             {worker.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" />}
           </div>
-          <p className="truncate text-xs text-muted-foreground">{worker.profession}</p>
+          <p className="truncate text-xs text-muted-foreground/70">{worker.profession}</p>
           {(worker.mainCategory || worker.subCategory) && (
             <div className="mt-0.5 flex flex-wrap items-center gap-1">
               {worker.mainCategory && (
-                <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {worker.mainCategory}
                 </span>
               )}

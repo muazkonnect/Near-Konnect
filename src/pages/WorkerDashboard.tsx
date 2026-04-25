@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Clock,
   Compass,
+  Eye,
   HeartPulse,
   LayoutDashboard,
   Lock,
@@ -45,11 +46,13 @@ import { fetchConversationSummaries } from "@/lib/messages";
 import { useNotifications, markRead } from "@/hooks/useNotifications";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
+import { useCategories } from "@/hooks/useCategories";
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
+  const { mainCategories, getSubCategories } = useCategories();
 
   // Admins are not workers — bounce them to the admin dashboard.
   useEffect(() => {
@@ -61,6 +64,8 @@ const WorkerDashboard = () => {
   const queryClient = useQueryClient();
 
   const [profession, setProfession] = useState("");
+  const [mainCategory, setMainCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
@@ -71,6 +76,8 @@ const WorkerDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { unreadByType } = useNotifications();
 
+  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+
   useEffect(() => {
     if (activeTab === "messages") markRead((n) => n.type === "message");
     if (activeTab === "bookings") markRead((n) => n.type === "booking");
@@ -79,6 +86,8 @@ const WorkerDashboard = () => {
   useEffect(() => {
     if (workerData) {
       setProfession(workerData.profession || "");
+      setMainCategory(workerData.main_category || "");
+      setSubCategory(workerData.sub_category || "");
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
@@ -171,7 +180,9 @@ const WorkerDashboard = () => {
     const { error: workerError } = await supabase
       .from("workers")
       .update({
-        profession,
+        profession: subCategory || profession, // Use subCategory as profession if available
+        main_category: mainCategory,
+        sub_category: subCategory,
         experience: parseInt(experience) || 0,
         description,
         available,
@@ -273,11 +284,40 @@ const WorkerDashboard = () => {
                   {available ? "Available now" : "Currently offline"}
                 </span>
                 <h1 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">Hi, {firstName}</h1>
-                <p className="text-sm text-hero-foreground/70">{profession || "Set your profession in profile"}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-sm text-hero-foreground/60">{profession || "Set your profession in profile"}</p>
+                  {workerData.verified && (
+                    <Badge className="h-5 gap-1 rounded-full bg-success/20 px-2 py-0 text-[10px] font-bold text-success-foreground border-none">
+                      <CheckCircle className="h-3 w-3" /> VERIFIED
+                    </Badge>
+                  )}
+                  {workerData.is_featured && (
+                    <Badge className="h-5 gap-1 rounded-full bg-primary/20 px-2 py-0 text-[10px] font-bold text-primary-foreground border-none">
+                      <Star className="h-3 w-3 fill-primary" /> FEATURED
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {!workerData.verified && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={workerData.verification_requested}
+                  onClick={async () => {
+                    const { error } = await supabase.from("workers").update({ verification_requested: true }).eq("id", workerData.id);
+                    if (error) return toast.error("Failed to request verification");
+                    toast.success("Verification request sent to admin!");
+                    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
+                  }}
+                  className="h-9 gap-2 rounded-full border-white/20 bg-white/10 text-xs text-white backdrop-blur-sm hover:bg-white/20"
+                >
+                  <Shield className="h-3.5 w-3.5" />
+                  {workerData.verification_requested ? "Verification Pending" : "Request Verification"}
+                </Button>
+              )}
               <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
                 <span className={`h-2 w-2 rounded-full ${available ? "bg-primary" : "bg-destructive"}`} />
                 {available ? "Visible" : "Hidden"}
@@ -298,6 +338,14 @@ const WorkerDashboard = () => {
                   className="ml-1"
                 />
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/worker/${workerData.id}`)}
+                className="h-9 gap-2 rounded-full border-white/20 bg-white/10 text-xs text-white backdrop-blur-sm hover:bg-white/20"
+              >
+                <Eye className="h-3.5 w-3.5" /> View Public Profile
+              </Button>
               <RequestFeaturedDialog workerId={workerData.id} />
               <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
                 <Search className="h-4 w-4" /> Explore
@@ -448,7 +496,44 @@ const WorkerDashboard = () => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession</Label>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Main Category</Label>
+                    <select
+                      value={mainCategory}
+                      onChange={(e) => {
+                        setMainCategory(e.target.value);
+                        setSubCategory("");
+                      }}
+                      className="mt-1.5 flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="">Select main category</option>
+                      {mainCategories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Subcategory</Label>
+                    <select
+                      value={subCategory}
+                      onChange={(e) => {
+                        setSubCategory(e.target.value);
+                        setProfession(e.target.value); // Sync profession with subcategory
+                      }}
+                      disabled={!mainCategory}
+                      className="mt-1.5 flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="">Select subcategory</option>
+                      {subCategories.map((sub) => (
+                        <option key={sub.id} value={sub.name}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession (Display Name)</Label>
                     <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
                   </div>
                   <div>

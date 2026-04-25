@@ -208,7 +208,7 @@ const Register = () => {
         </div>
         <div>
           <Label className={labelClass}>Contact options *</Label>
-          <p className="mb-2 text-xs text-muted-foreground">Phone is required. Add any other apps you use so customers can reach you.</p>
+          <p className="mb-2 text-xs text-muted-foreground font-medium text-destructive">Phone number is compulsory to proceed.</p>
           <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
         </div>
         <div>

@@ -330,15 +330,25 @@ const AdminDashboard = () => {
   };
 
   const deleteWorker = async (workerId: string) => {
-    if (!confirm("Permanently remove this worker profile? The user account stays, but their worker listing will be deleted.")) return;
-    const { error } = await supabase.from("workers").delete().eq("id", workerId);
+    if (!confirm("Permanently remove this worker profile? This will also remove their worker role and listing.")) return;
+    
+    const worker = (workers as any[]).find((w) => w.id === workerId);
+    if (!worker?.user_id) return toast.error("Worker user ID not found");
+
+    const { error } = await supabase.functions.invoke("admin-invite-user", {
+      body: { action: "remove_role", userId: worker.user_id, role: "worker" },
+    });
+
     if (error) {
-      toast.error("Failed to delete worker");
+      toast.error("Failed to delete worker: " + error.message);
       return;
     }
+
     queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
     queryClient.invalidateQueries({ queryKey: ["workers"] });
-    toast.success("Worker removed");
+    queryClient.invalidateQueries({ queryKey: ["admin_user_roles"] });
+    
+    toast.success("Worker removed and role revoked");
     if (user?.id) logAdminAction({ adminUserId: user.id, action: "worker.delete", targetType: "worker", targetId: workerId });
   };
 
@@ -593,7 +603,10 @@ const AdminDashboard = () => {
                           <span className="truncate text-sm font-medium text-card-foreground">
                             {w.profiles?.full_name || "Unnamed"}
                           </span>
-                          <span className="text-xs text-muted-foreground">{w.profession}</span>
+                          <div className="flex flex-col items-end">
+                            <span className="text-xs text-muted-foreground/70">{w.profession}</span>
+                            <span className="text-[10px] text-muted-foreground/60">{w.main_category} · {w.sub_category}</span>
+                          </div>
                         </li>
                       ))}
                       {workers.length === 0 && <li className="text-sm text-muted-foreground">No workers yet.</li>}
@@ -632,61 +645,88 @@ const AdminDashboard = () => {
                       </div>
                       <div className="min-w-[180px] flex-1">
                         <p className="font-semibold text-card-foreground">{w.profiles?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">{w.profession} · {w.experience} yrs</p>
+                        <p className="text-xs text-muted-foreground/70">{w.profession} · {w.experience} yrs</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground/70">
+                          {w.main_category} / {w.sub_category}
+                        </p>
                       </div>
-                      <Badge
-                        variant={w.available ? "default" : "secondary"}
-                        className={w.available ? "bg-success text-success-foreground" : ""}
-                      >
-                        {w.available ? "Visible" : "Hidden"}
-                      </Badge>
-                      <Button
-                        variant={w.available ? "outline" : "default"}
-                        size="sm"
-                        onClick={() => toggleAvailable(w.id, w.available)}
-                        title={w.available ? "Hide from listings" : "Show in listings"}
-                      >
-                        {w.available ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
-                        {w.available ? "Hide" : "Unhide"}
-                      </Button>
-                      <Button
-                        variant={featuredMap.has(w.id) ? "secondary" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          const featured = featuredMap.get(w.id);
-                          if (featured) removeFeatured(featured.id);
-                          else addFeatured(w.id);
-                        }}
-                      >
-                        <Star className="mr-1 h-3 w-3" />
-                        {featuredMap.has(w.id) ? "Unfeature" : "Feature"}
-                      </Button>
-                      <Button
-                        variant={w.verified ? "outline" : "default"}
-                        size="sm"
-                        onClick={() => toggleVerified(w.id, w.verified)}
-                      >
-                        {w.verified ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
-                        {w.verified ? "Unverify" : "Verify"}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingWorker(w)}
-                        title="Edit profession & category"
-                      >
-                        <Pencil className="mr-1 h-3 w-3" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteWorker(w.id)}
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        title="Delete worker profile"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <div className="flex items-center gap-2">
+                          {w.verification_requested && !w.verified && (
+                            <Badge variant="outline" className="animate-pulse bg-warning/10 text-[10px] text-warning border-warning/30">
+                              Verification Req
+                            </Badge>
+                          )}
+                          {w.featured_requested && !featuredMap.has(w.id) && (
+                            <Badge variant="outline" className="animate-pulse bg-primary/10 text-[10px] text-primary border-primary/30">
+                              Featured Req
+                            </Badge>
+                          )}
+                          <Button
+                            variant={w.available ? "outline" : "default"}
+                            size="sm"
+                            className="h-8 px-2 text-[11px]"
+                            onClick={() => toggleAvailable(w.id, w.available)}
+                            title={w.available ? "Hide from listings" : "Show in listings"}
+                          >
+                            {w.available ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
+                            {w.available ? "Hide" : "Unhide"}
+                          </Button>
+                          <Button
+                            variant={featuredMap.has(w.id) ? "secondary" : (w.featured_requested ? "default" : "outline")}
+                            size="sm"
+                            className="h-8 px-2 text-[11px]"
+                            onClick={async () => {
+                              const featured = featuredMap.get(w.id);
+                              if (featured) {
+                                await removeFeatured(featured.id);
+                              } else {
+                                await addFeatured(w.id);
+                                if (w.featured_requested) {
+                                  await supabase.from("workers").update({ featured_requested: false, is_featured: true }).eq("id", w.id);
+                                }
+                              }
+                            }}
+                          >
+                            <Star className={`mr-1 h-3 w-3 ${featuredMap.has(w.id) ? "fill-current" : ""}`} />
+                            {featuredMap.has(w.id) ? "Unfeature" : "Feature"}
+                          </Button>
+                          <Button
+                            variant={w.verified ? "outline" : (w.verification_requested ? "default" : "outline")}
+                            size="sm"
+                            className="h-8 px-2 text-[11px]"
+                            onClick={async () => {
+                              const newStatus = !w.verified;
+                              await toggleVerified(w.id, w.verified);
+                              if (newStatus && w.verification_requested) {
+                                await supabase.from("workers").update({ verification_requested: false }).eq("id", w.id);
+                              }
+                            }}
+                          >
+                            {w.verified ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
+                            {w.verified ? "Unverify" : "Verify"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2 text-[11px]"
+                            onClick={() => setEditingWorker(w)}
+                            title="Edit profession & category"
+                          >
+                            <Pencil className="mr-1 h-3 w-3" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteWorker(w.id)}
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            title="Delete worker profile"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                   {workers.length === 0 && (

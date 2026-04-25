@@ -28,14 +28,16 @@ const fadeUp = {
 
 const MAX_RADIUS_KM = 20;
 
+import { useWorkers } from "@/hooks/useWorkers";
+
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
-  const [workers, setWorkers] = useState<Worker[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { coords: browsingCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const feedAds = useNativeAds("home_feed", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
@@ -43,67 +45,16 @@ const Home = () => {
 
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
-  useEffect(() => {
-    const fetchWorkers = async () => {
-      setLoading(true);
-      const workersRes = await supabase
-        .from("workers")
-        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url)")
-        .eq("available", true)
-        .order("experience", { ascending: false })
-        .limit(24);
+  const workers = useMemo(() => {
+    // Only include workers who completed category setup (no placeholders)
+    // and exclude any users who hold the admin role.
+    return allWorkers
+      .filter((w) => w.userId !== user?.id)
+      .filter((w) => !adminUserIds.has(w.userId))
+      .filter((w) => !!w.mainCategory && !!w.subCategory);
+  }, [allWorkers, user?.id, adminUserIds]);
 
-      const workerData = workersRes.data || [];
-      const workerIds = workerData.map((w) => w.id);
-      const { data: reviewData } = workerIds.length
-        ? await supabase.from("reviews").select("worker_id, rating").in("worker_id", workerIds)
-        : { data: [] as Array<{ worker_id: string; rating: number }> };
-
-      const reviewMap: Record<string, { sum: number; count: number }> = {};
-      reviewData?.forEach((r) => {
-        if (!reviewMap[r.worker_id]) reviewMap[r.worker_id] = { sum: 0, count: 0 };
-        reviewMap[r.worker_id].sum += r.rating;
-        reviewMap[r.worker_id].count += 1;
-      });
-
-      const mapDbWorker = (w: any): Worker => {
-        const profile = w.profiles as any;
-        const rev = reviewMap[w.id];
-        return {
-          id: w.id,
-          name: profile?.full_name || "Worker",
-          profession: w.profession,
-          rating: rev ? Math.round((rev.sum / rev.count) * 10) / 10 : 0,
-          reviewCount: rev?.count || 0,
-          experience: w.experience,
-          distance: 0,
-          available: w.available,
-          verified: w.verified,
-          phone: profile?.phone || "",
-          description: w.description || "",
-          serviceAreas: w.service_areas || [],
-          profilePhoto: profile?.avatar_url || "",
-          city: w.city || "",
-          latitude: w.latitude ?? undefined,
-          longitude: w.longitude ?? undefined,
-          mainCategory: w.main_category || "",
-          subCategory: w.sub_category || "",
-          userId: w.user_id,
-        };
-      };
-
-      // Only include workers who completed category setup (no placeholders)
-      // and exclude any users who hold the admin role.
-      const mapped = workerData
-        .filter((w) => w.user_id !== user?.id)
-        .filter((w) => !adminUserIds.has(w.user_id))
-        .filter((w) => !!w.main_category && !!w.sub_category)
-        .map(mapDbWorker);
-      setWorkers(mapped);
-      setLoading(false);
-    };
-    fetchWorkers();
-  }, [user?.id, adminUserIds]);
+  const loading = workersLoading;
 
   const workerSuggestions = useMemo(() => {
     const cityList = [...new Set(workers.map((w) => w.city).filter(Boolean))].slice(0, 3);
@@ -119,25 +70,42 @@ const Home = () => {
       if (!words.length) return true;
       const name = w.name.toLowerCase();
       const prof = w.profession.toLowerCase();
-      return words.every((word) => name.includes(word) || prof.includes(word));
+      const main = (w.mainCategory || "").toLowerCase();
+      const sub = (w.subCategory || "").toLowerCase();
+      return words.every((word) => 
+        name.includes(word) || 
+        prof.includes(word) || 
+        main.includes(word) || 
+        sub.includes(word)
+      );
     });
-
-    if (!browsingCoords) {
-      return keywordFiltered.slice(0, 8).map((w) => ({ ...w, distance: 0 }));
-    }
 
     return keywordFiltered
       .map((w) => {
         if (typeof w.latitude !== "number" || typeof w.longitude !== "number") {
           return { ...w, distance: Number.POSITIVE_INFINITY };
         }
-        const distance = calculateDistance(browsingCoords.latitude, browsingCoords.longitude, w.latitude, w.longitude);
+        const distance = browsingCoords
+          ? calculateDistance(browsingCoords.latitude, browsingCoords.longitude, w.latitude, w.longitude)
+          : 0;
         return { ...w, distance: parseFloat(distance.toFixed(1)) };
       })
-      .filter((w) => Number.isFinite(w.distance) && w.distance <= MAX_RADIUS_KM)
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, 8);
-  }, [search, workers, browsingCoords]);
+      .filter((w) => {
+        // Only show workers within 5km by default if location is available
+        if (browsingCoords && w.distance !== Number.POSITIVE_INFINITY) {
+          return w.distance <= 5;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        // First sort by featured status
+        const aF = featuredIds.has(a.id) ? 1 : 0;
+        const bF = featuredIds.has(b.id) ? 1 : 0;
+        if (aF !== bF) return bF - aF;
+        // Then sort by distance
+        return a.distance - b.distance;
+      });
+  }, [search, workers, browsingCoords, featuredIds]);
 
   const { mainCategories, isLoading: categoriesLoading } = useCategories();
 
@@ -303,7 +271,7 @@ const Home = () => {
           <div className="mb-3 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-foreground">Nearby Services</h2>
-              <p className="text-xs text-muted-foreground">Top-rated workers within {MAX_RADIUS_KM} km</p>
+              <p className="text-xs text-muted-foreground">Trusted professionals available to help you</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => navigate("/discover")} className="gap-1">
               Explore <ArrowRight className="h-4 w-4" />
@@ -323,16 +291,14 @@ const Home = () => {
             </div>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {[...nearbyWorkers]
-                .sort((a, b) => Number(featuredIds.has(b.id)) - Number(featuredIds.has(a.id)))
-                .map((w, i) => (
-                  <WorkerCard
-                    key={`nearby-${w.id}-${i}`}
-                    worker={w}
-                    index={i}
-                    sponsored={featuredIds.has(w.id)}
-                  />
-                ))}
+              {nearbyWorkers.map((w, i) => (
+                <WorkerCard
+                  key={`nearby-${w.id}-${i}`}
+                  worker={w}
+                  index={i}
+                  sponsored={featuredIds.has(w.id)}
+                />
+              ))}
               {feedAds[0] && (
                 <div className="md:col-span-2 xl:col-span-3">
                   <NativeAdCard ad={feedAds[0]} variant="feed" viewerCoords={browsingCoords} />
@@ -370,27 +336,45 @@ const Home = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-                {mainCategoryMeta.map((category) => {
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+                {mainCategoryMeta.slice(0, showAllCategories ? undefined : 5).map((category) => {
                   const Icon = category.icon;
                   return (
                     <button
                       key={category.name}
                       type="button"
                       onClick={() => navigate(`/discover?main_category=${encodeURIComponent(category.name)}`)}
-                      className="tap-feedback group flex flex-col items-start gap-2.5 rounded-2xl bg-white/5 p-3 text-left text-hero-foreground ring-1 ring-white/10 transition-all hover:bg-white/10"
+                      className="tap-feedback group flex items-center gap-3 rounded-2xl bg-white/5 p-3 text-left text-hero-foreground ring-1 ring-white/10 transition-all hover:bg-white/10"
                     >
-                      <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-primary transition-colors group-hover:bg-white/15">
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-primary transition-colors group-hover:bg-white/15">
                         {category.emoji ? (
-                          <span className="text-base">{category.emoji}</span>
+                          <span className="text-lg">{category.emoji}</span>
                         ) : (
-                          <Icon className="h-4 w-4" />
+                          <Icon className="h-5 w-5" />
                         )}
                       </span>
-                      <span className="text-xs font-semibold leading-tight">{category.name}</span>
+                      <span className="text-sm font-bold leading-tight line-clamp-2">{category.name}</span>
                     </button>
                   );
                 })}
+                {mainCategoryMeta.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                    className="tap-feedback group flex items-center gap-3 rounded-2xl bg-white/10 p-3 text-left text-hero-foreground ring-1 ring-white/20 transition-all hover:bg-white/20"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform">
+                      {showAllCategories ? (
+                        <ArrowRight className="h-5 w-5 -rotate-90" />
+                      ) : (
+                        <ArrowRight className="h-5 w-5 rotate-90" />
+                      )}
+                    </span>
+                    <span className="text-sm font-bold leading-tight">
+                      {showAllCategories ? "Show Less" : "Show All"}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

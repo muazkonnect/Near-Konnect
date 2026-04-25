@@ -119,10 +119,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (role === "worker") {
         const lat = toNumberOrNull(md.latitude);
         const lng = toNumberOrNull(md.longitude);
+        
+        // Use the actual selected sub-category or fallback to metadata profession, 
+        // only using "General Service" as a last resort.
+        const workerProfession = subCategory || String(md.profession || "").trim() || "General Service";
+
         const { error: workerError } = await supabase.from("workers").upsert(
           {
             user_id: nextUser.id,
-            profession: subCategory || "General Service",
+            profession: workerProfession,
             main_category: mainCategory,
             sub_category: subCategory,
             experience: Math.max(0, parseInt(String(md.experience || "0"), 10) || 0),
@@ -154,8 +159,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
+    // 1. Single source of truth for initial session
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          void ensureUserRecords(session.user);
+        }
+      } catch (err) {
+        console.error("Auth init error:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    void initAuth();
+
+    // 2. Listen for subsequent changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        if (!mounted) return;
+        
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -165,16 +195,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        void ensureUserRecords(session.user);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {

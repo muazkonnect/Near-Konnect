@@ -113,16 +113,16 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                  className={`relative flex flex-col items-center justify-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                     active
                       ? "bg-primary text-primary-foreground"
                       : "text-hero-muted hover:bg-white/10 hover:text-hero-foreground"
                   }`}
                 >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  <span className="text-[11px] leading-none">{item.label}</span>
                   {item.badge > 0 && (
-                    <span className="ml-0.5 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold leading-none text-destructive-foreground">
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-destructive-foreground ring-2 ring-hero">
                       {item.badge > 9 ? "9+" : item.badge}
                     </span>
                   )}

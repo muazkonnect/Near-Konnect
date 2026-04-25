@@ -40,13 +40,14 @@ const WorkerProfile = () => {
     });
   };
 
-  const { data: dbWorker } = useQuery({
+  const { data: dbWorker, isLoading: workerLoading, isError: workerError } = useQuery({
     queryKey: ["worker", id],
     queryFn: async () => {
+      if (!id) return null;
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
-        .eq("id", id!)
+        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact, profession_override)")
+        .eq("id", id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -54,7 +55,7 @@ const WorkerProfile = () => {
     enabled: !!id,
   });
 
-  const { data: dbReviews = [] } = useQuery({
+  const { data: dbReviews = [], isLoading: reviewsLoading } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -73,13 +74,25 @@ const WorkerProfile = () => {
     void trackEvent("profile_view");
   }, [id, dbWorker?.user_id]);
 
-  if (!dbWorker) {
+  if (workerLoading) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       </div>
+    );
+  }
+
+  if (workerError || !dbWorker) {
+    return (
+      <AppLayout title="Error" subtitle="">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h2 className="text-2xl font-bold mb-4">Worker profile not found</h2>
+          <p className="text-muted-foreground mb-8">The worker you are looking for might have removed their profile or the link is invalid.</p>
+          <Button onClick={() => navigate("/discover")}>Back to search</Button>
+        </div>
+      </AppLayout>
     );
   }
 
@@ -97,7 +110,7 @@ const WorkerProfile = () => {
     id: dbWorker.id,
     userId: dbWorker.user_id,
     name: (dbWorker as any).profiles?.full_name || "Unknown",
-    profession: dbWorker.profession,
+    profession: (dbWorker as any).profiles?.profession_override || dbWorker.profession || "General Service",
     mainCategory: (dbWorker as any).main_category || "",
     subCategory: (dbWorker as any).sub_category || "",
     experience: dbWorker.experience,
@@ -142,7 +155,13 @@ const WorkerProfile = () => {
     void trackEvent("contact_click");
   };
 
-  const initials = worker.name.split(" ").map(n => n[0]).join("");
+  const initials = worker.name
+    .split(" ")
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <AppLayout title="" subtitle="">
@@ -189,7 +208,7 @@ const WorkerProfile = () => {
                   <h1 className="text-2xl font-bold tracking-tight text-hero-foreground">{worker.name}</h1>
                   {worker.verified && <CheckCircle className="h-5 w-5 text-primary" />}
                 </div>
-                <p className="text-sm text-hero-muted">{worker.profession}</p>
+                <p className="text-sm text-hero-muted/80">{worker.profession}</p>
                 {(worker.mainCategory || worker.subCategory) && (
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                     {worker.mainCategory && (

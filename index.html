@@ -71,35 +71,15 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const splash = document.getElementById('app-splash');
-          if (splash) {
-            splash.classList.add('is-hidden');
-          }
-
-          // Capacitor splash bhi hide karo (agar use ho raha ho)
-          if (window.Capacitor) {
-            navigator.splashscreen?.hide();
-          }
-        }, 1500); // 👈 yahan timing control karo (ms)
-      });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const splash = document.getElementById("app-splash");
-
-        // Wait for UI to render properly
-        setTimeout(() => {
-          // Hide HTML splash
-          splash.classList.add("is-hidden");
-
-          // Hide Android splash AFTER HTML is ready
-          if (window.Capacitor) {
-            navigator.splashscreen?.hide();
-          }
-        }, 1500); // 👈 adjust (1000–2000 best)
-      });
+      window.hideHtmlSplash = () => {
+        const splash = document.getElementById('app-splash');
+        if (splash) {
+          splash.classList.add('is-hidden');
+        }
+        if (window.Capacitor && navigator.splashscreen) {
+          navigator.splashscreen.hide();
+        }
+      };
     </script>
   </body>
 </html>

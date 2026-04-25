@@ -100,6 +100,8 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin_user_roles"] });
     qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+    qc.invalidateQueries({ queryKey: ["admin_workers"] });
+    qc.invalidateQueries({ queryKey: ["workers"] });
   };
 
   // Mutations for real-time updates

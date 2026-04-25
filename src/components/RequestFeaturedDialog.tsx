@@ -28,46 +28,23 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: requests = [] } = useQuery({
-    queryKey: ["my_featured_requests", workerId],
+  const { data: workerData } = useQuery({
+    queryKey: ["worker_featured_status", workerId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("featured_requests")
-        .select("id, status, message, created_at, decided_at")
-        .eq("worker_id", workerId)
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("workers").select("is_featured, featured_requested").eq("id", workerId).maybeSingle();
       if (error) throw error;
-      return (data || []) as RequestRow[];
-    },
-    enabled: !!workerId,
-  });
-
-  // Check if already featured
-  const { data: featured } = useQuery({
-    queryKey: ["my_featured_active", workerId],
-    queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from("featured_services")
-        .select("id, is_active, ends_at")
-        .eq("service_id", workerId)
-        .eq("is_active", true)
-        .maybeSingle();
       return data;
     },
     enabled: !!workerId,
   });
 
-  const pending = requests.find((r) => r.status === "pending");
-  const isFeatured = !!featured;
+  const isFeatured = workerData?.is_featured;
+  const pending = workerData?.featured_requested;
 
   const submit = async () => {
     if (!user) return;
     setSubmitting(true);
-    const { error } = await (supabase as any).from("featured_requests").insert({
-      worker_id: workerId,
-      user_id: user.id,
-      message: message.trim() || null,
-    });
+    const { error } = await supabase.from("workers").update({ featured_requested: true }).eq("id", workerId);
     setSubmitting(false);
     if (error) {
       toast.error("Failed to submit request");
@@ -76,7 +53,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
     toast.success("Featured request submitted! Admins will review it soon.");
     setMessage("");
     setOpen(false);
-    queryClient.invalidateQueries({ queryKey: ["my_featured_requests", workerId] });
+    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
   };
 
   return (

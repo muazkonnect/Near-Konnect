@@ -243,7 +243,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
         .wm-pin { position: relative; width: 22px; height: 22px; border-radius: 6px; background: hsl(0 0% 100% / 0.1); color: hsl(var(--primary)); display: grid; place-items: center; flex-shrink: 0; }
         .wm-row { position: relative; display: inline-flex; align-items: center; gap: 6px; line-height: 1; }
         .wm-name { font-size: 12px; font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--hero-foreground)); }
-        .wm-prof { font-size: 11px; font-weight: 500; color: hsl(var(--hero-muted)); }
+        .wm-prof { font-size: 11px; font-weight: 500; color: hsl(var(--hero-muted) / 0.8); }
         .wm-dot { font-size: 11px; color: hsl(var(--hero-muted)); opacity: 0.6; }
         .wm-chip { position: relative; padding: 2px 6px; border-radius: 9999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
       `}</style>

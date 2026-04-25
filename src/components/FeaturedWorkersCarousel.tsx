@@ -32,14 +32,15 @@ const FeaturedWorkersCarousel = ({
   className = "",
 }: Props) => {
   const { user } = useAuth();
-  const { data: featured = [] } = useFeaturedServices();
+  const { data: featuredData } = useFeaturedServices();
+  const featured = featuredData || [];
   const [items, setItems] = useState<FeaturedWorker[]>([]);
 
   useEffect(() => {
     let cancelled = false;
-    const ids = featured.slice(0, limit).map((f) => f.service_id);
+    const ids = featured.map((f) => f.service_id);
     if (ids.length === 0) {
-      setItems([]);
+      if (items.length > 0) setItems([]);
       return;
     }
     (async () => {
@@ -60,12 +61,18 @@ const FeaturedWorkersCarousel = ({
         priority: priorityById.get(w.id) ?? 0,
       }));
       enriched.sort((a, b) => b.priority - a.priority);
-      setItems(enriched);
+      
+      // Simple check to avoid redundant state updates
+      const currentIds = items.map(i => i.id).join(',');
+      const newIds = enriched.map(i => i.id).join(',');
+      if (currentIds !== newIds) {
+        setItems(enriched);
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [featured, limit]);
+  }, [featuredData, limit, items.length]);
 
   if (items.length === 0) return null;
 
@@ -110,7 +117,7 @@ const FeaturedWorkersCarousel = ({
                       <p className="truncate text-sm font-bold text-card-foreground">{w.full_name}</p>
                       {w.verified && <BadgeCheck className="h-3 w-3 shrink-0 text-primary" />}
                     </div>
-                    <p className="truncate text-[11px] text-muted-foreground">{w.profession}</p>
+                    <p className="truncate text-[11px] text-muted-foreground/70">{w.profession}</p>
                     {w.city && <p className="truncate text-[10px] text-muted-foreground/80">{w.city}</p>}
                   </div>
                   <span className="inline-flex items-center gap-0.5 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground">

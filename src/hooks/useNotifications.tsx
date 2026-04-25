@@ -147,7 +147,7 @@ const init = async (userId: string) => {
       read: false,
     });
   }
-  // Featured-request notifications for admins
+  // Featured & Verification requests for admins
   const { data: adminRole } = await sb
     .from("user_roles")
     .select("role")
@@ -156,27 +156,42 @@ const init = async (userId: string) => {
     .maybeSingle();
   const isAdmin = !!adminRole;
   if (isAdmin) {
-    const { data: freqs } = await sb
-      .from("featured_requests")
-      .select("id, user_id, message, status, created_at")
-      .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .limit(10);
-    for (const r of freqs || []) {
+    const { data: workerReqs } = await supabase
+      .from("workers")
+      .select("id, user_id, verification_requested, featured_requested, created_at")
+      .or("verification_requested.eq.true,featured_requested.eq.true")
+      .order("updated_at", { ascending: false })
+      .limit(20);
+
+    for (const w of workerReqs || []) {
       const { data: rp } = await supabase
         .from("profiles")
         .select("full_name")
-        .eq("user_id", r.user_id)
+        .eq("user_id", w.user_id)
         .maybeSingle();
-      list.push({
-        id: `featreq-${r.id}`,
-        type: "featured_request",
-        title: "Featured request",
-        body: `${rp?.full_name || "A worker"} requested to be featured`,
-        created_at: r.created_at,
-        link: "/admin",
-        read: false,
-      });
+      
+      if (w.verification_requested) {
+        list.push({
+          id: `verifreq-${w.id}`,
+          type: "featured_request" as any,
+          title: "Verification request",
+          body: `${rp?.full_name || "A worker"} requested verification`,
+          created_at: w.created_at,
+          link: "/admin",
+          read: false,
+        });
+      }
+      if (w.featured_requested) {
+        list.push({
+          id: `featreq-worker-${w.id}`,
+          type: "featured_request",
+          title: "Featured request",
+          body: `${rp?.full_name || "A worker"} requested to be featured`,
+          created_at: w.created_at,
+          link: "/admin",
+          read: false,
+        });
+      }
     }
   }
   store = list.slice(0, 25);

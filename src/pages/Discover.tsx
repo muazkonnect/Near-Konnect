@@ -17,8 +17,10 @@ import { useCategories } from "@/hooks/useCategories";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
-type RadiusKm = 1 | 2 | 3 | null;
+type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
 const MAX_RADIUS_KM = 20;
+
+import { useWorkers } from "@/hooks/useWorkers";
 
 const Discover = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,8 +60,9 @@ const Discover = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
   const [showMapView, setShowMapView] = useState(false);
-  const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
+  const [radiusKm, setRadiusKm] = useState<RadiusKm>(5 as any);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
+  const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
 
@@ -92,92 +95,16 @@ const Discover = () => {
     if (!expandedMainCategory) return [];
     return getSubCategories(expandedMainCategory).map(c => c.name);
   }, [expandedMainCategory, getSubCategories]);
- 
-  const { data: dbWorkers = [] } = useQuery({
-    queryKey: ["workers"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url)")
-        .eq("available", true)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: true,
-    staleTime: 30_000,
-    gcTime: 5 * 60_000,
-    retry: 1,
-  });
-
-   useEffect(() => {
-    const channelName = `workers-rt-${Math.random().toString(36).slice(2)}`;
-    const channel = supabase.channel(channelName);
-    channel.on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
-      queryClient.invalidateQueries({ queryKey: ["workers"] });
-    });
-    channel.on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
-      queryClient.invalidateQueries({ queryKey: ["workers"] });
-    });
-    channel.on("postgres_changes", { event: "*", schema: "public", table: "reviews" }, () => {
-      queryClient.invalidateQueries({ queryKey: ["review_stats"] });
-    });
-    channel.subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient]);
-
-  const { data: reviewStats } = useQuery({
-    queryKey: ["review_stats"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("reviews").select("worker_id, rating");
-      if (error) {
-        console.warn("Review stats unavailable", error.message);
-        return {} as Record<string, { total: number; count: number }>;
-      }
-      const stats: Record<string, { total: number; count: number }> = {};
-      data.forEach((r: any) => {
-        if (!stats[r.worker_id]) stats[r.worker_id] = { total: 0, count: 0 };
-        stats[r.worker_id].total += r.rating;
-        stats[r.worker_id].count += 1;
-      });
-      return stats;
-    },
-    enabled: true,
-    staleTime: 30_000,
-    gcTime: 5 * 60_000,
-    retry: 1,
-  });
 
   const workersList = useMemo(() => {
-    return dbWorkers.map((w: any) => {
-      const stats = reviewStats?.[w.id];
-      const rating = stats ? parseFloat((stats.total / stats.count).toFixed(1)) : 0;
-      let distance = 0;
+    return allWorkers.map((w) => {
+      let distance = w.distance;
       if (userCoords && w.latitude && w.longitude) {
         distance = parseFloat(calculateDistance(userCoords.latitude, userCoords.longitude, w.latitude, w.longitude).toFixed(1));
       }
-      return {
-        id: w.id,
-        userId: w.user_id,
-        name: w.profiles?.full_name || "Unknown",
-        profession: w.profession,
-        rating,
-        reviewCount: stats?.count || 0,
-        experience: w.experience,
-        distance,
-        available: w.available,
-        verified: w.verified,
-        phone: w.profiles?.phone || "",
-        description: w.description || "",
-        serviceAreas: w.service_areas || [],
-        profilePhoto: w.profiles?.avatar_url || "",
-        city: w.city || "",
-        mainCategory: w.main_category || "",
-        subCategory: w.sub_category || "",
-      };
+      return { ...w, distance };
     });
-  }, [dbWorkers, userCoords, reviewStats]);
+  }, [allWorkers, userCoords]);
 
   const ownWorkerUserId = user?.id || null;
 
@@ -197,11 +124,15 @@ const Discover = () => {
     if (adminUserIds.size > 0) {
       list = list.filter((w) => !adminUserIds.has(w.userId));
     }
-    if (selectedMainCategory) {
-      list = list.filter(w => w.mainCategory === selectedMainCategory);
-    }
-    if (selectedSubCategory) {
-      list = list.filter(w => w.subCategory === selectedSubCategory);
+    if (selectedMainCategory && selectedSubCategory) {
+      // If both are selected, we want strict matching for both (hierarchical)
+      list = list.filter(w => w.mainCategory === selectedMainCategory && w.subCategory === selectedSubCategory);
+    } else if (selectedMainCategory) {
+      // If only main category is selected, show workers matching it in EITHER field
+      list = list.filter(w => w.mainCategory === selectedMainCategory || w.subCategory === selectedMainCategory);
+    } else if (selectedSubCategory) {
+      // If only sub category is selected, show workers matching it in EITHER field
+      list = list.filter(w => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search) {
       const words = search.toLowerCase().trim().split(/\s+/);
@@ -228,6 +159,9 @@ const Discover = () => {
       list = list
         .filter((w) => nearbyIds[w.id] !== undefined)
         .map((w) => ({ ...w, matchedDistanceMeters: nearbyIds[w.id] }));
+    } else if (radiusKm && userCoords) {
+      // Fallback manual filtering if RPC fails or is still loading
+      list = list.filter((w) => w.distance <= (radiusKm as number));
     }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
@@ -323,6 +257,26 @@ const Discover = () => {
                 {sortLabels[s]}
               </Button>
             ))}
+            <div className="mx-1 h-8 w-px bg-white/10" />
+            {([1, 2, 5, 10, 20] as number[]).map((r) => (
+              <Button
+                key={r}
+                variant={radiusKm === r ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRadiusKm(r as any)}
+                className="shrink-0"
+              >
+                {r}km
+              </Button>
+            ))}
+            <Button
+              variant={radiusKm === null ? "default" : "outline"}
+              size="sm"
+              onClick={() => setRadiusKm(null)}
+              className="shrink-0"
+            >
+              Any distance
+            </Button>
           </div>
         </div>
 

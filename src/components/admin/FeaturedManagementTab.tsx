@@ -244,7 +244,7 @@ const FeaturedManagementTab = () => {
                 <div key={req.id} className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3">
                   <div className="min-w-[180px] flex-1">
                     <p className="text-sm font-semibold text-card-foreground">
-                      {worker?.profiles?.full_name || "Unknown"} · {worker?.profession}
+                      {worker?.profiles?.full_name || "Unknown"} · <span className="font-medium text-muted-foreground/70">{worker?.profession}</span>
                     </p>
                     {req.message && (
                       <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">"{req.message}"</p>
@@ -345,7 +345,7 @@ const FeaturedManagementTab = () => {
                     <p className="truncate text-sm font-semibold text-card-foreground">
                       {w?.profiles?.full_name || w?.profession || "Service"}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground/70">
                       {w?.profession}
                       {f.starts_at && ` · from ${format(new Date(f.starts_at), "MMM d")}`}
                       {f.ends_at && ` · until ${format(new Date(f.ends_at), "MMM d")}`}

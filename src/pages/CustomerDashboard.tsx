@@ -414,7 +414,7 @@ const CustomerDashboard = () => {
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <p className="font-bold text-card-foreground">{b.workers?.profiles?.full_name || "Service"}</p>
-                        <p className="text-xs font-medium text-primary">{b.workers?.profession}</p>
+                        <p className="text-xs text-muted-foreground/70">{b.workers?.profession}</p>
                         <p className="mt-2 text-sm text-muted-foreground">{b.service_description}</p>
                         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                           <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground"><Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}</span>
