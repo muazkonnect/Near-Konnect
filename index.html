@@ -81,5 +81,18 @@
         }
       };
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const splash = document.getElementById("app-splash");
+
+        setTimeout(() => {
+          splash.classList.add("is-hidden");
+
+          if (window.Capacitor) {
+            navigator.splashscreen?.hide();
+          }
+        }, 1500);
+      });
+    </script>
   </body>
 </html>
