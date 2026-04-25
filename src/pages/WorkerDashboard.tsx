@@ -35,6 +35,7 @@ import AppLayout from "@/components/AppLayout";
 import DashboardNav from "@/components/DashboardNav";
 import WorkersMap from "@/components/WorkersMap";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { getCurrentPosition } from "@/lib/geolocation";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,6 +49,14 @@ import { type ContactMethod, parseContactMethods, validateContactMethods, saniti
 const WorkerDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { roles, isLoading: roleLoading } = useUserRole();
+
+  // Admins are not workers — bounce them to the admin dashboard.
+  useEffect(() => {
+    if (!authLoading && !roleLoading && roles.includes("admin")) {
+      navigate("/admin", { replace: true });
+    }
+  }, [authLoading, roleLoading, roles, navigate]);
   const { data: workerData, isLoading } = useWorkerProfile();
   const queryClient = useQueryClient();
 
