@@ -94,5 +94,16 @@
         }, 1500);
       });
     </script>
+    <script>
+      window.addEventListener("androidBackPressed", function () {
+          if (window.history.length > 1) {
+              window.history.back(); // previous page
+          } else {
+              if (window.Capacitor) {
+                  navigator.app.exitApp(); // exit app
+              }
+          }
+      });
+    </script>
   </body>
 </html>
