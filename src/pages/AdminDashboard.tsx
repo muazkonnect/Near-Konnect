@@ -183,6 +183,7 @@ const AdminDashboard = () => {
   const [donorFilter, setDonorFilter] = useState("");
   const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
   const [editingAdId, setEditingAdId] = useState<string | null>(null);
+  const [editingWorker, setEditingWorker] = useState<any | null>(null);
 
   const setAdTargetCoords = (c: Coords | null) => {
     setAdTargetCoordsState(c);
