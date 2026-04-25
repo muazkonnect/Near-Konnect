@@ -47,3 +47,7 @@ body {
   padding: 0;
   background-color: #0b0b0b;
 }
+
+body {
+  padding-top: env(safe-area-inset-top);
+}

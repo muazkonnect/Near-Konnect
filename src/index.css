@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -102,25 +102,39 @@
     @apply border-border;
   }
 
-  html, body {
+  html,
+  body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     overflow-x: hidden;
     max-width: 100vw;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', system-ui, sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Inter", system-ui, sans-serif;
     letter-spacing: -0.02em;
     font-weight: 700;
   }
 }
 
 @layer utilities {
-  .bg-hero { background-color: hsl(var(--hero)); }
-  .text-hero-foreground { color: hsl(var(--hero-foreground)); }
-  .text-hero-muted { color: hsl(var(--hero-muted)); }
-  .bg-primary-soft { background-color: hsl(var(--accent)); }
+  .bg-hero {
+    background-color: hsl(var(--hero));
+  }
+  .text-hero-foreground {
+    color: hsl(var(--hero-foreground));
+  }
+  .text-hero-muted {
+    color: hsl(var(--hero-muted));
+  }
+  .bg-primary-soft {
+    background-color: hsl(var(--accent));
+  }
 
   .hero-section {
     @apply bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-6 pb-8 md:rounded-3xl md:px-8 md:pt-8 md:pb-10;
@@ -158,9 +172,10 @@
   }
 
   .shadow-premium {
-    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04),
-                0 4px 8px hsl(var(--foreground) / 0.04),
-                0 12px 24px hsl(var(--foreground) / 0.06);
+    box-shadow:
+      0 1px 2px hsl(var(--foreground) / 0.04),
+      0 4px 8px hsl(var(--foreground) / 0.04),
+      0 12px 24px hsl(var(--foreground) / 0.06);
   }
 
   .animate-float {
@@ -173,8 +188,13 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* RTL Support */
@@ -272,4 +292,15 @@
     height: 38px !important;
     line-height: 38px !important;
   }
+}
+
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0b0b0b;
 }
