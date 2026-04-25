@@ -14,6 +14,7 @@ import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
 import { useCategories } from "@/hooks/useCategories";
+import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | null;
@@ -60,6 +61,7 @@ const Discover = () => {
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const featuredIds = useFeaturedWorkerIds();
+  const adminUserIds = useAdminUserIds();
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
