@@ -15,6 +15,9 @@ export interface Worker {
   city: string;
   latitude?: number;
   longitude?: number;
+  mainCategory?: string;
+  subCategory?: string;
+  userId?: string;
 }
 
 export interface ServiceCategory {
