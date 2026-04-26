@@ -9,6 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+const sb = supabase as any;
+
 interface Props {
   workerId: string;
 }
@@ -23,13 +25,13 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
   const { data: requests = [] } = useQuery({
     queryKey: ["featured_requests", workerId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("featured_requests")
         .select("id, status, message, created_at, decided_at")
         .eq("worker_id", workerId)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!workerId,
   });
@@ -37,13 +39,13 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
   const { data: featured } = useQuery({
     queryKey: ["worker_is_featured", workerId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await sb
         .from("featured_services")
         .select("id, ends_at")
         .eq("service_id", workerId)
         .eq("is_active", true)
         .maybeSingle();
-      return data;
+      return data as any;
     },
     enabled: !!workerId,
   });
@@ -54,7 +56,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
   const submit = async () => {
     if (!user) return;
     setSubmitting(true);
-    const { error } = await supabase
+    const { error } = await sb
       .from("featured_requests")
       .insert({ worker_id: workerId, user_id: user.id, message: message || null });
     setSubmitting(false);
