@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Star, Loader2, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,14 +13,6 @@ interface Props {
   workerId: string;
 }
 
-type RequestRow = {
-  id: string;
-  status: string;
-  message: string | null;
-  created_at: string;
-  decided_at: string | null;
-};
-
 const RequestFeaturedDialog = ({ workerId }: Props) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -28,23 +20,43 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: workerData } = useQuery({
-    queryKey: ["worker_featured_status", workerId],
+  const { data: requests = [] } = useQuery({
+    queryKey: ["featured_requests", workerId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("workers").select("is_featured, featured_requested").eq("id", workerId).maybeSingle();
+      const { data, error } = await supabase
+        .from("featured_requests")
+        .select("id, status, message, created_at, decided_at")
+        .eq("worker_id", workerId)
+        .order("created_at", { ascending: false });
       if (error) throw error;
+      return data || [];
+    },
+    enabled: !!workerId,
+  });
+
+  const { data: featured } = useQuery({
+    queryKey: ["worker_is_featured", workerId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("featured_services")
+        .select("id, ends_at")
+        .eq("service_id", workerId)
+        .eq("is_active", true)
+        .maybeSingle();
       return data;
     },
     enabled: !!workerId,
   });
 
-  const isFeatured = workerData?.is_featured;
-  const pending = workerData?.featured_requested;
+  const isFeatured = !!featured;
+  const pending = requests.find((r: any) => r.status === "pending");
 
   const submit = async () => {
     if (!user) return;
     setSubmitting(true);
-    const { error } = await supabase.from("workers").update({ featured_requested: true }).eq("id", workerId);
+    const { error } = await supabase
+      .from("featured_requests")
+      .insert({ worker_id: workerId, user_id: user.id, message: message || null });
     setSubmitting(false);
     if (error) {
       toast.error("Failed to submit request");
@@ -53,7 +65,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
     toast.success("Featured request submitted! Admins will review it soon.");
     setMessage("");
     setOpen(false);
-    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
+    queryClient.invalidateQueries({ queryKey: ["featured_requests", workerId] });
   };
 
   return (
@@ -115,7 +127,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           <div className="space-y-1.5">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">History</p>
             <div className="max-h-32 space-y-1.5 overflow-auto">
-              {requests.slice(0, 5).map((r) => (
+              {requests.slice(0, 5).map((r: any) => (
                 <div key={r.id} className="flex items-center justify-between rounded-lg border bg-card px-2.5 py-1.5 text-xs">
                   <span className="text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
                   <Badge
