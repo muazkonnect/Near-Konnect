@@ -156,42 +156,28 @@ const init = async (userId: string) => {
     .maybeSingle();
   const isAdmin = !!adminRole;
   if (isAdmin) {
-    const { data: workerReqs } = await supabase
-      .from("workers")
-      .select("id, user_id, verification_requested, featured_requested, created_at")
-      .or("verification_requested.eq.true,featured_requested.eq.true")
-      .order("updated_at", { ascending: false })
+    const { data: featReqs } = await sb
+      .from("featured_requests")
+      .select("id, user_id, status, created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
       .limit(20);
 
-    for (const w of workerReqs || []) {
+    for (const fr of (featReqs || []) as any[]) {
       const { data: rp } = await supabase
         .from("profiles")
         .select("full_name")
-        .eq("user_id", w.user_id)
+        .eq("user_id", fr.user_id)
         .maybeSingle();
-      
-      if (w.verification_requested) {
-        list.push({
-          id: `verifreq-${w.id}`,
-          type: "featured_request" as any,
-          title: "Verification request",
-          body: `${rp?.full_name || "A worker"} requested verification`,
-          created_at: w.created_at,
-          link: "/admin",
-          read: false,
-        });
-      }
-      if (w.featured_requested) {
-        list.push({
-          id: `featreq-worker-${w.id}`,
-          type: "featured_request",
-          title: "Featured request",
-          body: `${rp?.full_name || "A worker"} requested to be featured`,
-          created_at: w.created_at,
-          link: "/admin",
-          read: false,
-        });
-      }
+      list.push({
+        id: `featreq-${fr.id}`,
+        type: "featured_request",
+        title: "Featured request",
+        body: `${rp?.full_name || "A worker"} requested to be featured`,
+        created_at: fr.created_at,
+        link: "/admin",
+        read: false,
+      });
     }
   }
   store = list.slice(0, 25);
