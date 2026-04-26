@@ -427,9 +427,9 @@ const Discover = () => {
         {showMapView ? (
           <WorkersMap
             workers={sorted
-              .filter((w) => (dbWorkers.find((d: any) => d.id === w.id)?.latitude) && (dbWorkers.find((d: any) => d.id === w.id)?.longitude))
+              .filter((w) => (allWorkers.find((d: any) => d.id === w.id)?.latitude) && (allWorkers.find((d: any) => d.id === w.id)?.longitude))
               .map((w) => {
-                const db = dbWorkers.find((d: any) => d.id === w.id);
+                const db: any = allWorkers.find((d: any) => d.id === w.id);
                 return {
                   id: w.id,
                   name: w.name,
