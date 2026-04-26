@@ -235,7 +235,7 @@
 
 @media (max-width: 767px) {
   body.has-mobile-bottom-nav {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
   }
 }
 
