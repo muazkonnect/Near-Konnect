@@ -44,40 +44,43 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* MOBILE: dark hero header */}
+      {/* MOBILE: bold compact hero header */}
       <div className="md:hidden">
         {title ? (
-          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
+          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-6">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <div className="relative items-center justify-between text-center flex flex-col">
+            <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+            <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
+                <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
               </Link>
+              {user && <NotificationBell />}
             </div>
-
-            <div className="relative mt-6 flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-                {subtitle && <p className="mt-1.5 text-sm text-hero-muted line-clamp-2">{subtitle}</p>}
+            <div className="relative mt-5 flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-[22px] font-bold leading-tight tracking-tight">{title}</h1>
+                {subtitle && <p className="mt-1 text-[13px] leading-snug text-hero-muted line-clamp-2">{subtitle}</p>}
               </div>
               {action && <div className="shrink-0">{action}</div>}
             </div>
           </div>
         ) : (
-          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[2rem] px-5 pt-7 pb-8 my-0">
+          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-5">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <div className="relative items-center justify-between text-center flex flex-col">
+            <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+            <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="NearKonnect" className="h-9 object-contain" />
+                <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
               </Link>
+              {user && <NotificationBell />}
             </div>
           </div>
         )}
 
-        <main className="px-4 pt-5 my-[58px]">{children}</main>
+        <main className="px-4 pt-4 pb-6">{children}</main>
 
         {user && showSignOut && (
-          <div className="px-4 pb-32 pt-6 flex flex-col items-center gap-4">
+          <div className="px-4 pb-8 pt-2 flex flex-col items-center gap-4">
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
               <Link to="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
               <span aria-hidden>·</span>
