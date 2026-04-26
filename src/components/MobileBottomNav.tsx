@@ -28,110 +28,66 @@ const MobileBottomNav = () => {
 
   const { unreadByType } = useNotifications();
   const messagesBadge = unreadByType.message + unreadByType.contact_request;
+  const bloodDot = unreadByType.blood_request > 0;
 
-  const leftItems = [
-    { label: "Home", to: "/", icon: Home, badge: 0 },
-    { label: "Explore", to: "/discover", icon: Compass, badge: 0 },
+  const items = [
+    { label: "Home", to: "/", icon: Home, badge: 0, dot: false },
+    { label: "Explore", to: "/discover", icon: Compass, badge: 0, dot: false },
+    { label: "Blood", to: "/blood-donors", icon: HeartPulse, badge: 0, dot: bloodDot, accent: true },
+    { label: "Inbox", to: "/messages", icon: MessageSquare, badge: messagesBadge, dot: false },
+    { label: "Profile", to: profilePath, icon: User, badge: 0, dot: false },
   ];
-  const rightItems = [
-    { label: "Inbox", to: "/messages", icon: MessageSquare, badge: messagesBadge },
-    { label: "Profile", to: profilePath, icon: User, badge: 0 },
-  ];
-
-  const fab = {
-    label: "Donate",
-    to: "/blood-donors",
-    icon: HeartPulse,
-    hasDot: unreadByType.blood_request > 0,
-  };
 
   if (shouldHide) return null;
 
   const isActive = (to: string) => pathname === to || (to !== "/" && pathname.startsWith(to));
 
-  const renderItem = (item: { label: string; to: string; icon: any; badge: number }) => {
-    const active = isActive(item.to);
-    return (
-      <Link
-        key={item.label}
-        to={item.to}
-        aria-label={item.label}
-        aria-current={active ? "page" : undefined}
-        className="tap-feedback group relative flex flex-1 flex-col items-center justify-center gap-1 py-2"
-      >
-        {/* Active indicator pill at top */}
-        <span
-          className={`absolute top-0 h-1 w-8 rounded-full transition-all duration-300 ${
-            active ? "bg-primary opacity-100" : "opacity-0"
-          }`}
-        />
-        <span className="relative">
-          <item.icon
-            className={`h-[22px] w-[22px] transition-all duration-200 ${
-              active ? "text-primary scale-110" : "text-muted-foreground group-hover:text-foreground"
-            }`}
-            strokeWidth={active ? 2.5 : 2}
-          />
-          {item.badge > 0 && (
-            <span className="absolute -top-1.5 -right-2 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-none text-destructive-foreground ring-2 ring-card">
-              {item.badge > 9 ? "9+" : item.badge}
-            </span>
-          )}
-        </span>
-        <span
-          className={`text-[10px] font-semibold leading-none transition-colors ${
-            active ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          {item.label}
-        </span>
-      </Link>
-    );
-  };
-
   return (
     <nav
-      className="md:hidden fixed inset-x-0 bottom-0 z-50"
+      className="md:hidden fixed left-1/2 z-50 -translate-x-1/2"
+      style={{ bottom: "calc(0.85rem + env(safe-area-inset-bottom))" }}
       aria-label="Primary mobile navigation"
     >
-      {/* Backdrop blur container */}
-      <div
-        className="relative border-t border-border/40 bg-card/90 backdrop-blur-2xl"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        {/* SVG curve cutout for FAB */}
-        <svg
-          className="absolute left-1/2 -top-[1px] -translate-x-1/2 text-card/90"
-          width="80"
-          height="28"
-          viewBox="0 0 80 28"
-          fill="currentColor"
-          aria-hidden
-        >
-          <path d="M0 1 C 18 1, 18 28, 40 28 C 62 28, 62 1, 80 1 L 80 0 L 0 0 Z" />
-        </svg>
-
-        <ul className="relative flex items-stretch justify-between px-2">
-          {leftItems.map(renderItem)}
-          <li className="w-[72px] shrink-0" aria-hidden />
-          {rightItems.map(renderItem)}
-        </ul>
-
-        {/* Floating FAB */}
-        <Link
-          to={fab.to}
-          aria-label={fab.label}
-          className="tap-feedback absolute left-1/2 -translate-x-1/2 -top-7 flex h-[58px] w-[58px] items-center justify-center rounded-full text-destructive-foreground shadow-[0_8px_24px_-4px_hsl(var(--destructive)/0.5)] transition-transform active:scale-90"
-          style={{
-            background:
-              "linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(var(--destructive)/0.8) 100%)",
-          }}
-        >
-          <fab.icon className="h-7 w-7" strokeWidth={2.5} />
-          {fab.hasDot && (
-            <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-card ring-2 ring-destructive animate-pulse" />
-          )}
-        </Link>
+      <div className="relative flex items-center gap-1 rounded-full border border-border/50 bg-card/85 px-2 py-1.5 shadow-[0_20px_50px_-20px_hsl(var(--foreground)/0.5)] backdrop-blur-2xl">
+        {items.map((item) => {
+          const active = isActive(item.to);
+          const accent = item.accent && active;
+          return (
+            <Link
+              key={item.label}
+              to={item.to}
+              aria-label={item.label}
+              aria-current={active ? "page" : undefined}
+              className={`tap-feedback group relative flex items-center justify-center rounded-full transition-all duration-300 ${
+                active
+                  ? accent
+                    ? "bg-destructive text-destructive-foreground gap-1.5 px-3.5 py-2 shadow-[0_8px_20px_-6px_hsl(var(--destructive)/0.6)]"
+                    : "bg-primary text-primary-foreground gap-1.5 px-3.5 py-2 shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.6)]"
+                  : "h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-muted/60"
+              }`}
+            >
+              <span className="relative flex items-center justify-center">
+                <item.icon
+                  className={`transition-all ${active ? "h-[18px] w-[18px]" : "h-[20px] w-[20px]"}`}
+                  strokeWidth={active ? 2.5 : 2}
+                />
+                {item.dot && !active && (
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-card animate-pulse" />
+                )}
+                {item.badge > 0 && !active && (
+                  <span className="absolute -top-1.5 -right-2 inline-flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-destructive-foreground ring-2 ring-card">
+                    {item.badge > 9 ? "9+" : item.badge}
+                  </span>
+                )}
+              </span>
+              {active && (
+                <span className="text-[12px] font-bold leading-none animate-in fade-in slide-in-from-left-1 duration-200">
+                  {item.label}
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );
