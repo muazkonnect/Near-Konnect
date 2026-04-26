@@ -291,33 +291,11 @@ const WorkerDashboard = () => {
                       <CheckCircle className="h-3 w-3" /> VERIFIED
                     </Badge>
                   )}
-                  {workerData.is_featured && (
-                    <Badge className="h-5 gap-1 rounded-full bg-primary/20 px-2 py-0 text-[10px] font-bold text-primary-foreground border-none">
-                      <Star className="h-3 w-3 fill-primary" /> FEATURED
-                    </Badge>
-                  )}
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              {!workerData.verified && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={workerData.verification_requested}
-                  onClick={async () => {
-                    const { error } = await supabase.from("workers").update({ verification_requested: true }).eq("id", workerData.id);
-                    if (error) return toast.error("Failed to request verification");
-                    toast.success("Verification request sent to admin!");
-                    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
-                  }}
-                  className="h-9 gap-2 rounded-full border-white/20 bg-white/10 text-xs text-white backdrop-blur-sm hover:bg-white/20"
-                >
-                  <Shield className="h-3.5 w-3.5" />
-                  {workerData.verification_requested ? "Verification Pending" : "Request Verification"}
-                </Button>
-              )}
               <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
                 <span className={`h-2 w-2 rounded-full ${available ? "bg-primary" : "bg-destructive"}`} />
                 {available ? "Visible" : "Hidden"}
