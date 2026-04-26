@@ -673,7 +673,7 @@ const AdminDashboard = () => {
                             {w.available ? "Hide" : "Unhide"}
                           </Button>
                           <Button
-                            variant={featuredMap.has(w.id) ? "secondary" : (w.featured_requested ? "default" : "outline")}
+                            variant={featuredMap.has(w.id) ? "secondary" : "outline"}
                             size="sm"
                             className="h-8 px-2 text-[11px]"
                             onClick={async () => {
@@ -682,9 +682,6 @@ const AdminDashboard = () => {
                                 await removeFeatured(featured.id);
                               } else {
                                 await addFeatured(w.id);
-                                if (w.featured_requested) {
-                                  await supabase.from("workers").update({ featured_requested: false, is_featured: true }).eq("id", w.id);
-                                }
                               }
                             }}
                           >
@@ -692,15 +689,11 @@ const AdminDashboard = () => {
                             {featuredMap.has(w.id) ? "Unfeature" : "Feature"}
                           </Button>
                           <Button
-                            variant={w.verified ? "outline" : (w.verification_requested ? "default" : "outline")}
+                            variant="outline"
                             size="sm"
                             className="h-8 px-2 text-[11px]"
                             onClick={async () => {
-                              const newStatus = !w.verified;
                               await toggleVerified(w.id, w.verified);
-                              if (newStatus && w.verification_requested) {
-                                await supabase.from("workers").update({ verification_requested: false }).eq("id", w.id);
-                              }
                             }}
                           >
                             {w.verified ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
