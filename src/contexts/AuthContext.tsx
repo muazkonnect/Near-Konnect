@@ -69,11 +69,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const rawMainCategory = String(md.main_category || "").trim();
       const rawSubCategory = String(md.sub_category || "").trim();
 
-      const mainCategory = isValidMainCategory(rawMainCategory) ? rawMainCategory : null;
-      const subCategory =
-        mainCategory && isValidSubcategoryForMain(mainCategory, rawSubCategory)
-          ? rawSubCategory
-          : null;
+      // Trust whatever the user picked in the signup form (categories come from the
+      // admin-managed `service_categories` table, not a hardcoded list).
+      const mainCategory = rawMainCategory || null;
+      const subCategory = rawSubCategory || null;
 
       // Check if profile already exists — if so, do NOT overwrite user-edited fields
       // like contact_methods, phone, blood_group, etc. Only seed them on first creation.
