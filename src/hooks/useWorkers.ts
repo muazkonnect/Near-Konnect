@@ -34,7 +34,7 @@ export function useWorkers() {
         .from("workers")
         .select(`
           *,
-          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, profession_override),
+          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url),
           reviews(rating)
         `)
         .order("experience", { ascending: false });
@@ -52,8 +52,7 @@ export function useWorkers() {
         const ratingSum = reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0);
         const rating = reviewCount > 0 ? Math.round((ratingSum / reviewCount) * 10) / 10 : 0;
 
-        // Use profile override if it exists, otherwise use worker table profession
-        const finalProfession = profile?.profession_override || w.profession || "General Service";
+        const finalProfession = w.profession || "General Service";
 
         return {
           id: w.id,
