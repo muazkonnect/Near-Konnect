@@ -269,7 +269,7 @@ const FeaturedManagementTab = () => {
       {/* Add featured form */}
       <div className="rounded-2xl border bg-card p-4">
         <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Add Featured Worker</h3>
-        <div className="grid gap-3 md:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5">
           <div className="md:col-span-2">
             <Select value={selectedWorkerId} onValueChange={setSelectedWorkerId}>
               <SelectTrigger>
@@ -293,8 +293,8 @@ const FeaturedManagementTab = () => {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn("justify-start font-normal", !startsAt && "text-muted-foreground")}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {startsAt ? format(startsAt, "PP") : "Start date"}
+                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                <span className="truncate">{startsAt ? format(startsAt, "PP") : "Start date"}</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -304,8 +304,8 @@ const FeaturedManagementTab = () => {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn("justify-start font-normal", !endsAt && "text-muted-foreground")}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {endsAt ? format(endsAt, "PP") : "End date"}
+                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                <span className="truncate">{endsAt ? format(endsAt, "PP") : "End date"}</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
