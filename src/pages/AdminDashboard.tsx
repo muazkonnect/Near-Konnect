@@ -580,7 +580,7 @@ const AdminDashboard = () => {
             <Badge className="bg-primary text-primary-foreground">Admin</Badge>
           </header>
 
-          <main className="flex-1 p-4 md:p-6 lg:p-8">
+          <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
             {/* OVERVIEW */}
             {tab === "overview" && (
               <div>
@@ -776,34 +776,38 @@ const AdminDashboard = () => {
                   {bloodDonors
                     .filter((d: any) => !donorFilter || d.blood_group === donorFilter)
                     .map((d: any) => (
-                      <div key={d.id} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 text-sm font-bold text-destructive">
-                          {d.full_name?.slice(0, 2).toUpperCase() || "??"}
+                      <div key={d.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center">
+                        <div className="flex flex-1 items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-sm font-bold text-destructive">
+                            {d.full_name?.slice(0, 2).toUpperCase() || "??"}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-semibold text-card-foreground">{d.full_name || "Unnamed"}</p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {d.city || "No city"} · {d.blood_group || "?"}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-[160px] flex-1">
-                          <p className="font-semibold text-card-foreground">{d.full_name || "Unnamed"}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {d.city || "No city"} · {d.blood_group || "?"}
-                          </p>
+                        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                          <Badge
+                            variant="outline"
+                            className={d.donor_status === "active" ? "border-success text-success" : ""}
+                          >
+                            {d.donor_status === "active" ? "Active" : "Inactive"}
+                          </Badge>
+                          <Button size="sm" variant="outline" onClick={() => toggleDonorStatus(d.user_id, d.donor_status)}>
+                            <Droplet className="mr-1 h-3 w-3" />
+                            {d.donor_status === "active" ? "Deactivate" : "Activate"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive"
+                            onClick={() => removeDonor(d.user_id)}
+                          >
+                            <XCircle className="h-3 w-3" />
+                          </Button>
                         </div>
-                        <Badge
-                          variant="outline"
-                          className={d.donor_status === "active" ? "border-success text-success" : ""}
-                        >
-                          {d.donor_status === "active" ? "Active" : "Inactive"}
-                        </Badge>
-                        <Button size="sm" variant="outline" onClick={() => toggleDonorStatus(d.user_id, d.donor_status)}>
-                          <Droplet className="mr-1 h-3 w-3" />
-                          {d.donor_status === "active" ? "Deactivate" : "Activate"}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive"
-                          onClick={() => removeDonor(d.user_id)}
-                        >
-                          <XCircle className="h-3 w-3" />
-                        </Button>
                       </div>
                     ))}
                   {bloodDonors.filter((d: any) => !donorFilter || d.blood_group === donorFilter).length === 0 && (
