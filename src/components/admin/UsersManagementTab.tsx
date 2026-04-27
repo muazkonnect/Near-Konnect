@@ -365,14 +365,14 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                   </div>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2 sm:justify-end">
                 {availableToAdd.length > 0 && (
                   <Select
                     onValueChange={(v) => assignRole(p.user_id, v as AppRole)}
                     disabled={isUpdating}
                   >
-                    <SelectTrigger className="w-[150px]">
-                      <Plus className="mr-1 h-3.5 w-3.5" />
+                    <SelectTrigger className="w-full min-w-0 sm:w-[150px]">
+                      <Plus className="mr-1 h-3.5 w-3.5 shrink-0" />
                       <SelectValue placeholder="Add role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -389,7 +389,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                   variant="ghost"
                   onClick={() => deleteUser(p.user_id)}
                   disabled={isUpdating}
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   aria-label="Delete user"
                 >
                   <Trash2 className="h-4 w-4" />
