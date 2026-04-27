@@ -241,9 +241,9 @@ const FeaturedManagementTab = () => {
             {pendingRequests.map((req: any) => {
               const worker = workerMap.get(req.worker_id);
               return (
-                <div key={req.id} className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3">
-                  <div className="min-w-[180px] flex-1">
-                    <p className="text-sm font-semibold text-card-foreground">
+                <div key={req.id} className="flex flex-col gap-3 rounded-xl border bg-card p-3 sm:flex-row sm:flex-wrap sm:items-center">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-card-foreground">
                       {worker?.profiles?.full_name || "Unknown"} · <span className="font-medium text-muted-foreground/70">{worker?.profession}</span>
                     </p>
                     {req.message && (
@@ -253,12 +253,14 @@ const FeaturedManagementTab = () => {
                       Requested {new Date(req.created_at).toLocaleString()}
                     </p>
                   </div>
-                  <Button size="sm" onClick={() => approveRequest(req)} className="gap-1">
-                    <CheckCircle className="h-3 w-3" /> Approve
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => denyRequest(req)} className="gap-1">
-                    <XCircle className="h-3 w-3" /> Deny
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                    <Button size="sm" onClick={() => approveRequest(req)} className="gap-1">
+                      <CheckCircle className="h-3 w-3" /> Approve
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => denyRequest(req)} className="gap-1">
+                      <XCircle className="h-3 w-3" /> Deny
+                    </Button>
+                  </div>
                 </div>
               );
             })}
