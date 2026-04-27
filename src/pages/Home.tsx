@@ -46,12 +46,11 @@ const Home = () => {
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
   const workers = useMemo(() => {
-    // Only include workers who completed category setup (no placeholders)
-    // and exclude any users who hold the admin role.
+    // Exclude self and any users who hold the admin role.
+    // Workers without main/sub categories are still included — we fall back to profession.
     return allWorkers
       .filter((w) => w.userId !== user?.id)
-      .filter((w) => !adminUserIds.has(w.userId))
-      .filter((w) => !!w.mainCategory && !!w.subCategory);
+      .filter((w) => !adminUserIds.has(w.userId));
   }, [allWorkers, user?.id, adminUserIds]);
 
   const loading = workersLoading;
