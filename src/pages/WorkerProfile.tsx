@@ -176,7 +176,7 @@ const WorkerProfile = () => {
           className="overflow-hidden rounded-[2rem] border bg-card pb-8 shadow-premium"
         >
           {/* Dark hero header */}
-          <div className="relative overflow-hidden bg-hero px-5 pt-6 pb-6 text-hero-foreground md:px-8 md:pt-8 md:pb-8">
+          <div className="relative overflow-hidden bg-hero px-4 pt-5 pb-6 text-hero-foreground sm:px-5 sm:pt-6 md:px-8 md:pt-8 md:pb-8">
             <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
               backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
@@ -260,7 +260,7 @@ const WorkerProfile = () => {
           </div>
 
           {/* Body */}
-          <div className="relative px-5 pt-5 md:px-8 md:pt-6">
+          <div className="relative px-4 pt-5 sm:px-5 md:px-8 md:pt-6">
 
             <div className="mt-5 grid grid-cols-3 gap-2">
               <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center text-secondary bg-secondary-foreground">
@@ -279,7 +279,7 @@ const WorkerProfile = () => {
 
           </div>
 
-          <div className="px-5 pb-6 md:px-8">
+          <div className="px-4 pb-6 sm:px-5 md:px-8">
             <div className="mt-6">
               <h2 className="font-semibold text-card-foreground mb-2">About</h2>
               <p className="text-sm leading-relaxed text-muted-foreground">{worker.description || "No description provided yet."}</p>
