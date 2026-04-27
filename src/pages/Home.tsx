@@ -91,9 +91,9 @@ const Home = () => {
         return { ...w, distance: parseFloat(distance.toFixed(1)) };
       })
       .filter((w) => {
-        // Only show workers within 5km by default if location is available
+        // Only show workers within 10km by default if location is available
         if (browsingCoords && w.distance !== Number.POSITIVE_INFINITY) {
-          return w.distance <= 5;
+          return w.distance <= 10;
         }
         return true;
       })
