@@ -338,14 +338,14 @@ const FeaturedManagementTab = () => {
             const w = workerMap.get(f.service_id);
             const s = statsMap.get(f.service_id);
             return (
-              <div key={f.id} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-3">
-                <div className="flex items-center gap-2 min-w-[180px] flex-1">
-                  <Star className={`h-4 w-4 ${f.is_active ? "fill-star text-star" : "text-muted-foreground"}`} />
+              <div key={f.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <div className="flex flex-1 items-center gap-2">
+                  <Star className={`h-4 w-4 shrink-0 ${f.is_active ? "fill-star text-star" : "text-muted-foreground"}`} />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-card-foreground">
                       {w?.profiles?.full_name || w?.profession || "Service"}
                     </p>
-                    <p className="text-[11px] text-muted-foreground/70">
+                    <p className="truncate text-[11px] text-muted-foreground/70">
                       {w?.profession}
                       {f.starts_at && ` · from ${format(new Date(f.starts_at), "MMM d")}`}
                       {f.ends_at && ` · until ${format(new Date(f.ends_at), "MMM d")}`}
@@ -353,7 +353,7 @@ const FeaturedManagementTab = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
                     <Eye className="h-3 w-3" /> {s?.impressions ?? 0}
                   </span>
@@ -363,21 +363,23 @@ const FeaturedManagementTab = () => {
                   <Badge variant="outline" className="text-[10px]">CTR {s?.ctr ?? 0}%</Badge>
                 </div>
 
-                <Input
-                  type="number"
-                  defaultValue={f.priority}
-                  className="w-20 h-9"
-                  onBlur={(e) => {
-                    const v = Number(e.target.value);
-                    if (v && v !== f.priority) updatePriority(f.id, v);
-                  }}
-                />
-                <Button size="sm" variant="outline" onClick={() => toggleActive(f.id, f.is_active)}>
-                  {f.is_active ? "Disable" : "Enable"}
-                </Button>
-                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeFeatured(f.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                  <Input
+                    type="number"
+                    defaultValue={f.priority}
+                    className="h-9 w-20"
+                    onBlur={(e) => {
+                      const v = Number(e.target.value);
+                      if (v && v !== f.priority) updatePriority(f.id, v);
+                    }}
+                  />
+                  <Button size="sm" variant="outline" onClick={() => toggleActive(f.id, f.is_active)}>
+                    {f.is_active ? "Disable" : "Enable"}
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeFeatured(f.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             );
           })}
