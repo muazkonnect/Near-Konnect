@@ -543,33 +543,35 @@ const AdsManagementTab = () => {
           const s = statsByAd.get(ad.id) || { impressions: 0, clicks: 0, ctr: 0 };
           return (
             <div key={ad.id} className="rounded-2xl border bg-card p-4">
-              <div className="flex flex-wrap items-start gap-3">
-                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
-                  {ad.image_url ? (
-                    <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                      <ImageIcon className="h-4 w-4" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="min-w-[200px] flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-card-foreground">{ad.title}</p>
-                    <Badge variant="outline" className="text-[10px]">{ad.placement}</Badge>
-                    <Badge variant="outline" className="text-[10px]">P{ad.priority}</Badge>
-                    {!ad.is_active && <Badge variant="secondary" className="text-[10px]">Disabled</Badge>}
-                    {scheduled && <Badge className="bg-warning text-warning-foreground text-[10px]">Scheduled</Badge>}
-                    {expired && <Badge className="bg-destructive text-destructive-foreground text-[10px]">Expired</Badge>}
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
+                <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                    {ad.image_url ? (
+                      <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                        <ImageIcon className="h-4 w-4" />
+                      </div>
+                    )}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {hasTarget
-                      ? `📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} · ${ad.target_radius_km} km`
-                      : "🌍 Global"}
-                    {ad.starts_at && ` · from ${new Date(ad.starts_at).toLocaleDateString()}`}
-                    {ad.ends_at && ` · to ${new Date(ad.ends_at).toLocaleDateString()}`}
-                  </p>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate font-semibold text-card-foreground">{ad.title}</p>
+                      <Badge variant="outline" className="text-[10px]">{ad.placement}</Badge>
+                      <Badge variant="outline" className="text-[10px]">P{ad.priority}</Badge>
+                      {!ad.is_active && <Badge variant="secondary" className="text-[10px]">Disabled</Badge>}
+                      {scheduled && <Badge className="bg-warning text-warning-foreground text-[10px]">Scheduled</Badge>}
+                      {expired && <Badge className="bg-destructive text-destructive-foreground text-[10px]">Expired</Badge>}
+                    </div>
+                    <p className="mt-1 break-words text-xs text-muted-foreground">
+                      {hasTarget
+                        ? `📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} · ${ad.target_radius_km} km`
+                        : "🌍 Global"}
+                      {ad.starts_at && ` · from ${new Date(ad.starts_at).toLocaleDateString()}`}
+                      {ad.ends_at && ` · to ${new Date(ad.ends_at).toLocaleDateString()}`}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -583,7 +585,7 @@ const AdsManagementTab = () => {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
                   <Button size="sm" variant="outline" onClick={() => toggleAdActive(ad.id, ad.is_active)}>
                     {ad.is_active ? "Disable" : "Enable"}
                   </Button>
