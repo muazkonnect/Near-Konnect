@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { isValidMainCategory, isValidSubcategoryForMain } from "@/data/serviceCategories";
 import { parseContactMethods } from "@/lib/contactMethods";
 
 const toBoolean = (value: unknown): boolean => {
