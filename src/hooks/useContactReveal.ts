@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
+import { removeNotification } from "@/hooks/useNotifications";
 
 export type RevealStatus = "none" | "pending" | "approved" | "denied";
 
@@ -86,8 +87,10 @@ export function useContactReveal(workerUserId: string | undefined) {
     },
     onSuccess: (_d, vars) => {
       toast.success(vars.approve ? "Contact shared" : "Request declined");
+      removeNotification(`reveal-${vars.id}`);
       qc.invalidateQueries({ queryKey: ["contact_reveal"] });
       qc.invalidateQueries({ queryKey: ["contact_reveals_inbox"] });
+      qc.invalidateQueries({ queryKey: ["pending_reveals_inbox"] });
     },
     onError: (e: any) => toast.error(e?.message || "Could not update"),
   });

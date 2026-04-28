@@ -33,6 +33,12 @@ const upsert = (n: AppNotification) => {
   broadcast();
 };
 
+export const removeNotification = (id: string) => {
+  const before = store.length;
+  store = store.filter((x) => x.id !== id);
+  if (store.length !== before) broadcast();
+};
+
 const loadReadKeys = async (userId: string) => {
   const { data } = await sb.from("notification_reads").select("notification_key").eq("user_id", userId);
   readKeys = new Set((data || []).map((r: any) => r.notification_key as string));
@@ -281,6 +287,24 @@ const init = async (userId: string) => {
         read: false,
       });
       toast.info("🔒 Contact request", { description: `${name} wants your contact info` });
+    }
+  );
+
+  ch.on(
+    "postgres_changes",
+    { event: "UPDATE", schema: "public", table: "contact_reveals", filter: `worker_user_id=eq.${userId}` },
+    (payload: any) => {
+      if (payload.new?.status && payload.new.status !== "pending") {
+        removeNotification(`reveal-${payload.new.id}`);
+      }
+    }
+  );
+
+  ch.on(
+    "postgres_changes",
+    { event: "DELETE", schema: "public", table: "contact_reveals" },
+    (payload: any) => {
+      if (payload.old?.id) removeNotification(`reveal-${payload.old.id}`);
     }
   );
 

@@ -26,7 +26,7 @@ const Messages = () => {
   }, [searchParams, user, navigate]);
 
   useEffect(() => {
-    markRead((n) => n.type === "message");
+    markRead((n) => n.type === "message" || n.type === "contact_request");
   }, []);
 
   const { data: conversations = [] } = useQuery({
