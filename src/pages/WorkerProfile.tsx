@@ -46,7 +46,7 @@ const WorkerProfile = () => {
       if (!id) return null;
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact, profession_override)")
+        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -110,7 +110,7 @@ const WorkerProfile = () => {
     id: dbWorker.id,
     userId: dbWorker.user_id,
     name: (dbWorker as any).profiles?.full_name || "Unknown",
-    profession: (dbWorker as any).profiles?.profession_override || dbWorker.profession || "General Service",
+    profession: dbWorker.profession || "General Service",
     mainCategory: (dbWorker as any).main_category || "",
     subCategory: (dbWorker as any).sub_category || "",
     experience: dbWorker.experience,
