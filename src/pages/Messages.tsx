@@ -45,16 +45,68 @@ const Messages = () => {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("contact_reveals")
-        .select("client_user_id")
+        .select("id, client_user_id, request_message, created_at")
         .eq("worker_user_id", user!.id)
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data || []).map((r: any) => r.client_user_id as string);
+      const rows = (data || []) as Array<{ id: string; client_user_id: string; request_message: string | null; created_at: string }>;
+      const ids = Array.from(new Set(rows.map((r) => r.client_user_id)));
+      let nameMap: Record<string, { name: string; avatar: string | null }> = {};
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("user_id, full_name, avatar_url")
+          .in("user_id", ids);
+        (profs || []).forEach((p: any) => {
+          nameMap[p.user_id] = { name: p.full_name || "User", avatar: p.avatar_url };
+        });
+      }
+      return rows.map((r) => ({ ...r, name: nameMap[r.client_user_id]?.name || "User", avatar: nameMap[r.client_user_id]?.avatar || null }));
     },
     enabled: !!user,
     staleTime: 15_000,
   });
-  const pendingSet = useMemo(() => new Set(pendingReveals), [pendingReveals]);
+  const pendingSet = useMemo(() => new Set(pendingReveals.map((r: any) => r.client_user_id)), [pendingReveals]);
+  const [pendingExpanded, setPendingExpanded] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyBulk, setBusyBulk] = useState(false);
+
+  const decideOne = async (id: string, approve: boolean) => {
+    setBusyId(id);
+    const { error } = await (supabase as any)
+      .from("contact_reveals")
+      .update({ status: approve ? "approved" : "denied", decided_at: new Date().toISOString() })
+      .eq("id", id);
+    setBusyId(null);
+    if (error) {
+      toast.error(error.message || "Could not update");
+      return;
+    }
+    removeNotification(`reveal-${id}`);
+    toast.success(approve ? "Contact shared" : "Request declined");
+    queryClient.invalidateQueries({ queryKey: ["pending_reveals_inbox", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["contact_reveal"] });
+  };
+
+  const decideAll = async (approve: boolean) => {
+    if (!pendingReveals.length) return;
+    setBusyBulk(true);
+    const ids = (pendingReveals as any[]).map((r) => r.id);
+    const { error } = await (supabase as any)
+      .from("contact_reveals")
+      .update({ status: approve ? "approved" : "denied", decided_at: new Date().toISOString() })
+      .in("id", ids);
+    setBusyBulk(false);
+    if (error) {
+      toast.error(error.message || "Could not update");
+      return;
+    }
+    ids.forEach((id) => removeNotification(`reveal-${id}`));
+    toast.success(approve ? "All requests approved" : "All requests declined");
+    queryClient.invalidateQueries({ queryKey: ["pending_reveals_inbox", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["contact_reveal"] });
+  };
 
   useEffect(() => {
     if (!user) return;
