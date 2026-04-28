@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
+import { removeNotification } from "@/hooks/useNotifications";
 
 export type RevealStatus = "none" | "pending" | "approved" | "denied";
 
