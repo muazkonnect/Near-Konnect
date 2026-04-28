@@ -305,7 +305,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
           return (
             <div key={main.id} className="space-y-2">
               <div
-                className={`flex items-center gap-3 rounded-2xl border bg-card p-3 transition-all ${
+                className={`flex items-center gap-2 sm:gap-3 rounded-2xl border bg-card p-2 sm:p-3 transition-all ${
                   isEditingMain ? "ring-2 ring-primary/20" : ""
                 } ${isBusyMain ? "opacity-60 pointer-events-none" : ""}`}
               >
