@@ -155,21 +155,73 @@ const Messages = () => {
     <AppLayout title="Messages" subtitle="Chat with nearby helpers and confirm work quickly.">
       <div className="space-y-4">
         {pendingRevealCount > 0 && (
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
-                <Lock className="h-4 w-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-bold text-foreground">
-                  {pendingRevealCount} pending contact request{pendingRevealCount === 1 ? "" : "s"}
-                </p>
-                <p className="text-xs text-muted-foreground">Review and approve from the conversations below.</p>
+          <div className="rounded-2xl border border-primary/30 bg-primary/10 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setPendingExpanded((v) => !v)}
+              className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left tap-feedback"
+              aria-expanded={pendingExpanded}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+                  <Lock className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-foreground">
+                    {pendingRevealCount} pending contact request{pendingRevealCount === 1 ? "" : "s"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Tap to review and respond.</p>
+                </div>
               </div>
-            </div>
-            <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-destructive px-2 text-xs font-bold text-destructive-foreground">
-              {pendingRevealCount > 9 ? "9+" : pendingRevealCount}
-            </span>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-destructive px-2 text-xs font-bold text-destructive-foreground">
+                  {pendingRevealCount > 9 ? "9+" : pendingRevealCount}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${pendingExpanded ? "rotate-180" : ""}`} />
+              </div>
+            </button>
+
+            {pendingExpanded && (
+              <div className="border-t border-primary/20 bg-background/60">
+                <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-primary/10">
+                  <Button size="sm" onClick={() => decideAll(true)} disabled={busyBulk}>
+                    <Check className="h-3.5 w-3.5" /> Approve all
+                  </Button>
+                  <Button size="sm" variant="destructive" onClick={() => decideAll(false)} disabled={busyBulk}>
+                    <X className="h-3.5 w-3.5" /> Decline all
+                  </Button>
+                </div>
+                <ul className="divide-y divide-border/50">
+                  {(pendingReveals as any[]).map((r) => (
+                    <li key={r.id} className="flex items-center gap-3 px-4 py-3">
+                      <Link to={`/chat/${r.client_user_id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-hero text-xs font-bold text-primary overflow-hidden">
+                          {r.avatar ? (
+                            <img src={r.avatar} alt={r.name} className="h-full w-full object-cover" />
+                          ) : (
+                            r.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-foreground truncate">{r.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {r.request_message || "Wants to view your contact"}
+                          </p>
+                        </div>
+                      </Link>
+                      <div className="flex shrink-0 gap-1.5">
+                        <Button size="icon" className="h-9 w-9" onClick={() => decideOne(r.id, true)} disabled={busyId === r.id}>
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => decideOne(r.id, false)} disabled={busyId === r.id}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
         <div className="relative">
