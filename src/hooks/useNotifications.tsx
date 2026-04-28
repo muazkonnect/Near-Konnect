@@ -290,6 +290,24 @@ const init = async (userId: string) => {
     }
   );
 
+  ch.on(
+    "postgres_changes",
+    { event: "UPDATE", schema: "public", table: "contact_reveals", filter: `worker_user_id=eq.${userId}` },
+    (payload: any) => {
+      if (payload.new?.status && payload.new.status !== "pending") {
+        removeNotification(`reveal-${payload.new.id}`);
+      }
+    }
+  );
+
+  ch.on(
+    "postgres_changes",
+    { event: "DELETE", schema: "public", table: "contact_reveals" },
+    (payload: any) => {
+      if (payload.old?.id) removeNotification(`reveal-${payload.old.id}`);
+    }
+  );
+
   if (isAdmin) {
     ch.on(
       "postgres_changes",
