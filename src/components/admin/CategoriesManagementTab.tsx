@@ -343,24 +343,24 @@ export default function CategoriesManagementTab({ categories }: Props) {
                   </>
                 ) : (
                   <>
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl">
+                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg sm:text-xl">
                       {main.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-card-foreground truncate">{main.name}</p>
+                      <p className="font-semibold text-card-foreground truncate text-sm sm:text-base">{main.name}</p>
                       <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
                         {subs.length} subcategories
                       </p>
                     </div>
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => startEdit(main)}>
+                    <div className="flex gap-0.5 sm:gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(main)}>
                         <Edit2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
                       <Button
                         size="icon"
                         variant="ghost"
                         onClick={() => handleDelete(main.id)}
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
