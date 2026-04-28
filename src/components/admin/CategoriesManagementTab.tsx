@@ -210,12 +210,12 @@ export default function CategoriesManagementTab({ categories }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
-              <Shield className="h-5 w-5 text-primary" /> Service Categories
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight text-foreground">
+              <Shield className="h-5 w-5 text-primary shrink-0" /> Service Categories
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Manage the taxonomy of services available on the platform.
             </p>
           </div>
@@ -224,7 +224,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
             size="sm"
             onClick={() => seedMutation.mutate()}
             disabled={busyId === "seed"}
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto shrink-0"
           >
             {busyId === "seed" ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -237,30 +237,32 @@ export default function CategoriesManagementTab({ categories }: Props) {
       </div>
 
       {/* Add New Category */}
-      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:items-end">
-        <div className="flex-1 space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Category Name
-          </label>
-          <Input
-            placeholder="e.g. Electrician"
-            value={newCatName}
-            onChange={(e) => setNewCatName(e.target.value)}
-            disabled={busyId === "new"}
-          />
+      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:p-4 sm:flex-row sm:items-end sm:flex-wrap">
+        <div className="flex gap-3 sm:contents">
+          <div className="flex-1 space-y-1.5 min-w-0">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Category Name
+            </label>
+            <Input
+              placeholder="e.g. Electrician"
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              disabled={busyId === "new"}
+            />
+          </div>
+          <div className="w-20 sm:w-24 space-y-1.5 shrink-0">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Icon
+            </label>
+            <Input
+              placeholder="Emoji"
+              value={newCatIcon}
+              onChange={(e) => setNewCatIcon(e.target.value)}
+              disabled={busyId === "new"}
+            />
+          </div>
         </div>
-        <div className="w-24 space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Icon
-          </label>
-          <Input
-            placeholder="Emoji"
-            value={newCatIcon}
-            onChange={(e) => setNewCatIcon(e.target.value)}
-            disabled={busyId === "new"}
-          />
-        </div>
-        <div className="w-48 space-y-1.5">
+        <div className="w-full sm:w-48 space-y-1.5">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Parent
           </label>
@@ -282,10 +284,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
             </SelectContent>
           </Select>
         </div>
-        <Button 
-          onClick={() => addMutation.mutate()} 
+        <Button
+          onClick={() => addMutation.mutate()}
           disabled={busyId === "new" || !newCatName.trim()}
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto"
         >
           {busyId === "new" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Add
@@ -303,7 +305,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
           return (
             <div key={main.id} className="space-y-2">
               <div
-                className={`flex items-center gap-3 rounded-2xl border bg-card p-3 transition-all ${
+                className={`flex items-center gap-2 sm:gap-3 rounded-2xl border bg-card p-2 sm:p-3 transition-all ${
                   isEditingMain ? "ring-2 ring-primary/20" : ""
                 } ${isBusyMain ? "opacity-60 pointer-events-none" : ""}`}
               >
@@ -320,45 +322,45 @@ export default function CategoriesManagementTab({ categories }: Props) {
                 {isEditingMain ? (
                   <>
                     <Input
-                      className="w-16 text-center text-xl"
+                      className="w-12 sm:w-16 shrink-0 text-center text-lg sm:text-xl px-1"
                       value={editIcon}
                       onChange={(e) => setEditIcon(e.target.value)}
                     />
                     <Input
-                      className="flex-1"
+                      className="flex-1 min-w-0"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       autoFocus
                     />
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => saveEdit(main.id)}>
+                    <div className="flex gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => saveEdit(main.id)}>
                         <Check className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={cancelEdit}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEdit}>
                         <X className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl">
+                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg sm:text-xl">
                       {main.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-card-foreground truncate">{main.name}</p>
+                      <p className="font-semibold text-card-foreground truncate text-sm sm:text-base">{main.name}</p>
                       <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
                         {subs.length} subcategories
                       </p>
                     </div>
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => startEdit(main)}>
+                    <div className="flex gap-0.5 sm:gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(main)}>
                         <Edit2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
                       <Button
                         size="icon"
                         variant="ghost"
                         onClick={() => handleDelete(main.id)}
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -368,7 +370,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
               </div>
 
               {isExpanded && (
-                <div className="ml-9 space-y-2 border-l-2 border-muted pl-4">
+                <div className="ml-4 sm:ml-9 space-y-2 border-l-2 border-muted pl-3 sm:pl-4">
                   {subs.map((sub) => {
                     const isEditingSub = editingId === sub.id;
                     const isBusySub = busyId === sub.id;
