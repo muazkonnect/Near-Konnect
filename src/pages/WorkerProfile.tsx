@@ -46,7 +46,7 @@ const WorkerProfile = () => {
       if (!id) return null;
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact, profession_override)")
+        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
