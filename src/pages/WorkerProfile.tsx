@@ -110,7 +110,7 @@ const WorkerProfile = () => {
     id: dbWorker.id,
     userId: dbWorker.user_id,
     name: (dbWorker as any).profiles?.full_name || "Unknown",
-    profession: (dbWorker as any).profiles?.profession_override || dbWorker.profession || "General Service",
+    profession: dbWorker.profession || "General Service",
     mainCategory: (dbWorker as any).main_category || "",
     subCategory: (dbWorker as any).sub_category || "",
     experience: dbWorker.experience,
