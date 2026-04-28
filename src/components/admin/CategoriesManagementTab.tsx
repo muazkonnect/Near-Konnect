@@ -322,21 +322,21 @@ export default function CategoriesManagementTab({ categories }: Props) {
                 {isEditingMain ? (
                   <>
                     <Input
-                      className="w-16 text-center text-xl"
+                      className="w-12 sm:w-16 shrink-0 text-center text-lg sm:text-xl px-1"
                       value={editIcon}
                       onChange={(e) => setEditIcon(e.target.value)}
                     />
                     <Input
-                      className="flex-1"
+                      className="flex-1 min-w-0"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       autoFocus
                     />
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => saveEdit(main.id)}>
+                    <div className="flex gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => saveEdit(main.id)}>
                         <Check className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={cancelEdit}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEdit}>
                         <X className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
