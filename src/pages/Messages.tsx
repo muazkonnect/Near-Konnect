@@ -1,13 +1,15 @@
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { MessageSquare, Search, Lock } from "lucide-react";
+import { MessageSquare, Search, Lock, ChevronDown, Check, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/AppLayout";
 import { fetchConversationSummaries } from "@/lib/messages";
-import { markRead } from "@/hooks/useNotifications";
+import { markRead, removeNotification } from "@/hooks/useNotifications";
+import { toast } from "sonner";
 
 const Messages = () => {
   const { user, loading } = useAuth();
