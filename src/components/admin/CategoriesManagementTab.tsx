@@ -210,12 +210,12 @@ export default function CategoriesManagementTab({ categories }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
-              <Shield className="h-5 w-5 text-primary" /> Service Categories
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight text-foreground">
+              <Shield className="h-5 w-5 text-primary shrink-0" /> Service Categories
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Manage the taxonomy of services available on the platform.
             </p>
           </div>
@@ -224,7 +224,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
             size="sm"
             onClick={() => seedMutation.mutate()}
             disabled={busyId === "seed"}
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto shrink-0"
           >
             {busyId === "seed" ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -237,30 +237,32 @@ export default function CategoriesManagementTab({ categories }: Props) {
       </div>
 
       {/* Add New Category */}
-      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:items-end">
-        <div className="flex-1 space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Category Name
-          </label>
-          <Input
-            placeholder="e.g. Electrician"
-            value={newCatName}
-            onChange={(e) => setNewCatName(e.target.value)}
-            disabled={busyId === "new"}
-          />
+      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:p-4 sm:flex-row sm:items-end sm:flex-wrap">
+        <div className="flex gap-3 sm:contents">
+          <div className="flex-1 space-y-1.5 min-w-0">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Category Name
+            </label>
+            <Input
+              placeholder="e.g. Electrician"
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              disabled={busyId === "new"}
+            />
+          </div>
+          <div className="w-20 sm:w-24 space-y-1.5 shrink-0">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Icon
+            </label>
+            <Input
+              placeholder="Emoji"
+              value={newCatIcon}
+              onChange={(e) => setNewCatIcon(e.target.value)}
+              disabled={busyId === "new"}
+            />
+          </div>
         </div>
-        <div className="w-24 space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Icon
-          </label>
-          <Input
-            placeholder="Emoji"
-            value={newCatIcon}
-            onChange={(e) => setNewCatIcon(e.target.value)}
-            disabled={busyId === "new"}
-          />
-        </div>
-        <div className="w-48 space-y-1.5">
+        <div className="w-full sm:w-48 space-y-1.5">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Parent
           </label>
@@ -282,10 +284,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
             </SelectContent>
           </Select>
         </div>
-        <Button 
-          onClick={() => addMutation.mutate()} 
+        <Button
+          onClick={() => addMutation.mutate()}
           disabled={busyId === "new" || !newCatName.trim()}
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto"
         >
           {busyId === "new" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Add
