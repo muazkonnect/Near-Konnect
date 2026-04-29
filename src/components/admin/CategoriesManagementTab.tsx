@@ -158,6 +158,8 @@ export default function CategoriesManagementTab({ categories }: Props) {
     }
     reorderMutation.mutate({ a, b });
   };
+
+  const seedMutation = useMutation({
     mutationFn: async () => {
       setBusyId("seed");
       
