@@ -124,12 +124,12 @@ export default function CategoriesManagementTab({ categories }: Props) {
       // Swap sort_order values between two siblings
       const { error: e1 } = await supabase
         .from("service_categories")
-        .update({ sort_order: bOrder })
+        .update({ sort_order: bOrder } as any)
         .eq("id", a.id);
       if (e1) throw e1;
       const { error: e2 } = await supabase
         .from("service_categories")
-        .update({ sort_order: aOrder })
+        .update({ sort_order: aOrder } as any)
         .eq("id", b.id);
       if (e2) throw e2;
     },
