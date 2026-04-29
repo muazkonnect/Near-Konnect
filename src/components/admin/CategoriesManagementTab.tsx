@@ -341,7 +341,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
 
       {/* Categories List */}
       <div className="space-y-4">
-        {mainCategories.map((main) => {
+        {mainCategories.map((main, mainIdx) => {
           const subs = subCategories.filter((s) => s.parent_id === main.id);
           const isExpanded = expandedIds.has(main.id);
           const isEditingMain = editingId === main.id;
