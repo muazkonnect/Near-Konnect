@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from "react";
+import ServerError from "@/pages/ServerError";
 
 interface Props {
   children: ReactNode;
@@ -50,20 +51,13 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
-          <div className="max-w-md w-full text-center space-y-4">
-            <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
-            <p className="text-sm text-muted-foreground">
-              {this.state.error?.message || "An unexpected error occurred."}
-            </p>
-            <button
-              onClick={this.handleReload}
-              className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Reload App
-            </button>
-          </div>
-        </div>
+        <ServerError
+          error={this.state.error}
+          onRetry={() => {
+            this.setState({ hasError: false, error: null });
+            window.location.reload();
+          }}
+        />
       );
     }
     return this.props.children;
