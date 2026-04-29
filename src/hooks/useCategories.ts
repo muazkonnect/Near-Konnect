@@ -9,6 +9,7 @@ export interface Category {
   icon: string;
   parent_id: string | null;
   created_at: string;
+  sort_order?: number;
 }
 
 export function useCategories() {
@@ -18,7 +19,8 @@ export function useCategories() {
       const { data, error } = await supabase
         .from("service_categories")
         .select("*")
-        .order("name");
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true });
       if (error) throw error;
       return data as Category[];
     },

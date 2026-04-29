@@ -33,6 +33,9 @@ const Discover = () => {
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
+  const CATEGORIES_INITIAL = 6;
+  const CATEGORIES_STEP = 6;
+  const [visibleCategoryCount, setVisibleCategoryCount] = useState(CATEGORIES_INITIAL);
 
   // Sync search input when URL param changes (e.g. arriving from Home with ?search=...)
   useEffect(() => {
@@ -315,7 +318,7 @@ const Discover = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-              {categoriesToUse.map((mainCategory) => {
+              {categoriesToUse.slice(0, visibleCategoryCount).map((mainCategory) => {
                 const isSelected = selectedMainCategory === mainCategory;
                 
                 // Try to find matching icon or emoji
@@ -358,6 +361,32 @@ const Discover = () => {
                 );
               })}
             </div>
+
+            {categoriesToUse.length > CATEGORIES_INITIAL && (
+              <div className="flex justify-center">
+                {visibleCategoryCount < categoriesToUse.length ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setVisibleCategoryCount((n) => Math.min(n + CATEGORIES_STEP, categoriesToUse.length))}
+                    className="h-8 rounded-full bg-white/10 px-4 text-xs font-semibold text-hero-foreground hover:bg-white/15"
+                  >
+                    Show more ({categoriesToUse.length - visibleCategoryCount} more)
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setVisibleCategoryCount(CATEGORIES_INITIAL)}
+                    className="h-8 rounded-full bg-white/10 px-4 text-xs font-semibold text-hero-foreground hover:bg-white/15"
+                  >
+                    Show less
+                  </Button>
+                )}
+              </div>
+            )}
 
             {expandedMainCategory && (
               <div className="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">

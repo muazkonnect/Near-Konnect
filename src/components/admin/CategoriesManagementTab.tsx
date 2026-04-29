@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Check, X, Shield, Loader2, RotateCcw, ChevronRight, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, Shield, Loader2, RotateCcw, ChevronRight, ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
 import { SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
 
 const DEFAULT_CATEGORIES = [
@@ -29,6 +29,7 @@ interface Category {
   icon: string;
   parent_id: string | null;
   created_at: string;
+  sort_order?: number;
 }
 
 interface Props {
@@ -46,8 +47,9 @@ export default function CategoriesManagementTab({ categories }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const mainCategories = categories.filter((c) => !c.parent_id);
-  const subCategories = categories.filter((c) => !!c.parent_id);
+  const sortFn = (a: Category, b: Category) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name);
+  const mainCategories = categories.filter((c) => !c.parent_id).slice().sort(sortFn);
+  const subCategories = categories.filter((c) => !!c.parent_id).slice().sort(sortFn);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin_categories"] });
@@ -113,6 +115,49 @@ export default function CategoriesManagementTab({ categories }: Props) {
     onError: (e: any) => toast.error(e.message || "Failed to delete category"),
     onSettled: () => setBusyId(null),
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: async ({ a, b }: { a: Category; b: Category }) => {
+      setBusyId(a.id);
+      const aOrder = a.sort_order ?? 0;
+      const bOrder = b.sort_order ?? 0;
+      // Swap sort_order values between two siblings
+      const { error: e1 } = await supabase
+        .from("service_categories")
+        .update({ sort_order: bOrder } as any)
+        .eq("id", a.id);
+      if (e1) throw e1;
+      const { error: e2 } = await supabase
+        .from("service_categories")
+        .update({ sort_order: aOrder } as any)
+        .eq("id", b.id);
+      if (e2) throw e2;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin_categories"] });
+      qc.invalidateQueries({ queryKey: ["service_categories"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to reorder"),
+    onSettled: () => setBusyId(null),
+  });
+
+  const moveCategory = (cat: Category, direction: "up" | "down") => {
+    const siblings = categories
+      .filter((c) => c.parent_id === cat.parent_id)
+      .slice()
+      .sort(sortFn);
+    const idx = siblings.findIndex((s) => s.id === cat.id);
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= siblings.length) return;
+    let a = cat;
+    let b = siblings[swapIdx];
+    // If both have the same sort_order (e.g. defaults), assign distinct values first
+    if ((a.sort_order ?? 0) === (b.sort_order ?? 0)) {
+      a = { ...a, sort_order: (idx + 1) * 10 };
+      b = { ...b, sort_order: (swapIdx + 1) * 10 };
+    }
+    reorderMutation.mutate({ a, b });
+  };
 
   const seedMutation = useMutation({
     mutationFn: async () => {
@@ -296,7 +341,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
 
       {/* Categories List */}
       <div className="space-y-4">
-        {mainCategories.map((main) => {
+        {mainCategories.map((main, mainIdx) => {
           const subs = subCategories.filter((s) => s.parent_id === main.id);
           const isExpanded = expandedIds.has(main.id);
           const isEditingMain = editingId === main.id;
@@ -353,6 +398,26 @@ export default function CategoriesManagementTab({ categories }: Props) {
                       </p>
                     </div>
                     <div className="flex gap-0.5 sm:gap-1 shrink-0">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => moveCategory(main, "up")}
+                        disabled={mainIdx === 0}
+                        title="Move up"
+                      >
+                        <ArrowUp className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => moveCategory(main, "down")}
+                        disabled={mainIdx === mainCategories.length - 1}
+                        title="Move down"
+                      >
+                        <ArrowDown className="h-4 w-4 text-muted-foreground" />
+                      </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(main)}>
                         <Edit2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
@@ -371,7 +436,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
 
               {isExpanded && (
                 <div className="ml-4 sm:ml-9 space-y-2 border-l-2 border-muted pl-3 sm:pl-4">
-                  {subs.map((sub) => {
+                  {subs.map((sub, subIdx) => {
                     const isEditingSub = editingId === sub.id;
                     const isBusySub = busyId === sub.id;
                     return (
@@ -404,6 +469,26 @@ export default function CategoriesManagementTab({ categories }: Props) {
                               <p className="text-sm font-medium text-card-foreground truncate">{sub.name}</p>
                             </div>
                             <div className="flex gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => moveCategory(sub, "up")}
+                                disabled={subIdx === 0}
+                                title="Move up"
+                              >
+                                <ArrowUp className="h-3.5 w-3.5 text-muted-foreground" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => moveCategory(sub, "down")}
+                                disabled={subIdx === subs.length - 1}
+                                title="Move down"
+                              >
+                                <ArrowDown className="h-3.5 w-3.5 text-muted-foreground" />
+                              </Button>
                               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(sub)}>
                                 <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                               </Button>
