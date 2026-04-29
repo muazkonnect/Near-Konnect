@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2, Edit2, Check, X, Shield, Loader2, RotateCcw, ChevronRight, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, Shield, Loader2, RotateCcw, ChevronRight, ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
 import { SUBCATEGORIES_BY_MAIN } from "@/data/serviceCategories";
 
 const DEFAULT_CATEGORIES = [
