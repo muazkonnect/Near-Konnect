@@ -104,6 +104,23 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
     qc.invalidateQueries({ queryKey: ["workers"] });
   };
 
+  // Realtime: refresh whenever user_roles changes anywhere (any admin/session)
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-user-roles-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        () => {
+          qc.invalidateQueries({ queryKey: ["admin_user_roles"] });
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
+
   // Mutations for real-time updates
   const roleMutation = useMutation({
     mutationFn: async ({ userId, role, action }: { userId: string; role: AppRole; action: "assign_role" | "remove_role" }) => {
