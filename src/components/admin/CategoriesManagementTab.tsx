@@ -116,7 +116,48 @@ export default function CategoriesManagementTab({ categories }: Props) {
     onSettled: () => setBusyId(null),
   });
 
-  const seedMutation = useMutation({
+  const reorderMutation = useMutation({
+    mutationFn: async ({ a, b }: { a: Category; b: Category }) => {
+      setBusyId(a.id);
+      const aOrder = a.sort_order ?? 0;
+      const bOrder = b.sort_order ?? 0;
+      // Swap sort_order values between two siblings
+      const { error: e1 } = await supabase
+        .from("service_categories")
+        .update({ sort_order: bOrder })
+        .eq("id", a.id);
+      if (e1) throw e1;
+      const { error: e2 } = await supabase
+        .from("service_categories")
+        .update({ sort_order: aOrder })
+        .eq("id", b.id);
+      if (e2) throw e2;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin_categories"] });
+      qc.invalidateQueries({ queryKey: ["service_categories"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to reorder"),
+    onSettled: () => setBusyId(null),
+  });
+
+  const moveCategory = (cat: Category, direction: "up" | "down") => {
+    const siblings = categories
+      .filter((c) => c.parent_id === cat.parent_id)
+      .slice()
+      .sort(sortFn);
+    const idx = siblings.findIndex((s) => s.id === cat.id);
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= siblings.length) return;
+    let a = cat;
+    let b = siblings[swapIdx];
+    // If both have the same sort_order (e.g. defaults), assign distinct values first
+    if ((a.sort_order ?? 0) === (b.sort_order ?? 0)) {
+      a = { ...a, sort_order: (idx + 1) * 10 };
+      b = { ...b, sort_order: (swapIdx + 1) * 10 };
+    }
+    reorderMutation.mutate({ a, b });
+  };
     mutationFn: async () => {
       setBusyId("seed");
       
