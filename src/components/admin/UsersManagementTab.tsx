@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -103,6 +103,23 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
     qc.invalidateQueries({ queryKey: ["admin_workers"] });
     qc.invalidateQueries({ queryKey: ["workers"] });
   };
+
+  // Realtime: refresh whenever user_roles changes anywhere (any admin/session)
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-user-roles-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        () => {
+          qc.invalidateQueries({ queryKey: ["admin_user_roles"] });
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
 
   // Mutations for real-time updates
   const roleMutation = useMutation({
