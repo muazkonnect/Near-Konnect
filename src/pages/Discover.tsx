@@ -33,6 +33,9 @@ const Discover = () => {
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
+  const CATEGORIES_INITIAL = 6;
+  const CATEGORIES_STEP = 6;
+  const [visibleCategoryCount, setVisibleCategoryCount] = useState(CATEGORIES_INITIAL);
 
   // Sync search input when URL param changes (e.g. arriving from Home with ?search=...)
   useEffect(() => {
