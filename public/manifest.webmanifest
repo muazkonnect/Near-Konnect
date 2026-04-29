@@ -1,0 +1,14 @@
+{
+  "name": "Near Konnect",
+  "short_name": "NearKonnect",
+  "description": "Near Konnect connects users by enabling secure authentication and location-based services.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14171f",
+  "theme_color": "#14171f",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
