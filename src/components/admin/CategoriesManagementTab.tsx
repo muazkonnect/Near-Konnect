@@ -47,8 +47,9 @@ export default function CategoriesManagementTab({ categories }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const mainCategories = categories.filter((c) => !c.parent_id);
-  const subCategories = categories.filter((c) => !!c.parent_id);
+  const sortFn = (a: Category, b: Category) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name);
+  const mainCategories = categories.filter((c) => !c.parent_id).slice().sort(sortFn);
+  const subCategories = categories.filter((c) => !!c.parent_id).slice().sort(sortFn);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin_categories"] });
