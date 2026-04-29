@@ -469,6 +469,26 @@ export default function CategoriesManagementTab({ categories }: Props) {
                               <p className="text-sm font-medium text-card-foreground truncate">{sub.name}</p>
                             </div>
                             <div className="flex gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => moveCategory(sub, "up")}
+                                disabled={subIdx === 0}
+                                title="Move up"
+                              >
+                                <ArrowUp className="h-3.5 w-3.5 text-muted-foreground" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => moveCategory(sub, "down")}
+                                disabled={subIdx === subs.length - 1}
+                                title="Move down"
+                              >
+                                <ArrowDown className="h-3.5 w-3.5 text-muted-foreground" />
+                              </Button>
                               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(sub)}>
                                 <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                               </Button>
