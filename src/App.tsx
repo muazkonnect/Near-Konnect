@@ -24,6 +24,9 @@ import BloodDonors from "./pages/BloodDonors";
 import Chat from "./pages/Chat";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
+import Offline from "./pages/Offline";
+import Maintenance from "./pages/Maintenance";
+import OfflineBanner from "@/components/OfflineBanner";
 import Disclaimer from "./pages/Disclaimer";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
@@ -62,6 +65,7 @@ const AppContent = () => {
         {loading && <SplashScreen key="splash" />}
       </AnimatePresence>
       <BrowserRouter>
+        <OfflineBanner />
         <UnverifiedEmailBanner />
         <DisclosureModals />
         <WorkerOnboardingDialog />
@@ -83,6 +87,8 @@ const AppContent = () => {
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/offline" element={<Offline />} />
+          <Route path="/maintenance" element={<Maintenance />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
