@@ -29,6 +29,7 @@ interface Category {
   icon: string;
   parent_id: string | null;
   created_at: string;
+  sort_order?: number;
 }
 
 interface Props {
