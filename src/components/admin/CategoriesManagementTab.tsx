@@ -398,6 +398,26 @@ export default function CategoriesManagementTab({ categories }: Props) {
                       </p>
                     </div>
                     <div className="flex gap-0.5 sm:gap-1 shrink-0">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => moveCategory(main, "up")}
+                        disabled={mainIdx === 0}
+                        title="Move up"
+                      >
+                        <ArrowUp className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => moveCategory(main, "down")}
+                        disabled={mainIdx === mainCategories.length - 1}
+                        title="Move down"
+                      >
+                        <ArrowDown className="h-4 w-4 text-muted-foreground" />
+                      </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(main)}>
                         <Edit2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
