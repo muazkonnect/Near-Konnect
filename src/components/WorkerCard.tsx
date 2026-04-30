@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Star, MapPin, BadgeCheck, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Worker } from "@/data/mockData";
@@ -123,4 +123,4 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
   );
 };
 
-export default WorkerCard;
+export default memo(WorkerCard);
