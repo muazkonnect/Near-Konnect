@@ -115,16 +115,16 @@ const Index = () => {
               {/* Inline search */}
               <form
                 onSubmit={(e) => { e.preventDefault(); submitSearch(search); }}
-                className="mt-7 flex items-center gap-1 rounded-full bg-white/10 p-1.5 backdrop-blur-sm ring-1 ring-white/10 focus-within:ring-primary/40"
+                className="mt-7 flex w-full items-center gap-1 rounded-full bg-white/10 p-1.5 pl-2 backdrop-blur-sm ring-1 ring-white/10 focus-within:ring-primary/40"
               >
-                <Search className="ml-3 h-4 w-4 shrink-0 text-hero-muted" />
+                <Search className="ml-1 h-4 w-4 shrink-0 text-hero-muted" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search services or city..."
-                  className="flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
+                  className="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
                 />
-                <Button type="submit" size="sm" className="h-9 rounded-full px-4">Search</Button>
+                <Button type="submit" size="sm" className="h-9 shrink-0 rounded-full px-3 sm:px-4">Search</Button>
               </form>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
