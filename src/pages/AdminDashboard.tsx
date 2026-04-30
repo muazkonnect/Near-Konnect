@@ -47,12 +47,19 @@ import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
-import UsersManagementTab from "@/components/admin/UsersManagementTab";
-import AdminProfileTab from "@/components/admin/AdminProfileTab";
-import CategoriesManagementTab from "@/components/admin/CategoriesManagementTab";
-import AdsManagementTab from "@/components/admin/AdsManagementTab";
-import FeaturedManagementTab from "@/components/admin/FeaturedManagementTab";
+import { lazy, Suspense } from "react";
+const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));
+const AdminProfileTab = lazy(() => import("@/components/admin/AdminProfileTab"));
+const CategoriesManagementTab = lazy(() => import("@/components/admin/CategoriesManagementTab"));
+const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
+const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
+
+const TabFallback = () => (
+  <div className="flex h-40 items-center justify-center">
+    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
@@ -738,15 +745,23 @@ const AdminDashboard = () => {
 
             {/* USERS */}
             {tab === "users" && (
-              <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
+              <Suspense fallback={<TabFallback />}>
+                <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
+              </Suspense>
             )}
 
             {/* PROFILE */}
-            {tab === "profile" && <AdminProfileTab />}
+            {tab === "profile" && (
+              <Suspense fallback={<TabFallback />}>
+                <AdminProfileTab />
+              </Suspense>
+            )}
 
             {/* CATEGORIES */}
             {tab === "categories" && (
-              <CategoriesManagementTab categories={categories as any} />
+              <Suspense fallback={<TabFallback />}>
+                <CategoriesManagementTab categories={categories as any} />
+              </Suspense>
             )}
 
             {/* DONORS */}
@@ -821,12 +836,18 @@ const AdminDashboard = () => {
             {tab === "featured" && (
               <div>
                 <SectionHeader title="Featured Workers" subtitle="Promote, schedule, and review featured listings." />
-                <FeaturedManagementTab />
+                <Suspense fallback={<TabFallback />}>
+                  <FeaturedManagementTab />
+                </Suspense>
               </div>
             )}
 
             {/* ADS */}
-            {tab === "ads" && <AdsManagementTab />}
+            {tab === "ads" && (
+              <Suspense fallback={<TabFallback />}>
+                <AdsManagementTab />
+              </Suspense>
+            )}
           </main>
         </div>
       </div>

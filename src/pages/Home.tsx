@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
 import ActiveBloodRequests from "@/components/ActiveBloodRequests";
-import { workers as mockWorkers } from "@/data/mockData";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useCategories } from "@/hooks/useCategories";
