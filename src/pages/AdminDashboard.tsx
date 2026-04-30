@@ -745,15 +745,23 @@ const AdminDashboard = () => {
 
             {/* USERS */}
             {tab === "users" && (
-              <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
+              <Suspense fallback={<TabFallback />}>
+                <UsersManagementTab profiles={allProfiles as any} userRoles={allUserRoles as any} />
+              </Suspense>
             )}
 
             {/* PROFILE */}
-            {tab === "profile" && <AdminProfileTab />}
+            {tab === "profile" && (
+              <Suspense fallback={<TabFallback />}>
+                <AdminProfileTab />
+              </Suspense>
+            )}
 
             {/* CATEGORIES */}
             {tab === "categories" && (
-              <CategoriesManagementTab categories={categories as any} />
+              <Suspense fallback={<TabFallback />}>
+                <CategoriesManagementTab categories={categories as any} />
+              </Suspense>
             )}
 
             {/* DONORS */}
@@ -828,12 +836,18 @@ const AdminDashboard = () => {
             {tab === "featured" && (
               <div>
                 <SectionHeader title="Featured Workers" subtitle="Promote, schedule, and review featured listings." />
-                <FeaturedManagementTab />
+                <Suspense fallback={<TabFallback />}>
+                  <FeaturedManagementTab />
+                </Suspense>
               </div>
             )}
 
             {/* ADS */}
-            {tab === "ads" && <AdsManagementTab />}
+            {tab === "ads" && (
+              <Suspense fallback={<TabFallback />}>
+                <AdsManagementTab />
+              </Suspense>
+            )}
           </main>
         </div>
       </div>
