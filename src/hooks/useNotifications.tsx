@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -391,16 +391,18 @@ export const useNotifications = () => {
     };
   }, [user]);
 
-  const unreadByType = {
-    message: items.filter((n) => !n.read && n.type === "message").length,
-    booking: items.filter((n) => !n.read && n.type === "booking").length,
-    blood_request: items.filter((n) => !n.read && n.type === "blood_request").length,
-    contact_request: items.filter((n) => !n.read && n.type === "contact_request").length,
-  };
+  const { unread, unreadByType } = useMemo(() => {
+    let message = 0, booking = 0, blood_request = 0, contact_request = 0, total = 0;
+    for (const n of items) {
+      if (n.read) continue;
+      total++;
+      if (n.type === "message") message++;
+      else if (n.type === "booking") booking++;
+      else if (n.type === "blood_request") blood_request++;
+      else if (n.type === "contact_request") contact_request++;
+    }
+    return { unread: total, unreadByType: { message, booking, blood_request, contact_request } };
+  }, [items]);
 
-  return {
-    items,
-    unread: items.filter((n) => !n.read).length,
-    unreadByType,
-  };
+  return { items, unread, unreadByType };
 };
