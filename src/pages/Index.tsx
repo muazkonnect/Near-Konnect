@@ -69,8 +69,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto w-full max-w-md md:max-w-7xl md:px-6 md:pt-6">
+    <div className="min-h-screen overflow-x-hidden bg-background">
+      <main className="mx-auto w-full max-w-full md:max-w-7xl md:px-6 md:pt-6">
         <div className="flex flex-col md:grid md:grid-cols-[1.15fr_1fr] md:gap-10 md:items-stretch">
           {/* DARK HERO */}
           <section className="relative isolate overflow-hidden rounded-b-[2.5rem] bg-hero px-6 pb-12 pt-7 text-hero-foreground md:rounded-[2rem] md:p-10">
