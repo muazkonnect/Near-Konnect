@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
 import { markRead } from "@/hooks/useNotifications";
-import AppLayout from "@/components/AppLayout";
 
 const Chat = () => {
   const { userId } = useParams();
@@ -17,6 +16,15 @@ const Chat = () => {
     if (!user || !userId) return;
     markRead((n) => (n.type === "message" || n.type === "contact_request") && n.link === `/chat/${userId}`);
   }, [user, userId]);
+
+  // Lock body scroll while in the chat view so only the message list scrolls.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
 
   const { data: otherProfile } = useQuery({
     queryKey: ["profile", userId],
@@ -37,9 +45,12 @@ const Chat = () => {
   const backLink = role === "worker" ? "/worker-dashboard" : "/dashboard";
 
   return (
-    <AppLayout title="Chat" subtitle={`Conversation with ${otherProfile?.full_name || "Client"}`}>
-      <div className="flex flex-1 flex-col">
-        <div className="flex min-h-[62vh] flex-1 flex-col overflow-hidden rounded-2xl border bg-card">
+    <div
+      className="fixed inset-0 z-40 flex flex-col bg-background"
+      style={{ height: "100dvh" }}
+    >
+      <div className="mx-auto flex h-full w-full max-w-[900px] flex-col overflow-hidden md:p-4">
+        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden md:rounded-2xl md:border md:bg-card md:shadow-premium">
           <ChatWindow
             otherUserId={userId}
             otherUserName={otherProfile?.full_name || "Client"}
@@ -47,7 +58,7 @@ const Chat = () => {
           />
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 };
 
