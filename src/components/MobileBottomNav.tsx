@@ -10,7 +10,7 @@ const MobileBottomNav = () => {
   const { user } = useAuth();
   const { role } = useUserRole();
 
-  const hideNavRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/terms", "/privacy", "/disclaimer"];
+  const hideNavRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/terms", "/privacy", "/disclaimer", "/chat/"];
   const shouldHide = hideNavRoutes.some((route) => pathname.startsWith(route));
 
   useEffect(() => {
