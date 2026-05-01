@@ -397,7 +397,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                         {subs.length} subcategories
                       </p>
                     </div>
-                    <div className="flex flex-wrap justify-end gap-0.5 shrink-0 max-w-[44%] sm:max-w-none">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 shrink-0 w-[72px] sm:w-auto">
                       <Button
                         size="icon"
                         variant="ghost"
@@ -468,7 +468,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-card-foreground truncate">{sub.name}</p>
                             </div>
-                            <div className="flex flex-wrap justify-end gap-0.5 shrink-0 max-w-[44%] sm:max-w-none">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 shrink-0 w-[72px] sm:w-auto">
                               <Button
                                 size="icon"
                                 variant="ghost"
