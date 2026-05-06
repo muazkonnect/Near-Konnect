@@ -14,7 +14,7 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY") || "";
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY") || "";
 const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") || "mailto:noreply@nearkonnect.app";
-const FCM_SERVER_KEY = Deno.env.get("FCM_SERVER_KEY") || "";
+const FCM_SERVICE_ACCOUNT_JSON = Deno.env.get("FCM_SERVICE_ACCOUNT_JSON") || "";
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {
   try {
@@ -22,6 +22,88 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
   } catch (e) {
     console.error("VAPID config invalid", e);
   }
+}
+
+// ---- FCM HTTP v1: OAuth2 access token via service-account JWT ----
+type ServiceAccount = {
+  client_email: string;
+  private_key: string;
+  project_id: string;
+  token_uri?: string;
+};
+
+let _sa: ServiceAccount | null = null;
+function getServiceAccount(): ServiceAccount | null {
+  if (_sa) return _sa;
+  if (!FCM_SERVICE_ACCOUNT_JSON) return null;
+  try {
+    _sa = JSON.parse(FCM_SERVICE_ACCOUNT_JSON);
+    return _sa;
+  } catch (e) {
+    console.error("FCM_SERVICE_ACCOUNT_JSON parse failed", e);
+    return null;
+  }
+}
+
+function b64urlEncode(data: ArrayBuffer | Uint8Array | string): string {
+  let bytes: Uint8Array;
+  if (typeof data === "string") bytes = new TextEncoder().encode(data);
+  else if (data instanceof ArrayBuffer) bytes = new Uint8Array(data);
+  else bytes = data;
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function pemToPkcs8(pem: string): Uint8Array {
+  const cleaned = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, "")
+    .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\s+/g, "");
+  const bin = atob(cleaned);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+let _tokenCache: { token: string; expiresAt: number } | null = null;
+async function getFcmAccessToken(): Promise<string | null> {
+  const sa = getServiceAccount();
+  if (!sa) return null;
+  const now = Math.floor(Date.now() / 1000);
+  if (_tokenCache && _tokenCache.expiresAt - 60 > now) return _tokenCache.token;
+
+  const header = { alg: "RS256", typ: "JWT" };
+  const claim = {
+    iss: sa.client_email,
+    scope: "https://www.googleapis.com/auth/firebase.messaging",
+    aud: sa.token_uri || "https://oauth2.googleapis.com/token",
+    iat: now,
+    exp: now + 3600,
+  };
+  const signingInput = `${b64urlEncode(JSON.stringify(header))}.${b64urlEncode(JSON.stringify(claim))}`;
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    pemToPkcs8(sa.private_key),
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(signingInput));
+  const jwt = `${signingInput}.${b64urlEncode(sig)}`;
+
+  const tokenRes = await fetch(sa.token_uri || "https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
+  if (!tokenRes.ok) {
+    console.error("FCM token exchange failed", tokenRes.status, await tokenRes.text());
+    return null;
+  }
+  const j = await tokenRes.json();
+  _tokenCache = { token: j.access_token, expiresAt: now + (j.expires_in || 3600) };
+  return _tokenCache.token;
 }
 
 Deno.serve(async (req) => {
@@ -54,6 +136,10 @@ Deno.serve(async (req) => {
     let sent = 0;
     let removed = 0;
 
+    const sa = getServiceAccount();
+    const fcmToken = sa ? await getFcmAccessToken() : null;
+    const fcmEndpoint = sa ? `https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send` : "";
+
     for (const s of subs) {
       try {
         if (s.platform === "web" && s.endpoint && s.p256dh && s.auth) {
@@ -62,23 +148,45 @@ Deno.serve(async (req) => {
             payload
           );
           sent++;
-        } else if ((s.platform === "android" || s.platform === "ios") && s.fcm_token && FCM_SERVER_KEY) {
-          const r = await fetch("https://fcm.googleapis.com/fcm/send", {
+        } else if ((s.platform === "android" || s.platform === "ios") && s.fcm_token && fcmToken) {
+          const message: any = {
+            token: s.fcm_token,
+            notification: { title, body: text || "" },
+            data: { url: String(url || "/"), tag: String(tag || "") },
+            android: {
+              priority: urgent ? "HIGH" : "NORMAL",
+              notification: { click_action: url || "/" },
+            },
+            apns: {
+              headers: { "apns-priority": urgent ? "10" : "5" },
+              payload: { aps: { sound: "default" } },
+            },
+            webpush: { fcm_options: { link: url || "/" } },
+          };
+          const r = await fetch(fcmEndpoint, {
             method: "POST",
             headers: {
-              Authorization: `key=${FCM_SERVER_KEY}`,
+              Authorization: `Bearer ${fcmToken}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              to: s.fcm_token,
-              notification: { title, body: text || "", click_action: url || "/" },
-              data: { url: url || "/", tag: tag || "" },
-            }),
+            body: JSON.stringify({ message }),
           });
-          if (r.ok) sent++;
-          else if (r.status === 404 || r.status === 410) {
-            await supabase.from("push_subscriptions").delete().eq("id", s.id);
-            removed++;
+          if (r.ok) {
+            sent++;
+          } else {
+            const errText = await r.text();
+            // UNREGISTERED / INVALID_ARGUMENT for stale token
+            if (
+              r.status === 404 ||
+              r.status === 410 ||
+              errText.includes("UNREGISTERED") ||
+              errText.includes("registration-token-not-registered")
+            ) {
+              await supabase.from("push_subscriptions").delete().eq("id", s.id);
+              removed++;
+            } else {
+              console.warn("FCM v1 send failed", r.status, errText);
+            }
           }
         }
       } catch (err: any) {
