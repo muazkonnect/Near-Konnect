@@ -17,6 +17,7 @@ import DisclosureModals from "@/components/DisclosureModals";
 import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
 import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
 
 // Eager: landing page (most-visited entry point)
 import Index from "./pages/Index";
@@ -63,6 +64,7 @@ const RouteFallback = () => (
 
 const AppContent = () => {
   const { loading } = useAuth();
+  usePushAutoRegister();
 
   useEffect(() => {
     // Hide the initial HTML splash screen once React has mounted and taken over
