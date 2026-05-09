@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 /**
  * Returns a Set of user_ids that hold the `admin` role.
  * Used to exclude admin accounts from public worker listings — admins
- * are never treated as workers in NearKonnect.
+ * are never treated as workers in Near Konnect.
  */
 export function useAdminUserIds() {
   const { data } = useQuery({

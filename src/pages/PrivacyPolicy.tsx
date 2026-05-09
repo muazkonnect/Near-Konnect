@@ -3,7 +3,7 @@ import LegalLayout, { LegalSection } from "@/components/LegalLayout";
 const PrivacyPolicy = () => (
   <LegalLayout
     title="Privacy Policy"
-    subtitle="How we collect, use, and protect your information on NearKonnect."
+    subtitle="How we collect, use, and protect your information on Near Konnect."
   >
     <LegalSection index={1} title="Information We Collect">
       <p>

@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!existingProfile) {
         const { error: profileError } = await supabase.from("profiles").insert({
           user_id: nextUser.id,
-          full_name: fullName || nextUser.email?.split("@")[0] || "NearKonnect User",
+          full_name: fullName || nextUser.email?.split("@")[0] || "Near Konnect User",
           phone: phone || null,
           blood_group: bloodGroup,
           is_blood_donor: isBloodDonor,
