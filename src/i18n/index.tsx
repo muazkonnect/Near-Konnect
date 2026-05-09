@@ -26,7 +26,8 @@ const I18nContext = createContext<I18nContextType>({
 
 export const useI18n = () => useContext(I18nContext);
 
-const STORAGE_KEY = "nearconnect_lang";
+const STORAGE_KEY = "near_konnect_lang";
+const LEGACY_STORAGE_KEY = "nearconnect_lang";
 
 function getInitialLang(): Language {
   try {
