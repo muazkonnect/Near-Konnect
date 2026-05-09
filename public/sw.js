@@ -1,4 +1,4 @@
-// NearKonnect service worker: push notifications + offline fallback
+// Near Konnect service worker: push notifications + offline fallback
 const VERSION = "v2";
 const CACHE = `nk-cache-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
@@ -61,10 +61,10 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data ? event.data.json() : {};
   } catch (_) {
-    data = { title: "NearKonnect", body: event.data ? event.data.text() : "" };
+    data = { title: "Near Konnect", body: event.data ? event.data.text() : "" };
   }
 
-  const title = data.title || "NearKonnect";
+  const title = data.title || "Near Konnect";
   const options = {
     body: data.body || "",
     icon: "/favicon.svg",
