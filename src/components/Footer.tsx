@@ -49,7 +49,7 @@ const Footer = () => {
               <img src={logoImg} alt="Near Konnect" className="h-16 object-contain" />
             </Link>
             <p className="mt-1 max-w-xs text-xs text-hero-muted">
-              Connecting you with trusted local professionals near your location.
+              We don't provide services — we connect you with trusted local providers near you.
             </p>
           </div>
 
