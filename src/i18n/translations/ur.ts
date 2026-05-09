@@ -31,10 +31,10 @@ export const ur: TranslationKeys = {
   "section.seeAll": "سب دیکھیں",
 
   "cta.title": "کیا آپ ایک ہنر مند ورکر ہیں؟",
-  "cta.subtitle": "NearConnect میں شامل ہوں اور آپ کی خدمات تلاش کرنے والے ہزاروں صارفین تک پہنچیں۔",
+  "cta.subtitle": "Near Konnect میں شامل ہوں اور آپ کی خدمات تلاش کرنے والے ہزاروں صارفین تک پہنچیں۔",
   "cta.register": "بطور ورکر رجسٹر ہوں",
 
-  "footer.tagline": "© 2026 NearConnect. آپ کو قابل اعتماد مقامی پیشہ وروں سے جوڑنا۔",
+  "footer.tagline": "© 2026 Near Konnect. آپ کو قابل اعتماد مقامی پیشہ وروں سے جوڑنا۔",
   "footer.language": "زبان",
 
   "login.welcomeBack": "واپس خوش آمدید",
@@ -46,7 +46,7 @@ export const ur: TranslationKeys = {
   "login.noAccount": "اکاؤنٹ نہیں ہے؟",
 
   "register.title": "اکاؤنٹ بنائیں",
-  "register.subtitle": "آج NearConnect میں شامل ہوں",
+  "register.subtitle": "آج Near Konnect میں شامل ہوں",
   "register.fullName": "پورا نام",
   "register.phone": "فون نمبر",
   "register.email": "ای میل",
