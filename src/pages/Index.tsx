@@ -121,7 +121,7 @@ const Index = () => {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search services or city..."
+                  placeholder="Search for a provider or city..."
                   className="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
                 />
                 <Button type="submit" size="sm" className="h-9 shrink-0 rounded-full px-3 sm:px-4">Search</Button>
