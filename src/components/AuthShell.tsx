@@ -17,7 +17,7 @@ interface AuthShellProps {
  * Servicely-style auth layout: deep black hero with brand chip, large title,
  * optional toggle, then a white card body. Mobile-first; centers nicely on desktop.
  */
-const AuthShell = ({ title, subtitle, brand = "NearKonnect", showBack = true, heroExtra, children }: AuthShellProps) => {
+const AuthShell = ({ title, subtitle, brand = "Near Konnect", showBack = true, heroExtra, children }: AuthShellProps) => {
   const navigate = useNavigate();
 
   return (
