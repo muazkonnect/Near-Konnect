@@ -303,16 +303,16 @@ const Index = () => {
         <section className="mx-6 mb-12 overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground md:mx-0 md:p-10">
           <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Ready to connect with your community?</h2>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Ready to get connected?</h2>
               <p className="mt-2 text-sm text-hero-muted md:text-base">
-                Join thousands using NearKonnect to find trusted help, offer services, and respond to urgent local needs.
+                Join thousands using Near Konnect — the platform that connects clients with trusted local service providers. We don't deliver the service, we deliver the connection.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <RoleSelectDialog>
                   <Button>Create free account</Button>
                 </RoleSelectDialog>
                 <Button variant="outline" className="border-white/20 bg-transparent text-hero-foreground hover:bg-white/10" onClick={() => navigate("/discover")}>
-                  Browse services
+                  Browse providers
                 </Button>
               </div>
             </div>
