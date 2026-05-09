@@ -271,7 +271,7 @@ const Index = () => {
         )}
 
         <section className="mx-6 mt-6 md:mx-0">
-          <FeaturedWorkersCarousel subtitle="Top providers picked by our team" />
+          <FeaturedWorkersCarousel subtitle="Featured providers we've connected to many clients" />
         </section>
 
         {/* WHY US */}
