@@ -26,11 +26,12 @@ const I18nContext = createContext<I18nContextType>({
 
 export const useI18n = () => useContext(I18nContext);
 
-const STORAGE_KEY = "nearconnect_lang";
+const STORAGE_KEY = "near_konnect_lang";
+const LEGACY_STORAGE_KEY = "nearconnect_lang";
 
 function getInitialLang(): Language {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
     if (saved && translations[saved as Language]) return saved as Language;
   } catch {}
   // Detect browser language
