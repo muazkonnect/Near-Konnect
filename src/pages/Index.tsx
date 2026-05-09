@@ -277,8 +277,8 @@ const Index = () => {
         {/* WHY US */}
         <section className="px-6 pb-10 md:px-0 md:pb-16">
           <div className="mb-6 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Why NearKonnect</p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">A smarter way to find local help</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Why Near Konnect</p>
+            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">A smarter way to connect with local providers</h2>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {trustPoints.map((item) => (
