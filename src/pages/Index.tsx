@@ -247,13 +247,13 @@ const Index = () => {
         <section className="px-6 py-10 md:px-0 md:py-16">
           <div className="mb-6 max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">How it works</p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">Get help in three simple steps</h2>
+            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">We connect you in three simple steps</h2>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {[
-              { step: "01", title: "Search nearby", text: "Tell us what you need — we surface trusted local options." },
-              { step: "02", title: "Connect instantly", text: "Chat or call directly. No middlemen, no commissions." },
-              { step: "03", title: "Get it done", text: "Hire, review, and grow your trusted local network." },
+              { step: "01", title: "Tell us what you need", text: "Search the kind of provider you're looking for in your area." },
+              { step: "02", title: "We connect you", text: "Browse verified provider profiles and reach out directly — no middlemen, no commissions." },
+              { step: "03", title: "Arrange it together", text: "You and the provider agree on the details, price, and timing — directly between you." },
             ].map((s) => (
               <div key={s.step} className="rounded-3xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md">
                 <span className="text-xs font-bold tracking-wider text-primary">{s.step}</span>
