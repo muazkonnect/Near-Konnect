@@ -49,7 +49,7 @@ const Footer = () => {
               <img src={logoImg} alt="Near Konnect" className="h-16 object-contain" />
             </Link>
             <p className="mt-1 max-w-xs text-xs text-hero-muted">
-              Connecting you with trusted local professionals near your location.
+              We don't provide services — we connect you with trusted local providers near you.
             </p>
           </div>
 
@@ -72,7 +72,7 @@ const Footer = () => {
 
         <div className="relative mt-3 flex items-center justify-center border-t border-white/10 pt-2">
           <p className="text-xs text-hero-muted">
-            © {new Date().getFullYear()} NearKonnect. All rights reserved.
+            © {new Date().getFullYear()} Near Konnect. All rights reserved.
           </p>
         </div>
       </div>

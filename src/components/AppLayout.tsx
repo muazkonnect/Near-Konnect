@@ -52,7 +52,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
             <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
               </Link>
               {user && <NotificationBell />}
             </div>
@@ -70,7 +70,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
             <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
               </Link>
               {user && <NotificationBell />}
             </div>
@@ -106,7 +106,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: A
         <header className="sticky top-4 z-30 flex items-center gap-4 rounded-full bg-hero text-hero-foreground px-4 py-2.5 shadow-premium relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
           <Link to="/" className="relative flex shrink-0 items-center pl-2 pr-3">
-            <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
+            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
           </Link>
 
           <nav className="relative flex flex-1 items-center justify-center gap-1">

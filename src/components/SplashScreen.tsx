@@ -21,14 +21,14 @@ const SplashScreen = () => {
           <div className="absolute -inset-4 rounded-full bg-primary/20 blur-xl animate-pulse" />
           <img 
             src={logoImg} 
-            alt="NearKonnect" 
+            alt="Near Konnect" 
             className="relative h-16 w-auto object-contain sm:h-20" 
           />
         </div>
         
         <div className="flex flex-col items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">NearKonnect</h1>
-          <p className="text-sm text-hero-muted sm:text-base">Connecting you to local help</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Near Konnect</h1>
+          <p className="text-sm text-hero-muted sm:text-base">Connecting clients with local providers</p>
         </div>
 
         <div className="mt-8 flex gap-1.5">

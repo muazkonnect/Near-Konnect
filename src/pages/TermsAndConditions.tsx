@@ -4,11 +4,11 @@ import LegalLayout, { LegalSection } from "@/components/LegalLayout";
 const TermsAndConditions = () => (
   <LegalLayout
     title="Terms & Conditions"
-    subtitle="The rules of the road for using NearKonnect — please read carefully before signing up."
+    subtitle="The rules of the road for using Near Konnect — please read carefully before signing up."
   >
     <LegalSection index={1} title="Acceptance of Terms">
       <p>
-        By accessing and using NearKonnect, you accept and agree to be bound by these Terms and Conditions.
+        By accessing and using Near Konnect, you accept and agree to be bound by these Terms and Conditions.
         If you do not agree, please do not use the platform.
       </p>
     </LegalSection>
@@ -22,7 +22,7 @@ const TermsAndConditions = () => (
           <div className="space-y-3">
             <p className="font-semibold text-foreground">Important Notice</p>
             <p>
-              NearKonnect serves <strong className="text-foreground">solely as a communication platform</strong>{" "}
+              Near Konnect serves <strong className="text-foreground">solely as a communication platform</strong>{" "}
               that connects customers with service workers. We are responsible only for facilitating the initial
               connection and communication between parties.
             </p>
@@ -71,7 +71,7 @@ const TermsAndConditions = () => (
 
     <LegalSection index={6} title="Limitation of Liability">
       <p>
-        NearKonnect shall not be liable for any indirect, incidental, special, consequential, or punitive damages
+        Near Konnect shall not be liable for any indirect, incidental, special, consequential, or punitive damages
         resulting from your use of or inability to use the platform.
       </p>
     </LegalSection>

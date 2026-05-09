@@ -1,7 +1,7 @@
 {
   "name": "Near Konnect",
-  "short_name": "NearKonnect",
-  "description": "Near Konnect connects users by enabling secure authentication and location-based services.",
+  "short_name": "Near Konnect",
+  "description": "Near Konnect is the bridge between clients and local service providers. We don't provide the services — we connect you with the people who do.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

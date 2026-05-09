@@ -31,10 +31,10 @@ export const fr: TranslationKeys = {
   "section.seeAll": "Voir tout",
 
   "cta.title": "Êtes-vous un travailleur qualifié ?",
-  "cta.subtitle": "Rejoignez NearConnect et atteignez des milliers de clients qui recherchent vos services.",
+  "cta.subtitle": "Rejoignez Near Konnect et atteignez des milliers de clients qui recherchent vos services.",
   "cta.register": "S'inscrire comme travailleur",
 
-  "footer.tagline": "© 2026 NearConnect. Vous connecte avec des professionnels locaux de confiance.",
+  "footer.tagline": "© 2026 Near Konnect. Vous connecte avec des professionnels locaux de confiance.",
   "footer.language": "Langue",
 
   "login.welcomeBack": "Bon retour",
@@ -46,7 +46,7 @@ export const fr: TranslationKeys = {
   "login.noAccount": "Pas de compte ?",
 
   "register.title": "Créer un compte",
-  "register.subtitle": "Rejoignez NearConnect aujourd'hui",
+  "register.subtitle": "Rejoignez Near Konnect aujourd'hui",
   "register.fullName": "Nom complet",
   "register.phone": "Numéro de téléphone",
   "register.email": "E-mail",

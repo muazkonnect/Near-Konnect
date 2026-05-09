@@ -14,32 +14,32 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 
 const slides = [
   {
-    eyebrow: "Local help network",
-    title: ["Find help or", "offer your skills"],
-    description: "Connect with local professionals in real-time or start earning by providing services in your area.",
+    eyebrow: "We connect — they deliver",
+    title: ["The bridge between", "clients & providers"],
+    description: "Near Konnect doesn't provide services. We connect you with trusted local providers who do — quickly, directly, and on your terms.",
   },
   {
-    eyebrow: "Trusted community",
-    title: ["Trusted local", "service network"],
-    description: "Verified profiles, real reviews, and instant chat — get matched with helpers around you in seconds.",
+    eyebrow: "Verified local network",
+    title: ["Trusted providers,", "verified profiles"],
+    description: "Browse identity-checked service providers near you, read real client reviews, and reach out directly through the app.",
   },
   {
-    eyebrow: "Live response feed",
-    title: ["Urgent help,", "fast response"],
-    description: "From blood requests to emergency repairs, your community responds when you need it most.",
+    eyebrow: "Live community help",
+    title: ["Urgent needs,", "instant connections"],
+    description: "From blood requests to emergency repairs, we connect people who need help with people ready to help — in real time.",
   },
 ];
 
 const actions = [
-  { icon: Search, title: "Find a Service", subtitle: "I need to hire a local professional", to: "/discover", tone: "primary" as const },
-  { icon: Briefcase, title: "Become a Worker", subtitle: "I want to offer my services & earn", to: "/register?role=worker", tone: "card" as const },
+  { icon: Search, title: "Find a Provider", subtitle: "Connect with a local service provider", to: "/discover", tone: "primary" as const },
+  { icon: Briefcase, title: "List Your Services", subtitle: "Be discovered by clients near you", to: "/register?role=worker", tone: "card" as const },
   { icon: HeartPulse, title: "Blood Konnect", subtitle: "Donate • Request • Save Lives", to: "/blood-donors", tone: "card" as const },
 ];
 
 const trustPoints = [
-  { icon: ShieldCheck, title: "Verified profiles", text: "Real identities, ratings and reviews from your community." },
-  { icon: Sparkles, title: "Instant matching", text: "Smart suggestions based on your location and needs." },
-  { icon: HeartPulse, title: "Emergency ready", text: "Urgent and blood requests stand out and respond fast." },
+  { icon: ShieldCheck, title: "Verified providers", text: "Every listed provider goes through identity checks before connecting with clients." },
+  { icon: Sparkles, title: "Direct connections", text: "We introduce you — then step aside. Chat and arrange everything directly with the provider." },
+  { icon: HeartPulse, title: "Community-powered", text: "Urgent posts and blood requests stand out so the right people see them fast." },
 ];
 
 const popularSearches = ["Electrician", "Plumber", "Tutor", "Delivery", "AC Repair", "Cleaner"];
@@ -84,7 +84,7 @@ const Index = () => {
 
             <div className="relative flex items-center justify-between">
               <div className="inline-flex items-center">
-                <img src={logoImg} alt="NearKonnect" className="h-14 object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="h-14 object-contain" />
               </div>
               <button className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-hero-foreground hover:bg-white/15">
                 <Globe className="h-3.5 w-3.5" /> EN
@@ -121,7 +121,7 @@ const Index = () => {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search services or city..."
+                  placeholder="Search for a provider or city..."
                   className="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm text-hero-foreground placeholder:text-hero-muted focus:outline-none"
                 />
                 <Button type="submit" size="sm" className="h-9 shrink-0 rounded-full px-3 sm:px-4">Search</Button>
@@ -247,13 +247,13 @@ const Index = () => {
         <section className="px-6 py-10 md:px-0 md:py-16">
           <div className="mb-6 max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">How it works</p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">Get help in three simple steps</h2>
+            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">We connect you in three simple steps</h2>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {[
-              { step: "01", title: "Search nearby", text: "Tell us what you need — we surface trusted local options." },
-              { step: "02", title: "Connect instantly", text: "Chat or call directly. No middlemen, no commissions." },
-              { step: "03", title: "Get it done", text: "Hire, review, and grow your trusted local network." },
+              { step: "01", title: "Tell us what you need", text: "Search the kind of provider you're looking for in your area." },
+              { step: "02", title: "We connect you", text: "Browse verified provider profiles and reach out directly — no middlemen, no commissions." },
+              { step: "03", title: "Arrange it together", text: "You and the provider agree on the details, price, and timing — directly between you." },
             ].map((s) => (
               <div key={s.step} className="rounded-3xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md">
                 <span className="text-xs font-bold tracking-wider text-primary">{s.step}</span>
@@ -271,14 +271,14 @@ const Index = () => {
         )}
 
         <section className="mx-6 mt-6 md:mx-0">
-          <FeaturedWorkersCarousel subtitle="Top providers picked by our team" />
+          <FeaturedWorkersCarousel subtitle="Featured providers we've connected to many clients" />
         </section>
 
         {/* WHY US */}
         <section className="px-6 pb-10 md:px-0 md:pb-16">
           <div className="mb-6 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Why NearKonnect</p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">A smarter way to find local help</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Why Near Konnect</p>
+            <h2 className="mt-1 text-2xl font-bold text-foreground md:text-3xl">A smarter way to connect with local providers</h2>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {trustPoints.map((item) => (
@@ -303,16 +303,16 @@ const Index = () => {
         <section className="mx-6 mb-12 overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground md:mx-0 md:p-10">
           <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Ready to connect with your community?</h2>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Ready to get connected?</h2>
               <p className="mt-2 text-sm text-hero-muted md:text-base">
-                Join thousands using NearKonnect to find trusted help, offer services, and respond to urgent local needs.
+                Join thousands using Near Konnect — the platform that connects clients with trusted local service providers. We don't deliver the service, we deliver the connection.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <RoleSelectDialog>
                   <Button>Create free account</Button>
                 </RoleSelectDialog>
                 <Button variant="outline" className="border-white/20 bg-transparent text-hero-foreground hover:bg-white/10" onClick={() => navigate("/discover")}>
-                  Browse services
+                  Browse providers
                 </Button>
               </div>
             </div>

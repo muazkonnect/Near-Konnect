@@ -314,7 +314,7 @@ const Register = () => {
           <div>
             <p className="text-sm font-semibold text-foreground">Platform Role — Communication Only</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              NearKonnect serves <strong>solely as a communication platform</strong> connecting customers with service workers.
+              Near Konnect serves <strong>solely as a communication platform</strong> connecting clients with local service providers — we are not the service provider.
               We are <strong>not responsible</strong> for the quality, timing, or outcome of any work, payments, agreements, damages,
               injuries, or disputes between parties. All dealings happen at your own risk.
             </p>

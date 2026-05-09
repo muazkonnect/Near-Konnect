@@ -199,7 +199,7 @@ const WorkerOnboardingDialog = () => {
               </span>
               <div>
                 <h2 className="text-xl font-bold tracking-tight">
-                  {adminAssigned ? "You're now a worker on NearKonnect" : "Complete your service profile"}
+                  {adminAssigned ? "You're now a worker on Near Konnect" : "Complete your service profile"}
                 </h2>
                 <p className="text-sm text-hero-muted">
                   {adminAssigned

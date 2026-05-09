@@ -31,7 +31,7 @@ const LegalLayout = ({ title, subtitle, lastUpdated = "April 2026", children }: 
             <ArrowLeft className="h-3.5 w-3.5" /> Back to home
           </Link>
           <div className="inline-flex items-center">
-            <img src={logoImg} alt="NearKonnect" className="h-8 object-contain" />
+            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
           </div>
           <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">{title}</h1>
           {subtitle && <p className="mt-3 max-w-2xl text-sm text-hero-muted md:text-base">{subtitle}</p>}
