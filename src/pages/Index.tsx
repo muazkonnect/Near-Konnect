@@ -14,32 +14,32 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 
 const slides = [
   {
-    eyebrow: "Local help network",
-    title: ["Find help or", "offer your skills"],
-    description: "Connect with local professionals in real-time or start earning by providing services in your area.",
+    eyebrow: "We connect — they deliver",
+    title: ["The bridge between", "clients & providers"],
+    description: "Near Konnect doesn't provide services. We connect you with trusted local providers who do — quickly, directly, and on your terms.",
   },
   {
-    eyebrow: "Trusted community",
-    title: ["Trusted local", "service network"],
-    description: "Verified profiles, real reviews, and instant chat — get matched with helpers around you in seconds.",
+    eyebrow: "Verified local network",
+    title: ["Trusted providers,", "verified profiles"],
+    description: "Browse identity-checked service providers near you, read real client reviews, and reach out directly through the app.",
   },
   {
-    eyebrow: "Live response feed",
-    title: ["Urgent help,", "fast response"],
-    description: "From blood requests to emergency repairs, your community responds when you need it most.",
+    eyebrow: "Live community help",
+    title: ["Urgent needs,", "instant connections"],
+    description: "From blood requests to emergency repairs, we connect people who need help with people ready to help — in real time.",
   },
 ];
 
 const actions = [
-  { icon: Search, title: "Find a Service", subtitle: "I need to hire a local professional", to: "/discover", tone: "primary" as const },
-  { icon: Briefcase, title: "Become a Worker", subtitle: "I want to offer my services & earn", to: "/register?role=worker", tone: "card" as const },
+  { icon: Search, title: "Find a Provider", subtitle: "Connect with a local service provider", to: "/discover", tone: "primary" as const },
+  { icon: Briefcase, title: "List Your Services", subtitle: "Be discovered by clients near you", to: "/register?role=worker", tone: "card" as const },
   { icon: HeartPulse, title: "Blood Konnect", subtitle: "Donate • Request • Save Lives", to: "/blood-donors", tone: "card" as const },
 ];
 
 const trustPoints = [
-  { icon: ShieldCheck, title: "Verified profiles", text: "Real identities, ratings and reviews from your community." },
-  { icon: Sparkles, title: "Instant matching", text: "Smart suggestions based on your location and needs." },
-  { icon: HeartPulse, title: "Emergency ready", text: "Urgent and blood requests stand out and respond fast." },
+  { icon: ShieldCheck, title: "Verified providers", text: "Every listed provider goes through identity checks before connecting with clients." },
+  { icon: Sparkles, title: "Direct connections", text: "We introduce you — then step aside. Chat and arrange everything directly with the provider." },
+  { icon: HeartPulse, title: "Community-powered", text: "Urgent posts and blood requests stand out so the right people see them fast." },
 ];
 
 const popularSearches = ["Electrician", "Plumber", "Tutor", "Delivery", "AC Repair", "Cleaner"];
