@@ -72,7 +72,7 @@ const Footer = () => {
 
         <div className="relative mt-3 flex items-center justify-center border-t border-white/10 pt-2">
           <p className="text-xs text-hero-muted">
-            © {new Date().getFullYear()} NearKonnect. All rights reserved.
+            © {new Date().getFullYear()} Near Konnect. All rights reserved.
           </p>
         </div>
       </div>
