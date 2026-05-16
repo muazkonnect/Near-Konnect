@@ -19,7 +19,7 @@ const AvatarResetFlow = ({ onReplaced }: { onReplaced?: (url: string) => void })
 
   const load = async () => {
     if (!user) return;
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from("avatar_reset_requests")
       .select("status")
       .eq("user_id", user.id)
