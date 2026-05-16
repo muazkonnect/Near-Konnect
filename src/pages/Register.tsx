@@ -176,30 +176,37 @@ const Register = () => {
   const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#c4c7c7]";
 
   return (
-    <AuthShell
-      title={t("register.title")}
-      subtitle={t("register.subtitle")}
-      heroExtra={
-        <div className="space-y-3">
-          <AuthTabs active="register" />
-          <div className="grid grid-cols-2 gap-1 rounded-full bg-white/5 p-1">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute -right-[10%] -top-[10%] h-[300px] w-[300px] rounded-full bg-[#d9ff7a]/5 blur-[120px]" />
+        <div className="absolute -bottom-[5%] -left-[5%] h-[250px] w-[250px] rounded-full bg-[#c8c6c5]/5 blur-[100px]" />
+      </div>
+
+      <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center px-5 py-12 md:px-16">
+        <img src={logoImg} alt="Near Konnect" className="mb-6 h-12 object-contain" />
+
+        <div className="w-full space-y-6">
+          <header className="space-y-1 text-center">
+            <h2 className="text-[28px] font-semibold leading-9 tracking-tight text-[#e5e2e1]">Create Account</h2>
+            <p className="text-base text-[#c4c7c7]">{t("register.subtitle")}</p>
+          </header>
+
+          <div className="grid grid-cols-2 gap-1 rounded-full border border-[#444748]/20 bg-[#1c1b1b] p-1">
             {(["customer", "worker"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
                 className={`rounded-full py-2 text-xs font-semibold transition ${
-                  role === r ? "bg-white text-hero shadow-sm" : "text-hero-muted"
+                  role === r ? "bg-[#d9ff7a] text-[#151f00] shadow-sm" : "text-[#c4c7c7]"
                 }`}
               >
                 {t(`register.${r}`)}
               </button>
             ))}
           </div>
-        </div>
-      }
-    >
-      <form onSubmit={handleSubmit} className="space-y-5">
+
+          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md">
         <div>
           <Label htmlFor="name" className={labelClass}>{t("register.fullName")} *</Label>
           <Input id="name" placeholder={t("register.fullName")} value={name} onChange={e => setName(e.target.value)} className={inputClass} />
