@@ -23,6 +23,7 @@ interface PhoneFieldProps {
   placeholderLabel?: string;
   ariaLabel?: string;
   className?: string;
+  variant?: "default" | "hero";
 }
 
 const PhoneField = ({
@@ -31,7 +32,9 @@ const PhoneField = ({
   defaultCountry,
   ariaLabel,
   className = "",
+  variant = "default",
 }: PhoneFieldProps) => {
+  const hero = variant === "hero";
   // Determine the country either from the stored E.164 or the detected default
   const split = splitPhone(value, defaultCountry);
   const [country, setCountry] = useState<CountryCode>(split.country);
