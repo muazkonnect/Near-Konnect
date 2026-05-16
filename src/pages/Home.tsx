@@ -160,7 +160,7 @@ const Home = () => {
   return (
     <AppLayout hideMobileHeader>
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
-      <div className="-mx-4 -mt-[70px] mb-[-70px] bg-hero text-hero-foreground">
+      <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground">
         {/* TICKER */}
         <div className="overflow-hidden border-b border-white/5 bg-black/40">
           <div className="flex h-9 items-center">
