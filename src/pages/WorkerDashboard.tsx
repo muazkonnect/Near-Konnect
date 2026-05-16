@@ -80,6 +80,7 @@ const WorkerDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [avatarPreviewOpen, setAvatarPreviewOpen] = useState(false);
   const { unreadByType } = useNotifications();
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
@@ -306,19 +307,26 @@ const WorkerDashboard = () => {
           className="mx-auto max-w-2xl space-y-4"
         >
           {/* Profile Summary */}
-          <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 sm:p-5">
+          <div className="px-1 py-2">
             <div className="flex flex-col items-center gap-3 text-center">
-              <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} size={84} />
-              <div className="space-y-1">
+              <button
+                type="button"
+                onClick={() => setAvatarPreviewOpen(true)}
+                className="rounded-2xl transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="View profile photo"
+              >
+                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} size={84} />
+              </button>
+              <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                  <span className="text-xl font-bold sm:text-2xl">{workerName}</span>
+                  <span className="text-lg font-bold sm:text-2xl">{workerName}</span>
                   {workerData.verified && (
                     <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                       Pro Verified
                     </span>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-hero-foreground/70">
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-hero-foreground/70 sm:text-sm">
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
                   </span>
@@ -333,6 +341,31 @@ const WorkerDashboard = () => {
               </div>
             </div>
           </div>
+
+          {avatarPreviewOpen && (
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in"
+              onClick={() => setAvatarPreviewOpen(false)}
+              role="dialog"
+              aria-modal="true"
+            >
+              {(workerData as any).profiles?.avatar_url ? (
+                <img
+                  src={(workerData as any).profiles.avatar_url}
+                  alt="Profile"
+                  onClick={(e) => e.stopPropagation()}
+                  className="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl animate-scale-in"
+                />
+              ) : (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex h-64 w-64 items-center justify-center rounded-2xl bg-accent text-6xl font-bold text-accent-foreground animate-scale-in"
+                >
+                  {workerName?.[0]?.toUpperCase() || "?"}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
@@ -354,14 +387,14 @@ const WorkerDashboard = () => {
           </div>
 
           {/* Sparks Wallet */}
-          <div className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
-            <Zap className="pointer-events-none absolute -right-6 -top-6 h-52 w-52 text-primary-foreground/10 rotate-12" strokeWidth={1} fill="currentColor" />
-            <Zap className="pointer-events-none absolute -left-2 bottom-2 h-24 w-24 text-primary-foreground/5 -rotate-12" strokeWidth={1} fill="currentColor" />
+          <div className="relative overflow-hidden rounded-xl bg-primary p-4 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)] sm:p-5">
+            <Zap className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 rotate-12 text-primary-foreground/10 animate-[pulse_3s_ease-in-out_infinite] sm:h-52 sm:w-52" strokeWidth={1} fill="currentColor" />
+            <Zap className="pointer-events-none absolute -left-2 bottom-2 h-20 w-20 -rotate-12 text-primary-foreground/5 animate-[pulse_4s_ease-in-out_infinite] sm:h-24 sm:w-24" strokeWidth={1} fill="currentColor" />
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20">
-                  <Zap className="h-5 w-5" fill="currentColor" strokeWidth={1.5} />
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition hover:scale-110">
+                  <Zap className="h-5 w-5 animate-pulse" fill="currentColor" strokeWidth={1.5} />
                 </div>
               </div>
               <div className="mt-4">
