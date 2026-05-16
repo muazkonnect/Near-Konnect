@@ -268,20 +268,33 @@ const WorkerDashboard = () => {
     <AppLayout showSignOut hideMobileHeader>
       <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
         {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
           </Link>
-          <button
-            onClick={() => navigate("/messages")}
-            className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
-            aria-label="Notifications"
-          >
-            <MessageSquare className="h-5 w-5" />
-            {(unreadByType.message + unreadByType.booking) > 0 && (
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-1.5">
+              <span className={`h-2 w-2 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
+              <span className="text-[11px] font-bold uppercase tracking-wider">{available ? "Online" : "Offline"}</span>
+              <Switch
+                checked={available}
+                onCheckedChange={(v) => {
+                  setAvailable(v);
+                  supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
+                }}
+              />
+            </label>
+            <button
+              onClick={() => navigate("/messages")}
+              className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
+              aria-label="Notifications"
+            >
+              <MessageSquare className="h-5 w-5" />
+              {(unreadByType.message + unreadByType.booking) > 0 && (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+              )}
+            </button>
+          </div>
         </header>
 
         <motion.div
