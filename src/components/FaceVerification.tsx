@@ -11,6 +11,7 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [streaming, setStreaming] = useState(false);
+  const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
@@ -33,25 +34,54 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
 
   // Attach stream once the <video> element is mounted
   useEffect(() => {
-    if (streaming && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-      videoRef.current.play().catch((err) => console.error("video play failed", err));
-    }
+    const v = videoRef.current;
+    if (!streaming || !v || !streamRef.current) return;
+    setReady(false);
+    v.srcObject = streamRef.current;
+    const onReady = () => {
+      if (v.videoWidth > 0 && v.videoHeight > 0 && v.readyState >= 2) setReady(true);
+    };
+    v.addEventListener("loadedmetadata", onReady);
+    v.addEventListener("loadeddata", onReady);
+    v.addEventListener("playing", onReady);
+    v.play().then(onReady).catch((err) => console.error("video play failed", err));
+    return () => {
+      v.removeEventListener("loadedmetadata", onReady);
+      v.removeEventListener("loadeddata", onReady);
+      v.removeEventListener("playing", onReady);
+    };
   }, [streaming]);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setStreaming(false);
+    setReady(false);
   };
 
   useEffect(() => () => stopCamera(), []);
 
   const capture = async () => {
     const v = videoRef.current;
-    if (!v || !v.videoWidth || !v.videoHeight) {
-      setError("Camera not ready yet. Please wait a moment and try again.");
-      return;
+    if (!v || v.readyState < 2 || !v.videoWidth || !v.videoHeight || v.paused || v.ended) {
+      // Wait briefly for the stream to become ready
+      const waited = await new Promise<boolean>((resolve) => {
+        let tries = 0;
+        const id = setInterval(() => {
+          tries++;
+          if (v && v.readyState >= 2 && v.videoWidth > 0 && v.videoHeight > 0 && !v.paused) {
+            clearInterval(id);
+            resolve(true);
+          } else if (tries > 20) {
+            clearInterval(id);
+            resolve(false);
+          }
+        }, 100);
+      });
+      if (!waited) {
+        setError("Camera not ready yet. Please wait a moment and try again.");
+        return;
+      }
     }
     const size = Math.min(v.videoWidth, v.videoHeight);
     const canvas = document.createElement("canvas");
@@ -62,6 +92,13 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
     const sx = (v.videoWidth - size) / 2;
     const sy = (v.videoHeight - size) / 2;
     ctx.drawImage(v, sx, sy, size, size, 0, 0, 512, 512);
+    // Guard against an all-black frame
+    const sample = ctx.getImageData(256, 256, 1, 1).data;
+    if (sample[0] === 0 && sample[1] === 0 && sample[2] === 0 && sample[3] === 255) {
+      // Try one more frame after a short delay
+      await new Promise((r) => setTimeout(r, 150));
+      ctx.drawImage(v, sx, sy, size, size, 0, 0, 512, 512);
+    }
     const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
     const blob: Blob | null = await new Promise((res) =>
       canvas.toBlob((b) => res(b), "image/jpeg", 0.85),
@@ -173,9 +210,10 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
           <button
             type="button"
             onClick={capture}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-sm font-semibold text-[#151f00]"
+            disabled={!ready}
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-sm font-semibold text-[#151f00] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="h-4 w-4" /> Capture
+            <Check className="h-4 w-4" /> {ready ? "Capture" : "Preparing camera…"}
           </button>
         )}
         {capturedUrl && !verifying && (
