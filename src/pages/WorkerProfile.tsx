@@ -1,12 +1,25 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock3, MapPin, ShieldCheck, Star, Briefcase, CalendarPlus, Sparkles, EyeOff, MessageSquare } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  MoreVertical,
+  Star,
+  ShieldCheck,
+  Briefcase,
+  Zap,
+  Send,
+  Mail,
+  Phone,
+  MessageSquare,
+  MessageCircle,
+  Video,
+  Lock,
+  Sparkles,
+  CalendarPlus,
+  EyeOff,
+  Crown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import StarRating from "@/components/StarRating";
-import BookingDialog from "@/components/BookingDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,11 +27,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
-
-import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
-import { calculateDistance } from "@/lib/geolocation";
+import BookingDialog from "@/components/BookingDialog";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
+import { getExpertise } from "@/lib/categoryExpertise";
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -28,7 +40,6 @@ const WorkerProfile = () => {
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [submittingReview, setSubmittingReview] = useState(false);
-  const { coords: userCoords } = useRealtimeLocation();
 
   const trackEvent = async (eventType: "profile_view" | "contact_click" | "conversion") => {
     if (!id || !dbWorker) return;
@@ -55,12 +66,12 @@ const WorkerProfile = () => {
     enabled: !!id,
   });
 
-  const { data: dbReviews = [], isLoading: reviewsLoading } = useQuery({
+  const { data: dbReviews = [] } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reviews")
-        .select("*, profiles:customer_id(full_name)")
+        .select("*, profiles:customer_id(full_name, avatar_url)")
         .eq("worker_id", id!)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -72,24 +83,24 @@ const WorkerProfile = () => {
   useEffect(() => {
     if (!dbWorker || !id) return;
     void trackEvent("profile_view");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, dbWorker?.user_id]);
 
   if (workerLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+      <AppLayout hideMobileHeader>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (workerError || !dbWorker) {
     return (
-      <AppLayout title="Error" subtitle="">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h2 className="text-2xl font-bold mb-4">Worker profile not found</h2>
-          <p className="text-muted-foreground mb-8">The worker you are looking for might have removed their profile or the link is invalid.</p>
+      <AppLayout hideMobileHeader>
+        <div className="px-4 py-16 text-center">
+          <h2 className="mb-4 text-2xl font-bold">Worker profile not found</h2>
           <Button onClick={() => navigate("/discover")}>Back to search</Button>
         </div>
       </AppLayout>
@@ -105,6 +116,7 @@ const WorkerProfile = () => {
       ]
     : [];
   const contactMethods: ContactMethod[] = storedMethods.length > 0 ? storedMethods : fallbackMethods;
+  const showContact = (dbWorker as any).profiles?.show_contact ?? true;
 
   const worker = {
     id: dbWorker.id,
@@ -121,9 +133,13 @@ const WorkerProfile = () => {
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
   };
 
+  const isOwner = !!user && user.id === worker.userId;
   const avgRating = dbReviews.length
     ? (dbReviews.reduce((s: number, r: any) => s + r.rating, 0) / dbReviews.length).toFixed(1)
-    : "0";
+    : "0.0";
+  const expertise = getExpertise(worker.mainCategory, worker.subCategory, [worker.profession, ...worker.serviceAreas], 3);
+  const initials = worker.name.split(" ").filter(Boolean).map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const phoneSan = profilePhone.replace(/[^\d+]/g, "");
 
   const handleSubmitReview = async () => {
     if (!user) { toast.error("Please log in to leave a review"); return; }
@@ -145,262 +161,291 @@ const WorkerProfile = () => {
     }
   };
 
-  const handleInAppMessage = () => {
-    void trackEvent("contact_click");
-    if (!user) return;
-    navigate(`/chat/${worker.userId}`);
-  };
-
-  const handleChannelClick = () => {
-    void trackEvent("contact_click");
-  };
-
-  const initials = worker.name
-    .split(" ")
-    .filter(Boolean)
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
-    <AppLayout title="" subtitle="">
-      <div className="mx-auto max-w-3xl overflow-x-hidden">
-        <Link to="/discover" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to search
-        </Link>
+    <AppLayout hideMobileHeader>
+      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
+        {/* Top App Bar */}
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-hero/85 px-5 py-3 backdrop-blur-md">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10"
+            aria-label="Back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Worker Profile</h1>
+          <button className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10" aria-label="More">
+            <MoreVertical className="h-5 w-5" />
+          </button>
+        </header>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-[2rem] border bg-card pb-8 shadow-premium"
-        >
-          {/* Dark hero header */}
-          <div className="relative overflow-hidden bg-hero px-4 pt-5 pb-6 text-hero-foreground sm:px-5 sm:pt-6 md:px-8 md:pt-8 md:pb-8">
-            <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
-            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
-              backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
-              backgroundSize: "20px 20px",
-            }} />
-            <div className="relative flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-hero-muted">
-                <Sparkles className="h-3 w-3 text-primary" /> Service profile
-              </span>
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
-                  worker.available ? "bg-primary text-primary-foreground" : "bg-white/10 text-hero-muted"
-                }`}
-              >
-                <span className={`h-1.5 w-1.5 rounded-full ${worker.available ? "bg-primary-foreground" : "bg-hero-muted"}`} />
-                {worker.available ? "Available now" : "Currently busy"}
-              </span>
+        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6">
+          {/* 1. Compact Header */}
+          <section className="mb-6 flex flex-col items-center gap-3 text-center">
+            <div className="relative shrink-0">
+              <div className="h-[120px] w-[120px] overflow-hidden rounded-full border-2 border-primary shadow-[0_0_18px_-2px_hsl(var(--primary)/0.5)]">
+                {worker.profilePhoto ? (
+                  <img src={worker.profilePhoto} alt={worker.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="grid h-full w-full place-items-center bg-white/10 text-3xl font-bold text-primary">{initials}</div>
+                )}
+              </div>
+              {worker.verified && (
+                <div className="absolute -bottom-2 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-lg">
+                  <Crown className="h-3 w-3" /> Premium
+                </div>
+              )}
             </div>
 
-            {/* Avatar + name + profession — inside the banner */}
-            <div className="relative mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              {worker.profilePhoto ? (
-                <img src={worker.profilePhoto} alt={worker.name} className="h-24 w-24 shrink-0 rounded-3xl border-4 border-hero object-cover shadow-md ring-2 ring-primary/30" />
-              ) : (
-                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl border-4 border-hero text-2xl font-bold shadow-md ring-2 ring-primary/30 text-primary-foreground bg-primary">{initials}</div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-bold tracking-tight text-hero-foreground">{worker.name}</h1>
-                  {worker.verified && <CheckCircle className="h-5 w-5 text-primary" />}
-                </div>
-                <p className="text-sm text-hero-muted/80">{worker.profession}</p>
-                {(worker.mainCategory || worker.subCategory) && (
-                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                    {worker.mainCategory && (
-                      <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[11px] font-semibold text-primary-foreground ring-1 ring-primary/40">
-                        {worker.mainCategory}
-                      </span>
-                    )}
-                    {worker.subCategory && worker.subCategory !== worker.profession && (
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-hero-foreground">
-                        {worker.subCategory}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-hero-foreground backdrop-blur-sm">
-                    <Star className="h-3 w-3 fill-star text-star" />
-                    {avgRating}
-                    <span className="text-hero-muted">({dbReviews.length})</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs text-hero-muted backdrop-blur-sm">
-                    <Briefcase className="h-3.5 w-3.5" /> {worker.experience} yrs exp.
-                  </span>
-                </div>
+            <div className="mt-3">
+              <h2 className="font-sora text-2xl font-bold leading-tight tracking-tight">{worker.name}</h2>
+              <div className="mt-1 flex items-center justify-center gap-1.5 text-primary">
+                <Star className="h-4 w-4 fill-current" />
+                <span className="text-sm font-semibold">{avgRating}</span>
+                <span className="text-xs text-hero-muted">({dbReviews.length} Reviews)</span>
               </div>
             </div>
+          </section>
 
-            {/* Contact options inside hero banner */}
-            <div className="relative mt-6">
-              {user ? (
-                <ContactBlock
-                  isOwner={user.id === worker.userId}
-                  showContact={(dbWorker as any).profiles?.show_contact ?? true}
-                  contactMethods={contactMethods}
-                  onInAppMessage={handleInAppMessage}
-                  onChannelClick={handleChannelClick}
-                  workerId={worker.id}
-                  workerName={worker.name}
-                  trackConversion={() => void trackEvent("conversion")}
+          {/* 2. Qualifications */}
+          <section className="mb-5">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {worker.mainCategory && (
+                <span className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+                  <Zap className="h-3.5 w-3.5" /> {worker.mainCategory}
+                </span>
+              )}
+              {worker.subCategory && (
+                <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider">
+                  {worker.subCategory}
+                </span>
+              )}
+            </div>
+            {expertise.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+                <span className="mr-1 text-xs text-hero-muted">Expertise:</span>
+                {expertise.map((e) => (
+                  <span
+                    key={e}
+                    className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider"
+                  >
+                    {e}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* 3. Horizontal Metrics */}
+          <section className="mb-5 grid grid-cols-3 gap-2">
+            <Metric
+              icon={<ShieldCheck className="h-5 w-5 text-primary" />}
+              label="Status"
+              value={worker.verified ? "Verified" : "Pending"}
+            />
+            <Metric
+              icon={<Briefcase className="h-5 w-5 text-primary" />}
+              label="Exp."
+              value={`${worker.experience} ${worker.experience === 1 ? "Year" : "Years"}`}
+            />
+            <Metric
+              icon={<Sparkles className="h-5 w-5 text-primary" />}
+              label="Reply"
+              value={worker.available ? "< 15m" : "Offline"}
+            />
+          </section>
+
+          {/* 4. About */}
+          <section className="mb-5">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+              <p className="text-sm leading-snug text-hero-muted">
+                {worker.description || "No description provided yet."}
+              </p>
+            </div>
+          </section>
+
+          {/* 5. Give a Review */}
+          {user && !isOwner && (
+            <section className="mb-5">
+              <div className="mb-2 px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider">Give a Review</h3>
+              </div>
+              <div className="flex flex-col gap-4 rounded-xl border border-white/15 bg-white/5 p-4 backdrop-blur-md">
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-xs text-hero-muted">How was your experience?</p>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button key={n} onClick={() => setReviewRating(n)} className="focus:outline-none" aria-label={`${n} stars`}>
+                        <Star className={`h-7 w-7 ${n <= reviewRating ? "fill-primary text-primary" : "text-hero-muted"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Textarea
+                  rows={3}
+                  placeholder="Share your feedback here..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  className="resize-none border-white/15 bg-white/5 text-sm text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                />
+                <Button
+                  onClick={handleSubmitReview}
+                  disabled={submittingReview}
+                  className="h-11 w-full gap-2 rounded-lg shadow-lg shadow-primary/10"
+                >
+                  <Send className="h-4 w-4" />
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </Button>
+              </div>
+            </section>
+          )}
+
+          {/* Reviews */}
+          <section className="mb-5">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider">Recent Reviews</h3>
+              <span className="text-xs text-hero-muted">{dbReviews.length} total</span>
+            </div>
+            {dbReviews.length === 0 ? (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-sm text-hero-muted">
+                No reviews yet.
+              </div>
+            ) : (
+              <div className="hide-scrollbar flex snap-x gap-3 overflow-x-auto pb-2">
+                {dbReviews.slice(0, 10).map((r: any) => (
+                  <div
+                    key={r.id}
+                    className="flex min-w-[280px] snap-start flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {r.profiles?.avatar_url ? (
+                          <img src={r.profiles.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover" />
+                        ) : (
+                          <div className="h-6 w-6 rounded-full bg-white/10" />
+                        )}
+                        <span className="text-xs font-semibold">{r.profiles?.full_name || "Anonymous"}</span>
+                      </div>
+                      <div className="flex text-primary">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <Star key={n} className={`h-3 w-3 ${n <= r.rating ? "fill-current" : "opacity-30"}`} />
+                        ))}
+                      </div>
+                    </div>
+                    {r.review_text && (
+                      <p className="line-clamp-2 text-xs text-hero-muted">{r.review_text}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* In-banner contact methods (kept for completeness when contact is private/public) */}
+          {user && !isOwner && (
+            <section className="mb-5">
+              {showContact && contactMethods.length > 0 ? (
+                <ContactMethodsBar
+                  methods={contactMethods}
+                  onInAppMessage={() => { void trackEvent("contact_click"); navigate(`/chat/${worker.userId}`); }}
+                  onChannelClick={() => void trackEvent("contact_click")}
+                  variant="hero"
                 />
               ) : (
-                <AuthRequiredDialog title="Log in to contact" description="Please log in or sign up to contact this service.">
-                  <Button className="w-full h-11 rounded-xl gap-2 shadow-sm">
-                    <CalendarPlus className="h-4 w-4" /> Log in to contact
+                <div className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-hero-muted">
+                  <EyeOff className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p>This service pro keeps direct contact private. Message them in-app or book a slot.</p>
+                </div>
+              )}
+            </section>
+          )}
+        </main>
+
+        {/* 6. Sticky Action Bar */}
+        <footer className="sticky bottom-0 z-30 border-t border-white/10 bg-hero/90 px-5 py-3 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-2xl items-center gap-3">
+            <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto">
+              <ActionCircle
+                onClick={() => { void trackEvent("contact_click"); user ? navigate(`/chat/${worker.userId}`) : navigate("/login"); }}
+                aria-label="In-app chat"
+              >
+                <MessageSquare className="h-5 w-5 text-hero-muted" />
+              </ActionCircle>
+              {phoneSan && (
+                <ActionCircle
+                  onClick={() => { void trackEvent("contact_click"); window.open(`https://wa.me/${phoneSan.replace(/^\+/, "")}`, "_blank"); }}
+                  aria-label="WhatsApp"
+                >
+                  <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                </ActionCircle>
+              )}
+              <ActionCircle aria-label="Video">
+                <Video className="h-5 w-5 text-[#3B82F6]" />
+              </ActionCircle>
+              <ActionCircle aria-label="Signal">
+                <Lock className="h-5 w-5 text-[#4A90E2]" />
+              </ActionCircle>
+            </div>
+            <div className="ml-1 flex flex-1 gap-2">
+              {user ? (
+                <>
+                  <BookingDialog workerId={worker.id} workerName={worker.name}>
+                    <Button
+                      variant="outline"
+                      className="h-10 flex-1 gap-1 rounded-lg border-white/15 bg-white/5 px-2 text-xs font-semibold text-hero-foreground hover:bg-white/10"
+                      onClick={() => void trackEvent("conversion")}
+                    >
+                      <CalendarPlus className="h-4 w-4" /> <span className="truncate">Book</span>
+                    </Button>
+                  </BookingDialog>
+                  <Button
+                    className="h-10 flex-[1.2] gap-1 rounded-lg px-2 text-xs font-semibold shadow-lg shadow-primary/10"
+                    onClick={() => {
+                      void trackEvent("contact_click");
+                      if (phoneSan) window.location.href = `tel:${phoneSan}`;
+                      else navigate(`/chat/${worker.userId}`);
+                    }}
+                  >
+                    <Phone className="h-4 w-4 fill-current" /> <span className="truncate">Call Now</span>
+                  </Button>
+                </>
+              ) : (
+                <AuthRequiredDialog title="Log in to contact" description="Sign in to contact this professional.">
+                  <Button className="h-10 w-full gap-1 rounded-lg text-xs font-semibold">
+                    <Mail className="h-4 w-4" /> Log in to contact
                   </Button>
                 </AuthRequiredDialog>
               )}
             </div>
           </div>
+        </footer>
 
-          {/* Body */}
-          <div className="relative px-4 pt-5 sm:px-5 md:px-8 md:pt-6">
-
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center text-secondary bg-secondary-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary-foreground" />
-                <span className="text-[11px] font-semibold text-secondary">Trust verified</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary-foreground">
-                <Clock3 className="h-4 w-4 text-secondary" />
-                <span className="text-[11px] font-semibold text-secondary">Replies fast</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 rounded-2xl border p-3 text-center bg-secondary-foreground">
-                <MapPin className="h-4 w-4 text-secondary" />
-                <span className="text-[11px] font-semibold text-card-foreground">Local expert</span>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="px-4 pb-6 sm:px-5 md:px-8">
-            <div className="mt-6">
-              <h2 className="font-semibold text-card-foreground mb-2">About</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">{worker.description || "No description provided yet."}</p>
-            </div>
-
-            <div className="mt-6">
-              <h2 className="font-semibold text-card-foreground mb-2">Service Areas</h2>
-              <div className="flex gap-2 flex-wrap">
-                {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
-              </div>
-            </div>
-
-            {user && user.id !== worker.userId && (
-              <div className="mt-8 p-4 rounded-2xl bg-muted/50">
-                <h2 className="font-semibold text-card-foreground mb-3">Leave a Review</h2>
-                <div className="flex items-center gap-2 mb-3">
-                  <Label className="text-sm">Rating:</Label>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map(n => (
-                      <button key={n} onClick={() => setReviewRating(n)} className="focus:outline-none">
-                        <Star className={`w-5 h-5 ${n <= reviewRating ? "text-star fill-star" : "text-muted-foreground"}`} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <Textarea placeholder="Write your review..." value={reviewText} onChange={e => setReviewText(e.target.value)} rows={3} className="mb-3" />
-                <Button onClick={handleSubmitReview} disabled={submittingReview} size="sm">
-                  {submittingReview ? "Submitting..." : "Submit Review"}
-                </Button>
-              </div>
-            )}
-
-            <div className="mt-8">
-              <h2 className="font-semibold text-card-foreground mb-4">Reviews ({dbReviews.length})</h2>
-              {dbReviews.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No reviews yet.</p>
-              ) : (
-                <div className="space-y-4">
-                  {dbReviews.map((r: any) => (
-                    <div key={r.id} className="p-4 rounded-2xl bg-muted/50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-sm text-card-foreground">{r.profiles?.full_name || "Anonymous"}</span>
-                        <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <StarRating rating={r.rating} size={14} />
-                      {r.review_text && <p className="text-sm text-muted-foreground mt-2">{r.review_text}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
+        <style>{`.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}`}</style>
       </div>
     </AppLayout>
   );
 };
 
-interface ContactBlockProps {
-  isOwner: boolean;
-  showContact: boolean;
-  contactMethods: ContactMethod[];
-  onInAppMessage: () => void;
-  onChannelClick: () => void;
-  workerId: string;
-  workerName: string;
-  trackConversion: () => void;
-}
+const Metric = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) => (
+  <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
+    {icon}
+    <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">{label}</p>
+    <p className="text-xs font-semibold">{value}</p>
+  </div>
+);
 
-const ContactBlock = ({
-  isOwner,
-  showContact,
-  contactMethods,
-  onInAppMessage,
-  onChannelClick,
-  workerId,
-  workerName,
-  trackConversion,
-}: ContactBlockProps) => {
-  const canView = isOwner || showContact;
-
-  return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-3 backdrop-blur-sm">
-      {canView ? (
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <ContactMethodsBar
-            methods={contactMethods}
-            onInAppMessage={isOwner ? undefined : onInAppMessage}
-            onChannelClick={onChannelClick}
-            variant="hero"
-          />
-          <BookingDialog workerId={workerId} workerName={workerName}>
-            <Button className="w-full gap-2 sm:w-auto" onClick={trackConversion}>
-              <CalendarPlus className="h-4 w-4" /> Book Now
-            </Button>
-          </BookingDialog>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-start gap-2 rounded-xl bg-white/5 p-3 text-xs text-hero-muted">
-            <EyeOff className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p>
-              This service pro has chosen to keep their direct contact details private. You can still
-              message them in the app or book a slot.
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <Button onClick={onInAppMessage} className="w-full gap-2 sm:w-auto">
-              <MessageSquare className="h-4 w-4" /> Message in app
-            </Button>
-            <BookingDialog workerId={workerId} workerName={workerName}>
-              <Button variant="secondary" className="w-full gap-2 sm:w-auto" onClick={trackConversion}>
-                <CalendarPlus className="h-4 w-4" /> Book Now
-              </Button>
-            </BookingDialog>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
+const ActionCircle = ({
+  children,
+  onClick,
+  ...rest
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <button
+    onClick={onClick}
+    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 transition hover:bg-primary/10 active:scale-90"
+    {...rest}
+  >
+    {children}
+  </button>
+);
 
 export default WorkerProfile;
