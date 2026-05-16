@@ -87,6 +87,10 @@ const Register = () => {
       toast.error("Please agree to the Terms & Privacy Policy.");
       return;
     }
+    if (!faceDataUrl) {
+      toast.error("Please complete face verification first.");
+      return;
+    }
 
     setLoading(true);
     try {
