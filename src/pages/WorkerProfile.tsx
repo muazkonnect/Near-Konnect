@@ -57,15 +57,18 @@ const WorkerProfile = () => {
     });
   };
 
+  const isUuid = !!id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
   const { data: dbWorker, isLoading: workerLoading, isError: workerError } = useQuery({
     queryKey: ["worker", id],
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await supabase
+      const query = (supabase as any)
         .from("workers")
         .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
-        .eq("id", id)
+        .eq(isUuid ? "id" : "uid", isUuid ? id : id.toUpperCase())
         .maybeSingle();
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -215,6 +218,19 @@ const WorkerProfile = () => {
                   </span>
                 )}
               </div>
+              {(dbWorker as any).uid && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText((dbWorker as any).uid);
+                    toast.success("Worker ID copied");
+                  }}
+                  className="mt-2 inline-block rounded-full border border-border/40 bg-muted/40 px-2.5 py-0.5 font-mono text-[11px] tracking-wider text-muted-foreground transition hover:bg-muted/70"
+                  title="Click to copy"
+                >
+                  {(dbWorker as any).uid}
+                </button>
+              )}
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/20 px-5 py-2 text-primary shadow-[0_0_24px_-4px_hsl(var(--primary)/0.7)]">
                 <MapPin className="h-5 w-5" />
                 <span className="font-sora text-lg font-bold leading-none">

@@ -32,6 +32,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
+import WorkerShareCard from "@/components/WorkerShareCard";
 import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import RequestLocationChangeDialog from "@/components/RequestLocationChangeDialog";
@@ -514,6 +515,9 @@ const WorkerDashboard = () => {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
+              {(workerData as any).uid && (
+                <WorkerShareCard uid={(workerData as any).uid} name={workerName} />
+              )}
               <div className="grid gap-4 lg:grid-cols-2">
                 <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6">
                   <div className="mb-4 flex items-center justify-between">
