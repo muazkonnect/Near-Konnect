@@ -14,7 +14,7 @@ const Offline = () => {
 
   return (
     <div
-      className="relative min-h-[100dvh] overflow-hidden bg-background text-foreground selection:bg-primary selection:text-primary-foreground"
+      className="relative min-h-[100dvh] overflow-hidden bg-background text-muted-foreground selection:bg-primary selection:text-primary-foreground"
       style={{
         backgroundImage:
           "linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px)",
@@ -51,7 +51,7 @@ const Offline = () => {
 
           {/* Typography */}
           <div className="space-y-6">
-            <h1 className="text-5xl font-bold tracking-tighter md:text-6xl">Off the Grid</h1>
+            <h1 className="text-5xl font-bold tracking-tighter text-primary md:text-6xl">Off the Grid</h1>
             <p className="mx-auto max-w-md text-base text-muted-foreground md:text-lg">
               Your device has lost its connection to the hyperlocal node. We'll reconnect you as
               soon as you're back in range.
@@ -69,7 +69,7 @@ const Offline = () => {
             </button>
             <button
               onClick={() => (window.location.href = "/")}
-              className="rounded-lg border border-border/50 bg-transparent px-12 py-4 text-sm font-medium text-foreground transition-all duration-300 hover:border-foreground/40 hover:bg-muted/30 active:scale-95"
+              className="rounded-lg border border-border/50 bg-transparent px-12 py-4 text-sm font-medium text-muted-foreground transition-all duration-300 hover:border-primary/40 hover:bg-muted/30 hover:text-primary active:scale-95"
             >
               View Offline Services
             </button>
