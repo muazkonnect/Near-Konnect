@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
@@ -370,12 +371,14 @@ interface ExploreCardProps {
 
 const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) => {
   const navigate = useNavigate();
+  const [popupOpen, setPopupOpen] = useState(false);
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel = worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km away` : "Distance unknown";
 
   return (
     <article
-      className={`relative flex flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
+      onClick={() => setPopupOpen(true)}
+      className={`relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
         premium
           ? "border-primary/20 bg-gradient-to-br from-white/[0.06] to-white/[0.02] shadow-[0_0_24px_-12px_hsl(var(--primary)/0.5)] hover:border-primary/40"
           : "border-white/10 bg-white/[0.04] hover:border-white/20"
@@ -433,18 +436,18 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
         </div>
       )}
 
-      <div className="mt-auto flex gap-2 border-t border-white/5 pt-3">
+      <div className="mt-auto flex gap-2 border-t border-white/5 pt-3" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="ghost"
           className="flex-1 rounded-lg bg-white/5 text-xs font-semibold text-hero-foreground hover:bg-white/10"
-          onClick={() => navigate(`/worker/${worker.id}`)}
+          onClick={() => setPopupOpen(true)}
         >
           View Profile
         </Button>
         {isAuthed ? (
           <Button
             className="flex-1 rounded-lg text-xs font-semibold"
-            onClick={() => navigate(`/worker/${worker.id}`)}
+            onClick={() => setPopupOpen(true)}
           >
             Contact
           </Button>
@@ -454,6 +457,7 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
           </AuthRequiredDialog>
         )}
       </div>
+      <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={setPopupOpen} isAuthed={isAuthed} />
     </article>
   );
 };
