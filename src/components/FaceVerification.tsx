@@ -333,10 +333,10 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
           <button
             type="button"
             onClick={capture}
-            disabled={!ready}
+            disabled={!ready || !alignment.ok}
             className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-sm font-semibold text-[#151f00] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="h-4 w-4" /> {ready ? "Capture" : "Preparing camera…"}
+            <Check className="h-4 w-4" /> {!ready ? "Preparing camera…" : alignment.ok ? "Capture" : alignment.hint}
           </button>
         )}
         {capturedUrl && !verifying && (
