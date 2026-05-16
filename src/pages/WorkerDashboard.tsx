@@ -338,7 +338,7 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Schedule", icon: Calendar, onClick: () => setActiveTab("bookings") },
+              { label: "Profile", icon: UserCheck, onClick: () => setActiveTab("profile") },
               { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
               { label: "Boost Ad", icon: Sparkles, onClick: () => navigate("/discover") },
               { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
@@ -453,18 +453,6 @@ const WorkerDashboard = () => {
         </motion.div>
 
         <div className="mx-auto mt-8 max-w-2xl space-y-6">
-          <DashboardNav
-            items={[
-              { value: "overview", label: "Overview", icon: LayoutDashboard },
-              { value: "profile", label: "Profile", icon: UserCheck },
-              { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message + unreadByType.contact_request },
-              { value: "reviews", label: "Reviews", icon: Star },
-            ]}
-            active={activeTab}
-            onChange={setActiveTab}
-          />
-
           <Tabs value={activeTab} onValueChange={setActiveTab} className="min-w-0 space-y-5">
             <TabsList className="hidden">
               <TabsTrigger value="overview" />
