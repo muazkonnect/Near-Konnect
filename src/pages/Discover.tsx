@@ -237,7 +237,7 @@ const Discover = () => {
 
   return (
     <AppLayout hideMobileHeader>
-      <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground">
+      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
         {/* TOP APP BAR */}
         <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-hero/80 px-5 py-3 backdrop-blur-md">
           <Link to="/" className="inline-flex items-center gap-2">
