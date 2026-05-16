@@ -284,8 +284,12 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
                 <path d="M94 94 H86 M94 94 V86" />
               </g>
             </svg>
-            <div className="absolute inset-x-0 bottom-2 text-center text-[10px] font-medium text-[#d9ff7a] drop-shadow">
-              Align your face inside the oval
+            <div
+              className={`absolute inset-x-0 bottom-2 text-center text-[11px] font-semibold drop-shadow ${
+                alignment.ok ? "text-[#d9ff7a]" : "text-amber-300"
+              }`}
+            >
+              {alignment.hint}
             </div>
           </div>
         )}
