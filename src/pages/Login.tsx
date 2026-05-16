@@ -38,17 +38,6 @@ const Login = () => {
     navigate(redirect, { replace: true });
   };
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
-    });
-    if (error) {
-      setLoading(false);
-      toast.error(getAuthErrorMessage(error));
-    }
-  };
 
   return (
     <div className="relative flex min-h-screen flex-col justify-between overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
