@@ -35,6 +35,7 @@ import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
+import logoImg from "@/assets/logo.svg";
 import DashboardNav from "@/components/DashboardNav";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -264,25 +265,16 @@ const WorkerDashboard = () => {
   const firstName = workerName.split(" ")[0];
 
   return (
-    <AppLayout showSignOut>
-      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-6 text-hero-foreground">
+    <AppLayout showSignOut hideMobileHeader>
+      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
         {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-white/5 bg-hero/85 px-5 py-3 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-white/20">
-              {(workerData as any).profiles?.avatar_url ? (
-                <img src={(workerData as any).profiles.avatar_url} alt={workerName} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-white/10 text-xs font-bold">
-                  {workerName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
-                </div>
-              )}
-            </div>
-            <h1 className="font-sora text-base font-bold uppercase tracking-wider sm:text-lg">Pro Dashboard</h1>
-          </div>
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+          <Link to="/" className="inline-flex items-center">
+            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+          </Link>
           <button
             onClick={() => navigate("/messages")}
-            className="relative rounded-full p-2 text-primary transition hover:bg-white/10"
+            className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
             aria-label="Notifications"
           >
             <MessageSquare className="h-5 w-5" />
@@ -298,7 +290,7 @@ const WorkerDashboard = () => {
           className="mx-auto max-w-2xl space-y-4"
         >
           {/* Profile Summary */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+          <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 sm:p-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -325,7 +317,7 @@ const WorkerDashboard = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => navigate(`/worker/${workerData.id}`)}
-                  className="flex-1 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-semibold text-hero-foreground transition hover:bg-white/10 sm:flex-none"
+                  className="flex-1 rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-4 py-3 text-xs font-semibold text-hero-foreground transition hover:bg-hero-foreground/10 sm:flex-none"
                 >
                   Visibility: {available ? "High" : "Low"}
                 </button>
@@ -354,7 +346,7 @@ const WorkerDashboard = () => {
               <button
                 key={a.label}
                 onClick={a.onClick}
-                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-4 text-center transition hover:border-primary/30 hover:bg-white/[0.07]"
+                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 text-center transition hover:border-primary/30 hover:bg-hero-foreground/10"
               >
                 <a.icon className="h-5 w-5 text-hero-foreground/70 transition group-hover:text-primary" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-hero-foreground/70">{a.label}</span>
@@ -399,7 +391,7 @@ const WorkerDashboard = () => {
             </div>
 
             {pendingBookings.length === 0 ? (
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-8 text-center text-sm text-hero-foreground/60">
+              <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-8 text-center text-sm text-hero-foreground/60">
                 No active requests right now.
               </div>
             ) : (
@@ -412,10 +404,10 @@ const WorkerDashboard = () => {
                   return (
                     <div
                       key={b.id}
-                      className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 transition hover:border-primary/30 sm:flex-row sm:items-center sm:justify-between"
+                      className="group flex flex-col gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 transition hover:border-primary/30 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-primary">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-hero-foreground/15 bg-hero-foreground/5 text-primary">
                           <UserCheck className="h-5 w-5" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -441,7 +433,7 @@ const WorkerDashboard = () => {
                       <div className="flex shrink-0 gap-2">
                         <button
                           onClick={() => handleBookingAction(b.id, "rejected")}
-                          className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-hero-foreground/80 transition hover:bg-white/10"
+                          className="rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-xs font-semibold text-hero-foreground/80 transition hover:bg-hero-foreground/10"
                         >
                           Decline
                         </button>
