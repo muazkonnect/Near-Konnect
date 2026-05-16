@@ -360,14 +360,14 @@ const Register = () => {
             t("register.submit")
           )}
         </Button>
-      </form>
+          </form>
 
-      <SocialAuthButtons disabled={loading} />
-
-      <p className="mt-8 text-center text-sm text-muted-foreground">
-        {t("register.hasAccount")}{" "}
-        <Link to="/login" className="font-semibold text-foreground hover:underline">{t("nav.logIn")}</Link>
-      </p>
+          <p className="pb-6 text-center text-sm text-[#c4c7c7]">
+            {t("register.hasAccount")}{" "}
+            <Link to="/login" className="font-bold text-[#d9ff7a] hover:underline">{t("nav.logIn")}</Link>
+          </p>
+        </div>
+      </main>
 
       <Dialog open={existingAccountModal.open} onOpenChange={(open) => setExistingAccountModal((s) => ({ ...s, open }))}>
         <DialogContent className="rounded-2xl sm:max-w-md">
@@ -399,7 +399,7 @@ const Register = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AuthShell>
+    </div>
   );
 };
 
