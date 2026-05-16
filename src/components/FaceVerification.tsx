@@ -10,12 +10,19 @@ interface Props {
 const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const detectorRef = useRef<any>(null);
+  const detectIntervalRef = useRef<number | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [alignment, setAlignment] = useState<{ ok: boolean; hint: string }>({
+    ok: false,
+    hint: "Position your face inside the oval",
+  });
+  const detectorSupported = typeof (window as any).FaceDetector === "function";
 
   const startCamera = async () => {
     setError(null);
@@ -55,11 +62,81 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    if (detectIntervalRef.current) {
+      clearInterval(detectIntervalRef.current);
+      detectIntervalRef.current = null;
+    }
+    detectorRef.current = null;
     setStreaming(false);
     setReady(false);
+    setAlignment({ ok: false, hint: "Position your face inside the oval" });
   };
 
   useEffect(() => () => stopCamera(), []);
+
+  // Face alignment detection loop
+  useEffect(() => {
+    if (!streaming || !ready || capturedUrl) return;
+    const v = videoRef.current;
+    if (!v) return;
+
+    if (!detectorSupported) {
+      // No native detector — fall back to allowing capture once camera is ready
+      setAlignment({ ok: true, hint: "Camera ready" });
+      return;
+    }
+
+    try {
+      detectorRef.current = new (window as any).FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+    } catch {
+      setAlignment({ ok: true, hint: "Camera ready" });
+      return;
+    }
+
+    const tick = async () => {
+      const vid = videoRef.current;
+      const det = detectorRef.current;
+      if (!vid || !det || vid.readyState < 2) return;
+      try {
+        const faces = await det.detect(vid);
+        if (!faces || faces.length === 0) {
+          setAlignment({ ok: false, hint: "No face detected" });
+          return;
+        }
+        if (faces.length > 1) {
+          setAlignment({ ok: false, hint: "Only one person in frame" });
+          return;
+        }
+        const box = faces[0].boundingBox;
+        const vw = vid.videoWidth, vh = vid.videoHeight;
+        const cx = box.x + box.width / 2;
+        const cy = box.y + box.height / 2;
+        const offX = Math.abs(cx - vw / 2) / vw;
+        const offY = Math.abs(cy - vh / 2) / vh;
+        const sizeRatio = box.height / vh;
+
+        if (sizeRatio < 0.35) {
+          setAlignment({ ok: false, hint: "Move closer" });
+        } else if (sizeRatio > 0.85) {
+          setAlignment({ ok: false, hint: "Move back a little" });
+        } else if (offX > 0.12 || offY > 0.12) {
+          setAlignment({ ok: false, hint: "Center your face" });
+        } else {
+          setAlignment({ ok: true, hint: "Looks good — hold still" });
+        }
+      } catch {
+        // ignore transient detection errors
+      }
+    };
+
+    detectIntervalRef.current = window.setInterval(tick, 350);
+    return () => {
+      if (detectIntervalRef.current) {
+        clearInterval(detectIntervalRef.current);
+        detectIntervalRef.current = null;
+      }
+    };
+  }, [streaming, ready, capturedUrl, detectorSupported]);
 
   const capture = async () => {
     const v = videoRef.current;
@@ -207,8 +284,12 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
                 <path d="M94 94 H86 M94 94 V86" />
               </g>
             </svg>
-            <div className="absolute inset-x-0 bottom-2 text-center text-[10px] font-medium text-[#d9ff7a] drop-shadow">
-              Align your face inside the oval
+            <div
+              className={`absolute inset-x-0 bottom-2 text-center text-[11px] font-semibold drop-shadow ${
+                alignment.ok ? "text-[#d9ff7a]" : "text-amber-300"
+              }`}
+            >
+              {alignment.hint}
             </div>
           </div>
         )}
@@ -252,10 +333,10 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
           <button
             type="button"
             onClick={capture}
-            disabled={!ready}
+            disabled={!ready || !alignment.ok}
             className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-sm font-semibold text-[#151f00] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="h-4 w-4" /> {ready ? "Capture" : "Preparing camera…"}
+            <Check className="h-4 w-4" /> {!ready ? "Preparing camera…" : alignment.ok ? "Capture" : alignment.hint}
           </button>
         )}
         {capturedUrl && !verifying && (
