@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -372,12 +372,24 @@ interface ExploreCardProps {
 const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) => {
   const navigate = useNavigate();
   const [popupOpen, setPopupOpen] = useState(false);
+  const lastClosedRef = useRef(0);
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel = worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km away` : "Distance unknown";
 
+  const handleOpen = () => {
+    if (popupOpen) return;
+    if (Date.now() - lastClosedRef.current < 300) return;
+    setPopupOpen(true);
+  };
+  const handleChange = (o: boolean) => {
+    if (!o) lastClosedRef.current = Date.now();
+    setPopupOpen(o);
+  };
+
   return (
+    <>
     <article
-      onClick={() => setPopupOpen(true)}
+      onClick={handleOpen}
       className={`relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
         premium
           ? "border-primary/20 bg-gradient-to-br from-white/[0.06] to-white/[0.02] shadow-[0_0_24px_-12px_hsl(var(--primary)/0.5)] hover:border-primary/40"
@@ -457,8 +469,9 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
           </AuthRequiredDialog>
         )}
       </div>
-      <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={setPopupOpen} isAuthed={isAuthed} />
     </article>
+    <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={handleChange} isAuthed={isAuthed} />
+    </>
   );
 };
 
