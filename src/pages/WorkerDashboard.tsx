@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
 import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
+import RequestLocationChangeDialog from "@/components/RequestLocationChangeDialog";
 import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
 import StarRating from "@/components/StarRating";
