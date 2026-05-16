@@ -516,10 +516,10 @@ const WorkerDashboard = () => {
             </TabsContent>
 
             <TabsContent value="profile">
-              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-xl font-bold text-card-foreground">Service profile</h2>
+                    <h2 className="text-xl font-bold text-hero-foreground">Service profile</h2>
                     <p className="text-sm text-muted-foreground">How clients see you</p>
                   </div>
                   {workerData.verified && (
@@ -529,10 +529,10 @@ const WorkerDashboard = () => {
                   )}
                 </div>
 
-                <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
+                <div className="mb-6 flex items-center gap-4 rounded-2xl bg-hero-foreground/5 p-4">
                   <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
+                    <p className="truncate font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
                     <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
@@ -608,13 +608,13 @@ const WorkerDashboard = () => {
                 </Button>
               </div>
 
-              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
                 <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
                   <KeyRound className="h-4 w-4" /> Security
                 </h3>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-muted/30 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-hero-foreground/5 p-4">
                   <div className="min-w-[200px]">
-                    <p className="font-semibold text-card-foreground">Password</p>
+                    <p className="font-semibold text-hero-foreground">Password</p>
                     <p className="text-xs text-muted-foreground">Change your account password regularly to stay secure.</p>
                   </div>
                   <ChangePasswordDialog>
@@ -625,7 +625,7 @@ const WorkerDashboard = () => {
                 </div>
               </div>
 
-              <div className="rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
                     <p className="font-semibold text-foreground">Fixed service location</p>
