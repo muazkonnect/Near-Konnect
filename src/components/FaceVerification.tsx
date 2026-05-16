@@ -62,11 +62,81 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    if (detectIntervalRef.current) {
+      clearInterval(detectIntervalRef.current);
+      detectIntervalRef.current = null;
+    }
+    detectorRef.current = null;
     setStreaming(false);
     setReady(false);
+    setAlignment({ ok: false, hint: "Position your face inside the oval" });
   };
 
   useEffect(() => () => stopCamera(), []);
+
+  // Face alignment detection loop
+  useEffect(() => {
+    if (!streaming || !ready || capturedUrl) return;
+    const v = videoRef.current;
+    if (!v) return;
+
+    if (!detectorSupported) {
+      // No native detector — fall back to allowing capture once camera is ready
+      setAlignment({ ok: true, hint: "Camera ready" });
+      return;
+    }
+
+    try {
+      detectorRef.current = new (window as any).FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+    } catch {
+      setAlignment({ ok: true, hint: "Camera ready" });
+      return;
+    }
+
+    const tick = async () => {
+      const vid = videoRef.current;
+      const det = detectorRef.current;
+      if (!vid || !det || vid.readyState < 2) return;
+      try {
+        const faces = await det.detect(vid);
+        if (!faces || faces.length === 0) {
+          setAlignment({ ok: false, hint: "No face detected" });
+          return;
+        }
+        if (faces.length > 1) {
+          setAlignment({ ok: false, hint: "Only one person in frame" });
+          return;
+        }
+        const box = faces[0].boundingBox;
+        const vw = vid.videoWidth, vh = vid.videoHeight;
+        const cx = box.x + box.width / 2;
+        const cy = box.y + box.height / 2;
+        const offX = Math.abs(cx - vw / 2) / vw;
+        const offY = Math.abs(cy - vh / 2) / vh;
+        const sizeRatio = box.height / vh;
+
+        if (sizeRatio < 0.35) {
+          setAlignment({ ok: false, hint: "Move closer" });
+        } else if (sizeRatio > 0.85) {
+          setAlignment({ ok: false, hint: "Move back a little" });
+        } else if (offX > 0.12 || offY > 0.12) {
+          setAlignment({ ok: false, hint: "Center your face" });
+        } else {
+          setAlignment({ ok: true, hint: "Looks good — hold still" });
+        }
+      } catch {
+        // ignore transient detection errors
+      }
+    };
+
+    detectIntervalRef.current = window.setInterval(tick, 350);
+    return () => {
+      if (detectIntervalRef.current) {
+        clearInterval(detectIntervalRef.current);
+        detectIntervalRef.current = null;
+      }
+    };
+  }, [streaming, ready, capturedUrl, detectorSupported]);
 
   const capture = async () => {
     const v = videoRef.current;
