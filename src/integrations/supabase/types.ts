@@ -1074,6 +1074,54 @@ export type Database = {
         }
         Relationships: []
       }
+      worker_location_change_requests: {
+        Row: {
+          admin_comment: string
+          created_at: string
+          current_latitude: number | null
+          current_longitude: number | null
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          reason: string
+          requested_latitude: number
+          requested_longitude: number
+          status: string
+          updated_at: string
+          worker_user_id: string
+        }
+        Insert: {
+          admin_comment?: string
+          created_at?: string
+          current_latitude?: number | null
+          current_longitude?: number | null
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          reason?: string
+          requested_latitude: number
+          requested_longitude: number
+          status?: string
+          updated_at?: string
+          worker_user_id: string
+        }
+        Update: {
+          admin_comment?: string
+          created_at?: string
+          current_latitude?: number | null
+          current_longitude?: number | null
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          reason?: string
+          requested_latitude?: number
+          requested_longitude?: number
+          status?: string
+          updated_at?: string
+          worker_user_id?: string
+        }
+        Relationships: []
+      }
       workers: {
         Row: {
           available: boolean
