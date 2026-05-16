@@ -180,6 +180,8 @@ const Discover = () => {
 
   const filteredWithAdvanced = filtered.filter((w) => {
     if (minRating > 0 && w.rating < minRating) return false;
+    if (verifiedOnly && !w.verified) return false;
+    if (availableOnly && !w.available) return false;
     if (priceBand === "budget") return w.experience <= 2;
     if (priceBand === "mid") return w.experience > 2 && w.experience <= 6;
     if (priceBand === "premium") return w.experience > 6;
