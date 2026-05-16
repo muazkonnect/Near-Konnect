@@ -350,6 +350,7 @@ const CustomerDashboard = () => {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-card-foreground">{profile?.full_name || user?.email}</p>
                   <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
+                  <AvatarResetFlow onReplaced={(url) => setProfile((p: any) => p ? { ...p, avatar_url: url } : p)} />
                 </div>
               </div>
 
