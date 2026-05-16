@@ -122,7 +122,15 @@ export const composePhone = (country: CountryCode, national: string): string => 
   const digits = (national || "").replace(/\D/g, "");
   if (!digits) return "";
   const parsed = parsePhoneNumberFromString(digits, country);
-  return parsed ? parsed.number : `+${digits}`;
+  if (parsed) return parsed.number;
+  try {
+    const cc = getCountryCallingCode(country);
+    // Strip leading country code if user typed it as part of the national field
+    const stripped = digits.startsWith(cc) ? digits.slice(cc.length) : digits;
+    return `+${cc}${stripped}`;
+  } catch {
+    return `+${digits}`;
+  }
 };
 
 export const parseContactMethods = (raw: unknown): ContactMethod[] => {
