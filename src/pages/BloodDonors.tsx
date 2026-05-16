@@ -129,8 +129,8 @@ const BloodDonors = () => {
         <main className="px-6 pt-6 pb-8">
           {/* HERO CARD */}
           <section className="relative mb-8 overflow-hidden rounded-xl border border-[#ffe2de] bg-white p-4 shadow-sm">
-            <div aria-hidden className="pointer-events-none absolute -right-2 -top-2">
-              <Heart style={{ opacity: 0.08 }} className="h-32 w-32 fill-[#b7131a] text-[#b7131a] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
+            <div aria-hidden className="pointer-events-none absolute -right-2 -top-2 opacity-20">
+              <Heart className="h-32 w-32 fill-[#b7131a] text-[#b7131a] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
             </div>
             <div className="relative">
               <div className="mb-2 flex items-center gap-2">
@@ -153,7 +153,7 @@ const BloodDonors = () => {
                 </Button>
               </div>
             </div>
-            <style>{`@keyframes heart-pulse { 0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8} }`}</style>
+            <style>{`@keyframes heart-pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.15)} }`}</style>
           </section>
 
           {/* BLOOD GROUP CHIPS */}
