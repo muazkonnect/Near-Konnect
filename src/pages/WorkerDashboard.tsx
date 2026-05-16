@@ -520,7 +520,7 @@ const WorkerDashboard = () => {
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-xl font-bold text-hero-foreground">Service profile</h2>
-                    <p className="text-sm text-muted-foreground">How clients see you</p>
+                    <p className="text-sm text-hero-foreground/60">How clients see you</p>
                   </div>
                   {workerData.verified && (
                     <Badge className="gap-1 rounded-full bg-success px-3 py-1 text-success-foreground">
@@ -533,21 +533,21 @@ const WorkerDashboard = () => {
                   <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
-                    <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
+                    <p className="truncate text-sm text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Main Category</Label>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Main Category</Label>
                     <select
                       value={mainCategory}
                       onChange={(e) => {
                         setMainCategory(e.target.value);
                         setSubCategory("");
                       }}
-                      className="mt-1.5 flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-1.5 flex h-11 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select main category</option>
                       {mainCategories.map((cat) => (
@@ -558,7 +558,7 @@ const WorkerDashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Subcategory</Label>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Subcategory</Label>
                     <select
                       value={subCategory}
                       onChange={(e) => {
@@ -566,7 +566,7 @@ const WorkerDashboard = () => {
                         setProfession(e.target.value); // Sync profession with subcategory
                       }}
                       disabled={!mainCategory}
-                      className="mt-1.5 flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-1.5 flex h-11 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select subcategory</option>
                       {subCategories.map((sub) => (
@@ -577,28 +577,28 @@ const WorkerDashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profession (Display Name)</Label>
-                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Profession (Display Name)</Label>
+                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Years of Experience</Label>
-                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Years of Experience</Label>
+                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</Label>
-                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">About</Label>
+                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact options</Label>
-                    <p className="mb-2 mt-1 text-xs text-muted-foreground">Phone is required. Add any other apps so clients can reach you.</p>
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Contact options</Label>
+                    <p className="mb-2 mt-1 text-xs text-hero-foreground/60">Phone is required. Add any other apps so clients can reach you.</p>
                     <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-4">
+                <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 p-4">
                   <div>
-                    <p className="font-semibold text-foreground">Availability</p>
-                    <p className="text-xs text-muted-foreground">{available ? "You are visible to clients" : "You are hidden from search"}</p>
+                    <p className="font-semibold text-hero-foreground">Availability</p>
+                    <p className="text-xs text-hero-foreground/60">{available ? "You are visible to clients" : "You are hidden from search"}</p>
                   </div>
                   <Switch checked={available} onCheckedChange={setAvailable} />
                 </div>
@@ -609,13 +609,13 @@ const WorkerDashboard = () => {
               </div>
 
               <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
-                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
                   <KeyRound className="h-4 w-4" /> Security
                 </h3>
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-hero-foreground/5 p-4">
                   <div className="min-w-[200px]">
                     <p className="font-semibold text-hero-foreground">Password</p>
-                    <p className="text-xs text-muted-foreground">Change your account password regularly to stay secure.</p>
+                    <p className="text-xs text-hero-foreground/60">Change your account password regularly to stay secure.</p>
                   </div>
                   <ChangePasswordDialog>
                     <Button variant="outline" className="gap-2 rounded-xl h-10">
@@ -628,8 +628,8 @@ const WorkerDashboard = () => {
               <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold text-foreground">Fixed service location</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-semibold text-hero-foreground">Fixed service location</p>
+                    <p className="text-xs text-hero-foreground/60">
                       {workerData.latitude && workerData.longitude
                         ? "Permanent and locked to your shop or work spot."
                         : "Set this once. It cannot be changed later."}
@@ -644,13 +644,13 @@ const WorkerDashboard = () => {
 
                 {workerData.latitude && workerData.longitude ? (
                   <>
-                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs text-muted-foreground">
+                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-hero-foreground/10 px-2.5 py-1 text-xs text-hero-foreground/60">
                       <MapPin className="h-3 w-3" />
                       {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
                     </div>
-                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-border bg-card/50 p-3">
-                      <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground">
+                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-hero-foreground/15 bg-hero-foreground/5 p-3">
+                      <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-hero-foreground/60" />
+                      <p className="text-xs text-hero-foreground/60">
                         Need to change your fixed location?{" "}
                         <button
                           type="button"
