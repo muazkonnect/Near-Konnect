@@ -265,42 +265,41 @@ const WorkerDashboard = () => {
 
   return (
     <AppLayout showSignOut>
-      <section className="space-y-5">
-        {/* Pro Dashboard hero */}
+      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-6 text-hero-foreground">
+        {/* Top App Bar */}
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-white/5 bg-hero/85 px-5 py-3 backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 overflow-hidden rounded-full border border-white/20">
+              {(workerData as any).profiles?.avatar_url ? (
+                <img src={(workerData as any).profiles.avatar_url} alt={workerName} className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-white/10 text-xs font-bold">
+                  {workerName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <h1 className="font-sora text-base font-bold uppercase tracking-wider sm:text-lg">Pro Dashboard</h1>
+          </div>
+          <button
+            onClick={() => navigate("/messages")}
+            className="relative rounded-full p-2 text-primary transition hover:bg-white/10"
+            aria-label="Notifications"
+          >
+            <MessageSquare className="h-5 w-5" />
+            {(unreadByType.message + unreadByType.booking) > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+            )}
+          </button>
+        </header>
+
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-white/5 bg-hero p-5 text-hero-foreground sm:p-6"
+          className="mx-auto max-w-2xl space-y-4"
         >
-          {/* Top bar */}
-          <div className="mb-5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 overflow-hidden rounded-full border border-white/20">
-                {(workerData as any).profiles?.avatar_url ? (
-                  <img src={(workerData as any).profiles.avatar_url} alt={workerName} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-white/10 text-xs font-bold">
-                    {workerName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <h1 className="text-base font-bold uppercase tracking-wide">Pro Dashboard</h1>
-            </div>
-            <button
-              onClick={() => navigate("/messages")}
-              className="relative rounded-full p-2 text-hero-foreground/80 transition hover:bg-white/10"
-              aria-label="Notifications"
-            >
-              <MessageSquare className="h-5 w-5" />
-              {unreadByType.message > 0 && (
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
-              )}
-            </button>
-          </div>
-
-          {/* Profile summary */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+          {/* Profile Summary */}
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xl font-bold sm:text-2xl">{workerName}</span>
@@ -323,30 +322,29 @@ const WorkerDashboard = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex w-full gap-2 sm:w-auto">
-                <Button
-                  variant="outline"
+              <div className="flex gap-2">
+                <button
                   onClick={() => navigate(`/worker/${workerData.id}`)}
-                  className="h-10 flex-1 gap-1.5 rounded-xl border-white/15 bg-white/5 px-4 text-xs text-hero-foreground hover:bg-white/10 sm:flex-none"
+                  className="flex-1 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-semibold text-hero-foreground transition hover:bg-white/10 sm:flex-none"
                 >
-                  <Eye className="h-3.5 w-3.5" /> View Profile
-                </Button>
-                <Button
+                  Visibility: {available ? "High" : "Low"}
+                </button>
+                <button
                   onClick={() => {
                     const v = !available;
                     setAvailable(v);
                     supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
                   }}
-                  className="h-10 flex-1 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none"
+                  className="flex-1 rounded-xl bg-primary px-4 py-3 text-xs font-bold text-primary-foreground transition hover:opacity-90 sm:flex-none"
                 >
                   {available ? "Go Offline" : "Go Online"}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Quick actions 2x2 */}
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {/* Quick Actions 2x2 */}
+          <div className="grid grid-cols-2 gap-3">
             {[
               { label: "Schedule", icon: Calendar, onClick: () => setActiveTab("bookings") },
               { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
@@ -356,49 +354,113 @@ const WorkerDashboard = () => {
               <button
                 key={a.label}
                 onClick={a.onClick}
-                className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center transition hover:border-primary/30 hover:bg-white/[0.07]"
+                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-4 text-center transition hover:border-primary/30 hover:bg-white/[0.07]"
               >
                 <a.icon className="h-5 w-5 text-hero-foreground/70 transition group-hover:text-primary" />
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-hero-foreground/70">{a.label}</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-hero-foreground/70">{a.label}</span>
               </button>
             ))}
           </div>
 
           {/* Sparks Wallet */}
-          <div className="relative mt-4 overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
-            <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 text-primary-foreground/10" />
-            <div className="relative flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</p>
-                <p className="mt-2 text-3xl font-bold leading-none">2,450</p>
-                <p className="mt-1 text-xs opacity-80">Available Credits</p>
+          <div className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
+            <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-40 w-40 text-primary-foreground/5" strokeWidth={1} />
+            <div className="relative">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
+                <Sparkles className="h-5 w-5" />
               </div>
-              <Sparkles className="h-5 w-5" />
+              <div className="mt-4">
+                <p className="text-3xl font-bold leading-none">2,450</p>
+                <p className="mt-1 text-sm opacity-80">Available Credits</p>
+              </div>
             </div>
-            <Button className="relative mt-4 h-10 w-full rounded-xl bg-primary-foreground text-sm font-bold text-primary hover:bg-primary-foreground/90">
-              Top Up Balance
-            </Button>
+            <div className="relative mt-6 space-y-2">
+              <button className="w-full rounded-xl bg-primary-foreground py-3 text-sm font-bold text-primary transition hover:opacity-90">
+                Top Up Balance
+              </button>
+              <p className="text-center text-[11px] font-semibold opacity-70">Next auto-recharge in 4 days</p>
+            </div>
           </div>
 
-          {/* Stats row */}
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            {[
-              { label: "Pending", value: pendingBookings.length, icon: Clock },
-              { label: "New msgs", value: unreadByType.message, icon: MessageSquare },
-              { label: "Bookings", value: unreadByType.booking, icon: Calendar },
-            ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                <div className="mb-1 flex items-center justify-between">
-                  <s.icon className="h-3.5 w-3.5 opacity-70" />
-                  <span className="text-[9px] font-semibold uppercase tracking-wide opacity-70">{s.label}</span>
-                </div>
-                <p className="text-lg font-bold">{s.value}</p>
+          {/* Active Requests */}
+          <section className="space-y-3">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-xl font-bold">Active Requests</h2>
+                <p className="text-sm text-hero-foreground/60">High-priority hyperlocal service leads near you.</p>
               </div>
-            ))}
-          </div>
+              <button
+                onClick={() => setActiveTab("bookings")}
+                className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+              >
+                View All →
+              </button>
+            </div>
+
+            {pendingBookings.length === 0 ? (
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-8 text-center text-sm text-hero-foreground/60">
+                No active requests right now.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {pendingBookings.slice(0, 4).map((b: any) => {
+                  const ageMs = Date.now() - new Date(b.created_at).getTime();
+                  const ageMin = Math.floor(ageMs / 60000);
+                  const ageLabel = ageMin < 60 ? `${ageMin}m ago` : ageMin < 1440 ? `${Math.floor(ageMin / 60)}h ago` : `${Math.floor(ageMin / 1440)}d ago`;
+                  const urgent = ageMin < 15;
+                  return (
+                    <div
+                      key={b.id}
+                      className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 transition hover:border-primary/30 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-primary">
+                          <UserCheck className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="truncate text-sm font-semibold">{b.profiles?.full_name || "Client"}</h3>
+                            {urgent && (
+                              <span className="rounded bg-destructive/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-destructive">
+                                Urgent
+                              </span>
+                            )}
+                          </div>
+                          <p className="line-clamp-1 text-xs text-hero-foreground/60">{b.service_description}</p>
+                          <div className="mt-1 flex items-center gap-3 text-[11px] text-hero-foreground/60">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" /> {new Date(b.booking_date).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" /> {ageLabel}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          onClick={() => handleBookingAction(b.id, "rejected")}
+                          className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-hero-foreground/80 transition hover:bg-white/10"
+                        >
+                          Decline
+                        </button>
+                        <button
+                          onClick={() => handleBookingAction(b.id, "confirmed")}
+                          className="rounded-lg bg-hero-foreground px-4 py-2 text-xs font-bold text-hero transition group-hover:bg-primary group-hover:text-primary-foreground"
+                        >
+                          Accept Job
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         </motion.div>
 
-        <div className="space-y-6">
+        <div className="mx-auto mt-8 max-w-2xl space-y-6">
           <DashboardNav
             items={[
               { value: "overview", label: "Overview", icon: LayoutDashboard },
