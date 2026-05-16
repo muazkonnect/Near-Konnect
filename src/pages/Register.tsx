@@ -1,101 +1,94 @@
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-import MapLocationPicker from "@/components/MapLocationPicker";
+import { Eye, EyeOff, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PasswordStrength from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/passwordValidation";
-import { useI18n } from "@/i18n";
-import { type Coords } from "@/lib/geolocation";
 import { useCategories } from "@/hooks/useCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
-import ContactMethodsEditor from "@/components/ContactMethodsEditor";
-import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
+import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
+
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+const EXPERTISE_SUGGESTIONS: Record<string, string[]> = {
+  default: ["Residential", "Commercial", "Emergency", "Maintenance"],
+};
 
 const Register = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const { mainCategories, getSubCategories } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
-  const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [existingAccountModal, setExistingAccountModal] = useState<{ open: boolean; email: string }>({ open: false, email: "" });
-  
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [mainCategory, setMainCategory] = useState<string>("");
+  const [showPw, setShowPw] = useState(false);
+
+  const [mainCategory, setMainCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
+
+  const [isBloodDonor, setIsBloodDonor] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
-  const [willingToDonate, setWillingToDonate] = useState(false);
-  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
-  const [workerCoords, setWorkerCoords] = useState<Coords | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const [loading, setLoading] = useState(false);
+  const [existingAccountModal, setExistingAccountModal] = useState<{ open: boolean; email: string }>({ open: false, email: "" });
 
-  const phoneEntry = contactMethods.find((m) => m.type === "phone");
-  const phone = phoneEntry?.value ?? "";
+  const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseChips = EXPERTISE_SUGGESTIONS[subCategory] || EXPERTISE_SUGGESTIONS.default;
+
+  const toggleTag = (tag: string) => {
+    setExpertiseTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  };
+
+  const addCustomTag = () => {
+    const t = customTag.trim();
+    if (t && !expertiseTags.includes(t)) setExpertiseTags([...expertiseTags, t]);
+    setCustomTag("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPhone = sanitizePhone(phone);
-    const normalizedExperience = experience.trim();
 
-    if (!normalizedName || !normalizedEmail || !password) {
+    if (!normalizedName || !normalizedEmail || !password || !normalizedPhone) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    const pwValidation = validatePassword(password);
-    if (!pwValidation.isValid) {
-      toast.error("Password doesn't meet requirements: " + pwValidation.errors[0]);
+    const pw = validatePassword(password);
+    if (!pw.isValid) {
+      toast.error("Password: " + pw.errors[0]);
       return;
     }
-    if (!normalizedPhone) {
-      toast.error("A phone number is required.");
+    if (role === "worker" && (!mainCategory || !subCategory || !experience.trim())) {
+      toast.error("Please complete category, sub-category and experience.");
       return;
     }
-    // Normalise every contact method (phones → E.164 no spaces; others → no internal whitespace)
-    const trimmedMethods: ContactMethod[] = normalizeContactMethods(contactMethods);
-    const contactErr = validateContactMethods(trimmedMethods);
-    if (contactErr) {
-      toast.error(contactErr);
-      return;
-    }
-    if (role === "worker" && (!mainCategory || !subCategory || !normalizedExperience)) {
-      toast.error("Please select category, subcategory, and experience.");
-      return;
-    }
-    if (role === "worker" && !workerCoords) {
-      toast.error("Please pick your fixed service location on the map.");
+    if (isBloodDonor && !bloodGroup) {
+      toast.error("Please select your blood type.");
       return;
     }
     if (!agreedToTerms) {
-      toast.error("Please agree to the Terms & Conditions to continue.");
+      toast.error("Please agree to the Terms & Privacy Policy.");
       return;
     }
 
     setLoading(true);
-    const hasWhatsapp = trimmedMethods.some((m) => m.type === "whatsapp" && m.value);
-
     try {
-      // Pre-check: phone must be unique across all accounts (one user = one account)
-      const { data: phoneTaken, error: phoneCheckErr } = await (supabase.rpc as any)("phone_exists", { _phone: normalizedPhone });
-      if (phoneCheckErr) {
-        console.warn("phone_exists check failed", phoneCheckErr);
-      } else if (phoneTaken) {
+      const { data: phoneTaken } = await (supabase.rpc as any)("phone_exists", { _phone: normalizedPhone });
+      if (phoneTaken) {
         setLoading(false);
         if (role === "worker") {
           setExistingAccountModal({ open: true, email: normalizedEmail });
@@ -110,18 +103,16 @@ const Register = () => {
         full_name: normalizedName,
         phone: normalizedPhone,
         role,
-        blood_group: bloodGroup,
-        is_blood_donor: willingToDonate ? "true" : "false",
-        use_whatsapp: hasWhatsapp ? "true" : "false",
-        contact_methods: JSON.stringify(trimmedMethods),
+        is_blood_donor: isBloodDonor ? "true" : "false",
+        blood_group: isBloodDonor ? bloodGroup : "",
+        contact_methods: JSON.stringify([{ type: "phone", value: normalizedPhone }]),
       };
       if (role === "worker") {
         metadata.main_category = mainCategory;
         metadata.sub_category = subCategory;
         metadata.profession = subCategory;
-        metadata.experience = normalizedExperience;
-        metadata.latitude = String(workerCoords?.latitude ?? "");
-        metadata.longitude = String(workerCoords?.longitude ?? "");
+        metadata.experience = experience.trim();
+        metadata.expertise_tags = JSON.stringify(expertiseTags);
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -134,9 +125,8 @@ const Register = () => {
       if (error) {
         const msg = getAuthErrorMessage(error);
         if (/already registered|already exists|log in instead/i.test(msg)) {
-          if (role === "worker") {
-            setExistingAccountModal({ open: true, email: normalizedEmail });
-          } else {
+          if (role === "worker") setExistingAccountModal({ open: true, email: normalizedEmail });
+          else {
             toast.error("Account already exists, please login");
             navigate(`/login?email=${encodeURIComponent(normalizedEmail)}`, { replace: true });
           }
@@ -147,18 +137,15 @@ const Register = () => {
       }
       const defaultRedirect = role === "worker" ? "/worker-dashboard" : "/dashboard";
       const redirect = searchParams.get("redirect") || defaultRedirect;
-
       const identities = (data.user as { identities?: unknown[] } | null)?.identities;
       if (data.user && !data.session && Array.isArray(identities) && identities.length === 0) {
-        if (role === "worker") {
-          setExistingAccountModal({ open: true, email: normalizedEmail });
-        } else {
+        if (role === "worker") setExistingAccountModal({ open: true, email: normalizedEmail });
+        else {
           toast.error("Account already exists, please login");
           navigate(`/login?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
         }
         return;
       }
-
       if (data.session) {
         toast.success("Account created!");
         navigate(redirect, { replace: true });
@@ -166,29 +153,37 @@ const Register = () => {
       }
       toast.success("An 8-digit OTP has been sent to your email.");
       navigate(`/verify-otp?email=${encodeURIComponent(normalizedEmail)}&redirect=${encodeURIComponent(redirect)}`, { replace: true });
-    } catch (error) {
+    } catch (err) {
       setLoading(false);
-      toast.error(error instanceof Error ? error.message : "Signup failed. Please try again.");
+      toast.error(err instanceof Error ? err.message : "Signup failed.");
     }
   };
 
-  const inputClass = "h-12 rounded-lg border border-[#444748]/20 bg-[#1c1b1b] text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 focus-visible:ring-0 focus-visible:border-[#d9ff7a] text-base";
-  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#c4c7c7]";
+  // Shared field styles (template look)
+  const fieldWrap = "group rounded-lg border border-[#444748]/20 bg-[#1c1b1b] focus-within:border-[#d9ff7a] focus-within:shadow-[0_0_15px_-3px_rgba(217,255,122,0.3)] transition-all";
+  const fieldInput = "w-full bg-transparent border-none outline-none focus:ring-0 py-3 px-3 text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 text-base";
+  const labelCls = "block text-[12px] font-semibold uppercase tracking-wider text-[#c4c7c7] px-1 mb-1.5";
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -right-[10%] -top-[10%] h-[300px] w-[300px] rounded-full bg-[#d9ff7a]/5 blur-[120px]" />
-        <div className="absolute -bottom-[5%] -left-[5%] h-[250px] w-[250px] rounded-full bg-[#c8c6c5]/5 blur-[100px]" />
+    <div className="relative min-h-screen overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute -right-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-[#d9ff7a]/5 blur-[120px]" />
+        <div className="absolute -bottom-[10%] -left-[10%] h-[30%] w-[30%] rounded-full bg-[#d9ff7a]/5 blur-[100px]" />
       </div>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center px-5 py-12 md:px-16">
+      <main className="mx-auto flex w-full max-w-md flex-col items-center px-5 py-10">
         <img src={logoImg} alt="Near Konnect" className="mb-6 h-12 object-contain" />
 
         <div className="w-full space-y-6">
           <header className="space-y-1 text-center">
-            <h2 className="text-[28px] font-semibold leading-9 tracking-tight text-[#e5e2e1]">Create Account</h2>
-            <p className="text-base text-[#c4c7c7]">{t("register.subtitle")}</p>
+            <h2 className="text-[28px] font-semibold leading-9 tracking-tight">
+              {role === "worker" ? "Join as a Pro" : "Create Account"}
+            </h2>
+            <p className="text-base text-[#c4c7c7]">
+              {role === "worker"
+                ? "Complete your professional profile to start"
+                : "Join the community as a Client today."}
+            </p>
           </header>
 
           <div className="grid grid-cols-2 gap-1 rounded-full border border-[#444748]/20 bg-[#1c1b1b] p-1">
@@ -197,175 +192,199 @@ const Register = () => {
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className={`rounded-full py-2 text-xs font-semibold transition ${
+                className={`rounded-full py-2 text-xs font-semibold uppercase tracking-wider transition ${
                   role === r ? "bg-[#d9ff7a] text-[#151f00] shadow-sm" : "text-[#c4c7c7]"
                 }`}
               >
-                {t(`register.${r}`)}
+                {r === "customer" ? "Client" : "Service Pro"}
               </button>
             ))}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md">
-        <div>
-          <Label htmlFor="name" className={labelClass}>{t("register.fullName")} *</Label>
-          <Input id="name" placeholder={t("register.fullName")} value={name} onChange={e => setName(e.target.value)} className={inputClass} />
-        </div>
-        <div>
-          <Label className={labelClass}>Contact options *</Label>
-          <p className="mb-2 text-xs text-muted-foreground font-medium text-destructive">Phone number is compulsory to proceed.</p>
-          <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
-        </div>
-        <div>
-          <Label htmlFor="email" className={labelClass}>{t("register.email")} *</Label>
-          <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} />
-        </div>
-        <div>
-          <Label htmlFor="password" className={labelClass}>{t("register.password")} *</Label>
-          <div className="relative">
-            <Input id="password" type={showPw ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className={`${inputClass} pr-10`} />
-            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-label="Toggle password">
-              {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {/* Common fields */}
+            <div>
+              <label className={labelCls}>Full Name</label>
+              <div className={fieldWrap}>
+                <input className={fieldInput} placeholder={role === "worker" ? "John Doe" : "Alex Rivera"} value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Email Address</label>
+              <div className={fieldWrap}>
+                <input type="email" className={fieldInput} placeholder={role === "worker" ? "john@example.com" : "alex@example.com"} value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Phone Number</label>
+              <div className={fieldWrap}>
+                <input type="tel" className={fieldInput} placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Password</label>
+              <div className={`${fieldWrap} flex items-center pr-3`}>
+                <input type={showPw ? "text" : "password"} className={fieldInput} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="text-[#c4c7c7] hover:text-[#e5e2e1]" aria-label="Toggle password">
+                  {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              <PasswordStrength password={password} />
+            </div>
+
+            {/* Worker-only fields */}
+            {role === "worker" && (
+              <div className="space-y-4 border-t border-[#444748]/20 pt-4">
+                <div>
+                  <label className={labelCls}>Main Category</label>
+                  <div className={fieldWrap}>
+                    <select
+                      value={mainCategory}
+                      onChange={(e) => { setMainCategory(e.target.value); setSubCategory(""); }}
+                      className={`${fieldInput} appearance-none cursor-pointer`}
+                      required
+                    >
+                      <option value="" className="bg-[#1c1b1b]">Select Primary Service</option>
+                      {mainCategories.map((c) => (
+                        <option key={c.id} value={c.name} className="bg-[#1c1b1b]">{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Sub Category</label>
+                  <div className={fieldWrap}>
+                    <select
+                      value={subCategory}
+                      onChange={(e) => setSubCategory(e.target.value)}
+                      disabled={!mainCategory}
+                      className={`${fieldInput} appearance-none cursor-pointer disabled:opacity-50`}
+                      required
+                    >
+                      <option value="" className="bg-[#1c1b1b]">Select Specialization</option>
+                      {subCategories.map((s) => (
+                        <option key={s.id} value={s.name} className="bg-[#1c1b1b]">{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Specific Expertise</label>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {expertiseChips.map((tag) => {
+                      const active = expertiseTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                            active
+                              ? "border-[#d9ff7a] bg-[#d9ff7a]/10 text-[#d9ff7a]"
+                              : "border-[#444748]/30 bg-[#20201f] text-[#c4c7c7] hover:border-[#d9ff7a] hover:text-[#d9ff7a]"
+                          }`}
+                        >
+                          {active ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />} {tag}
+                        </button>
+                      );
+                    })}
+                    {expertiseTags
+                      .filter((t) => !expertiseChips.includes(t))
+                      .map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          className="flex items-center gap-1 rounded-full border border-[#d9ff7a] bg-[#d9ff7a]/10 px-3 py-1.5 text-xs font-medium text-[#d9ff7a]"
+                        >
+                          <Check className="h-3.5 w-3.5" /> {tag}
+                        </button>
+                      ))}
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      value={customTag}
+                      onChange={(e) => setCustomTag(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
+                      placeholder="Add custom expertise…"
+                      className="flex-1 rounded-full border border-[#444748]/30 bg-[#1c1b1b] px-3 py-1.5 text-xs text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 outline-none focus:border-[#d9ff7a]"
+                    />
+                    <button type="button" onClick={addCustomTag} className="rounded-full border border-[#444748]/30 px-3 py-1.5 text-xs text-[#c4c7c7] hover:text-[#d9ff7a]">Add</button>
+                  </div>
+                  <p className="mt-1 px-1 text-[11px] italic text-[#c4c7c7]/60">Select all that apply to your professional license.</p>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Years of Experience</label>
+                  <div className={fieldWrap}>
+                    <input type="number" min="0" className={fieldInput} placeholder="5" value={experience} onChange={(e) => setExperience(e.target.value)} required />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Blood Konnect */}
+            <div className="rounded-lg border border-red-100 bg-white p-3 shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-base font-bold text-red-600">❤</span>
+                <span className="text-sm font-bold text-slate-900">Blood Konnect</span>
+              </div>
+              <label className="flex cursor-pointer items-center gap-3 group">
+                <div className="relative">
+                  <input className="peer sr-only" type="checkbox" checked={isBloodDonor} onChange={(e) => { setIsBloodDonor(e.target.checked); if (!e.target.checked) setBloodGroup(""); }} />
+                  <div className="h-5 w-10 rounded-full bg-slate-200 transition-colors peer-checked:bg-red-500" />
+                  <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-white transition-transform peer-checked:translate-x-5" />
+                </div>
+                <span className="text-xs font-medium text-slate-700 group-hover:text-slate-900">Register as a Blood Donor</span>
+              </label>
+              {isBloodDonor && (
+                <select
+                  value={bloodGroup}
+                  onChange={(e) => setBloodGroup(e.target.value)}
+                  className="mt-3 w-full appearance-none rounded-md border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-3 text-xs text-slate-900 focus:border-red-500 focus:outline-none"
+                  required
+                >
+                  <option value="">Select Blood Type</option>
+                  {BLOOD_GROUPS.map((bg) => (<option key={bg} value={bg}>{bg}</option>))}
+                </select>
+              )}
+            </div>
+
+            {/* Terms */}
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-[#444748]/40 bg-[#1c1b1b] text-[#d9ff7a] focus:ring-[#d9ff7a]"
+              />
+              <span className="text-xs text-[#c4c7c7]">
+                I agree to the{" "}
+                <Link to="/terms" target="_blank" className="text-[#d9ff7a] underline">Terms of Service</Link>{" "}
+                and{" "}
+                <Link to="/privacy" target="_blank" className="text-[#d9ff7a] underline">Privacy Policy</Link>.
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={loading || !agreedToTerms}
+              className="mt-2 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-[16px] font-semibold text-[#151f00] shadow-[0_4px_20px_rgba(217,255,122,0.2)] transition active:scale-[0.98] disabled:opacity-60"
+            >
+              {loading ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : role === "worker" ? "Submit Pro Application" : "Create Account"}
             </button>
-          </div>
-          <PasswordStrength password={password} />
-        </div>
-
-        <label htmlFor="willingToDonate" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3.5 text-sm font-medium">
-          <input
-            type="checkbox"
-            id="willingToDonate"
-            checked={willingToDonate}
-            onChange={e => {
-              setWillingToDonate(e.target.checked);
-              if (!e.target.checked) setBloodGroup("");
-            }}
-            className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
-          />
-          I am willing to donate blood
-        </label>
-
-        {willingToDonate && (
-          <div>
-            <Label htmlFor="bloodGroup" className={labelClass}>Blood Group *</Label>
-            <select id="bloodGroup" value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <option value="">Select blood group</option>
-              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
-                <option key={bg} value={bg}>{bg}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {role === "worker" && (
-          <>
-            <div className="rounded-2xl border border-primary/30 bg-accent/40 p-3 text-xs leading-relaxed text-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="font-semibold text-primary hover:underline">
-                Log in
-              </Link>{" "}
-              and use <strong>Become a Service</strong> on your dashboard to upgrade — don't create a second account.
-            </div>
-            <div>
-              <Label htmlFor="mainCategory" className={labelClass}>Main Category *</Label>
-              <select
-                id="mainCategory"
-                value={mainCategory}
-                onChange={(e) => {
-                  setMainCategory(e.target.value);
-                  setSubCategory("");
-                }}
-                className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <option value="">Select main category</option>
-                {mainCategories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="subCategory" className={labelClass}>Sub Category *</Label>
-              <select
-                id="subCategory"
-                value={subCategory}
-                onChange={e => setSubCategory(e.target.value)}
-                disabled={!mainCategory}
-                className="h-12 w-full rounded-2xl border border-border bg-background px-3 text-base disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <option value="">Select sub category</option>
-                {subCategories.map((sub) => (
-                  <option key={sub.id} value={sub.name}>
-                    {sub.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="experience" className={labelClass}>{t("register.experience")} *</Label>
-              <Input id="experience" type="number" placeholder="e.g. 5" value={experience} onChange={e => setExperience(e.target.value)} className={inputClass} />
-            </div>
-            <div className="space-y-2 rounded-2xl border border-border bg-muted/40 p-4">
-              <p className="text-sm font-semibold text-foreground">Pick your fixed service location *</p>
-              <p className="text-xs text-muted-foreground">Used for nearby matching. Cannot be changed frequently.</p>
-              <MapLocationPicker value={workerCoords} onChange={setWorkerCoords} />
-            </div>
-          </>
-        )}
-
-
-        <div className="space-y-3 rounded-2xl border border-primary/30 bg-accent/40 p-4">
-          <div>
-            <p className="text-sm font-semibold text-foreground">Platform Role — Communication Only</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              Near Konnect serves <strong>solely as a communication platform</strong> connecting clients with local service providers — we are not the service provider.
-              We are <strong>not responsible</strong> for the quality, timing, or outcome of any work, payments, agreements, damages,
-              injuries, or disputes between parties. All dealings happen at your own risk.
-            </p>
-          </div>
-          <label htmlFor="agreeTerms" className="flex cursor-pointer items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              id="agreeTerms"
-              checked={agreedToTerms}
-              onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-primary"
-            />
-            <span className="text-foreground">
-              I have read and agree to the{" "}
-              <Link to="/terms" target="_blank" className="font-semibold text-primary hover:underline">
-                Terms & Conditions
-              </Link>
-              ,{" "}
-              <Link to="/privacy" target="_blank" className="font-semibold text-primary hover:underline">
-                Privacy Policy
-              </Link>{" "}
-              and{" "}
-              <Link to="/disclaimer" target="_blank" className="font-semibold text-primary hover:underline">
-                Disclaimer
-              </Link>
-              .
-            </span>
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading || !agreedToTerms}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-[16px] font-semibold text-[#273500] shadow-lg shadow-[#d9ff7a]/10 transition-all active:scale-[0.98] disabled:opacity-60"
-        >
-          {loading ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          ) : (
-            t("register.submit")
-          )}
-        </button>
           </form>
 
           <p className="pb-6 text-center text-sm text-[#c4c7c7]">
-            {t("register.hasAccount")}{" "}
-            <Link to="/login" className="font-bold text-[#d9ff7a] hover:underline">{t("nav.logIn")}</Link>
+            Already have an account?{" "}
+            <Link to="/login" className="font-bold text-[#d9ff7a] hover:underline">Log In</Link>
           </p>
         </div>
       </main>
@@ -375,24 +394,16 @@ const Register = () => {
           <DialogHeader>
             <DialogTitle>Account already exists</DialogTitle>
             <DialogDescription>
-              An account with this email is already registered. You don't need a separate worker account — log in and upgrade your existing profile to a Service in one step.
+              An account with this email/phone is already registered. Log in and use <strong>Become a Service</strong> to upgrade your existing profile.
             </DialogDescription>
           </DialogHeader>
-          <div className="rounded-xl border border-primary/30 bg-accent/40 p-3 text-xs leading-relaxed text-foreground">
-            After logging in, the <strong>Become a Service</strong> form will pop up automatically so you can fill in the rest of your professional details.
-          </div>
           <DialogFooter className="gap-2 sm:justify-end">
-            <Button
-              variant="outline"
-              onClick={() => setExistingAccountModal({ open: false, email: "" })}
-            >
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setExistingAccountModal({ open: false, email: "" })}>Cancel</Button>
             <Button
               onClick={() => {
-                const email = existingAccountModal.email;
+                const em = existingAccountModal.email;
                 setExistingAccountModal({ open: false, email: "" });
-                navigate(`/login?email=${encodeURIComponent(email)}&upgrade=worker&redirect=${encodeURIComponent("/dashboard?upgrade=worker")}`, { replace: true });
+                navigate(`/login?email=${encodeURIComponent(em)}&upgrade=worker&redirect=${encodeURIComponent("/dashboard?upgrade=worker")}`, { replace: true });
               }}
             >
               Login & Upgrade to Worker
