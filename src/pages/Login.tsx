@@ -143,22 +143,6 @@ const Login = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-20 flex justify-center border-t border-[#444748]/5 px-5 py-6">
-        <div className="flex items-center gap-12 text-[#c4c7c7]/40">
-          <Link to="/legal/privacy" className="text-[12px] font-semibold uppercase tracking-wider transition-colors hover:text-[#e5e2e1]">
-            Privacy Policy
-          </Link>
-          <span className="h-1 w-1 rounded-full bg-[#444748]/30" />
-          <Link to="/legal/terms" className="text-[12px] font-semibold uppercase tracking-wider transition-colors hover:text-[#e5e2e1]">
-            Terms of Service
-          </Link>
-          <span className="h-1 w-1 rounded-full bg-[#444748]/30" />
-          <Link to="/help" className="text-[12px] font-semibold uppercase tracking-wider transition-colors hover:text-[#e5e2e1]">
-            Help Center
-          </Link>
-        </div>
-      </footer>
     </div>
   );
 };
