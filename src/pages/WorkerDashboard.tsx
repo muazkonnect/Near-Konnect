@@ -338,7 +338,7 @@ const WorkerDashboard = () => {
             {[
               { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
               { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
-              { label: "Boost Ad", icon: Sparkles, onClick: () => navigate("/discover") },
+              { label: "Boost Ad", icon: Zap, onClick: () => navigate("/discover") },
               { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
             ].map((a) => (
               <button
@@ -354,11 +354,14 @@ const WorkerDashboard = () => {
 
           {/* Sparks Wallet */}
           <div className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
-            <Zap className="pointer-events-none absolute -right-4 -top-4 h-40 w-40 text-primary-foreground/5" strokeWidth={1} fill="currentColor" />
+            <Zap className="pointer-events-none absolute -right-6 -top-6 h-52 w-52 text-primary-foreground/10 rotate-12" strokeWidth={1} fill="currentColor" />
+            <Zap className="pointer-events-none absolute -left-2 bottom-2 h-24 w-24 text-primary-foreground/5 -rotate-12" strokeWidth={1} fill="currentColor" />
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
-                <Zap className="h-5 w-5" fill="currentColor" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20">
+                  <Zap className="h-5 w-5" fill="currentColor" strokeWidth={1.5} />
+                </div>
               </div>
               <div className="mt-4">
                 <p className="text-3xl font-bold leading-none">2,450</p>
