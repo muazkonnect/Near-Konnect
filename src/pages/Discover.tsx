@@ -538,21 +538,21 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
         </div>
       )}
 
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="relative shrink-0">
-            <Avatar className="h-14 w-14 rounded-xl border border-white/10">
-              <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-              <AvatarFallback className="rounded-xl bg-white/10 text-sm font-bold text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span
-              className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-hero ${
-                worker.available ? "bg-primary" : "bg-white/30"
-              }`}
-            />
-          </div>
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative shrink-0 group">
+              <Avatar className="h-16 w-16 rounded-lg border border-white/10 [&_img]:grayscale [&_img]:transition-all [&_img]:duration-500 group-hover:[&_img]:grayscale-0">
+                <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
+                <AvatarFallback className="rounded-lg bg-white/10 text-sm font-bold text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <span
+                className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-hero ${
+                  worker.available ? "bg-primary" : "bg-white/30"
+                }`}
+              />
+            </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1">
               <h3 className="truncate text-sm font-bold text-hero-foreground">{worker.name}</h3>
