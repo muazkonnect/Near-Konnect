@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin } from "lucide-react";
+import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { getExpertise } from "@/lib/categoryExpertise";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
@@ -21,10 +22,12 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = sanitizePhone(worker.phone);
-  const expertise = Array.from(new Set([worker.profession, ...(worker.serviceAreas || [])].filter(Boolean))).slice(0, 8);
+  const expertise = getExpertise(worker.mainCategory, worker.subCategory, [worker.profession, ...(worker.serviceAreas || [])], 5);
   const isPremium = worker.verified;
   const dist = worker.distance;
-  const distLabel = typeof dist === "number" && dist > 0 && isFinite(dist) ? `${dist} km away` : "Distance unknown";
+  const hasDist = typeof dist === "number" && dist > 0 && isFinite(dist);
+  const distLabel = hasDist ? `${dist} km away` : "Distance unknown";
+  const available = !!worker.available;
 
   const requireAuth = (fn: () => void) => () => {
     if (!isAuthed) {
