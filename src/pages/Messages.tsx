@@ -18,9 +18,7 @@ const Messages = () => {
   const [search, setSearch] = useState("");
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (!loading && !user) navigate("/login");
-  }, [loading, user, navigate]);
+  // Guests can view this page; actions prompt login.
 
   useEffect(() => {
     const to = searchParams.get("to");
