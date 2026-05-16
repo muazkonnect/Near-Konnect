@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Navigation } from "lucide-react";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { toast } from "sonner";
+import LocationLabel from "@/components/LocationLabel";
 
 const markerIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -105,7 +106,7 @@ const MapLocationPicker = ({ value, onChange }: MapLocationPickerProps) => {
       </Button>
       {value && (
         <p className="text-xs text-muted-foreground">
-          Selected: {value.latitude.toFixed(5)}, {value.longitude.toFixed(5)}
+          Selected: <LocationLabel latitude={value.latitude} longitude={value.longitude} />
           {value.accuracy ? ` (±${Math.round(value.accuracy)}m)` : ""}
         </p>
       )}
