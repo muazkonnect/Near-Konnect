@@ -276,7 +276,7 @@ const WorkerDashboard = () => {
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="rounded-2xl bg-primary/15 p-1 ring-1 ring-primary/30">
-                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
+                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
               </div>
               <div>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
@@ -465,7 +465,7 @@ const WorkerDashboard = () => {
                 </div>
 
                 <div className="mb-6 flex items-center gap-4 rounded-2xl bg-muted/40 p-4">
-                  <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} onUpload={handleAvatarUpload} />
+                  <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
                     <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
