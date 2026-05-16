@@ -58,7 +58,7 @@ const Login = () => {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="w-full space-y-6 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5/80 p-6 backdrop-blur-md"
+          className="w-full space-y-6 rounded-xl border border-hero-foreground/10 bg-hero-foreground/80 p-6 backdrop-blur-md"
         >
           {/* Email */}
           <div className="space-y-1">
@@ -73,7 +73,7 @@ const Login = () => {
                 placeholder="Enter your contact info"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-14 w-full rounded-lg border-b border-hero-foreground/20/20 bg-hero-foreground/5 pl-14 pr-6 text-base text-hero-foreground placeholder:text-hero-muted/60 outline-none transition-colors focus:border-primary"
+                className="h-14 w-full rounded-lg border-b border-hero-foreground/20 bg-hero-foreground/5 pl-14 pr-6 text-base text-hero-foreground placeholder:text-hero-muted/60 outline-none transition-colors focus:border-primary"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ const Login = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setPwError(null); }}
-                className={`h-14 w-full rounded-lg border-b bg-hero-foreground/5 pl-14 pr-14 text-base text-hero-foreground placeholder:text-hero-muted/60 outline-none transition-colors focus:border-primary ${pwError ? "border-[#ffb4ab]" : "border-hero-foreground/20/20"}`}
+                className={`h-14 w-full rounded-lg border-b bg-hero-foreground/5 pl-14 pr-14 text-base text-hero-foreground placeholder:text-hero-muted/60 outline-none transition-colors focus:border-primary ${pwError ? "border-destructive" : "border-hero-foreground/20"}`}
               />
               <button
                 type="button"
@@ -108,7 +108,7 @@ const Login = () => {
               </button>
             </div>
             {pwError && (
-              <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[#ffb4ab]">
+              <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-destructive">
                 <AlertCircle className="h-3.5 w-3.5" /> {pwError}
               </p>
             )}

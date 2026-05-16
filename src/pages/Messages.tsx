@@ -153,7 +153,7 @@ const Messages = () => {
     <AppLayout hideMobileHeader>
       <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
         {/* TOP APP BAR */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-hero-foreground/20/20 bg-hero/80 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-hero-foreground/20 bg-hero/80 px-6 backdrop-blur-md">
           <img src={logoImg} alt="Near Konnect" className="h-8 object-contain invert" />
           <button
             onClick={() => navigate("/notifications")}
@@ -175,13 +175,13 @@ const Messages = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search conversations..."
-                className="h-14 w-full rounded-lg border-0 border-b border-hero-foreground/20/30 bg-hero-foreground/5 pl-12 pr-4 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-0 focus-visible:border-primary"
+                className="h-14 w-full rounded-lg border-0 border-b border-hero-foreground/30 bg-hero-foreground/5 pl-12 pr-4 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-0 focus-visible:border-primary"
               />
             </div>
           </section>
 
           {/* TABS */}
-          <div className="mb-8 flex gap-6 border-b border-hero-foreground/20/20 px-2">
+          <div className="mb-8 flex gap-6 border-b border-hero-foreground/20 px-2">
             {([
               { k: "all", label: "All" },
               { k: "unread", label: "Unread" },
@@ -237,7 +237,7 @@ const Messages = () => {
                       <X className="h-3.5 w-3.5" /> Decline all
                     </Button>
                   </div>
-                  <ul className="divide-y divide-hero-foreground/20/20">
+                  <ul className="divide-y divide-hero-foreground/20">
                     {(pendingReveals as any[]).map((r) => (
                       <li key={r.id} className="flex items-center gap-3 px-4 py-3">
                         <Link to={`/chat/${r.client_user_id}`} className="flex min-w-0 flex-1 items-center gap-3">
@@ -303,10 +303,10 @@ const Messages = () => {
                   <Link
                     key={c.userId}
                     to={`/chat/${c.userId}`}
-                    className="group flex items-center gap-4 rounded-xl border border-transparent bg-hero-foreground/5 p-4 transition-all duration-300 hover:border-hero-foreground/20/20 hover:bg-hero-foreground/10"
+                    className="group flex items-center gap-4 rounded-xl border border-transparent bg-hero-foreground/5 p-4 transition-all duration-300 hover:border-hero-foreground/20 hover:bg-hero-foreground/10"
                   >
                     <div className="relative shrink-0">
-                      <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-hero-foreground/20/10">
+                      <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-hero-foreground/10">
                         {c.avatar ? (
                           <img src={c.avatar} alt={c.name} className="h-full w-full object-cover" />
                         ) : (

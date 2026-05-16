@@ -160,7 +160,7 @@ const Register = () => {
   };
 
   // Shared field styles (template look)
-  const fieldWrap = "group rounded-lg border border-hero-foreground/20/20 bg-hero-foreground/5 focus-within:border-primary focus-within:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.3)] transition-all";
+  const fieldWrap = "group rounded-lg border border-hero-foreground/20 bg-hero-foreground/5 focus-within:border-primary focus-within:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.3)] transition-all";
   const fieldInput = "w-full bg-transparent border-none outline-none focus:ring-0 py-3 px-3 text-hero-foreground placeholder:text-hero-muted/40 text-base";
   const labelCls = "block text-[12px] font-semibold uppercase tracking-wider text-hero-muted px-1 mb-1.5";
 
@@ -186,7 +186,7 @@ const Register = () => {
             </p>
           </header>
 
-          <div className="grid grid-cols-2 gap-1 rounded-full border border-hero-foreground/20/20 bg-hero-foreground/5 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-full border border-hero-foreground/20 bg-hero-foreground/5 p-1">
             {(["customer", "worker"] as const).map((r) => (
               <button
                 key={r}
@@ -201,7 +201,7 @@ const Register = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5/80 p-5 backdrop-blur-md">
+          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/80 p-5 backdrop-blur-md">
             {/* Common fields */}
             <div>
               <label className={labelCls}>Full Name</label>
@@ -237,7 +237,7 @@ const Register = () => {
 
             {/* Worker-only fields */}
             {role === "worker" && (
-              <div className="space-y-4 border-t border-hero-foreground/20/20 pt-4">
+              <div className="space-y-4 border-t border-hero-foreground/20 pt-4">
                 <div>
                   <label className={labelCls}>Main Category</label>
                   <div className={fieldWrap}>
@@ -286,7 +286,7 @@ const Register = () => {
                           className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             active
                               ? "border-primary bg-primary/10 text-primary"
-                              : "border-hero-foreground/20/30 bg-hero-foreground/5 text-hero-muted hover:border-primary hover:text-primary"
+                              : "border-hero-foreground/30 bg-hero-foreground/5 text-hero-muted hover:border-primary hover:text-primary"
                           }`}
                         >
                           {active ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />} {tag}
@@ -312,9 +312,9 @@ const Register = () => {
                       onChange={(e) => setCustomTag(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
                       placeholder="Add custom expertise…"
-                      className="flex-1 rounded-full border border-hero-foreground/20/30 bg-hero-foreground/5 px-3 py-1.5 text-xs text-hero-foreground placeholder:text-hero-muted/40 outline-none focus:border-primary"
+                      className="flex-1 rounded-full border border-hero-foreground/30 bg-hero-foreground/5 px-3 py-1.5 text-xs text-hero-foreground placeholder:text-hero-muted/40 outline-none focus:border-primary"
                     />
-                    <button type="button" onClick={addCustomTag} className="rounded-full border border-hero-foreground/20/30 px-3 py-1.5 text-xs text-hero-muted hover:text-primary">Add</button>
+                    <button type="button" onClick={addCustomTag} className="rounded-full border border-hero-foreground/30 px-3 py-1.5 text-xs text-hero-muted hover:text-primary">Add</button>
                   </div>
                   <p className="mt-1 px-1 text-[11px] italic text-hero-muted/60">Select all that apply to your professional license.</p>
                 </div>
@@ -361,7 +361,7 @@ const Register = () => {
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-hero-foreground/20/40 bg-hero-foreground/5 text-primary focus:ring-primary"
+                className="mt-0.5 h-4 w-4 rounded border-hero-foreground/40 bg-hero-foreground/5 text-primary focus:ring-primary"
               />
               <span className="text-xs text-hero-muted">
                 I agree to the{" "}
