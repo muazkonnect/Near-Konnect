@@ -350,16 +350,17 @@ const Register = () => {
           </label>
         </div>
 
-        <Button type="submit" disabled={loading || !agreedToTerms} variant="hero" size="lg" className="w-full">
+        <button
+          type="submit"
+          disabled={loading || !agreedToTerms}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-[16px] font-semibold text-[#273500] shadow-lg shadow-[#d9ff7a]/10 transition-all active:scale-[0.98] disabled:opacity-60"
+        >
           {loading ? (
-            <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              {t("register.submitting")}
-            </>
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           ) : (
             t("register.submit")
           )}
-        </Button>
+        </button>
           </form>
 
           <p className="pb-6 text-center text-sm text-[#c4c7c7]">
