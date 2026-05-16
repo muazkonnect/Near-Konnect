@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { MapPin } from "lucide-react";
 import {
   ArrowLeft,
   MoreVertical,
@@ -38,6 +39,9 @@ const WorkerProfile = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navDistance = (location.state as any)?.distance;
+  const hasDist = typeof navDistance === "number" && navDistance > 0 && isFinite(navDistance);
   const queryClient = useQueryClient();
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
@@ -210,6 +214,15 @@ const WorkerProfile = () => {
                     <span className="absolute inset-0 rounded-full bg-primary/30 blur-md -z-10 animate-pulse" />
                   </span>
                 )}
+              </div>
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.6)]">
+                <MapPin className="h-4 w-4" />
+                <span className="font-sora text-base font-bold leading-none">
+                  {hasDist ? `${navDistance} km` : "—"}
+                </span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
+                  {hasDist ? "away" : "distance n/a"}
+                </span>
               </div>
               <div className="mt-2 flex items-center justify-center gap-1.5 text-primary">
                 <Star className="h-4 w-4 fill-current" />
