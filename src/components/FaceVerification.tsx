@@ -12,6 +12,8 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<any>(null);
   const detectIntervalRef = useRef<number | null>(null);
+  const okSinceRef = useRef<number | null>(null);
+  const autoCapturedRef = useRef(false);
   const [streaming, setStreaming] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
