@@ -218,6 +218,19 @@ const WorkerProfile = () => {
                   </span>
                 )}
               </div>
+              {(dbWorker as any).uid && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText((dbWorker as any).uid);
+                    toast.success("Worker ID copied");
+                  }}
+                  className="mt-2 inline-block rounded-full border border-border/40 bg-muted/40 px-2.5 py-0.5 font-mono text-[11px] tracking-wider text-muted-foreground transition hover:bg-muted/70"
+                  title="Click to copy"
+                >
+                  {(dbWorker as any).uid}
+                </button>
+              )}
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/20 px-5 py-2 text-primary shadow-[0_0_24px_-4px_hsl(var(--primary)/0.7)]">
                 <MapPin className="h-5 w-5" />
                 <span className="font-sora text-lg font-bold leading-none">
