@@ -225,12 +225,7 @@ const Discover = () => {
     setSearchParams(next);
   };
 
-  const sortLabels: Record<SortKey, string> = {
-    distance: "Distance",
-    rating: "Rating",
-    experience: "Experience",
-    price: "Price",
-  };
+
 
   return (
     <AppLayout hideMobileHeader>
