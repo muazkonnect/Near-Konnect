@@ -35,7 +35,7 @@ const AvatarResetFlow = ({ onReplaced }: { onReplaced?: (url: string) => void })
   const submitRequest = async () => {
     if (!user) return;
     setSubmitting(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("avatar_reset_requests")
       .insert({ user_id: user.id, reason: reason.trim(), status: "pending" });
     setSubmitting(false);
