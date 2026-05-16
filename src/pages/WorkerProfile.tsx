@@ -57,6 +57,8 @@ const WorkerProfile = () => {
     });
   };
 
+  const isUuid = !!id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
   const { data: dbWorker, isLoading: workerLoading, isError: workerError } = useQuery({
     queryKey: ["worker", id],
     queryFn: async () => {
@@ -64,7 +66,7 @@ const WorkerProfile = () => {
       const { data, error } = await supabase
         .from("workers")
         .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
-        .eq("id", id)
+        .eq(isUuid ? "id" : "uid", isUuid ? id : id.toUpperCase())
         .maybeSingle();
       if (error) throw error;
       return data;
