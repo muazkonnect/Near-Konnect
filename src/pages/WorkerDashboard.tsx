@@ -393,8 +393,8 @@ const WorkerDashboard = () => {
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition hover:scale-110">
-                  <Zap className="h-5 w-5 animate-pulse" fill="currentColor" strokeWidth={1.5} />
+                <div className="group flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition-all duration-300 hover:bg-primary-foreground/25 hover:ring-2 hover:ring-primary-foreground/40 hover:shadow-[0_0_20px_hsl(var(--primary-foreground)/0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50" tabIndex={0}>
+                  <Zap className="h-6 w-6 animate-pulse transition-transform duration-300 group-hover:scale-110 group-focus:scale-110" fill="currentColor" strokeWidth={1.5} />
                 </div>
               </div>
               <div className="mt-4">
