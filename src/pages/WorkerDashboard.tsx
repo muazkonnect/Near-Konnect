@@ -7,6 +7,7 @@ import {
   Clock,
   Compass,
   Sparkles,
+  Zap,
   Eye,
   HeartPulse,
   LayoutDashboard,
@@ -353,11 +354,11 @@ const WorkerDashboard = () => {
 
           {/* Sparks Wallet */}
           <div className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
-            <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-40 w-40 text-primary-foreground/5" strokeWidth={1} />
+            <Zap className="pointer-events-none absolute -right-4 -top-4 h-40 w-40 text-primary-foreground/5" strokeWidth={1} fill="currentColor" />
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
-                <Sparkles className="h-5 w-5" />
+                <Zap className="h-5 w-5" fill="currentColor" />
               </div>
               <div className="mt-4">
                 <p className="text-3xl font-bold leading-none">2,450</p>
