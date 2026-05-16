@@ -850,6 +850,9 @@ const AdminDashboard = () => {
                 <AdsManagementTab />
               </Suspense>
             )}
+
+            {/* AVATAR RESETS */}
+            {tab === "avatar_resets" && <AvatarResetsTab />}
           </main>
         </div>
       </div>
