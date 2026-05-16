@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // Make sure no avatar is already set (enforces unchangeability)
+    // Allow first-time set, or replacement if an approved reset request exists
     const { data: profile } = await admin
       .from("profiles")
       .select("avatar_url")
@@ -27,10 +27,19 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (profile?.avatar_url) {
-      return new Response(JSON.stringify({ error: "Profile photo already set" }), {
-        status: 409,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      const { data: reset } = await admin
+        .from("avatar_reset_requests")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("status", "approved")
+        .limit(1)
+        .maybeSingle();
+      if (!reset) {
+        return new Response(JSON.stringify({ error: "Profile photo already set. Request an admin reset first." }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const b64 = imageBase64.includes(",") ? imageBase64.split(",")[1] : imageBase64;

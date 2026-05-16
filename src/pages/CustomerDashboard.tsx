@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AvatarUpload from "@/components/AvatarUpload";
+import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
 
@@ -350,6 +351,7 @@ const CustomerDashboard = () => {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-card-foreground">{profile?.full_name || user?.email}</p>
                   <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
+                  <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_profile"] })} />
                 </div>
               </div>
 

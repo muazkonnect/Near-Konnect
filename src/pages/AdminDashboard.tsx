@@ -54,6 +54,7 @@ const CategoriesManagementTab = lazy(() => import("@/components/admin/Categories
 const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
+import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 
 const TabFallback = () => (
   <div className="flex h-40 items-center justify-center">
@@ -63,7 +64,7 @@ const TabFallback = () => (
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "profile";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "avatar_resets" | "profile";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -73,6 +74,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
   { key: "ads", label: "Ads & Geo", icon: Megaphone },
+  { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
   { key: "profile", label: "My Profile", icon: UserCog },
 ];
 
@@ -848,6 +850,9 @@ const AdminDashboard = () => {
                 <AdsManagementTab />
               </Suspense>
             )}
+
+            {/* AVATAR RESETS */}
+            {tab === "avatar_resets" && <AvatarResetsTab />}
           </main>
         </div>
       </div>

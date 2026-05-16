@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
+import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
@@ -469,6 +470,7 @@ const WorkerDashboard = () => {
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
                     <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
+                    <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>
 
