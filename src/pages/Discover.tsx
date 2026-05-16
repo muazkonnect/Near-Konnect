@@ -284,20 +284,24 @@ const Discover = () => {
           </div>
 
           {/* Quick filter chips */}
-          <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {(["distance", "rating", "experience"] as SortKey[]).map((s) => {
-              const active = sort === s;
+          <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {([
+              { key: "distance" as SortKey, label: "Nearby", Icon: Navigation },
+              { key: "rating" as SortKey, label: "Top Rated", Icon: Star },
+              { key: "experience" as SortKey, label: "Experienced", Icon: Briefcase },
+            ]).map(({ key, label, Icon }) => {
+              const active = sort === key;
               return (
                 <button
-                  key={s}
-                  onClick={() => setSort(s)}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+                  key={key}
+                  onClick={() => setSort(key)}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
                     active
                       ? "bg-primary text-primary-foreground shadow-md"
                       : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
                   }`}
                 >
-                  {sortLabels[s]}
+                  <Icon className="h-3.5 w-3.5" /> {label}
                 </button>
               );
             })}
@@ -309,25 +313,25 @@ const Discover = () => {
                   key={r}
                   onClick={() => setRadiusKm(radiusKm === r ? null : (r as any))}
                   disabled={!userCoords}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition disabled:opacity-40 ${
+                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition disabled:opacity-40 ${
                     active
                       ? "bg-primary text-primary-foreground shadow-md"
                       : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
                   }`}
                 >
-                  {r} km
+                  <MapPin className="h-3.5 w-3.5" /> {r} km
                 </button>
               );
             })}
             <button
               onClick={() => setRadiusKm(null)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
                 radiusKm === null
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
               }`}
             >
-              Any
+              <Compass className="h-3.5 w-3.5" /> Any
             </button>
           </div>
 
