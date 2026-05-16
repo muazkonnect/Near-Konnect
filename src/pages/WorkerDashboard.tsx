@@ -333,7 +333,7 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Profile", icon: UserCheck, onClick: () => setActiveTab("profile") },
+              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
               { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
               { label: "Boost Ad", icon: Sparkles, onClick: () => navigate("/discover") },
               { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
