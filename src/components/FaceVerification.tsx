@@ -63,9 +63,25 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
 
   const capture = async () => {
     const v = videoRef.current;
-    if (!v || !v.videoWidth || !v.videoHeight) {
-      setError("Camera not ready yet. Please wait a moment and try again.");
-      return;
+    if (!v || v.readyState < 2 || !v.videoWidth || !v.videoHeight || v.paused || v.ended) {
+      // Wait briefly for the stream to become ready
+      const waited = await new Promise<boolean>((resolve) => {
+        let tries = 0;
+        const id = setInterval(() => {
+          tries++;
+          if (v && v.readyState >= 2 && v.videoWidth > 0 && v.videoHeight > 0 && !v.paused) {
+            clearInterval(id);
+            resolve(true);
+          } else if (tries > 20) {
+            clearInterval(id);
+            resolve(false);
+          }
+        }, 100);
+      });
+      if (!waited) {
+        setError("Camera not ready yet. Please wait a moment and try again.");
+        return;
+      }
     }
     const size = Math.min(v.videoWidth, v.videoHeight);
     const canvas = document.createElement("canvas");
@@ -76,6 +92,13 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
     const sx = (v.videoWidth - size) / 2;
     const sy = (v.videoHeight - size) / 2;
     ctx.drawImage(v, sx, sy, size, size, 0, 0, 512, 512);
+    // Guard against an all-black frame
+    const sample = ctx.getImageData(256, 256, 1, 1).data;
+    if (sample[0] === 0 && sample[1] === 0 && sample[2] === 0 && sample[3] === 255) {
+      // Try one more frame after a short delay
+      await new Promise((r) => setTimeout(r, 150));
+      ctx.drawImage(v, sx, sy, size, size, 0, 0, 512, 512);
+    }
     const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
     const blob: Blob | null = await new Promise((res) =>
       canvas.toBlob((b) => res(b), "image/jpeg", 0.85),
