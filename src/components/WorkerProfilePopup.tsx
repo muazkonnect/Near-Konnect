@@ -79,11 +79,16 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
             </div>
 
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2">
-                <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
+              <div className="flex items-center justify-center gap-2 flex-nowrap">
+                <h2 className="font-sora text-2xl font-semibold tracking-tight leading-none">{worker.name}</h2>
                 {isPremium && (
-                  <span title="Premium Worker" className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-[0_0_12px_-2px_hsl(var(--primary)/0.8)]">
-                    <Crown className="h-3.5 w-3.5" />
+                  <span
+                    title="Premium Worker"
+                    aria-label="Premium Worker"
+                    className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.9)] ring-2 ring-primary/30"
+                  >
+                    <Crown className="h-4 w-4" />
+                    <span className="absolute inset-0 rounded-full bg-primary/30 blur-md -z-10 animate-pulse" />
                   </span>
                 )}
               </div>
