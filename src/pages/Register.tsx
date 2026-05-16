@@ -254,9 +254,12 @@ const Register = () => {
 
             <div>
               <label className={labelCls}>Phone Number</label>
-              <div className={fieldWrap}>
-                <input type="tel" className={fieldInput} placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-              </div>
+              <PhoneField
+                value={phone}
+                onChange={setPhone}
+                defaultCountry={detectedCountry}
+                ariaLabel="Phone number"
+              />
             </div>
 
             <div>
