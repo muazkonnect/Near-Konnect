@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
-import PhoneField from "@/components/PhoneField";
+
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
