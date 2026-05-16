@@ -215,7 +215,13 @@ const Register = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md">
+          <FaceVerification
+            verifiedDataUrl={faceDataUrl}
+            onVerified={(url, blob) => { setFaceDataUrl(url); setFaceBlob(blob); }}
+          />
+
+          <form onSubmit={handleSubmit} className={`space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md transition ${!faceDataUrl ? "pointer-events-none opacity-40" : ""}`}>
+            <fieldset disabled={!faceDataUrl} className="space-y-5">
             {/* Common fields */}
             <div>
               <label className={labelCls}>Full Name</label>
