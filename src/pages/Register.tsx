@@ -128,11 +128,18 @@ const Register = () => {
         options: { data: metadata },
       });
 
-      // Upload verified face as permanent avatar (best-effort, non-blocking)
+      // Upload verified face as permanent, unchangeable avatar — block until done
       if (data?.user && faceDataUrl) {
-        supabase.functions
-          .invoke("set-verified-avatar", { body: { userId: data.user.id, imageBase64: faceDataUrl } })
-          .catch((e) => console.error("avatar upload failed", e));
+        try {
+          const { error: avatarErr } = await supabase.functions.invoke(
+            "set-verified-avatar",
+            { body: { userId: data.user.id, imageBase64: faceDataUrl } },
+          );
+          if (avatarErr) throw avatarErr;
+        } catch (e) {
+          console.error("avatar upload failed", e);
+          toast.error("Couldn't save your verified photo. Please contact support.");
+        }
       }
 
       setLoading(false);
