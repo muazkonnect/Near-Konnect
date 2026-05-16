@@ -80,23 +80,29 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
             <div className="text-center">
               <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
-              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-                <div className="flex items-center gap-1 text-primary">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-semibold">{worker.rating?.toFixed(1) || "—"}</span>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                <div className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary">
+                  <Star className="h-3.5 w-3.5 fill-current" />
+                  <span className="text-xs font-bold">{worker.rating?.toFixed(1) || "—"}</span>
                 </div>
-                <span className="text-hero-muted">•</span>
-                <div className="flex items-center gap-1 text-hero-muted">
-                  <MapPin className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">{distLabel}</span>
+                <div className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold">{distLabel}</span>
+                </div>
+                <div
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${
+                    available
+                      ? "border border-primary/40 bg-primary/15 text-primary"
+                      : "border border-white/15 bg-white/5 text-hero-muted"
+                  }`}
+                >
+                  <Circle className={`h-2 w-2 fill-current ${available ? "animate-pulse" : ""}`} />
+                  {available ? "Available" : "Offline"}
                 </div>
                 {isPremium && (
-                  <>
-                    <span className="text-hero-muted">•</span>
-                    <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
-                      Premium
-                    </span>
-                  </>
+                  <div className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+                    Premium
+                  </div>
                 )}
               </div>
             </div>
@@ -112,12 +118,18 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Sub-Category</span>
               <span className="block font-sora text-base font-semibold uppercase">{worker.subCategory || "—"}</span>
             </div>
-            <div className="col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
-              <span className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Expertise</span>
+            <div className="col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3">
+              <div className="mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Top Expertise</span>
+              </div>
               {expertise.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {expertise.map((e) => (
-                    <span key={e} className="rounded border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-bold uppercase">
+                    <span
+                      key={e}
+                      className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"
+                    >
                       {e}
                     </span>
                   ))}
