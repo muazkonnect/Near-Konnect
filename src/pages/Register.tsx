@@ -11,6 +11,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
+import FaceVerification from "@/components/FaceVerification";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
