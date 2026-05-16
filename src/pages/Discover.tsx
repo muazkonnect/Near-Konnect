@@ -536,7 +536,7 @@ const Discover = () => {
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {allOthers.map((w, i) => (
-                <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={false} />
+                <ExploreCard key={`worker-${w.id}-${i}`} worker={w as any} isAuthed={!!user} />
               ))}
             </div>
           )}
