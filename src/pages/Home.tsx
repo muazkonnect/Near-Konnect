@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
+import CurrentLocationChip from "@/components/CurrentLocationChip";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import WorkerCard from "@/components/WorkerCard";
