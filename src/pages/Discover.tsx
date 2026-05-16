@@ -376,6 +376,7 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
   const distLabel = worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km away` : "Distance unknown";
 
   return (
+    <>
     <article
       onClick={() => setPopupOpen(true)}
       className={`relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
@@ -457,8 +458,9 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
           </AuthRequiredDialog>
         )}
       </div>
-      <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={setPopupOpen} isAuthed={isAuthed} />
     </article>
+    <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={setPopupOpen} isAuthed={isAuthed} />
+    </>
   );
 };
 
