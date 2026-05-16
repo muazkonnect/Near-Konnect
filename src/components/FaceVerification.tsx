@@ -34,10 +34,22 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
 
   // Attach stream once the <video> element is mounted
   useEffect(() => {
-    if (streaming && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-      videoRef.current.play().catch((err) => console.error("video play failed", err));
-    }
+    const v = videoRef.current;
+    if (!streaming || !v || !streamRef.current) return;
+    setReady(false);
+    v.srcObject = streamRef.current;
+    const onReady = () => {
+      if (v.videoWidth > 0 && v.videoHeight > 0 && v.readyState >= 2) setReady(true);
+    };
+    v.addEventListener("loadedmetadata", onReady);
+    v.addEventListener("loadeddata", onReady);
+    v.addEventListener("playing", onReady);
+    v.play().then(onReady).catch((err) => console.error("video play failed", err));
+    return () => {
+      v.removeEventListener("loadedmetadata", onReady);
+      v.removeEventListener("loadeddata", onReady);
+      v.removeEventListener("playing", onReady);
+    };
   }, [streaming]);
 
   const stopCamera = () => {
