@@ -215,12 +215,12 @@ const WorkerProfile = () => {
                   </span>
                 )}
               </div>
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.6)]">
-                <MapPin className="h-4 w-4" />
-                <span className="font-sora text-base font-bold leading-none">
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/20 px-5 py-2 text-primary shadow-[0_0_24px_-4px_hsl(var(--primary)/0.7)]">
+                <MapPin className="h-5 w-5" />
+                <span className="font-sora text-lg font-bold leading-none">
                   {hasDist ? `${navDistance} km` : "—"}
                 </span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">
                   {hasDist ? "away" : "distance n/a"}
                 </span>
               </div>
@@ -283,13 +283,28 @@ const WorkerProfile = () => {
             />
           </section>
 
-          {/* 4. About */}
-          <section className="mb-5">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-              <p className="text-sm leading-snug text-hero-muted">
-                {worker.description || "No description provided yet."}
-              </p>
-            </div>
+          {/* 4. Quick Contact Icons */}
+          <section className="mb-5 flex justify-center gap-4">
+            <ActionCircle
+              onClick={() => { void trackEvent("contact_click"); user ? navigate(`/chat/${worker.userId}`) : navigate("/login"); }}
+              aria-label="In-app chat"
+            >
+              <MessageSquare className="h-5 w-5 text-hero-muted" />
+            </ActionCircle>
+            {phoneSan && (
+              <ActionCircle
+                onClick={() => { void trackEvent("contact_click"); window.open(`https://wa.me/${phoneSan.replace(/^\+/, "")}`, "_blank"); }}
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-5 w-5 text-[#25D366]" />
+              </ActionCircle>
+            )}
+            <ActionCircle aria-label="Video">
+              <Video className="h-5 w-5 text-[#3B82F6]" />
+            </ActionCircle>
+            <ActionCircle aria-label="Signal">
+              <Lock className="h-5 w-5 text-[#4A90E2]" />
+            </ActionCircle>
           </section>
 
           {/* 5. Give a Review */}
@@ -392,29 +407,7 @@ const WorkerProfile = () => {
         {/* 6. Sticky Action Bar */}
         <footer className="sticky bottom-0 z-30 border-t border-white/10 bg-hero/90 px-5 py-3 backdrop-blur-xl">
           <div className="mx-auto flex max-w-2xl items-center gap-3">
-            <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto">
-              <ActionCircle
-                onClick={() => { void trackEvent("contact_click"); user ? navigate(`/chat/${worker.userId}`) : navigate("/login"); }}
-                aria-label="In-app chat"
-              >
-                <MessageSquare className="h-5 w-5 text-hero-muted" />
-              </ActionCircle>
-              {phoneSan && (
-                <ActionCircle
-                  onClick={() => { void trackEvent("contact_click"); window.open(`https://wa.me/${phoneSan.replace(/^\+/, "")}`, "_blank"); }}
-                  aria-label="WhatsApp"
-                >
-                  <MessageCircle className="h-5 w-5 text-[#25D366]" />
-                </ActionCircle>
-              )}
-              <ActionCircle aria-label="Video">
-                <Video className="h-5 w-5 text-[#3B82F6]" />
-              </ActionCircle>
-              <ActionCircle aria-label="Signal">
-                <Lock className="h-5 w-5 text-[#4A90E2]" />
-              </ActionCircle>
-            </div>
-            <div className="ml-1 flex flex-1 gap-2">
+            <div className="flex flex-1 gap-2">
               {user ? (
                 <>
                   <BookingDialog workerId={worker.id} workerName={worker.name}>
