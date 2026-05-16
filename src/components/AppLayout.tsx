@@ -81,19 +81,12 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
         <main className="px-4 pt-5 pb-24 my-[70px]">{children}</main>
 
         {user && showSignOut && (
-          <div className="px-4 pb-8 pt-2 flex flex-col items-center gap-4">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-              <Link to="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
-              <span aria-hidden>·</span>
-              <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-              <span aria-hidden>·</span>
-              <Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link>
-            </div>
+          <div className="bg-hero px-4 pb-8 pt-2 flex flex-col items-center gap-4 text-hero-foreground">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <Button
                 variant="outline"
                 onClick={handleSignOut}
-                className="gap-2 rounded-full border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                className="gap-2 rounded-full border-destructive/40 bg-transparent text-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
                 <LogOut className="h-4 w-4" /> Sign out
               </Button>
