@@ -190,7 +190,10 @@ const Home = () => {
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
           </Link>
-          {user && <NotificationBell />}
+          <div className="flex items-center gap-2">
+            <CurrentLocationChip />
+            {user && <NotificationBell />}
+          </div>
         </div>
 
         {/* HERO */}
