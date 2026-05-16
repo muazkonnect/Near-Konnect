@@ -135,6 +135,10 @@ const Register = () => {
         metadata.profession = subCategory;
         metadata.experience = experience.trim();
         metadata.expertise_tags = JSON.stringify(expertiseTags);
+        if (serviceLocation) {
+          metadata.latitude = String(serviceLocation.latitude);
+          metadata.longitude = String(serviceLocation.longitude);
+        }
       }
 
       const { data, error } = await supabase.auth.signUp({
