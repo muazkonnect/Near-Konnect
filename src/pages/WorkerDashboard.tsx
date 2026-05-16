@@ -511,106 +511,84 @@ const WorkerDashboard = () => {
             </TabsContent>
 
             <TabsContent value="profile">
-              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-hero-foreground">Service profile</h2>
-                    <p className="text-sm text-hero-foreground/60">How clients see you</p>
-                  </div>
-                  {workerData.verified && (
-                    <Badge className="gap-1 rounded-full bg-success px-3 py-1 text-success-foreground">
-                      <CheckCircle className="h-3 w-3" /> Verified
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="mb-4 flex items-center gap-3 rounded-2xl bg-hero-foreground/5 p-3">
+              <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
+                {/* Header row: avatar + name + verified */}
+                <div className="flex items-center gap-3">
                   <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
-                    <p className="truncate text-sm text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
+                      {workerData.verified && (
+                        <Badge className="h-5 gap-1 rounded-full bg-success px-1.5 text-[9px] text-success-foreground">
+                          <CheckCircle className="h-2.5 w-2.5" /> Verified
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Main Category</Label>
-                    <select
-                      value={mainCategory}
-                      onChange={(e) => {
-                        setMainCategory(e.target.value);
-                        setSubCategory("");
-                      }}
-                      className="mt-1 flex h-10 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="">Select main category</option>
-                      {mainCategories.map((cat) => (
-                        <option key={cat.id} value={cat.name}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Subcategory</Label>
-                    <select
-                      value={subCategory}
-                      onChange={(e) => {
-                        setSubCategory(e.target.value);
-                        setProfession(e.target.value); // Sync profession with subcategory
-                      }}
-                      disabled={!mainCategory}
-                      className="mt-1 flex h-10 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="">Select subcategory</option>
-                      {subCategories.map((sub) => (
-                        <option key={sub.id} value={sub.name}>
-                          {sub.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Profession (Display Name)</Label>
-                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1 h-10 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
-                  </div>
-                  <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Years of Experience</Label>
-                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1 h-10 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Contact options</Label>
-                    <p className="mb-2 mt-1 text-xs text-hero-foreground/60">Phone is required. Add any other apps so clients can reach you.</p>
-                    <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone variant="hero" />
-                  </div>
+                {/* Compact field grid */}
+                {(() => {
+                  const fieldCls = "h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-xs text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+                  const labelCls = "block text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50";
+                  return (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="col-span-1">
+                        <label className={labelCls}>Category</label>
+                        <select value={mainCategory} onChange={(e) => { setMainCategory(e.target.value); setSubCategory(""); }} className={`mt-0.5 ${fieldCls}`}>
+                          <option value="">Select</option>
+                          {mainCategories.map((cat) => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="col-span-1">
+                        <label className={labelCls}>Subcategory</label>
+                        <select value={subCategory} onChange={(e) => { setSubCategory(e.target.value); setProfession(e.target.value); }} disabled={!mainCategory} className={`mt-0.5 ${fieldCls} disabled:opacity-50`}>
+                          <option value="">Select</option>
+                          {subCategories.map((sub) => <option key={sub.id} value={sub.name}>{sub.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="col-span-2">
+                        <label className={labelCls}>Display name</label>
+                        <input value={profession} onChange={(e) => setProfession(e.target.value)} className={`mt-0.5 ${fieldCls}`} />
+                      </div>
+                      <div className="col-span-2">
+                        <label className={labelCls}>Years of experience</label>
+                        <input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className={`mt-0.5 ${fieldCls}`} />
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Contact options */}
+                <div>
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
+                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone variant="hero" />
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <Button onClick={handleSave} disabled={saving} className="h-10 gap-2 rounded-xl px-5">
-                    <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+                {/* Quick actions row */}
+                <div className="flex flex-wrap items-center gap-1.5 border-t border-hero-foreground/10 pt-3">
+                  <Button onClick={handleSave} disabled={saving} className="h-9 gap-1.5 rounded-lg px-4 text-xs">
+                    <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
                   </Button>
                   <ChangePasswordDialog>
-                    <Button type="button" variant="outline" className="h-10 gap-1.5 rounded-xl border-hero-foreground/15 bg-transparent text-hero-foreground hover:bg-hero-foreground/10">
-                      <KeyRound className="h-3.5 w-3.5" /> Password
+                    <Button type="button" variant="outline" className="h-9 gap-1 rounded-lg border-hero-foreground/15 bg-transparent px-3 text-xs text-hero-foreground hover:bg-hero-foreground/10">
+                      <KeyRound className="h-3 w-3" /> Password
                     </Button>
                   </ChangePasswordDialog>
                   {workerData.latitude && workerData.longitude ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-[11px] text-hero-foreground/70">
+                    <span className="inline-flex h-9 items-center gap-1 rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-[10px] text-hero-foreground/70">
                       <Lock className="h-3 w-3" />
                       <MapPin className="h-3 w-3" />
-                      {workerData.latitude.toFixed(3)}, {workerData.longitude.toFixed(3)}
-                      <button
-                        type="button"
-                        onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))}
-                        className="ml-1 font-semibold text-primary hover:underline"
-                      >
+                      {workerData.latitude.toFixed(3)},{workerData.longitude.toFixed(3)}
+                      <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))} className="ml-1 font-semibold text-primary hover:underline">
                         Change
                       </button>
                     </span>
                   ) : (
-                    <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-10 gap-1.5 rounded-xl border-hero-foreground/15 bg-transparent text-hero-foreground hover:bg-hero-foreground/10">
-                      <Navigation className="h-3.5 w-3.5" />
+                    <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-9 gap-1 rounded-lg border-hero-foreground/15 bg-transparent px-3 text-xs text-hero-foreground hover:bg-hero-foreground/10">
+                      <Navigation className="h-3 w-3" />
                       {settingLocation ? "Detecting..." : "Set location"}
                     </Button>
                   )}
