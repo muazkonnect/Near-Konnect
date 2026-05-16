@@ -36,6 +36,13 @@ const FONT_SCALES = [12, 16, 20, 24];
 const getHeading = () =>
   screen.getAllByRole("heading", { name: /Elena Rodriguez/i }).find((h) => h.tagName === "H2")!;
 
+const getHeading = () =>
+  screen
+    .getAllByRole("heading", { name: /Elena Rodriguez/i })
+    .find((h) => h.className.includes("font-sora"))!;
+
+describe.skip("__inner", () => {});
+
 describe("WorkerProfilePopup premium crown alignment", () => {
   it("renders crown next to name as direct sibling in a flex row", () => {
     renderPopup();
@@ -50,7 +57,7 @@ describe("WorkerProfilePopup premium crown alignment", () => {
 
   it("crown stays inline (same row baseline) across viewports and font scales", () => {
     renderPopup();
-    const heading = screen.getByRole("heading", { name: /Elena Rodriguez/i });
+    const heading = getHeading();
     const crown = screen.getByLabelText(/Premium Worker/i);
 
     for (const w of VIEWPORTS) {
