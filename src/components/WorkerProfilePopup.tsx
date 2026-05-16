@@ -87,11 +87,6 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                   </span>
                 )}
               </div>
-              {isPremium && (
-                <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                  <Sparkles className="h-3 w-3" /> Premium Verified Pro
-                </div>
-              )}
 
               {/* Prominent distance pill */}
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.6)]">
