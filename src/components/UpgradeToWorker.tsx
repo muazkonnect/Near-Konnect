@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Briefcase, ArrowRight, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LocationLabel from "@/components/LocationLabel";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
