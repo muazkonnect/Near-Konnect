@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X } from "lucide-react";
+import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,10 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = sanitizePhone(worker.phone);
-  const expertise = (worker.serviceAreas || []).slice(0, 6);
+  const expertise = Array.from(new Set([worker.profession, ...(worker.serviceAreas || [])].filter(Boolean))).slice(0, 8);
   const isPremium = worker.verified;
+  const dist = worker.distance;
+  const distLabel = typeof dist === "number" && dist > 0 && isFinite(dist) ? `${dist} km away` : "Distance unknown";
 
   const requireAuth = (fn: () => void) => () => {
     if (!isAuthed) {
@@ -75,10 +77,15 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
             <div className="text-center">
               <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
-              <div className="mt-1 flex items-center justify-center gap-3">
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                 <div className="flex items-center gap-1 text-primary">
                   <Star className="h-4 w-4 fill-current" />
                   <span className="text-sm font-semibold">{worker.rating?.toFixed(1) || "—"}</span>
+                </div>
+                <span className="text-hero-muted">•</span>
+                <div className="flex items-center gap-1 text-hero-muted">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="text-xs font-medium">{distLabel}</span>
                 </div>
                 {isPremium && (
                   <>
@@ -102,9 +109,9 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Sub-Category</span>
               <span className="block font-sora text-base font-semibold uppercase">{worker.subCategory || "—"}</span>
             </div>
-            {expertise.length > 0 && (
-              <div className="col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
-                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Expertise</span>
+            <div className="col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
+              <span className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Expertise</span>
+              {expertise.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {expertise.map((e) => (
                     <span key={e} className="rounded border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-bold uppercase">
@@ -112,8 +119,10 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                     </span>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <span className="text-xs text-hero-muted">—</span>
+              )}
+            </div>
           </div>
 
           {/* Bio */}
