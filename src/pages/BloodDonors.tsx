@@ -130,7 +130,7 @@ const BloodDonors = () => {
           {/* HERO CARD */}
           <section className="relative mb-8 overflow-hidden rounded-xl border border-[#ffe2de] bg-white p-4 shadow-sm">
             <div aria-hidden className="pointer-events-none absolute -right-2 -top-2">
-              <Heart className="h-32 w-32 fill-[#b7131a] text-[#b7131a] opacity-[0.015] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
+              <Heart style={{ opacity: 0.08 }} className="h-32 w-32 fill-[#b7131a] text-[#b7131a] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
             </div>
             <div className="relative">
               <div className="mb-2 flex items-center gap-2">
