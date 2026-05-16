@@ -20,19 +20,24 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: 640, height: 640 },
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 640 } },
         audio: false,
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
       setStreaming(true);
     } catch (e) {
-      setError("Camera access denied. Please enable camera permissions.");
+      console.error("getUserMedia failed", e);
+      setError("Camera access denied. Please enable camera permissions and try again.");
     }
   };
+
+  // Attach stream once the <video> element is mounted
+  useEffect(() => {
+    if (streaming && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch((err) => console.error("video play failed", err));
+    }
+  }, [streaming]);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -43,20 +48,25 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   useEffect(() => () => stopCamera(), []);
 
   const capture = async () => {
-    if (!videoRef.current) return;
     const v = videoRef.current;
+    if (!v || !v.videoWidth || !v.videoHeight) {
+      setError("Camera not ready yet. Please wait a moment and try again.");
+      return;
+    }
     const size = Math.min(v.videoWidth, v.videoHeight);
     const canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) { setError("Capture failed"); return; }
     const sx = (v.videoWidth - size) / 2;
     const sy = (v.videoHeight - size) / 2;
     ctx.drawImage(v, sx, sy, size, size, 0, 0, 512, 512);
     const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-    const blob: Blob = await new Promise((res) =>
-      canvas.toBlob((b) => res(b!), "image/jpeg", 0.85),
+    const blob: Blob | null = await new Promise((res) =>
+      canvas.toBlob((b) => res(b), "image/jpeg", 0.85),
     );
+    if (!blob) { setError("Capture failed"); return; }
     stopCamera();
     setCapturedUrl(dataUrl);
     setCapturedBlob(blob);
