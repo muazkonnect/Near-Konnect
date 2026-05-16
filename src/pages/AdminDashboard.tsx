@@ -855,6 +855,8 @@ const AdminDashboard = () => {
 
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
+
+            {tab === "location_requests" && <LocationChangeRequestsTab />}
           </main>
         </div>
       </div>
