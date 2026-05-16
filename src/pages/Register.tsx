@@ -12,6 +12,9 @@ import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
 import FaceVerification from "@/components/FaceVerification";
+import PhoneField from "@/components/PhoneField";
+import { useDetectedCountry } from "@/hooks/useDetectedCountry";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -24,6 +27,7 @@ const Register = () => {
   const [searchParams] = useSearchParams();
   const { mainCategories, getSubCategories } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
+  const detectedCountry = useDetectedCountry();
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
 
   const [name, setName] = useState("");
@@ -68,6 +72,10 @@ const Register = () => {
 
     if (!normalizedName || !normalizedEmail || !password || !normalizedPhone) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+    if (!isValidPhoneNumber(normalizedPhone)) {
+      toast.error("Please enter a valid phone number with country code.");
       return;
     }
     const pw = validatePassword(password);
@@ -246,9 +254,12 @@ const Register = () => {
 
             <div>
               <label className={labelCls}>Phone Number</label>
-              <div className={fieldWrap}>
-                <input type="tel" className={fieldInput} placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-              </div>
+              <PhoneField
+                value={phone}
+                onChange={setPhone}
+                defaultCountry={detectedCountry}
+                ariaLabel="Phone number"
+              />
             </div>
 
             <div>
