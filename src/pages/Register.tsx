@@ -13,6 +13,8 @@ import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
 import FaceVerification from "@/components/FaceVerification";
 import PhoneField from "@/components/PhoneField";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import type { Coords } from "@/lib/geolocation";
 import { useDetectedCountry } from "@/hooks/useDetectedCountry";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
@@ -41,6 +43,7 @@ const Register = () => {
   const [experience, setExperience] = useState("");
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
+  const [serviceLocation, setServiceLocation] = useState<Coords | null>(null);
 
   const [isBloodDonor, setIsBloodDonor] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
@@ -87,6 +90,10 @@ const Register = () => {
       toast.error("Please complete category, sub-category and experience.");
       return;
     }
+    if (role === "worker" && !serviceLocation) {
+      toast.error("Please pin your fixed service location on the map.");
+      return;
+    }
     if (isBloodDonor && !bloodGroup) {
       toast.error("Please select your blood type.");
       return;
@@ -128,6 +135,10 @@ const Register = () => {
         metadata.profession = subCategory;
         metadata.experience = experience.trim();
         metadata.expertise_tags = JSON.stringify(expertiseTags);
+        if (serviceLocation) {
+          metadata.latitude = String(serviceLocation.latitude);
+          metadata.longitude = String(serviceLocation.longitude);
+        }
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -363,6 +374,16 @@ const Register = () => {
                   <div className={fieldWrap}>
                     <input type="number" min="0" className={fieldInput} placeholder="5" value={experience} onChange={(e) => setExperience(e.target.value)} required />
                   </div>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Fixed Service Location</label>
+                  <div className="rounded-lg border border-[#444748]/20 bg-[#1c1b1b] p-3">
+                    <MapLocationPicker value={serviceLocation} onChange={setServiceLocation} />
+                  </div>
+                  <p className="mt-1 px-1 text-[11px] italic text-[#c4c7c7]/60">
+                    This location is permanent. To change it later you must contact an admin.
+                  </p>
                 </div>
               </div>
             )}
