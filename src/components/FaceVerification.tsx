@@ -116,13 +116,27 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
         const sizeRatio = box.height / vh;
 
         if (sizeRatio < 0.35) {
+          okSinceRef.current = null;
           setAlignment({ ok: false, hint: "Move closer" });
         } else if (sizeRatio > 0.85) {
+          okSinceRef.current = null;
           setAlignment({ ok: false, hint: "Move back a little" });
         } else if (offX > 0.12 || offY > 0.12) {
+          okSinceRef.current = null;
           setAlignment({ ok: false, hint: "Center your face" });
         } else {
-          setAlignment({ ok: true, hint: "Looks good — hold still" });
+          const now = Date.now();
+          if (okSinceRef.current == null) okSinceRef.current = now;
+          const held = now - okSinceRef.current;
+          const remain = Math.max(0, Math.ceil((1000 - held) / 100) / 10);
+          setAlignment({
+            ok: true,
+            hint: remain > 0 ? `Hold still… ${remain.toFixed(1)}s` : "Capturing…",
+          });
+          if (held >= 1000 && !autoCapturedRef.current) {
+            autoCapturedRef.current = true;
+            capture();
+          }
         }
       } catch {
         // ignore transient detection errors
