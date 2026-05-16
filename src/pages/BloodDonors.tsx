@@ -37,9 +37,7 @@ const BloodDonors = () => {
     markRead((n) => n.type === "blood_request" || n.type === "booking");
   }, []);
 
-  useEffect(() => {
-    if (!authLoading && !user) navigate("/login");
-  }, [authLoading, user, navigate]);
+  // Guests can view this page; contact/request actions prompt login.
 
   const { data: donors = [], isLoading } = useQuery({
     queryKey: ["blood_donors"],

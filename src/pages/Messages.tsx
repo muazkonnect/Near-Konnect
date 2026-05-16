@@ -18,9 +18,7 @@ const Messages = () => {
   const [search, setSearch] = useState("");
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (!loading && !user) navigate("/login");
-  }, [loading, user, navigate]);
+  // Guests can view this page; actions prompt login.
 
   useEffect(() => {
     const to = searchParams.get("to");
@@ -229,7 +227,14 @@ const Messages = () => {
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations..." className="h-12 rounded-full border-none bg-muted pl-11" />
         </div>
 
-        {filteredConversations.length === 0 ? (
+        {!user ? (
+          <div className="rounded-3xl bg-muted/40 py-16 text-center">
+            <Lock className="mx-auto mb-2 h-9 w-9 text-muted-foreground" />
+            <p className="font-bold text-foreground">Log in to view your messages</p>
+            <p className="mt-1 text-sm text-muted-foreground">You can browse the app freely. Sign in to chat with providers.</p>
+            <Button className="mt-4" onClick={() => navigate("/login")}>Log in</Button>
+          </div>
+        ) : filteredConversations.length === 0 ? (
           <div className="rounded-3xl bg-muted/40 py-16 text-center">
             <MessageSquare className="mx-auto mb-2 h-9 w-9 text-muted-foreground" />
             <p className="font-bold text-foreground">No conversations yet</p>
