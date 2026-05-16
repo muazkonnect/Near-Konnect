@@ -329,6 +329,19 @@ const WorkerDashboard = () => {
                     </>
                   )}
                 </div>
+                {(workerData as any).uid && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText((workerData as any).uid);
+                      toast.success("Worker ID copied");
+                    }}
+                    className="mx-auto block rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 py-0.5 font-mono text-[11px] tracking-wider text-hero-foreground/70 transition hover:bg-hero-foreground/10"
+                    title="Click to copy"
+                  >
+                    {(workerData as any).uid}
+                  </button>
+                )}
                 <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-hero-foreground/70 sm:text-sm">
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
