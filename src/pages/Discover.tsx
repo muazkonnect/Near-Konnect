@@ -249,9 +249,6 @@ const Discover = () => {
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Find services near you..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 rounded-full border-none bg-muted pl-11" />
             </div>
-            <Button variant="outline" size="icon" className="h-12 w-12" onClick={() => setShowMapView((v) => !v)}>
-              {showMapView ? <List className="h-4 w-4" /> : <Map className="h-4 w-4" />}
-            </Button>
           </div>
 
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">

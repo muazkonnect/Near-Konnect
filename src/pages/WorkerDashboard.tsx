@@ -582,17 +582,6 @@ const WorkerDashboard = () => {
                       <MapPin className="h-3 w-3" />
                       {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
                     </div>
-                    <div className="overflow-hidden rounded-2xl">
-                      <WorkersMap
-                        workers={[{
-                          id: workerData.id,
-                          name: profession || "Your service location",
-                          latitude: workerData.latitude,
-                          longitude: workerData.longitude,
-                        }]}
-                        height="240px"
-                      />
-                    </div>
                     <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-border bg-card/50 p-3">
                       <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                       <p className="text-xs text-muted-foreground">
