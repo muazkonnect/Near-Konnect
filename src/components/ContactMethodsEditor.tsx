@@ -73,6 +73,7 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false, variant =
                     onChange={(v) => updateValue(idx, v)}
                     defaultCountry={detectedCountry}
                     ariaLabel={`${app.label} number`}
+                    variant={hero ? "hero" : "default"}
                   />
                 ) : (
                   <Input
