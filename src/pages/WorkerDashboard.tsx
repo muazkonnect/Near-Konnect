@@ -516,8 +516,8 @@ const WorkerDashboard = () => {
             </TabsContent>
 
             <TabsContent value="profile">
-              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
-                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-xl font-bold text-hero-foreground">Service profile</h2>
                     <p className="text-sm text-hero-foreground/60">How clients see you</p>
@@ -529,7 +529,7 @@ const WorkerDashboard = () => {
                   )}
                 </div>
 
-                <div className="mb-6 flex items-center gap-4 rounded-2xl bg-hero-foreground/5 p-4">
+                <div className="mb-4 flex items-center gap-3 rounded-2xl bg-hero-foreground/5 p-3">
                   <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
@@ -538,7 +538,7 @@ const WorkerDashboard = () => {
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 md:grid-cols-2">
                   <div>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Main Category</Label>
                     <select
@@ -547,7 +547,7 @@ const WorkerDashboard = () => {
                         setMainCategory(e.target.value);
                         setSubCategory("");
                       }}
-                      className="mt-1.5 flex h-11 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-1 flex h-10 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select main category</option>
                       {mainCategories.map((cat) => (
@@ -566,7 +566,7 @@ const WorkerDashboard = () => {
                         setProfession(e.target.value); // Sync profession with subcategory
                       }}
                       disabled={!mainCategory}
-                      className="mt-1.5 flex h-11 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-1 flex h-10 w-full rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select subcategory</option>
                       {subCategories.map((sub) => (
@@ -578,15 +578,15 @@ const WorkerDashboard = () => {
                   </div>
                   <div>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Profession (Display Name)</Label>
-                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
+                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1 h-10 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Years of Experience</Label>
-                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
+                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1 h-10 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">About</Label>
-                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
+                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Contact options</Label>
@@ -595,7 +595,7 @@ const WorkerDashboard = () => {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 p-4">
+                <div className="mt-4 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 p-4">
                   <div>
                     <p className="font-semibold text-hero-foreground">Availability</p>
                     <p className="text-xs text-hero-foreground/60">{available ? "You are visible to clients" : "You are hidden from search"}</p>
@@ -603,16 +603,16 @@ const WorkerDashboard = () => {
                   <Switch checked={available} onCheckedChange={setAvailable} />
                 </div>
 
-                <Button onClick={handleSave} disabled={saving} className="mt-5 h-11 gap-2 rounded-xl px-6">
+                <Button onClick={handleSave} disabled={saving} className="mt-4 h-10 gap-2 rounded-xl px-6">
                   <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
                 </Button>
               </div>
 
-              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
+              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
                 <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
                   <KeyRound className="h-4 w-4" /> Security
                 </h3>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-hero-foreground/5 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-hero-foreground/5 p-3">
                   <div className="min-w-[200px]">
                     <p className="font-semibold text-hero-foreground">Password</p>
                     <p className="text-xs text-hero-foreground/60">Change your account password regularly to stay secure.</p>
@@ -625,7 +625,7 @@ const WorkerDashboard = () => {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
+              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
                     <p className="font-semibold text-hero-foreground">Fixed service location</p>
@@ -664,7 +664,7 @@ const WorkerDashboard = () => {
                     </div>
                   </>
                 ) : (
-                  <Button variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-11 gap-2 rounded-xl">
+                  <Button variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-10 gap-2 rounded-xl">
                     <Navigation className="h-4 w-4" />
                     {settingLocation ? "Detecting..." : "Use current location"}
                   </Button>
