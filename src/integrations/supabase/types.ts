@@ -1049,6 +1049,7 @@ export type Database = {
           created_at: string
           description: string | null
           experience: number
+          expertise_tags: string[]
           id: string
           latitude: number | null
           longitude: number | null
@@ -1068,6 +1069,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           experience?: number
+          expertise_tags?: string[]
           id?: string
           latitude?: number | null
           longitude?: number | null
@@ -1087,6 +1089,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           experience?: number
+          expertise_tags?: string[]
           id?: string
           latitude?: number | null
           longitude?: number | null
