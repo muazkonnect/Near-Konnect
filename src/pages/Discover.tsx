@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
   MapPin,
@@ -17,10 +17,14 @@ import {
   Zap,
   ShieldCheck,
   Clock3,
+  BadgeCheck,
+  Award,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import WorkerCard from "@/components/WorkerCard";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AuthRequiredDialog from "@/components/AuthRequiredDialog";
+import type { Worker } from "@/types/worker";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
