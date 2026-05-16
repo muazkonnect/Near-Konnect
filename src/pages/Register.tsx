@@ -400,6 +400,7 @@ const Register = () => {
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : role === "worker" ? "Submit Pro Application" : "Create Account"}
             </button>
+            </fieldset>
           </form>
 
           <p className="pb-6 text-center text-sm text-[#c4c7c7]">
