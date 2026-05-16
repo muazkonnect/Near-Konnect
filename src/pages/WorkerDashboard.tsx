@@ -35,6 +35,7 @@ import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
+import logoImg from "@/assets/logo.svg";
 import DashboardNav from "@/components/DashboardNav";
 
 import { useAuth } from "@/contexts/AuthContext";
