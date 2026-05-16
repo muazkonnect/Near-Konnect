@@ -384,62 +384,42 @@ const WorkerProfile = () => {
             )}
           </section>
 
-          {/* In-banner contact methods (kept for completeness when contact is private/public) */}
-          {user && !isOwner && (
+          {/* Auth CTA under reviews */}
+          {!user && (
             <section className="mb-5">
-              {showContact && contactMethods.length > 0 ? (
-                <ContactMethodsBar
-                  methods={contactMethods}
-                  onInAppMessage={() => { void trackEvent("contact_click"); navigate(`/chat/${worker.userId}`); }}
-                  onChannelClick={() => void trackEvent("contact_click")}
-                  variant="hero"
-                />
-              ) : (
-                <div className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-hero-muted">
-                  <EyeOff className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p>This service pro keeps direct contact private. Message them in-app or book a slot.</p>
-                </div>
-              )}
+              <AuthRequiredDialog title="Log in to contact" description="Sign in to contact this professional.">
+                <Button className="h-11 w-full gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10">
+                  <Mail className="h-4 w-4" /> Log in to contact
+                </Button>
+              </AuthRequiredDialog>
+            </section>
+          )}
+
+          {/* Booking + Call for logged in users */}
+          {user && !isOwner && (
+            <section className="mb-5 flex gap-2">
+              <BookingDialog workerId={worker.id} workerName={worker.name}>
+                <Button
+                  variant="outline"
+                  className="h-11 flex-1 gap-2 rounded-lg border-white/15 bg-white/5 text-sm font-semibold text-hero-foreground hover:bg-white/10"
+                  onClick={() => void trackEvent("conversion")}
+                >
+                  <CalendarPlus className="h-4 w-4" /> Book
+                </Button>
+              </BookingDialog>
+              <Button
+                className="h-11 flex-[1.2] gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10"
+                onClick={() => {
+                  void trackEvent("contact_click");
+                  if (phoneSan) window.location.href = `tel:${phoneSan}`;
+                  else navigate(`/chat/${worker.userId}`);
+                }}
+              >
+                <Phone className="h-4 w-4 fill-current" /> Call Now
+              </Button>
             </section>
           )}
         </main>
-
-        {/* 6. Sticky Action Bar */}
-        <footer className="sticky bottom-0 z-30 border-t border-white/10 bg-hero/90 px-5 py-3 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-2xl items-center gap-3">
-            <div className="flex flex-1 gap-2">
-              {user ? (
-                <>
-                  <BookingDialog workerId={worker.id} workerName={worker.name}>
-                    <Button
-                      variant="outline"
-                      className="h-10 flex-1 gap-1 rounded-lg border-white/15 bg-white/5 px-2 text-xs font-semibold text-hero-foreground hover:bg-white/10"
-                      onClick={() => void trackEvent("conversion")}
-                    >
-                      <CalendarPlus className="h-4 w-4" /> <span className="truncate">Book</span>
-                    </Button>
-                  </BookingDialog>
-                  <Button
-                    className="h-10 flex-[1.2] gap-1 rounded-lg px-2 text-xs font-semibold shadow-lg shadow-primary/10"
-                    onClick={() => {
-                      void trackEvent("contact_click");
-                      if (phoneSan) window.location.href = `tel:${phoneSan}`;
-                      else navigate(`/chat/${worker.userId}`);
-                    }}
-                  >
-                    <Phone className="h-4 w-4 fill-current" /> <span className="truncate">Call Now</span>
-                  </Button>
-                </>
-              ) : (
-                <AuthRequiredDialog title="Log in to contact" description="Sign in to contact this professional.">
-                  <Button className="h-10 w-full gap-1 rounded-lg text-xs font-semibold">
-                    <Mail className="h-4 w-4" /> Log in to contact
-                  </Button>
-                </AuthRequiredDialog>
-              )}
-            </div>
-          </div>
-        </footer>
 
         <style>{`.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}`}</style>
       </div>
