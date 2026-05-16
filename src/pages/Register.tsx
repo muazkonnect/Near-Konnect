@@ -27,6 +27,7 @@ const Register = () => {
   const [searchParams] = useSearchParams();
   const { mainCategories, getSubCategories } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
+  const detectedCountry = useDetectedCountry();
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
 
   const [name, setName] = useState("");
