@@ -10,12 +10,19 @@ interface Props {
 const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const detectorRef = useRef<any>(null);
+  const detectIntervalRef = useRef<number | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [alignment, setAlignment] = useState<{ ok: boolean; hint: string }>({
+    ok: false,
+    hint: "Position your face inside the oval",
+  });
+  const detectorSupported = typeof (window as any).FaceDetector === "function";
 
   const startCamera = async () => {
     setError(null);
