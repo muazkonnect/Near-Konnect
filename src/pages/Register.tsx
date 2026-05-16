@@ -44,6 +44,8 @@ const Register = () => {
 
   const [loading, setLoading] = useState(false);
   const [existingAccountModal, setExistingAccountModal] = useState<{ open: boolean; email: string }>({ open: false, email: "" });
+  const [faceDataUrl, setFaceDataUrl] = useState<string | null>(null);
+  const [faceBlob, setFaceBlob] = useState<Blob | null>(null);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
   const expertiseChips = EXPERTISE_SUGGESTIONS[subCategory] || EXPERTISE_SUGGESTIONS.default;
