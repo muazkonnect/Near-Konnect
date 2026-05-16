@@ -264,117 +264,138 @@ const WorkerDashboard = () => {
 
   return (
     <AppLayout showSignOut>
-      <section className="space-y-6">
-        {/* Dark hero header */}
+      <section className="space-y-5">
+        {/* Pro Dashboard hero */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[2rem] bg-hero p-6 text-hero-foreground sm:p-8"
+          className="rounded-3xl border border-white/5 bg-hero p-5 text-hero-foreground sm:p-6"
         >
-          <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/25 blur-3xl" />
-          <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(hsl(var(--hero-foreground))_1px,transparent_1px)] [background-size:18px_18px]" />
-
-          <div className="relative flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-primary/15 p-1 ring-1 ring-primary/30">
-                <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} />
+          {/* Top bar */}
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 overflow-hidden rounded-full border border-white/20">
+                {(workerData as any).profiles?.avatar_url ? (
+                  <img src={(workerData as any).profiles.avatar_url} alt={workerName} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-white/10 text-xs font-bold">
+                    {workerName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+                  </div>
+                )}
               </div>
-              <div>
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                  <span className={`h-1.5 w-1.5 rounded-full ${available ? "animate-pulse bg-primary" : "bg-muted-foreground"}`} />
-                  {available ? "Available now" : "Currently offline"}
-                </span>
-                <h1 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">Hi, {firstName}</h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-sm text-hero-foreground/60">{profession || "Set your profession in profile"}</p>
+              <h1 className="text-base font-bold uppercase tracking-wide">Pro Dashboard</h1>
+            </div>
+            <button
+              onClick={() => navigate("/messages")}
+              className="relative rounded-full p-2 text-hero-foreground/80 transition hover:bg-white/10"
+              aria-label="Notifications"
+            >
+              <MessageSquare className="h-5 w-5" />
+              {unreadByType.message > 0 && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
+              )}
+            </button>
+          </div>
+
+          {/* Profile summary */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xl font-bold sm:text-2xl">{workerName}</span>
                   {workerData.verified && (
-                    <Badge className="h-5 gap-1 rounded-full bg-success/20 px-2 py-0 text-[10px] font-bold text-success-foreground border-none">
-                      <CheckCircle className="h-3 w-3" /> VERIFIED
-                    </Badge>
+                    <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                      Pro Verified
+                    </span>
                   )}
                 </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-hero-foreground/70">
+                  <span className="flex items-center gap-1">
+                    <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <UserCheck className="h-3.5 w-3.5" /> {reviews.length} Reviews
+                  </span>
+                  <span className={`flex items-center gap-1.5 ${available ? "text-primary" : "text-hero-foreground/50"}`}>
+                    <span className={`h-2 w-2 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
+                    {available ? "Available Now" : "Offline"}
+                  </span>
+                </div>
               </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
-                <span className={`h-2 w-2 rounded-full ${available ? "bg-primary" : "bg-destructive"}`} />
-                {available ? "Visible" : "Hidden"}
-                <Switch checked={available} onCheckedChange={(v) => { setAvailable(v); supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })); }} className="ml-1" />
-              </div>
-              <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs backdrop-blur-sm">
-                <Lock className="h-3.5 w-3.5 opacity-80" />
-                {showContact ? "Contact public" : "Contact hidden"}
-                <Switch
-                  checked={showContact}
-                  onCheckedChange={async (v) => {
-                    setShowContact(v);
-                    const { error } = await supabase.from("profiles").update({ show_contact: v } as any).eq("user_id", user!.id);
-                    if (error) { toast.error("Could not update contact visibility"); setShowContact(!v); return; }
-                    toast.success(v ? "Contact is now public" : "Contact is now hidden");
-                    queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] });
+              <div className="flex w-full gap-2 sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/worker/${workerData.id}`)}
+                  className="h-10 flex-1 gap-1.5 rounded-xl border-white/15 bg-white/5 px-4 text-xs text-hero-foreground hover:bg-white/10 sm:flex-none"
+                >
+                  <Eye className="h-3.5 w-3.5" /> View Profile
+                </Button>
+                <Button
+                  onClick={() => {
+                    const v = !available;
+                    setAvailable(v);
+                    supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
                   }}
-                  className="ml-1"
-                />
+                  className="h-10 flex-1 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none"
+                >
+                  {available ? "Go Offline" : "Go Online"}
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/worker/${workerData.id}`)}
-                className="h-9 gap-2 rounded-full border-white/20 bg-white/10 text-xs text-white backdrop-blur-sm hover:bg-white/20"
-              >
-                <Eye className="h-3.5 w-3.5" /> View Public Profile
-              </Button>
-              <RequestFeaturedDialog workerId={workerData.id} />
-              <Button className="h-10 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/discover")}>
-                <Search className="h-4 w-4" /> Explore
-              </Button>
             </div>
           </div>
 
-          {/* Stats inside hero */}
-          <div className="relative mt-6 grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
+          {/* Quick actions 2x2 */}
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
-              { label: "Rating", value: avgRating, icon: Star, accent: true },
-              { label: "Reviews", value: String(reviews.length), icon: UserCheck },
-              { label: "New bookings", value: String(unreadByType.booking), icon: Calendar },
-              { label: "New messages", value: String(unreadByType.message), icon: MessageSquare },
-              { label: "Pending", value: String(pendingBookings.length), icon: Clock },
+              { label: "Schedule", icon: Calendar, onClick: () => setActiveTab("bookings") },
+              { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
+              { label: "Boost Ad", icon: Sparkles, onClick: () => navigate("/discover") },
+              { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
+            ].map((a) => (
+              <button
+                key={a.label}
+                onClick={a.onClick}
+                className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center transition hover:border-primary/30 hover:bg-white/[0.07]"
+              >
+                <a.icon className="h-5 w-5 text-hero-foreground/70 transition group-hover:text-primary" />
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-hero-foreground/70">{a.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Sparks Wallet */}
+          <div className="relative mt-4 overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)]">
+            <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 text-primary-foreground/10" />
+            <div className="relative flex items-start justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</p>
+                <p className="mt-2 text-3xl font-bold leading-none">2,450</p>
+                <p className="mt-1 text-xs opacity-80">Available Credits</p>
+              </div>
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <Button className="relative mt-4 h-10 w-full rounded-xl bg-primary-foreground text-sm font-bold text-primary hover:bg-primary-foreground/90">
+              Top Up Balance
+            </Button>
+          </div>
+
+          {/* Stats row */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {[
+              { label: "Pending", value: pendingBookings.length, icon: Clock },
+              { label: "New msgs", value: unreadByType.message, icon: MessageSquare },
+              { label: "Bookings", value: unreadByType.booking, icon: Calendar },
             ].map((s) => (
-              <div key={s.label} className={`rounded-2xl p-3 ${s.accent ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-sm"}`}>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <s.icon className="h-3.5 w-3.5 opacity-80" />
-                  <span className="text-[10px] font-medium uppercase tracking-wide opacity-70">{s.label}</span>
+              <div key={s.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <div className="mb-1 flex items-center justify-between">
+                  <s.icon className="h-3.5 w-3.5 opacity-70" />
+                  <span className="text-[9px] font-semibold uppercase tracking-wide opacity-70">{s.label}</span>
                 </div>
-                <p className="text-xl font-bold leading-none">{s.value}</p>
+                <p className="text-lg font-bold">{s.value}</p>
               </div>
             ))}
           </div>
         </motion.div>
-
-        <div className="grid gap-3 md:grid-cols-3">
-          <button onClick={() => navigate("/discover")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl p-2.5 group-hover:text-primary-foreground transition-colors bg-muted">
-              <Compass className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <p className="font-bold text-card-foreground">Find more demand</p>
-            <p className="text-xs text-muted-foreground">See local categories and active jobs</p>
-          </button>
-          <button onClick={() => navigate("/blood-donors")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-destructive hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl bg-destructive/10 p-2.5">
-              <HeartPulse className="h-5 w-5 text-destructive" />
-            </div>
-            <p className="font-bold text-card-foreground">Urgent network</p>
-            <p className="text-xs text-muted-foreground">Help with blood and emergency requests</p>
-          </button>
-          <button onClick={() => navigate("/messages")} className="tap-feedback group rounded-3xl border bg-card p-5 text-left transition-all hover:border-primary hover:shadow-lg">
-            <div className="mb-3 inline-flex rounded-2xl p-2.5 transition-colors bg-muted">
-              <MessageSquare className="h-5 w-5 text-secondary" />
-            </div>
-            <p className="font-bold text-card-foreground">Reply faster</p>
-            <p className="text-xs text-muted-foreground">Keep your response time high</p>
-          </button>
-        </div>
 
         <div className="space-y-6">
           <DashboardNav
