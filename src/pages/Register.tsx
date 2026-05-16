@@ -3,8 +3,6 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,11 +12,9 @@ import { useI18n } from "@/i18n";
 import { type Coords } from "@/lib/geolocation";
 import { useCategories } from "@/hooks/useCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
-import SocialAuthButtons from "@/components/SocialAuthButtons";
-import AuthShell from "@/components/AuthShell";
-import AuthTabs from "@/components/AuthTabs";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
+import logoImg from "@/assets/logo.svg";
 
 const Register = () => {
   const navigate = useNavigate();
