@@ -190,7 +190,9 @@ const UpgradeToWorker = () => {
               {location ? "Service location saved" : capturingLocation ? "Detecting location..." : "Use my current location"}
             </Button>
             {location && (
-              <p className="mt-2 text-xs text-muted-foreground">{location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                <LocationLabel latitude={location.latitude} longitude={location.longitude} />
+              </p>
             )}
           </div>
           <Button onClick={handleUpgrade} disabled={loading} className="w-full bg-gradient-brand text-primary-foreground hover:opacity-90 rounded-xl">
