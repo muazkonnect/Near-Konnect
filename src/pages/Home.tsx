@@ -13,6 +13,8 @@ import {
   Star,
   Zap,
 } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
+import NotificationBell from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import WorkerCard from "@/components/WorkerCard";
