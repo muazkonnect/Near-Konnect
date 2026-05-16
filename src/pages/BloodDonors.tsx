@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Droplet, Search, MapPin, Heart, Siren } from "lucide-react";
+import { Droplet, Search, MapPin, Heart, Siren, Bell } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BloodRequestDialog from "@/components/BloodRequestDialog";
@@ -116,25 +117,24 @@ const BloodDonors = () => {
 
   return (
     <AppLayout hideMobileHeader>
-      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-white text-[#271716]">
+      <div className="-mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
         {/* TOP APP BAR */}
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#ffe2de] bg-white/90 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[#271716]">menu</span>
-            <h1 className="text-xl font-semibold tracking-tight">Near Konnect</h1>
-          </div>
-          <span className="material-symbols-outlined text-[#271716]">notifications</span>
+          <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+          <button onClick={() => navigate("/notifications")} aria-label="Notifications" className="rounded-full p-2 text-[#271716] hover:bg-[#fff0ee]">
+            <Bell className="h-5 w-5" />
+          </button>
         </header>
 
         <main className="px-6 pt-6 pb-8">
           {/* HERO CARD */}
           <section className="relative mb-8 overflow-hidden rounded-xl border border-[#ffe2de] bg-white p-4 shadow-sm">
             <div aria-hidden className="pointer-events-none absolute -right-2 -top-2">
-              <Heart className="h-32 w-32 fill-[#b7131a] text-[#b7131a] opacity-[0.08] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
+              <Heart className="h-32 w-32 fill-[#b7131a] text-[#b7131a] opacity-[0.04] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
             </div>
             <div className="relative">
               <div className="mb-2 flex items-center gap-2">
-                <Heart className="h-4 w-4 fill-[#b7131a] text-[#b7131a] animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
+                <Heart className="h-4 w-4 fill-[#b7131a] text-[#b7131a] opacity-60 animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#b7131a]">Life Support</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold leading-tight tracking-tight">Blood Konnect</h2>
