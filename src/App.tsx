@@ -85,7 +85,7 @@ const AppContent = () => {
         <WorkerOnboardingDialog />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Home />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/worker/:id" element={<WorkerProfile />} />
             <Route path="/login" element={<Login />} />
