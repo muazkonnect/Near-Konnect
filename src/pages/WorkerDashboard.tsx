@@ -476,49 +476,49 @@ const WorkerDashboard = () => {
 
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-3xl border bg-card p-6">
+                <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6">
                   <div className="mb-4 flex items-center justify-between">
                     <div>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning">
                         <Clock className="h-3 w-3" /> Pending
                       </span>
-                      <h3 className="mt-2 font-bold text-card-foreground">Awaiting your reply ({pendingBookings.length})</h3>
+                      <h3 className="mt-2 font-bold text-hero-foreground">Awaiting your reply ({pendingBookings.length})</h3>
                     </div>
                   </div>
                   {pendingBookings.length === 0 ? (
-                    <div className="rounded-2xl bg-muted/40 p-6 text-center">
-                      <p className="text-sm text-muted-foreground">No pending requests right now.</p>
+                    <div className="rounded-2xl bg-hero-foreground/5 p-6 text-center">
+                      <p className="text-sm text-hero-foreground/60">No pending requests right now.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {pendingBookings.slice(0, 3).map((b: any) => (
-                        <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
-                          <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                          <p className="truncate text-xs text-muted-foreground">{b.service_description}</p>
+                        <div key={b.id} className="rounded-2xl bg-hero-foreground/5 p-3">
+                          <p className="text-sm font-semibold text-hero-foreground">{b.profiles?.full_name || "Client"}</p>
+                          <p className="truncate text-xs text-hero-foreground/60">{b.service_description}</p>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="rounded-3xl border bg-card p-6">
+                <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6">
                   <div className="mb-4 flex items-center justify-between">
                     <div>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-success">
                         <CheckCircle className="h-3 w-3" /> Confirmed
                       </span>
-                      <h3 className="mt-2 font-bold text-card-foreground">Upcoming jobs ({confirmedBookings.length})</h3>
+                      <h3 className="mt-2 font-bold text-hero-foreground">Upcoming jobs ({confirmedBookings.length})</h3>
                     </div>
                   </div>
                   {confirmedBookings.length === 0 ? (
-                    <div className="rounded-2xl bg-muted/40 p-6 text-center">
-                      <p className="text-sm text-muted-foreground">No upcoming confirmed jobs.</p>
+                    <div className="rounded-2xl bg-hero-foreground/5 p-6 text-center">
+                      <p className="text-sm text-hero-foreground/60">No upcoming confirmed jobs.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {confirmedBookings.slice(0, 3).map((b: any) => (
-                        <div key={b.id} className="rounded-2xl bg-muted/40 p-3">
-                          <p className="text-sm font-semibold text-card-foreground">{b.profiles?.full_name || "Client"}</p>
-                          <p className="text-xs text-muted-foreground">{new Date(b.booking_date).toLocaleDateString()} · {b.booking_time}</p>
+                        <div key={b.id} className="rounded-2xl bg-hero-foreground/5 p-3">
+                          <p className="text-sm font-semibold text-hero-foreground">{b.profiles?.full_name || "Client"}</p>
+                          <p className="text-xs text-hero-foreground/60">{new Date(b.booking_date).toLocaleDateString()} · {b.booking_time}</p>
                         </div>
                       ))}
                     </div>
