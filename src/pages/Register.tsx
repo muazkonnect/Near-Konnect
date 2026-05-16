@@ -13,6 +13,8 @@ import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
 import FaceVerification from "@/components/FaceVerification";
 import PhoneField from "@/components/PhoneField";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import type { Coords } from "@/lib/geolocation";
 import { useDetectedCountry } from "@/hooks/useDetectedCountry";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
