@@ -1,34 +1,50 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Search, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles, Compass } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import {
+  Search,
+  MapPin,
+  Navigation,
+  X,
+  Home as HomeIcon,
+  Car,
+  ShoppingBag,
+  Briefcase,
+  HeartPulse,
+  Sparkles,
+  Compass,
+  Star,
+  ArrowRight,
+  Zap,
+  ShieldCheck,
+  Clock3,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance } from "@/lib/geolocation";
 import AppLayout from "@/components/AppLayout";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
-import { useFeaturedWorkerIds } from "@/hooks/useSponsored";
+import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
+import NativeAdCard from "@/components/NativeAdCard";
 import { useCategories } from "@/hooks/useCategories";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
+import { useWorkers } from "@/hooks/useWorkers";
+import logoImg from "@/assets/logo.svg";
+import NotificationBell from "@/components/NotificationBell";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
-const MAX_RADIUS_KM = 20;
-
-import { useWorkers } from "@/hooks/useWorkers";
 
 const Discover = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [sort, setSort] = useState<SortKey>("distance");
-  const [priceBand, setPriceBand] = useState<"all" | "budget" | "mid" | "premium">("all");
+  const [priceBand] = useState<"all" | "budget" | "mid" | "premium">("all");
   const [minRating, setMinRating] = useState(0);
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
@@ -37,14 +53,12 @@ const Discover = () => {
   const CATEGORIES_STEP = 6;
   const [visibleCategoryCount, setVisibleCategoryCount] = useState(CATEGORIES_INITIAL);
 
-  // Sync search input when URL param changes (e.g. arriving from Home with ?search=...)
   useEffect(() => {
     const urlSearch = searchParams.get("search") || "";
     setSearch(urlSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("search")]);
 
-  // Reflect typed search into the URL (debounced) so it's shareable and consistent
   useEffect(() => {
     const t = setTimeout(() => {
       const next = new URLSearchParams(searchParams);
@@ -62,12 +76,13 @@ const Discover = () => {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
-  
+
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(10 as any);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
+  const bannerAds = useNativeAds("home_banner", userCoords);
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
@@ -89,11 +104,7 @@ const Discover = () => {
   });
 
   const { categories, mainCategories, getSubCategories } = useCategories();
-
-  const categoriesToUse = useMemo(() => {
-    return mainCategories.map(c => c.name);
-  }, [mainCategories]);
-
+  const categoriesToUse = useMemo(() => mainCategories.map(c => c.name), [mainCategories]);
   const subCategoriesToUse = useMemo(() => {
     if (!expandedMainCategory) return [];
     return getSubCategories(expandedMainCategory).map(c => c.name);
@@ -112,29 +123,18 @@ const Discover = () => {
   const ownWorkerUserId = user?.id || null;
 
   useEffect(() => {
-    if (selectedMainCategory) {
-      setExpandedMainCategory(selectedMainCategory);
-    }
+    if (selectedMainCategory) setExpandedMainCategory(selectedMainCategory);
   }, [selectedMainCategory]);
 
   const filtered = useMemo(() => {
     let list = [...workersList];
-    // Exclude the current user's own worker profile from the list
-    if (ownWorkerUserId) {
-      list = list.filter((w) => w.userId !== ownWorkerUserId);
-    }
-    // Admins are never treated as workers — hide them from the explore list
-    if (adminUserIds.size > 0) {
-      list = list.filter((w) => !adminUserIds.has(w.userId));
-    }
+    if (ownWorkerUserId) list = list.filter((w) => w.userId !== ownWorkerUserId);
+    if (adminUserIds.size > 0) list = list.filter((w) => !adminUserIds.has(w.userId));
     if (selectedMainCategory && selectedSubCategory) {
-      // If both are selected, we want strict matching for both (hierarchical)
       list = list.filter(w => w.mainCategory === selectedMainCategory && w.subCategory === selectedSubCategory);
     } else if (selectedMainCategory) {
-      // If only main category is selected, show workers matching it in EITHER field
       list = list.filter(w => w.mainCategory === selectedMainCategory || w.subCategory === selectedMainCategory);
     } else if (selectedSubCategory) {
-      // If only sub category is selected, show workers matching it in EITHER field
       list = list.filter(w => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search) {
@@ -150,7 +150,6 @@ const Discover = () => {
       });
     }
     if (userCoords) {
-      // Keep all workers; just sort known-distance ones first
       list.sort((a, b) => {
         const aHas = a.distance > 0 ? 1 : 0;
         const bHas = b.distance > 0 ? 1 : 0;
@@ -163,7 +162,6 @@ const Discover = () => {
         .filter((w) => nearbyIds[w.id] !== undefined)
         .map((w) => ({ ...w, matchedDistanceMeters: nearbyIds[w.id] }));
     } else if (radiusKm && userCoords) {
-      // Fallback manual filtering if RPC fails or is still loading
       list = list.filter((w) => w.distance <= (radiusKm as number));
     }
     list.sort((a, b) => {
@@ -175,7 +173,32 @@ const Discover = () => {
     return list;
   }, [workersList, selectedMainCategory, selectedSubCategory, search, sort, ownWorkerUserId, userCoords, radiusKm, nearbyIds, adminUserIds]);
 
+  const filteredWithAdvanced = filtered.filter((w) => {
+    if (minRating > 0 && w.rating < minRating) return false;
+    if (priceBand === "budget") return w.experience <= 2;
+    if (priceBand === "mid") return w.experience > 2 && w.experience <= 6;
+    if (priceBand === "premium") return w.experience > 6;
+    return true;
+  });
 
+  const sorted = useMemo(() => [...filteredWithAdvanced].sort((a, b) => {
+    const aF = featuredIds.has(a.id) ? 1 : 0;
+    const bF = featuredIds.has(b.id) ? 1 : 0;
+    if (aF !== bF) return bF - aF;
+    if (sort === "distance") return a.distance - b.distance;
+    if (sort === "rating") return b.rating - a.rating;
+    if (sort === "experience") return b.experience - a.experience;
+    return a.experience - b.experience;
+  }), [filteredWithAdvanced, featuredIds, sort]);
+
+  const featuredWorkers = useMemo(
+    () => sorted.filter((w) => featuredIds.has(w.id)).slice(0, 6),
+    [sorted, featuredIds]
+  );
+  const allOthers = useMemo(
+    () => sorted.filter((w) => !featuredIds.has(w.id)),
+    [sorted, featuredIds]
+  );
 
   const toggleMainCategory = (mainCategory: string) => {
     const next = new URLSearchParams(searchParams);
@@ -193,11 +216,8 @@ const Discover = () => {
 
   const toggleSubCategory = (subCategory: string) => {
     const next = new URLSearchParams(searchParams);
-    if (selectedSubCategory === subCategory) {
-      next.delete("sub_category");
-    } else {
-      next.set("sub_category", subCategory);
-    }
+    if (selectedSubCategory === subCategory) next.delete("sub_category");
+    else next.set("sub_category", subCategory);
     setSearchParams(next);
   };
 
@@ -208,93 +228,157 @@ const Discover = () => {
     price: "Price",
   };
 
-  const filteredWithAdvanced = filtered.filter((w) => {
-    if (minRating > 0 && w.rating < minRating) return false;
-    if (priceBand === "budget") return w.experience <= 2;
-    if (priceBand === "mid") return w.experience > 2 && w.experience <= 6;
-    if (priceBand === "premium") return w.experience > 6;
-    return true;
-  });
-
-  const sorted = [...filteredWithAdvanced].sort((a, b) => {
-    const aF = featuredIds.has(a.id) ? 1 : 0;
-    const bF = featuredIds.has(b.id) ? 1 : 0;
-    if (aF !== bF) return bF - aF;
-    if (sort === "distance") return a.distance - b.distance;
-    if (sort === "rating") return b.rating - a.rating;
-    if (sort === "experience") return b.experience - a.experience;
-    return a.experience - b.experience;
-  });
-
   return (
-    <AppLayout title="Explore" subtitle="Discover trusted services nearby with smart filters and map/list browsing.">
-      <div className="space-y-5">
-        <div className="rounded-3xl bg-card p-4 shadow-premium md:-mt-12">
-          <div className="mb-3 flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" />
+    <AppLayout hideMobileHeader>
+      <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground">
+        {/* BRAND BAR */}
+        <div className="sticky top-0 z-40 flex items-center justify-between border-b border-white/5 bg-hero/80 px-5 py-3 backdrop-blur-md md:hidden">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+          </Link>
+          {user && <NotificationBell />}
+        </div>
+
+        <div className="relative px-5 pt-5">
+          <div aria-hidden className="pointer-events-none absolute -right-16 -top-10 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+          <div className="relative">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted ring-1 ring-white/10">
+              <Compass className="h-3 w-3 text-primary" /> Explore
+            </span>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+              Find trusted services <span className="text-primary">near you</span>
+            </h1>
+            <p className="mt-1 text-xs text-hero-muted">
+              Search, filter, and view providers. Login is only required to contact a worker.
+            </p>
+          </div>
+
+          {/* Location chip */}
+          <div className="relative mt-4 flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs text-hero-muted ring-1 ring-white/10">
+            <MapPin className="h-3.5 w-3.5 text-primary" />
             {locationStatus === "denied" ? (
-              <span>Please enable location to continue</span>
+              <span>Enable location for nearby results</span>
             ) : userCoords ? (
-              <span className="truncate">Using current location ({userCoords.latitude.toFixed(2)}, {userCoords.longitude.toFixed(2)})</span>
+              <span className="truncate">Using ({userCoords.latitude.toFixed(2)}, {userCoords.longitude.toFixed(2)})</span>
             ) : (
               <span>Detecting current location...</span>
             )}
-            <Button variant="ghost" size="sm" onClick={refreshLocation} className="ml-auto h-6 gap-1 px-2 text-[11px]">
+            <Button variant="ghost" size="sm" onClick={refreshLocation} className="ml-auto h-6 gap-1 px-2 text-[11px] text-hero-foreground hover:bg-white/10">
               <Navigation className="h-3 w-3" /> Update
             </Button>
           </div>
 
-          <div className="mb-3 flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Find services near you..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 rounded-full border-none bg-muted pl-11" />
-            </div>
+          {/* Search */}
+          <div className="relative mt-3">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
+            <Input
+              placeholder="Search for professional services..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-12 rounded-full border-white/10 bg-white/10 pl-11 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-primary/40"
+            />
           </div>
 
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-            {(["distance", "rating", "experience"] as SortKey[]).map((s) => (
-              <Button key={s} variant={sort === s ? "default" : "outline"} size="sm" onClick={() => setSort(s)} className="shrink-0">
-                {sortLabels[s]}
-              </Button>
-            ))}
-            <div className="mx-1 h-8 w-px bg-white/10" />
-            {([1, 2, 5, 10, 20] as number[]).map((r) => (
-              <Button
-                key={r}
-                variant={radiusKm === r ? "default" : "outline"}
-                size="sm"
-                onClick={() => setRadiusKm(r as any)}
-                className="shrink-0"
-              >
-                {r}km
-              </Button>
-            ))}
-            <Button
-              variant={radiusKm === null ? "default" : "outline"}
-              size="sm"
+          {/* Quick filter chips */}
+          <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {(["distance", "rating", "experience"] as SortKey[]).map((s) => {
+              const active = sort === s;
+              return (
+                <button
+                  key={s}
+                  onClick={() => setSort(s)}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+                    active
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+                  }`}
+                >
+                  {sortLabels[s]}
+                </button>
+              );
+            })}
+            <div className="mx-1 h-7 w-px self-center bg-white/10" />
+            {([1, 2, 3, 5, 10] as number[]).map((r) => {
+              const active = radiusKm === r;
+              return (
+                <button
+                  key={r}
+                  onClick={() => setRadiusKm(radiusKm === r ? null : (r as any))}
+                  disabled={!userCoords}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition disabled:opacity-40 ${
+                    active
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+                  }`}
+                >
+                  {r} km
+                </button>
+              );
+            })}
+            <button
               onClick={() => setRadiusKm(null)}
-              className="shrink-0"
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+                radiusKm === null
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+              }`}
             >
-              Any distance
-            </Button>
+              Any
+            </button>
+          </div>
+
+          {/* Rating chips */}
+          <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {([0, 3, 4, 4.5] as const).map((rating) => {
+              const active = minRating === rating;
+              return (
+                <button
+                  key={rating}
+                  onClick={() => setMinRating(rating)}
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${
+                    active
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+                  }`}
+                >
+                  <Star className="h-3 w-3 fill-current" /> {rating === 0 ? "All" : `${rating}+`}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-3xl bg-hero p-5 text-hero-foreground md:p-6">
-          <div aria-hidden className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
-          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{
-            backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-          }} />
+        {/* FEATURED ADS marquee */}
+        {bannerAds.length > 0 && (
+          <section className="mt-5">
+            <div className="mb-2 flex items-center justify-between px-5">
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-hero-muted">
+                Sponsored Nearby
+              </h3>
+              <span className="inline-flex items-center gap-1 text-[10px] text-primary"><Zap className="h-3 w-3" /> Live</span>
+            </div>
+            <div className="overflow-hidden">
+              <div className="flex animate-[ads-slide_28s_linear_infinite] gap-4 px-5 pb-3">
+                {[...bannerAds, ...bannerAds].map((ad, i) => (
+                  <div key={`${ad.id}-${i}`} className="w-[300px] shrink-0">
+                    <NativeAdCard ad={ad} variant="banner" viewerCoords={userCoords} />
+                  </div>
+                ))}
+              </div>
+              <style>{`@keyframes ads-slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+            </div>
+          </section>
+        )}
 
-          <div className="relative space-y-4">
-            <div className="flex items-center justify-between gap-2">
+        {/* CATEGORIES */}
+        <section className="relative mt-6 px-5">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+            <div className="mb-3 flex items-center justify-between gap-2">
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
                   <Sparkles className="h-3 w-3 text-primary" /> Categories
                 </span>
-                <p className="mt-2 text-lg font-bold tracking-tight">Browse by category</p>
-                <p className="text-xs text-hero-muted">Pick a category to narrow your search</p>
+                <p className="mt-2 text-base font-bold tracking-tight">Browse by category</p>
               </div>
               {(selectedMainCategory || selectedSubCategory) && (
                 <Button
@@ -317,11 +401,8 @@ const Discover = () => {
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
               {categoriesToUse.slice(0, visibleCategoryCount).map((mainCategory) => {
                 const isSelected = selectedMainCategory === mainCategory;
-                
-                // Try to find matching icon or emoji
                 const dbCat = categories.find(c => c.name === mainCategory);
                 const emoji = dbCat?.icon;
-                
                 const Icon = ({
                   "Home & Local Services": HomeIcon,
                   "Automotive & Transport": Car,
@@ -347,11 +428,7 @@ const Discover = () => {
                         isSelected ? "bg-primary-foreground/15 text-primary-foreground" : "bg-white/10 text-primary group-hover:bg-white/15"
                       }`}
                     >
-                      {emoji ? (
-                        <span className="text-base">{emoji}</span>
-                      ) : (
-                        <Icon className="h-4 w-4" />
-                      )}
+                      {emoji ? <span className="text-base">{emoji}</span> : <Icon className="h-4 w-4" />}
                     </span>
                     <span className="text-xs font-semibold leading-tight">{mainCategory}</span>
                   </button>
@@ -360,7 +437,7 @@ const Discover = () => {
             </div>
 
             {categoriesToUse.length > CATEGORIES_INITIAL && (
-              <div className="flex justify-center">
+              <div className="mt-3 flex justify-center">
                 {visibleCategoryCount < categoriesToUse.length ? (
                   <Button
                     type="button"
@@ -385,8 +462,8 @@ const Discover = () => {
               </div>
             )}
 
-            {expandedMainCategory && (
-              <div className="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+            {expandedMainCategory && subCategoriesToUse.length > 0 && (
+              <div className="mt-3 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-hero-muted">
                   {expandedMainCategory}
                 </p>
@@ -398,7 +475,7 @@ const Discover = () => {
                         key={subCategory}
                         type="button"
                         onClick={() => toggleSubCategory(subCategory)}
-                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors text-inherit bg-inherit ${
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                           active
                             ? "bg-primary text-primary-foreground"
                             : "bg-white/10 text-hero-foreground hover:bg-white/15"
@@ -412,58 +489,71 @@ const Discover = () => {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
-          <span className="shrink-0 text-xs font-medium text-muted-foreground">Radius:</span>
-          {([1, 2, 3] as const).map((km) => (
-            <Button
-              key={km}
-              size="sm"
-              variant={radiusKm === km ? "default" : "outline"}
-              onClick={() => setRadiusKm(radiusKm === km ? null : km)}
-              disabled={!userCoords}
-              className="shrink-0 rounded-full"
-            >
-              {km} km
-            </Button>
-          ))}
-          {radiusKm && (
-            <Button size="sm" variant="ghost" onClick={() => setRadiusKm(null)} className="shrink-0 rounded-full text-xs">
-              Clear
-            </Button>
+        {/* FEATURED PROFESSIONALS */}
+        {featuredWorkers.length > 0 && (
+          <section className="mt-6 px-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-base font-bold">
+                <Star className="h-4 w-4 fill-primary text-primary" /> Featured Professionals
+              </h2>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-primary">Premium</span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {featuredWorkers.map((w, i) => (
+                <div
+                  key={`feat-${w.id}-${i}`}
+                  className="rounded-2xl bg-gradient-to-br from-primary/10 to-transparent p-[1px]"
+                >
+                  <div className="rounded-2xl bg-hero/60">
+                    <WorkerCard worker={w} index={i} sponsored />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ALL PROFESSIONALS */}
+        <section className="mt-6 px-5 pb-10">
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-base font-bold">All Professionals</h2>
+            <span className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-hero-muted">
+              {sorted.length} found
+            </span>
+          </div>
+
+          {workersLoading ? (
+            <div className="space-y-3">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-20 animate-pulse rounded-2xl border border-white/10 bg-white/5" />
+              ))}
+            </div>
+          ) : allOthers.length === 0 && featuredWorkers.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
+              <ShieldCheck className="mx-auto mb-2 h-6 w-6 text-primary" />
+              <p className="font-semibold">No services match this filter set</p>
+              <p className="mt-1 text-xs text-hero-muted">Try widening distance, rating, or category filters.</p>
+            </div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {allOthers.map((w, i) => (
+                <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={false} />
+              ))}
+            </div>
           )}
-        </div>
 
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-          {([0, 3, 4, 4.5] as const).map((rating) => (
-            <Button
-              key={rating}
-              size="sm"
-              variant={minRating === rating ? "default" : "outline"}
-              onClick={() => setMinRating(rating)}
-              className="shrink-0 rounded-full"
-            >
-              {rating === 0 ? "All ratings" : `${rating}+ stars`}
-            </Button>
-          ))}
-        </div>
-
-        <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
-        {(
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {sorted.map((w, i) => (
-              <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={featuredIds.has(w.id)} />
-            ))}
-          </div>
-        )}
-
-        {sorted.length === 0 && (
-          <div className="rounded-2xl border bg-muted/30 p-10 text-center">
-            <p className="font-semibold text-foreground">No services match this filter set</p>
-            <p className="text-sm text-muted-foreground">Try widening distance, rating, or category filters.</p>
-          </div>
-        )}
+          {!user && sorted.length > 0 && (
+            <div className="mt-6 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+              <Clock3 className="h-5 w-5 shrink-0 text-primary" />
+              <p className="text-xs text-hero-muted">
+                Browsing as guest. <Link to="/login" className="font-semibold text-primary hover:underline">Log in</Link> only when you want to contact a provider.
+                <ArrowRight className="ml-1 inline h-3 w-3 text-primary" />
+              </p>
+            </div>
+          )}
+        </section>
       </div>
     </AppLayout>
   );
