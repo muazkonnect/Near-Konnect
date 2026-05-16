@@ -181,6 +181,38 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
             <Camera className="h-10 w-10 opacity-40" />
           </div>
         )}
+
+        {/* Face guideline overlay */}
+        {streaming && !capturedUrl && (
+          <div className="pointer-events-none absolute inset-0">
+            {/* Dim outside the oval using SVG mask */}
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <mask id="faceMask">
+                  <rect width="100" height="100" fill="white" />
+                  <ellipse cx="50" cy="50" rx="32" ry="42" fill="black" />
+                </mask>
+              </defs>
+              <rect width="100" height="100" fill="rgba(0,0,0,0.45)" mask="url(#faceMask)" />
+              <ellipse
+                cx="50" cy="50" rx="32" ry="42"
+                fill="none" stroke="#d9ff7a" strokeWidth="0.6"
+                strokeDasharray="2 2" vectorEffect="non-scaling-stroke"
+              />
+              {/* Corner ticks */}
+              <g stroke="#d9ff7a" strokeWidth="0.8" vectorEffect="non-scaling-stroke" fill="none">
+                <path d="M6 6 H14 M6 6 V14" />
+                <path d="M94 6 H86 M94 6 V14" />
+                <path d="M6 94 H14 M6 94 V86" />
+                <path d="M94 94 H86 M94 94 V86" />
+              </g>
+            </svg>
+            <div className="absolute inset-x-0 bottom-2 text-center text-[10px] font-medium text-[#d9ff7a] drop-shadow">
+              Align your face inside the oval
+            </div>
+          </div>
+        )}
+
         {verifying && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#d9ff7a] border-t-transparent" />
@@ -188,6 +220,16 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
           </div>
         )}
       </div>
+
+      {/* Capture tips */}
+      {!capturedUrl && (
+        <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-[#c4c7c7]">
+          <li>• Good lighting on face</li>
+          <li>• Look straight at camera</li>
+          <li>• Remove sunglasses/mask</li>
+          <li>• Keep face centered</li>
+        </ul>
+      )}
 
       {error && (
         <div className="mt-3 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-300">
