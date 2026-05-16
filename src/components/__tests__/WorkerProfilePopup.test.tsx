@@ -39,7 +39,7 @@ const getHeading = () =>
 describe("WorkerProfilePopup premium crown alignment", () => {
   it("renders crown next to name as direct sibling in a flex row", () => {
     renderPopup();
-    const heading = screen.getByRole("heading", { name: /Elena Rodriguez/i });
+    const heading = getHeading();
     const crown = screen.getByLabelText(/Premium Worker/i);
     const row = heading.parentElement!;
     expect(row).toBe(crown.parentElement);
