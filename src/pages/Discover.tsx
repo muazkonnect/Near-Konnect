@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
-import type { Worker } from "@/types/worker";
+import type { Worker } from "@/data/mockData";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
