@@ -33,6 +33,9 @@ const renderPopup = () =>
 const VIEWPORTS = [320, 375, 390, 414, 768, 1024, 1440];
 const FONT_SCALES = [12, 16, 20, 24];
 
+const getHeading = () =>
+  screen.getAllByRole("heading", { name: /Elena Rodriguez/i }).find((h) => h.tagName === "H2")!;
+
 describe("WorkerProfilePopup premium crown alignment", () => {
   it("renders crown next to name as direct sibling in a flex row", () => {
     renderPopup();
