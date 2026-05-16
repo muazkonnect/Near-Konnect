@@ -128,6 +128,13 @@ const Register = () => {
         options: { data: metadata },
       });
 
+      // Upload verified face as permanent avatar (best-effort, non-blocking)
+      if (data?.user && faceDataUrl) {
+        supabase.functions
+          .invoke("set-verified-avatar", { body: { userId: data.user.id, imageBase64: faceDataUrl } })
+          .catch((e) => console.error("avatar upload failed", e));
+      }
+
       setLoading(false);
       if (error) {
         const msg = getAuthErrorMessage(error);
