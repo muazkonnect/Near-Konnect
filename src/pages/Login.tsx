@@ -61,9 +61,7 @@ const Login = () => {
       <main className="relative z-10 mx-auto flex w-full max-w-md flex-grow flex-col items-center justify-center px-5 py-20 md:px-16">
         {/* Brand */}
         <div className="mb-12 flex w-full flex-col items-center text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-[#444748]/20 bg-[#2a2a2a] shadow-xl">
-            <img src={logoImg} alt="Near Konnect" className="h-10 w-10 object-contain" />
-          </div>
+          <img src={logoImg} alt="Near Konnect" className="mb-6 h-12 object-contain" />
           <h1 className="text-[32px] font-semibold leading-10 tracking-tight text-[#e5e2e1]">Welcome Back</h1>
           <p className="mt-1 text-base text-[#c4c7c7]">Access your premium hyperlocal community</p>
         </div>
