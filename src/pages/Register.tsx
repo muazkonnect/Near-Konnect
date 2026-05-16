@@ -160,15 +160,15 @@ const Register = () => {
   };
 
   // Shared field styles (template look)
-  const fieldWrap = "group rounded-lg border border-[#444748]/20 bg-[#1c1b1b] focus-within:border-[#d9ff7a] focus-within:shadow-[0_0_15px_-3px_rgba(217,255,122,0.3)] transition-all";
-  const fieldInput = "w-full bg-transparent border-none outline-none focus:ring-0 py-3 px-3 text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 text-base";
-  const labelCls = "block text-[12px] font-semibold uppercase tracking-wider text-[#c4c7c7] px-1 mb-1.5";
+  const fieldWrap = "group rounded-lg border border-hero-foreground/20 bg-hero-foreground/5 focus-within:border-primary focus-within:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.3)] transition-all";
+  const fieldInput = "w-full bg-transparent border-none outline-none focus:ring-0 py-3 px-3 text-hero-foreground placeholder:text-hero-muted/40 text-base";
+  const labelCls = "block text-[12px] font-semibold uppercase tracking-wider text-hero-muted px-1 mb-1.5";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
+    <div className="relative min-h-screen overflow-x-hidden bg-hero text-hero-foreground">
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -right-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-[#d9ff7a]/5 blur-[120px]" />
-        <div className="absolute -bottom-[10%] -left-[10%] h-[30%] w-[30%] rounded-full bg-[#d9ff7a]/5 blur-[100px]" />
+        <div className="absolute -right-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute -bottom-[10%] -left-[10%] h-[30%] w-[30%] rounded-full bg-primary/5 blur-[100px]" />
       </div>
 
       <main className="mx-auto flex w-full max-w-md flex-col items-center px-5 py-10">
@@ -179,21 +179,21 @@ const Register = () => {
             <h2 className="text-[28px] font-semibold leading-9 tracking-tight">
               {role === "worker" ? "Join as a Pro" : "Create Account"}
             </h2>
-            <p className="text-base text-[#c4c7c7]">
+            <p className="text-base text-hero-muted">
               {role === "worker"
                 ? "Complete your professional profile to start"
                 : "Join the community as a Client today."}
             </p>
           </header>
 
-          <div className="grid grid-cols-2 gap-1 rounded-full border border-[#444748]/20 bg-[#1c1b1b] p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-full border border-hero-foreground/20 bg-hero-foreground/5 p-1">
             {(["customer", "worker"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
                 className={`rounded-full py-2 text-xs font-semibold uppercase tracking-wider transition ${
-                  role === r ? "bg-[#d9ff7a] text-[#151f00] shadow-sm" : "text-[#c4c7c7]"
+                  role === r ? "bg-primary text-primary-foreground shadow-sm" : "text-hero-muted"
                 }`}
               >
                 {r === "customer" ? "Client" : "Service Pro"}
@@ -201,7 +201,7 @@ const Register = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md">
+          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/80 p-5 backdrop-blur-md">
             {/* Common fields */}
             <div>
               <label className={labelCls}>Full Name</label>
@@ -228,7 +228,7 @@ const Register = () => {
               <label className={labelCls}>Password</label>
               <div className={`${fieldWrap} flex items-center pr-3`}>
                 <input type={showPw ? "text" : "password"} className={fieldInput} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="text-[#c4c7c7] hover:text-[#e5e2e1]" aria-label="Toggle password">
+                <button type="button" onClick={() => setShowPw(!showPw)} className="text-hero-muted hover:text-hero-foreground" aria-label="Toggle password">
                   {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
@@ -237,7 +237,7 @@ const Register = () => {
 
             {/* Worker-only fields */}
             {role === "worker" && (
-              <div className="space-y-4 border-t border-[#444748]/20 pt-4">
+              <div className="space-y-4 border-t border-hero-foreground/20 pt-4">
                 <div>
                   <label className={labelCls}>Main Category</label>
                   <div className={fieldWrap}>
@@ -247,9 +247,9 @@ const Register = () => {
                       className={`${fieldInput} appearance-none cursor-pointer`}
                       required
                     >
-                      <option value="" className="bg-[#1c1b1b]">Select Primary Service</option>
+                      <option value="" className="bg-hero-foreground/5">Select Primary Service</option>
                       {mainCategories.map((c) => (
-                        <option key={c.id} value={c.name} className="bg-[#1c1b1b]">{c.name}</option>
+                        <option key={c.id} value={c.name} className="bg-hero-foreground/5">{c.name}</option>
                       ))}
                     </select>
                   </div>
@@ -265,9 +265,9 @@ const Register = () => {
                       className={`${fieldInput} appearance-none cursor-pointer disabled:opacity-50`}
                       required
                     >
-                      <option value="" className="bg-[#1c1b1b]">Select Specialization</option>
+                      <option value="" className="bg-hero-foreground/5">Select Specialization</option>
                       {subCategories.map((s) => (
-                        <option key={s.id} value={s.name} className="bg-[#1c1b1b]">{s.name}</option>
+                        <option key={s.id} value={s.name} className="bg-hero-foreground/5">{s.name}</option>
                       ))}
                     </select>
                   </div>
@@ -285,8 +285,8 @@ const Register = () => {
                           onClick={() => toggleTag(tag)}
                           className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             active
-                              ? "border-[#d9ff7a] bg-[#d9ff7a]/10 text-[#d9ff7a]"
-                              : "border-[#444748]/30 bg-[#20201f] text-[#c4c7c7] hover:border-[#d9ff7a] hover:text-[#d9ff7a]"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-hero-foreground/30 bg-hero-foreground/5 text-hero-muted hover:border-primary hover:text-primary"
                           }`}
                         >
                           {active ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />} {tag}
@@ -300,7 +300,7 @@ const Register = () => {
                           key={tag}
                           type="button"
                           onClick={() => toggleTag(tag)}
-                          className="flex items-center gap-1 rounded-full border border-[#d9ff7a] bg-[#d9ff7a]/10 px-3 py-1.5 text-xs font-medium text-[#d9ff7a]"
+                          className="flex items-center gap-1 rounded-full border border-primary bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
                         >
                           <Check className="h-3.5 w-3.5" /> {tag}
                         </button>
@@ -312,11 +312,11 @@ const Register = () => {
                       onChange={(e) => setCustomTag(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
                       placeholder="Add custom expertise…"
-                      className="flex-1 rounded-full border border-[#444748]/30 bg-[#1c1b1b] px-3 py-1.5 text-xs text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 outline-none focus:border-[#d9ff7a]"
+                      className="flex-1 rounded-full border border-hero-foreground/30 bg-hero-foreground/5 px-3 py-1.5 text-xs text-hero-foreground placeholder:text-hero-muted/40 outline-none focus:border-primary"
                     />
-                    <button type="button" onClick={addCustomTag} className="rounded-full border border-[#444748]/30 px-3 py-1.5 text-xs text-[#c4c7c7] hover:text-[#d9ff7a]">Add</button>
+                    <button type="button" onClick={addCustomTag} className="rounded-full border border-hero-foreground/30 px-3 py-1.5 text-xs text-hero-muted hover:text-primary">Add</button>
                   </div>
-                  <p className="mt-1 px-1 text-[11px] italic text-[#c4c7c7]/60">Select all that apply to your professional license.</p>
+                  <p className="mt-1 px-1 text-[11px] italic text-hero-muted/60">Select all that apply to your professional license.</p>
                 </div>
 
                 <div>
@@ -361,20 +361,20 @@ const Register = () => {
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-[#444748]/40 bg-[#1c1b1b] text-[#d9ff7a] focus:ring-[#d9ff7a]"
+                className="mt-0.5 h-4 w-4 rounded border-hero-foreground/40 bg-hero-foreground/5 text-primary focus:ring-primary"
               />
-              <span className="text-xs text-[#c4c7c7]">
+              <span className="text-xs text-hero-muted">
                 I agree to the{" "}
-                <Link to="/terms" target="_blank" className="text-[#d9ff7a] underline">Terms of Service</Link>{" "}
+                <Link to="/terms" target="_blank" className="text-primary underline">Terms of Service</Link>{" "}
                 and{" "}
-                <Link to="/privacy" target="_blank" className="text-[#d9ff7a] underline">Privacy Policy</Link>.
+                <Link to="/privacy" target="_blank" className="text-primary underline">Privacy Policy</Link>.
               </span>
             </label>
 
             <button
               type="submit"
               disabled={loading || !agreedToTerms}
-              className="mt-2 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-[#d9ff7a] text-[16px] font-semibold text-[#151f00] shadow-[0_4px_20px_rgba(217,255,122,0.2)] transition active:scale-[0.98] disabled:opacity-60"
+              className="mt-2 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary text-[16px] font-semibold text-primary-foreground shadow-[0_4px_20px_hsl(var(--primary)/0.2)] transition active:scale-[0.98] disabled:opacity-60"
             >
               {loading ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -382,9 +382,9 @@ const Register = () => {
             </button>
           </form>
 
-          <p className="pb-6 text-center text-sm text-[#c4c7c7]">
+          <p className="pb-6 text-center text-sm text-hero-muted">
             Already have an account?{" "}
-            <Link to="/login" className="font-bold text-[#d9ff7a] hover:underline">Log In</Link>
+            <Link to="/login" className="font-bold text-primary hover:underline">Log In</Link>
           </p>
         </div>
       </main>

@@ -151,14 +151,14 @@ const Messages = () => {
 
   return (
     <AppLayout hideMobileHeader>
-      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
         {/* TOP APP BAR */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#444748]/20 bg-[#131313]/80 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-hero-foreground/20 bg-hero/80 px-6 backdrop-blur-md">
           <img src={logoImg} alt="Near Konnect" className="h-8 object-contain invert" />
           <button
             onClick={() => navigate("/notifications")}
             aria-label="Notifications"
-            className="rounded-full p-2 text-[#d9ff7a] hover:bg-[#2a2a2a]"
+            className="rounded-full p-2 text-primary hover:bg-hero-foreground/10"
           >
             <Bell className="h-5 w-5" />
           </button>
@@ -170,18 +170,18 @@ const Messages = () => {
           {/* SEARCH */}
           <section className="mb-8">
             <div className="relative mx-auto w-full max-w-2xl">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#c4c7c7]" />
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search conversations..."
-                className="h-14 w-full rounded-lg border-0 border-b border-[#444748]/30 bg-[#1c1b1b] pl-12 pr-4 text-[#e5e2e1] placeholder:text-[#c4c7c7] focus-visible:ring-0 focus-visible:border-[#d9ff7a]"
+                className="h-14 w-full rounded-lg border-0 border-b border-hero-foreground/30 bg-hero-foreground/5 pl-12 pr-4 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-0 focus-visible:border-primary"
               />
             </div>
           </section>
 
           {/* TABS */}
-          <div className="mb-8 flex gap-6 border-b border-[#444748]/20 px-2">
+          <div className="mb-8 flex gap-6 border-b border-hero-foreground/20 px-2">
             {([
               { k: "all", label: "All" },
               { k: "unread", label: "Unread" },
@@ -192,8 +192,8 @@ const Messages = () => {
                 onClick={() => setTab(k)}
                 className={`pb-2 px-1 text-sm font-medium tracking-wide transition-all ${
                   tab === k
-                    ? "text-[#d9ff7a] border-b-2 border-[#d9ff7a]"
-                    : "text-[#c4c7c7] hover:text-[#e5e2e1]"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-hero-muted hover:text-hero-foreground"
                 }`}
               >
                 {label}
@@ -203,45 +203,45 @@ const Messages = () => {
 
           {/* PENDING REVEALS */}
           {pendingRevealCount > 0 && (
-            <div className="mb-6 overflow-hidden rounded-xl border border-[#d9ff7a]/20 bg-[#d9ff7a]/5">
+            <div className="mb-6 overflow-hidden rounded-xl border border-primary/20 bg-primary/5">
               <button
                 type="button"
                 onClick={() => setPendingExpanded((v) => !v)}
                 className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#d9ff7a] text-[#151f00]">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
                     <Lock className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#e5e2e1]">
+                    <p className="text-sm font-semibold text-hero-foreground">
                       {pendingRevealCount} pending contact request{pendingRevealCount === 1 ? "" : "s"}
                     </p>
-                    <p className="text-xs text-[#c4c7c7]">Tap to review and respond.</p>
+                    <p className="text-xs text-hero-muted">Tap to review and respond.</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[#d9ff7a] px-2 text-xs font-bold text-[#151f00]">
+                  <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-primary px-2 text-xs font-bold text-primary-foreground">
                     {pendingRevealCount > 9 ? "9+" : pendingRevealCount}
                   </span>
-                  <ChevronDown className={`h-4 w-4 text-[#c4c7c7] transition-transform ${pendingExpanded ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 text-hero-muted transition-transform ${pendingExpanded ? "rotate-180" : ""}`} />
                 </div>
               </button>
               {pendingExpanded && (
-                <div className="border-t border-[#d9ff7a]/10 bg-[#131313]/60">
-                  <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-[#d9ff7a]/10">
-                    <Button size="sm" className="bg-[#d9ff7a] text-[#151f00] hover:bg-[#bff51f]" onClick={() => decideAll(true)} disabled={busyBulk}>
+                <div className="border-t border-primary/10 bg-hero/60">
+                  <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-primary/10">
+                    <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary" onClick={() => decideAll(true)} disabled={busyBulk}>
                       <Check className="h-3.5 w-3.5" /> Approve all
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => decideAll(false)} disabled={busyBulk}>
                       <X className="h-3.5 w-3.5" /> Decline all
                     </Button>
                   </div>
-                  <ul className="divide-y divide-[#444748]/20">
+                  <ul className="divide-y divide-hero-foreground/20">
                     {(pendingReveals as any[]).map((r) => (
                       <li key={r.id} className="flex items-center gap-3 px-4 py-3">
                         <Link to={`/chat/${r.client_user_id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#2a2a2a] text-xs font-bold text-[#d9ff7a]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-hero-foreground/10 text-xs font-bold text-primary">
                             {r.avatar ? (
                               <img src={r.avatar} alt={r.name} className="h-full w-full object-cover" />
                             ) : (
@@ -249,12 +249,12 @@ const Messages = () => {
                             )}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-[#e5e2e1] truncate">{r.name}</p>
-                            <p className="text-xs text-[#c4c7c7] truncate">{r.request_message || "Wants to view your contact"}</p>
+                            <p className="text-sm font-semibold text-hero-foreground truncate">{r.name}</p>
+                            <p className="text-xs text-hero-muted truncate">{r.request_message || "Wants to view your contact"}</p>
                           </div>
                         </Link>
                         <div className="flex shrink-0 gap-1.5">
-                          <Button size="icon" className="h-9 w-9 bg-[#d9ff7a] text-[#151f00] hover:bg-[#bff51f]" onClick={() => decideOne(r.id, true)} disabled={busyId === r.id}>
+                          <Button size="icon" className="h-9 w-9 bg-primary text-primary-foreground hover:bg-primary" onClick={() => decideOne(r.id, true)} disabled={busyId === r.id}>
                             <Check className="h-4 w-4" />
                           </Button>
                           <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => decideOne(r.id, false)} disabled={busyId === r.id}>
@@ -272,28 +272,28 @@ const Messages = () => {
           {/* CONVERSATIONS */}
           <section className="space-y-2">
             <div className="mb-3 flex items-center justify-between px-2">
-              <h2 className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#c4c7c7]">
+              <h2 className="text-[12px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
                 Recent Conversations
               </h2>
               {unreadCount > 0 && (
-                <span className="text-[12px] font-semibold text-[#d9ff7a]">{unreadCount} Unread</span>
+                <span className="text-[12px] font-semibold text-primary">{unreadCount} Unread</span>
               )}
             </div>
 
             {!user ? (
-              <div className="rounded-xl bg-[#1c1b1b] py-16 text-center">
-                <Lock className="mx-auto mb-2 h-9 w-9 text-[#c4c7c7]" />
-                <p className="font-semibold text-[#e5e2e1]">Log in to view your messages</p>
-                <p className="mt-1 text-sm text-[#c4c7c7]">You can browse the app freely. Sign in to chat.</p>
-                <Button className="mt-4 bg-[#d9ff7a] text-[#151f00] hover:bg-[#bff51f]" onClick={() => navigate("/login")}>
+              <div className="rounded-xl bg-hero-foreground/5 py-16 text-center">
+                <Lock className="mx-auto mb-2 h-9 w-9 text-hero-muted" />
+                <p className="font-semibold text-hero-foreground">Log in to view your messages</p>
+                <p className="mt-1 text-sm text-hero-muted">You can browse the app freely. Sign in to chat.</p>
+                <Button className="mt-4 bg-primary text-primary-foreground hover:bg-primary" onClick={() => navigate("/login")}>
                   Log in
                 </Button>
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div className="rounded-xl bg-[#1c1b1b] py-16 text-center">
-                <MessageSquare className="mx-auto mb-2 h-9 w-9 text-[#c4c7c7]" />
-                <p className="font-semibold text-[#e5e2e1]">No conversations yet</p>
-                <p className="text-sm text-[#c4c7c7]">Start by messaging a service from Explore.</p>
+              <div className="rounded-xl bg-hero-foreground/5 py-16 text-center">
+                <MessageSquare className="mx-auto mb-2 h-9 w-9 text-hero-muted" />
+                <p className="font-semibold text-hero-foreground">No conversations yet</p>
+                <p className="text-sm text-hero-muted">Start by messaging a service from Explore.</p>
               </div>
             ) : (
               filteredConversations.map((c: any) => {
@@ -303,41 +303,41 @@ const Messages = () => {
                   <Link
                     key={c.userId}
                     to={`/chat/${c.userId}`}
-                    className="group flex items-center gap-4 rounded-xl border border-transparent bg-[#1c1b1b] p-4 transition-all duration-300 hover:border-[#444748]/20 hover:bg-[#2a2a2a]"
+                    className="group flex items-center gap-4 rounded-xl border border-transparent bg-hero-foreground/5 p-4 transition-all duration-300 hover:border-hero-foreground/20 hover:bg-hero-foreground/10"
                   >
                     <div className="relative shrink-0">
-                      <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[#444748]/10">
+                      <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-hero-foreground/10">
                         {c.avatar ? (
                           <img src={c.avatar} alt={c.name} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-[#2a2a2a] text-base font-bold text-[#d9ff7a]">
+                          <div className="flex h-full w-full items-center justify-center bg-hero-foreground/10 text-base font-bold text-primary">
                             {initials}
                           </div>
                         )}
                       </div>
-                      <div className={`absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-[#131313] ${c.unread ? "bg-[#d9ff7a]" : "bg-[#444748]"}`} />
+                      <div className={`absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-hero ${c.unread ? "bg-primary" : "bg-hero-foreground/20"}`} />
                     </div>
                     <div className="min-w-0 flex-grow">
                       <div className="mb-1 flex items-baseline justify-between gap-2">
-                        <h3 className="truncate text-[18px] font-semibold text-[#e5e2e1]">{c.name}</h3>
-                        <span className="shrink-0 text-[12px] text-[#c4c7c7]">{formatTime(c.time)}</span>
+                        <h3 className="truncate text-[18px] font-semibold text-hero-foreground">{c.name}</h3>
+                        <span className="shrink-0 text-[12px] text-hero-muted">{formatTime(c.time)}</span>
                       </div>
                       {hasReveal && (
-                        <p className="mb-1 inline-flex items-center gap-1 text-[13px] font-medium text-[#d9ff7a]/80">
+                        <p className="mb-1 inline-flex items-center gap-1 text-[13px] font-medium text-primary/80">
                           <Lock className="h-3 w-3" /> Contact request
                         </p>
                       )}
-                      <p className={`truncate text-[15px] ${c.unread ? "font-semibold text-[#e5e2e1]" : "text-[#c4c7c7]"}`}>
+                      <p className={`truncate text-[15px] ${c.unread ? "font-semibold text-hero-foreground" : "text-hero-muted"}`}>
                         {c.lastMessage}
                       </p>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-2">
                       {c.unread ? (
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#d9ff7a] text-[10px] font-bold text-[#151f00]">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                           {typeof c.unread === "number" ? c.unread : 1}
                         </span>
                       ) : null}
-                      <ChevronRight className="h-4 w-4 text-[#c4c7c7] opacity-0 transition-opacity group-hover:opacity-100" />
+                      <ChevronRight className="h-4 w-4 text-hero-muted opacity-0 transition-opacity group-hover:opacity-100" />
                     </div>
                   </Link>
                 );
@@ -346,12 +346,12 @@ const Messages = () => {
           </section>
 
           {/* SAFETY NOTICE */}
-          <section className="mt-8 rounded-xl border border-[#d9ff7a]/10 bg-[#d9ff7a]/5 p-4">
+          <section className="mt-8 rounded-xl border border-primary/10 bg-primary/5 p-4">
             <div className="flex items-start gap-4">
-              <ShieldCheck className="h-5 w-5 shrink-0 text-[#d9ff7a]" />
+              <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
               <div>
-                <h4 className="mb-1 text-sm font-semibold text-[#e5e2e1]">Safe Communications</h4>
-                <p className="text-sm text-[#c4c7c7]">
+                <h4 className="mb-1 text-sm font-semibold text-hero-foreground">Safe Communications</h4>
+                <p className="text-sm text-hero-muted">
                   Near Konnect protects your privacy. Keep all payments and sensitive info within this chat to stay covered by our Konnect Guarantee.
                 </p>
               </div>
