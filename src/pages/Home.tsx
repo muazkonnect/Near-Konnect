@@ -113,7 +113,7 @@ const Home = () => {
         .eq("donor_status", "active")
         .limit(20);
       if (error) throw error;
-      const rows = (data || []) as DonorRow[];
+      const rows = ((data || []) as unknown) as DonorRow[];
       const ranked = rows
         .map((d) => {
           if (
