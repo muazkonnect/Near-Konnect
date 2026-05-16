@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
+import CurrentLocationChip from "@/components/CurrentLocationChip";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import WorkerCard from "@/components/WorkerCard";
@@ -190,7 +191,10 @@ const Home = () => {
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
           </Link>
-          {user && <NotificationBell />}
+          <div className="flex items-center gap-2">
+            <CurrentLocationChip />
+            {user && <NotificationBell />}
+          </div>
         </div>
 
         {/* HERO */}
