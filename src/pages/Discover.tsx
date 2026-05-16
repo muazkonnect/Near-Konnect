@@ -232,8 +232,8 @@ const Discover = () => {
 
 
 
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [availableOnly, setAvailableOnly] = useState(false);
+
+
 
   return (
     <AppLayout hideMobileHeader>
