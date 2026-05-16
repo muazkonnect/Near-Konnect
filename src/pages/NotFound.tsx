@@ -10,7 +10,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="relative min-h-[100dvh] bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
+    <div className="relative min-h-[100dvh] bg-background text-muted-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
       {/* Background visuals */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[800px] w-[800px] rounded-full bg-primary/5 blur-[120px]" />
@@ -47,7 +47,7 @@ const NotFound = () => {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               Signal Interrupted
             </span>
-            <h3 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            <h3 className="text-3xl font-semibold tracking-tight text-primary md:text-4xl">
               This coordinate doesn't exist
             </h3>
             <p className="text-base text-muted-foreground md:text-lg">
@@ -68,7 +68,7 @@ const NotFound = () => {
             </a>
             <a
               href="/discover"
-              className="flex items-center justify-center gap-2 rounded-xl border border-border/40 bg-transparent px-8 py-4 text-sm font-medium text-foreground backdrop-blur-sm transition-all hover:bg-muted/30 active:scale-95"
+              className="flex items-center justify-center gap-2 rounded-xl border border-border/40 bg-transparent px-8 py-4 text-sm font-medium text-muted-foreground backdrop-blur-sm transition-all hover:bg-muted/30 hover:text-primary active:scale-95"
             >
               <Compass className="h-4 w-4" />
               Search Nearby
