@@ -17,7 +17,9 @@ import {
   CalendarPlus,
   EyeOff,
   Crown,
+  BadgeCheck,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -182,24 +184,34 @@ const WorkerProfile = () => {
         <main className="mx-auto max-w-2xl px-5 pb-40 pt-6">
           {/* 1. Compact Header */}
           <section className="mb-6 flex flex-col items-center gap-3 text-center">
-            <div className="relative shrink-0">
-              <div className="h-[120px] w-[120px] overflow-hidden rounded-full border-2 border-primary shadow-[0_0_18px_-2px_hsl(var(--primary)/0.5)]">
-                {worker.profilePhoto ? (
-                  <img src={worker.profilePhoto} alt={worker.name} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="grid h-full w-full place-items-center bg-white/10 text-3xl font-bold text-primary">{initials}</div>
-                )}
-              </div>
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 rounded-full bg-primary opacity-20 blur transition duration-700 group-hover:opacity-30" />
+              <Avatar className="relative z-10 h-32 w-32 border-2 border-primary">
+                <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
+                <AvatarFallback className="bg-white/10 text-2xl font-bold text-primary">{initials}</AvatarFallback>
+              </Avatar>
               {worker.verified && (
-                <div className="absolute -bottom-2 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-lg">
-                  <Crown className="h-3 w-3" /> Premium
+                <div className="absolute bottom-1 right-1 z-20 rounded-full border-4 border-hero bg-primary p-1 text-primary-foreground">
+                  <BadgeCheck className="h-4 w-4" />
                 </div>
               )}
             </div>
 
-            <div className="mt-3">
-              <h2 className="font-sora text-2xl font-bold leading-tight tracking-tight">{worker.name}</h2>
-              <div className="mt-1 flex items-center justify-center gap-1.5 text-primary">
+            <div className="mt-3 text-center">
+              <div className="flex items-center justify-center gap-2 flex-nowrap">
+                <h2 className="font-sora text-2xl font-semibold tracking-tight leading-none">{worker.name}</h2>
+                {worker.verified && (
+                  <span
+                    title="Premium Worker"
+                    aria-label="Premium Worker"
+                    className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.9)] ring-2 ring-primary/30"
+                  >
+                    <Crown className="h-4 w-4" />
+                    <span className="absolute inset-0 rounded-full bg-primary/30 blur-md -z-10 animate-pulse" />
+                  </span>
+                )}
+              </div>
+              <div className="mt-2 flex items-center justify-center gap-1.5 text-primary">
                 <Star className="h-4 w-4 fill-current" />
                 <span className="text-sm font-semibold">{avgRating}</span>
                 <span className="text-xs text-hero-muted">({dbReviews.length} Reviews)</span>
@@ -207,33 +219,36 @@ const WorkerProfile = () => {
             </div>
           </section>
 
-          {/* 2. Qualifications */}
-          <section className="mb-5">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {worker.mainCategory && (
-                <span className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-                  <Zap className="h-3.5 w-3.5" /> {worker.mainCategory}
-                </span>
-              )}
-              {worker.subCategory && (
-                <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider">
-                  {worker.subCategory}
-                </span>
+          {/* 2. Qualifications — Bento Grid */}
+          <section className="mb-5 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Category</span>
+              <span className="block font-sora text-base font-semibold uppercase">{worker.mainCategory || "—"}</span>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Sub-Category</span>
+              <span className="block font-sora text-base font-semibold uppercase">{worker.subCategory || "—"}</span>
+            </div>
+            <div className="col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3">
+              <div className="mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Top Expertise</span>
+              </div>
+              {expertise.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {expertise.map((e) => (
+                    <span
+                      key={e}
+                      className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"
+                    >
+                      {e}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-xs text-hero-muted">—</span>
               )}
             </div>
-            {expertise.length > 0 && (
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
-                <span className="mr-1 text-xs text-hero-muted">Expertise:</span>
-                {expertise.map((e) => (
-                  <span
-                    key={e}
-                    className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider"
-                  >
-                    {e}
-                  </span>
-                ))}
-              </div>
-            )}
           </section>
 
           {/* 3. Horizontal Metrics */}
