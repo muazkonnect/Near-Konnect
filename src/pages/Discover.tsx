@@ -19,6 +19,7 @@ import {
   Clock3,
   BadgeCheck,
   Award,
+  Menu,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,8 @@ const Discover = () => {
   const [sort, setSort] = useState<SortKey>("distance");
   const [priceBand] = useState<"all" | "budget" | "mid" | "premium">("all");
   const [minRating, setMinRating] = useState(0);
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [availableOnly, setAvailableOnly] = useState(false);
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
@@ -179,6 +182,8 @@ const Discover = () => {
 
   const filteredWithAdvanced = filtered.filter((w) => {
     if (minRating > 0 && w.rating < minRating) return false;
+    if (verifiedOnly && !w.verified) return false;
+    if (availableOnly && !w.available) return false;
     if (priceBand === "budget") return w.experience <= 2;
     if (priceBand === "mid") return w.experience > 2 && w.experience <= 6;
     if (priceBand === "premium") return w.experience > 6;
@@ -227,138 +232,61 @@ const Discover = () => {
 
 
 
+
+
+
   return (
     <AppLayout hideMobileHeader>
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground">
-        {/* BRAND BAR */}
-        <div className="sticky top-0 z-40 flex items-center justify-between border-b border-white/5 bg-hero/80 px-5 py-3 backdrop-blur-md md:hidden">
+        {/* TOP APP BAR */}
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-hero/80 px-5 py-3 backdrop-blur-md">
           <Link to="/" className="inline-flex items-center gap-2">
-            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+            <Menu className="h-5 w-5 text-hero-foreground" />
+            <span className="text-base font-bold tracking-tight">Near Konnect</span>
           </Link>
-          {user && <NotificationBell />}
-        </div>
+          <NotificationBell />
+        </header>
 
-        <div className="relative px-5 pt-5">
-          <div aria-hidden className="pointer-events-none absolute -right-16 -top-10 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+        {/* SEARCH + FILTER CHIPS */}
+        <section className="px-5 pt-5">
           <div className="relative">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted ring-1 ring-white/10">
-              <Compass className="h-3 w-3 text-primary" /> Explore
-            </span>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
-              Find trusted services <span className="text-primary">near you</span>
-            </h1>
-            <p className="mt-1 text-xs text-hero-muted">
-              Search, filter, and view providers. Login is only required to contact a worker.
-            </p>
-          </div>
-
-          {/* Location chip */}
-          <div className="relative mt-4 flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs text-hero-muted ring-1 ring-white/10">
-            <MapPin className="h-3.5 w-3.5 text-primary" />
-            {locationStatus === "denied" ? (
-              <span>Enable location for nearby results</span>
-            ) : userCoords ? (
-              <span className="truncate">Using ({userCoords.latitude.toFixed(2)}, {userCoords.longitude.toFixed(2)})</span>
-            ) : (
-              <span>Detecting current location...</span>
-            )}
-            <Button variant="ghost" size="sm" onClick={refreshLocation} className="ml-auto h-6 gap-1 px-2 text-[11px] text-hero-foreground hover:bg-white/10">
-              <Navigation className="h-3 w-3" /> Update
-            </Button>
-          </div>
-
-          {/* Search */}
-          <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
             <Input
               placeholder="Search for professional services..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 rounded-none border-0 border-b border-white/15 bg-transparent pl-10 text-hero-foreground placeholder:text-hero-muted focus-visible:border-primary focus-visible:ring-0"
+              className="h-12 rounded-xl border border-white/10 bg-white/5 pl-11 text-hero-foreground placeholder:text-hero-muted focus-visible:border-primary focus-visible:ring-0"
             />
           </div>
 
-          {/* Quick filter chips */}
           <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {([
-              { key: "distance" as SortKey, label: "Nearby", Icon: Navigation },
-              { key: "rating" as SortKey, label: "Top Rated", Icon: Star },
-              { key: "experience" as SortKey, label: "Experienced", Icon: Briefcase },
-            ]).map(({ key, label, Icon }) => {
-              const active = sort === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setSort(key)}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" /> {label}
-                </button>
-              );
-            })}
-            <div className="mx-1 h-7 w-px self-center bg-white/10" />
-            {([1, 2, 3, 5, 10] as number[]).map((r) => {
-              const active = radiusKm === r;
-              return (
-                <button
-                  key={r}
-                  onClick={() => setRadiusKm(radiusKm === r ? null : (r as any))}
-                  disabled={!userCoords}
-                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition disabled:opacity-40 ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-                  }`}
-                >
-                  <MapPin className="h-3.5 w-3.5" /> {r} km
-                </button>
-              );
-            })}
-            <button
-              onClick={() => setRadiusKm(null)}
-              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
-                radiusKm === null
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-              }`}
-            >
-              <Compass className="h-3.5 w-3.5" /> Any
-            </button>
+              { key: "nearby", label: "Nearby", Icon: Navigation, active: sort === "distance", onClick: () => setSort("distance") },
+              { key: "verified", label: "Verified", Icon: BadgeCheck, active: verifiedOnly, onClick: () => setVerifiedOnly(v => !v) },
+              { key: "available", label: "Available", Icon: Clock3, active: availableOnly, onClick: () => setAvailableOnly(v => !v) },
+            ]).map(({ key, label, Icon, active, onClick }) => (
+              <button
+                key={key}
+                onClick={onClick}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" /> {label}
+              </button>
+            ))}
           </div>
-
-          {/* Rating chips */}
-          <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {([0, 3, 4, 4.5] as const).map((rating) => {
-              const active = minRating === rating;
-              return (
-                <button
-                  key={rating}
-                  onClick={() => setMinRating(rating)}
-                  className={`shrink-0 inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-                  }`}
-                >
-                  <Star className="h-3 w-3 fill-current" /> {rating === 0 ? "All" : `${rating}+`}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        </section>
 
         {/* FEATURED ADS marquee */}
         {bannerAds.length > 0 && (
           <section className="mt-5">
-            <div className="mb-2 flex items-center justify-between px-5">
+            <div className="mb-2 px-5">
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-hero-muted">
                 Featured Ads (3km)
               </h3>
-              <span className="inline-flex items-center gap-1 text-[10px] text-primary"><Zap className="h-3 w-3" /> Live</span>
             </div>
             <div className="overflow-hidden">
               <div className="flex animate-[ads-slide_28s_linear_infinite] gap-4 px-5 pb-3">
@@ -372,85 +300,6 @@ const Discover = () => {
             </div>
           </section>
         )}
-
-        {/* CATEGORIES */}
-        <section className="relative mt-6 px-5">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-hero-muted">
-              Categories
-            </h3>
-            {(selectedMainCategory || selectedSubCategory) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1 px-2 text-xs text-hero-foreground hover:bg-white/10"
-                onClick={() => {
-                  const next = new URLSearchParams(searchParams);
-                  next.delete("main_category");
-                  next.delete("sub_category");
-                  setExpandedMainCategory("");
-                  setSearchParams(next);
-                }}
-              >
-                <X className="h-3 w-3" /> Clear
-              </Button>
-            )}
-          </div>
-
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {categoriesToUse.map((mainCategory) => {
-              const isSelected = selectedMainCategory === mainCategory;
-              const dbCat = categories.find(c => c.name === mainCategory);
-              const emoji = dbCat?.icon;
-              const Icon = ({
-                "Home & Local Services": HomeIcon,
-                "Automotive & Transport": Car,
-                "Shops, Food & Daily Needs": ShoppingBag,
-                "Professional & Business Services": Briefcase,
-                "Health, Education & Community": HeartPulse,
-                "Events & Lifestyle": Sparkles,
-              } as any)[mainCategory] || Compass;
-
-              return (
-                <button
-                  key={mainCategory}
-                  type="button"
-                  onClick={() => toggleMainCategory(mainCategory)}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold whitespace-nowrap transition ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-                  }`}
-                >
-                  {emoji ? <span className="text-sm leading-none">{emoji}</span> : <Icon className="h-3.5 w-3.5" />}
-                  {mainCategory}
-                </button>
-              );
-            })}
-          </div>
-
-          {expandedMainCategory && subCategoriesToUse.length > 0 && (
-            <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {subCategoriesToUse.map((subCategory) => {
-                const active = selectedSubCategory === subCategory;
-                return (
-                  <button
-                    key={subCategory}
-                    type="button"
-                    onClick={() => toggleSubCategory(subCategory)}
-                    className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
-                    }`}
-                  >
-                    {subCategory}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </section>
 
         {/* FEATURED PROFESSIONALS */}
         {featuredWorkers.length > 0 && (
