@@ -547,14 +547,18 @@ const WorkerDashboard = () => {
                     </Button>
                   </ChangePasswordDialog>
                   {workerData.latitude && workerData.longitude ? (
-                    <span className="inline-flex h-9 items-center gap-1 rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-[10px] text-hero-foreground/70">
-                      <Lock className="h-3 w-3" />
-                      <MapPin className="h-3 w-3" />
-                      {workerData.latitude.toFixed(3)},{workerData.longitude.toFixed(3)}
-                      <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))} className="ml-1 font-semibold text-primary hover:underline">
-                        Change
-                      </button>
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-flex h-9 items-center gap-1 rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-[10px] text-hero-foreground/70">
+                        <Lock className="h-3 w-3" />
+                        <MapPin className="h-3 w-3" />
+                        {workerData.latitude.toFixed(3)},{workerData.longitude.toFixed(3)}
+                      </span>
+                      <RequestLocationChangeDialog
+                        workerUserId={workerData.user_id}
+                        currentLatitude={workerData.latitude}
+                        currentLongitude={workerData.longitude}
+                      />
+                    </div>
                   ) : (
                     <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-9 gap-1 rounded-lg border-hero-foreground/15 bg-transparent px-3 text-xs text-hero-foreground hover:bg-hero-foreground/10">
                       <Navigation className="h-3 w-3" />
