@@ -1,6 +1,6 @@
 import { Phone, Video, MessageCircle, Send } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { parsePhoneNumberFromString, isValidPhoneNumber } from "libphonenumber-js";
+import { parsePhoneNumberFromString, isValidPhoneNumber, getCountryCallingCode } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 
 export type ContactType = "phone" | "whatsapp" | "imo" | "botim" | "viber" | "telegram" | "signal";
