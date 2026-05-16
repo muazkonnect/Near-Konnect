@@ -23,6 +23,7 @@ interface PhoneFieldProps {
   placeholderLabel?: string;
   ariaLabel?: string;
   className?: string;
+  variant?: "default" | "hero";
 }
 
 const PhoneField = ({
@@ -31,7 +32,9 @@ const PhoneField = ({
   defaultCountry,
   ariaLabel,
   className = "",
+  variant = "default",
 }: PhoneFieldProps) => {
+  const hero = variant === "hero";
   // Determine the country either from the stored E.164 or the detected default
   const split = splitPhone(value, defaultCountry);
   const [country, setCountry] = useState<CountryCode>(split.country);
@@ -98,20 +101,28 @@ const PhoneField = ({
   return (
     <div className={className}>
       <div
-        className={`flex h-11 w-full items-stretch overflow-hidden rounded-xl border bg-background ${
-          isValid ? "border-input" : "border-destructive/60"
+        className={`flex ${hero ? "h-10" : "h-11"} w-full items-stretch overflow-hidden rounded-xl border ${
+          hero ? "bg-hero-foreground/5" : "bg-background"
+        } ${
+          isValid
+            ? hero ? "border-hero-foreground/15" : "border-input"
+            : "border-destructive/60"
         }`}
       >
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex shrink-0 items-center gap-1.5 border-r border-input bg-muted/30 px-2.5 text-sm hover:bg-muted/60"
+              className={`flex shrink-0 items-center gap-1.5 border-r px-2.5 text-sm transition-colors ${
+                hero
+                  ? "border-hero-foreground/15 bg-hero-foreground/10 text-hero-foreground hover:bg-hero-foreground/15"
+                  : "border-input bg-muted/30 hover:bg-muted/60"
+              }`}
               aria-label="Select country"
             >
               <span className="text-base leading-none">{countryEntry.flag}</span>
               <span className="font-medium">+{countryEntry.dialCode}</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+              <ChevronDown className={`h-3.5 w-3.5 ${hero ? "text-hero-foreground/60" : "text-muted-foreground"}`} />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-72 p-0" align="start">
@@ -120,7 +131,7 @@ const PhoneField = ({
                 <Search className="h-3.5 w-3.5 text-muted-foreground" />
                 <CommandInput placeholder="Search country…" className="border-0 focus:ring-0" />
               </div>
-              <CommandList>
+              <CommandList className="max-h-72">
                 <CommandEmpty>No country found.</CommandEmpty>
                 <CommandGroup>
                   {ALL_COUNTRIES.map((c) => (
@@ -146,7 +157,9 @@ const PhoneField = ({
           placeholder={examplePlaceholder}
           aria-label={ariaLabel || "Phone number"}
           inputMode="tel"
-          className="h-full flex-1 rounded-none border-0 bg-transparent px-3 focus-visible:ring-0"
+          className={`h-full flex-1 rounded-none border-0 bg-transparent px-3 focus-visible:ring-0 ${
+            hero ? "text-hero-foreground placeholder:text-hero-foreground/40" : ""
+          }`}
         />
       </div>
       {!isValid && (
