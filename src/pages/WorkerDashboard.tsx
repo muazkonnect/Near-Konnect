@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Clock,
   Compass,
+  Sparkles,
   Eye,
   HeartPulse,
   LayoutDashboard,
