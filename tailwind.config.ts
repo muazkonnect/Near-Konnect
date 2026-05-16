@@ -94,10 +94,15 @@ export default {
             height: "0",
           },
         },
+        "spark-pulse": {
+          "0%, 100%": { opacity: "0.85" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spark-pulse": "spark-pulse 3.5s ease-in-out infinite",
       },
     },
   },
