@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
-import WorkersMap from "@/components/WorkersMap";
+
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { calculateDistance } from "@/lib/geolocation";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
@@ -291,34 +291,6 @@ const WorkerProfile = () => {
                 {worker.serviceAreas.map((area: string) => <Badge key={area} variant="outline">{area}</Badge>)}
               </div>
             </div>
-
-            {dbWorker.latitude && dbWorker.longitude && (
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-semibold text-card-foreground">Pinned Service Location</h2>
-                  {userCoords && (
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {calculateDistance(userCoords.latitude, userCoords.longitude, dbWorker.latitude, dbWorker.longitude).toFixed(2)} km away
-                    </span>
-                  )}
-                </div>
-                <div className="md:hidden">
-                  <WorkersMap
-                    workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
-                    userCoords={userCoords}
-                    height="220px"
-                  />
-                </div>
-                <div className="hidden md:block">
-                  <WorkersMap
-                    workers={[{ id: dbWorker.id, name: worker.name, latitude: dbWorker.latitude, longitude: dbWorker.longitude }]}
-                    userCoords={userCoords}
-                    height="320px"
-                  />
-                </div>
-              </div>
-            )}
 
             {user && user.id !== worker.userId && (
               <div className="mt-8 p-4 rounded-2xl bg-muted/50">

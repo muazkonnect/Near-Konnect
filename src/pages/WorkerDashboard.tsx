@@ -34,7 +34,7 @@ import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
 import DashboardNav from "@/components/DashboardNav";
-import WorkersMap from "@/components/WorkersMap";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";

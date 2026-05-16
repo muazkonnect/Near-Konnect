@@ -1,11 +1,11 @@
-import { useState, useMemo, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, Map, List, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles, Compass } from "lucide-react";
+import { Search, MapPin, Navigation, SlidersHorizontal, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Sparkles, Compass } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import WorkerCard from "@/components/WorkerCard";
-const WorkersMap = lazy(() => import("@/components/WorkersMap"));
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,7 +62,7 @@ const Discover = () => {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
-  const [showMapView, setShowMapView] = useState(false);
+  
   const [radiusKm, setRadiusKm] = useState<RadiusKm>(10 as any);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
@@ -453,27 +453,7 @@ const Discover = () => {
         </div>
 
         <p className="text-sm text-muted-foreground">{sorted.length} services found</p>
-        {showMapView ? (
-          <Suspense fallback={<div className="flex h-[500px] items-center justify-center rounded-2xl border bg-muted/30"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
-            <WorkersMap
-              workers={sorted
-                .filter((w) => (allWorkers.find((d: any) => d.id === w.id)?.latitude) && (allWorkers.find((d: any) => d.id === w.id)?.longitude))
-                .map((w) => {
-                  const db: any = allWorkers.find((d: any) => d.id === w.id);
-                  return {
-                    id: w.id,
-                    name: w.name,
-                    profession: w.profession,
-                    latitude: db.latitude,
-                    longitude: db.longitude,
-                    distanceKm: w.distance > 0 ? w.distance : undefined,
-                  };
-                })}
-              userCoords={userCoords}
-              height="500px"
-            />
-          </Suspense>
-        ) : (
+        {(
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {sorted.map((w, i) => (
               <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={featuredIds.has(w.id)} />
