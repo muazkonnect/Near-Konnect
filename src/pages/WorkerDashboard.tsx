@@ -307,9 +307,10 @@ const WorkerDashboard = () => {
         >
           {/* Profile Summary */}
           <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 sm:p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} size={84} />
               <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2">
                   <span className="text-xl font-bold sm:text-2xl">{workerName}</span>
                   {workerData.verified && (
                     <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -317,7 +318,7 @@ const WorkerDashboard = () => {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-hero-foreground/70">
+                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-hero-foreground/70">
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
                   </span>
