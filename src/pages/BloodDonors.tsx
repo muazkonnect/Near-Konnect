@@ -120,7 +120,7 @@ const BloodDonors = () => {
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
         {/* TOP APP BAR */}
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#ffe2de] bg-white/90 px-6 backdrop-blur-md">
-          <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+          <img src={logoImg} alt="Near Konnect" className="h-8 object-contain brightness-0" />
           <button onClick={() => navigate("/notifications")} aria-label="Notifications" className="rounded-full p-2 text-[#271716] hover:bg-[#fff0ee]">
             <Bell className="h-5 w-5" />
           </button>
@@ -134,7 +134,7 @@ const BloodDonors = () => {
             </div>
             <div className="relative">
               <div className="mb-2 flex items-center gap-2">
-                <Heart className="h-4 w-4 fill-[#b7131a] text-[#b7131a] opacity-60 animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
+                <Heart className="h-4 w-4 fill-[#b7131a] text-[#b7131a] opacity-30 animate-[heart-pulse_1.5s_ease-in-out_infinite]" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#b7131a]">Life Support</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold leading-tight tracking-tight">Blood Konnect</h2>
