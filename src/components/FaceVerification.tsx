@@ -69,6 +69,8 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
       detectIntervalRef.current = null;
     }
     detectorRef.current = null;
+    okSinceRef.current = null;
+    autoCapturedRef.current = false;
     setStreaming(false);
     setReady(false);
     setAlignment({ ok: false, hint: "Position your face inside the oval" });
