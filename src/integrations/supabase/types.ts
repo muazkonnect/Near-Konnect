@@ -1138,6 +1138,7 @@ export type Database = {
           profession: string
           service_areas: string[] | null
           sub_category: string | null
+          uid: string | null
           updated_at: string
           user_id: string
           verified: boolean
@@ -1158,6 +1159,7 @@ export type Database = {
           profession: string
           service_areas?: string[] | null
           sub_category?: string | null
+          uid?: string | null
           updated_at?: string
           user_id: string
           verified?: boolean
@@ -1178,6 +1180,7 @@ export type Database = {
           profession?: string
           service_areas?: string[] | null
           sub_category?: string | null
+          uid?: string | null
           updated_at?: string
           user_id?: string
           verified?: boolean
@@ -1411,6 +1414,7 @@ export type Database = {
         Returns: number
       }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      generate_worker_uid: { Args: never; Returns: string }
       geometry: { Args: { "": string }; Returns: unknown }
       geometry_above: {
         Args: { geom1: unknown; geom2: unknown }
