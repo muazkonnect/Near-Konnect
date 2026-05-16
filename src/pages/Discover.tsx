@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -470,7 +470,7 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
         )}
       </div>
     </article>
-    <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={setPopupOpen} isAuthed={isAuthed} />
+    <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={handleChange} isAuthed={isAuthed} />
     </>
   );
 };
