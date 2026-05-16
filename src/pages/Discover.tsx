@@ -506,14 +506,7 @@ const Discover = () => {
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {featuredWorkers.map((w, i) => (
-                <div
-                  key={`feat-${w.id}-${i}`}
-                  className="rounded-2xl bg-gradient-to-br from-primary/10 to-transparent p-[1px]"
-                >
-                  <div className="rounded-2xl bg-hero/60">
-                    <WorkerCard worker={w} index={i} sponsored />
-                  </div>
-                </div>
+                <ExploreCard key={`feat-${w.id}-${i}`} worker={w as any} premium isAuthed={!!user} />
               ))}
             </div>
           </section>
