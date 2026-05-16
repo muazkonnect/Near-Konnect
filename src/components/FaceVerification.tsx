@@ -56,6 +56,7 @@ const FaceVerification = ({ onVerified, verifiedDataUrl }: Props) => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setStreaming(false);
+    setReady(false);
   };
 
   useEffect(() => () => stopCamera(), []);
