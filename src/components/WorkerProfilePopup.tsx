@@ -80,28 +80,37 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
             <div className="text-center">
               <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
+
+              {/* Prominent distance pill */}
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.6)]">
+                <MapPin className="h-4 w-4 fill-current/0" />
+                <span className="font-sora text-base font-bold leading-none">
+                  {hasDist ? `${dist} km` : "—"}
+                </span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
+                  {hasDist ? "away" : "distance n/a"}
+                </span>
+              </div>
+
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-                <div className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary">
-                  <Star className="h-3.5 w-3.5 fill-current" />
-                  <span className="text-xs font-bold">{worker.rating?.toFixed(1) || "—"}</span>
-                </div>
                 <div className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1">
-                  <MapPin className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-semibold">{distLabel}</span>
+                  <Star className="h-3 w-3 fill-current text-primary" />
+                  <span className="text-[11px] font-semibold">{worker.rating?.toFixed(1) || "—"}</span>
                 </div>
                 <div
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${
                     available
                       ? "border border-primary/40 bg-primary/15 text-primary"
                       : "border border-white/15 bg-white/5 text-hero-muted"
                   }`}
                 >
                   <Circle className={`h-2 w-2 fill-current ${available ? "animate-pulse" : ""}`} />
-                  {available ? "Available" : "Offline"}
+                  {available ? "Available now" : "Offline"}
                 </div>
-                {isPremium && (
-                  <div className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
-                    Premium
+                {worker.experience > 0 && (
+                  <div className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-hero-foreground">
+                    <Sparkles className="h-3 w-3 text-primary" />
+                    {worker.experience}+ yrs
                   </div>
                 )}
               </div>
