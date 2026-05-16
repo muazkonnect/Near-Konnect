@@ -324,12 +324,8 @@ const WorkerDashboard = () => {
                   <span className="text-lg font-bold sm:text-2xl">{workerName}</span>
                   {workerData.verified && (
                     <>
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                        <Crown className="h-3 w-3" fill="currentColor" /> Pro
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                        <BadgeCheck className="h-3 w-3" /> Verified
-                      </span>
+                      <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Pro" />
+                      <BadgeCheck className="h-4 w-4 text-primary" aria-label="Verified" />
                     </>
                   )}
                 </div>
@@ -566,9 +562,7 @@ const WorkerDashboard = () => {
                     <div className="flex items-center gap-2">
                       <p className="truncate text-sm font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
                       {workerData.verified && (
-                        <Badge className="h-5 gap-1 rounded-full bg-success px-1.5 text-[9px] text-success-foreground">
-                          <BadgeCheck className="h-2.5 w-2.5" /> Verified
-                        </Badge>
+                        <BadgeCheck className="h-4 w-4 text-success" aria-label="Verified" />
                       )}
                     </div>
                     <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
