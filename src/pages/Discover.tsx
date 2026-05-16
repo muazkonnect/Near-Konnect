@@ -356,7 +356,7 @@ const Discover = () => {
           <section className="mt-5">
             <div className="mb-2 flex items-center justify-between px-5">
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-hero-muted">
-                Sponsored Nearby
+                Featured Ads (3km)
               </h3>
               <span className="inline-flex items-center gap-1 text-[10px] text-primary"><Zap className="h-3 w-3" /> Live</span>
             </div>
