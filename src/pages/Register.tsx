@@ -90,6 +90,10 @@ const Register = () => {
       toast.error("Please complete category, sub-category and experience.");
       return;
     }
+    if (role === "worker" && !serviceLocation) {
+      toast.error("Please pin your fixed service location on the map.");
+      return;
+    }
     if (isBloodDonor && !bloodGroup) {
       toast.error("Please select your blood type.");
       return;
