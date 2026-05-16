@@ -453,18 +453,6 @@ const WorkerDashboard = () => {
         </motion.div>
 
         <div className="mx-auto mt-8 max-w-2xl space-y-6">
-          <DashboardNav
-            items={[
-              { value: "overview", label: "Overview", icon: LayoutDashboard },
-              { value: "profile", label: "Profile", icon: UserCheck },
-              { value: "bookings", label: "Bookings", icon: Calendar, badge: unreadByType.booking },
-              { value: "messages", label: "Messages", icon: MessageSquare, badge: unreadByType.message + unreadByType.contact_request },
-              { value: "reviews", label: "Reviews", icon: Star },
-            ]}
-            active={activeTab}
-            onChange={setActiveTab}
-          />
-
           <Tabs value={activeTab} onValueChange={setActiveTab} className="min-w-0 space-y-5">
             <TabsList className="hidden">
               <TabsTrigger value="overview" />
