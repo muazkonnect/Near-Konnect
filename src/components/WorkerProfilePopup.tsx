@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle } from "lucide-react";
+import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,19 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
             </div>
 
             <div className="text-center">
-              <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
+              <div className="flex items-center justify-center gap-2">
+                <h2 className="font-sora text-2xl font-semibold tracking-tight">{worker.name}</h2>
+                {isPremium && (
+                  <span title="Premium Worker" className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-[0_0_12px_-2px_hsl(var(--primary)/0.8)]">
+                    <Crown className="h-3.5 w-3.5" />
+                  </span>
+                )}
+              </div>
+              {isPremium && (
+                <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                  <Sparkles className="h-3 w-3" /> Premium Verified Pro
+                </div>
+              )}
 
               {/* Prominent distance pill */}
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.6)]">
