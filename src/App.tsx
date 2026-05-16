@@ -19,8 +19,8 @@ import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
 
-// Eager: landing page (most-visited entry point)
-import Index from "./pages/Index";
+// Eager: homepage (most-visited entry point)
+import Home from "./pages/Home";
 
 // Lazy: every other route — they only load when the user actually navigates.
 const Discover = lazy(() => import("./pages/Discover"));
