@@ -15,9 +15,11 @@ interface Props {
   onChange: (next: ContactMethod[]) => void;
   /** When true, at least one Phone entry is locked in and cannot be removed */
   requirePhone?: boolean;
+  variant?: "default" | "hero";
 }
 
-const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) => {
+const ContactMethodsEditor = ({ value, onChange, requirePhone = false, variant = "default" }: Props) => {
+  const hero = variant === "hero";
   const detectedCountry = useDetectedCountry();
   const usedTypes = new Set(value.map((m) => m.type));
   const availableApps = CONTACT_APPS.filter((a) => !usedTypes.has(a.type));
@@ -36,22 +38,33 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
     onChange(value.filter((_, i) => i !== idx));
   };
 
+  const emptyCls = hero
+    ? "rounded-xl border border-dashed border-hero-foreground/15 bg-hero-foreground/5 p-3 text-center text-xs text-hero-foreground/60"
+    : "rounded-2xl border border-dashed border-border bg-muted/30 p-4 text-center text-xs text-muted-foreground";
+  const inputCls = hero
+    ? "h-10 rounded-lg border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40"
+    : "h-11 rounded-xl";
+  const labelCls = hero ? "mt-0.5 px-1 text-[10px] uppercase tracking-wide text-hero-foreground/50" : "mt-0.5 px-1 text-[10px] uppercase tracking-wide text-muted-foreground";
+  const removeCls = hero ? "mt-0.5 shrink-0 text-hero-foreground/60 hover:text-destructive disabled:opacity-30" : "mt-0.5 shrink-0 text-muted-foreground hover:text-destructive disabled:opacity-30";
+  const addWrapCls = hero
+    ? "rounded-xl border border-dashed border-hero-foreground/15 bg-hero-foreground/5 p-2.5"
+    : "rounded-2xl border border-dashed border-border bg-muted/30 p-3";
+  const addHeadCls = hero ? "mb-2 text-[11px] font-semibold uppercase tracking-wide text-hero-foreground/60" : "mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+  const iconBoxSize = hero ? "h-9 w-9" : "h-11 w-11";
+  const iconSize = hero ? "h-4 w-4" : "h-5 w-5";
+
   return (
-    <div className="space-y-3">
+    <div className={hero ? "space-y-2" : "space-y-3"}>
       <div className="space-y-2">
-        {value.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-muted/30 p-4 text-center text-xs text-muted-foreground">
-            No contact methods yet. Add one below.
-          </p>
-        )}
+        {value.length === 0 && <p className={emptyCls}>No contact methods yet. Add one below.</p>}
         {value.map((m, idx) => {
           const app = CONTACT_APP_BY_TYPE[m.type];
           const Icon = app.icon;
           const isLockedPhone = requirePhone && m.type === "phone";
           return (
             <div key={m.type} className="flex items-start gap-2">
-              <span className={`mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-xl ${app.brandClass}`}>
-                <Icon className="h-5 w-5" />
+              <span className={`mt-0.5 grid ${iconBoxSize} shrink-0 place-items-center rounded-lg ${app.brandClass}`}>
+                <Icon className={iconSize} />
               </span>
               <div className="min-w-0 flex-1">
                 {app.isPhone ? (
@@ -67,10 +80,10 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
                     onChange={(e) => updateValue(idx, e.target.value)}
                     placeholder={app.placeholder}
                     aria-label={`${app.label} contact value`}
-                    className="h-11 rounded-xl"
+                    className={inputCls}
                   />
                 )}
-                <p className="mt-0.5 px-1 text-[10px] uppercase tracking-wide text-muted-foreground">{app.label}</p>
+                <p className={labelCls}>{app.label}</p>
               </div>
               <Button
                 type="button"
@@ -79,7 +92,7 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
                 onClick={() => removeMethod(idx)}
                 disabled={isLockedPhone}
                 aria-label={`Remove ${app.label}`}
-                className="mt-0.5 shrink-0 text-muted-foreground hover:text-destructive disabled:opacity-30"
+                className={removeCls}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -89,11 +102,11 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
       </div>
 
       {availableApps.length > 0 && (
-        <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-3">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className={addWrapCls}>
+          <p className={addHeadCls}>
             <Plus className="mr-1 inline h-3 w-3" /> Add contact app
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {availableApps.map((a) => {
               const Icon = a.icon;
               return (
@@ -101,9 +114,9 @@ const ContactMethodsEditor = ({ value, onChange, requirePhone = false }: Props) 
                   key={a.type}
                   type="button"
                   onClick={() => addMethod(a.type)}
-                  className={`tap-feedback inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition hover:opacity-90 ${a.brandClass}`}
+                  className={`tap-feedback inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-90 ${a.brandClass}`}
                 >
-                  <Icon className="h-3.5 w-3.5" /> {a.label}
+                  <Icon className="h-3 w-3" /> {a.label}
                 </button>
               );
             })}

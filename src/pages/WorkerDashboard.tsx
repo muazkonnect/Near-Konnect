@@ -268,20 +268,33 @@ const WorkerDashboard = () => {
     <AppLayout showSignOut hideMobileHeader>
       <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
         {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
           </Link>
-          <button
-            onClick={() => navigate("/messages")}
-            className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
-            aria-label="Notifications"
-          >
-            <MessageSquare className="h-5 w-5" />
-            {(unreadByType.message + unreadByType.booking) > 0 && (
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-1.5">
+              <span className={`h-2 w-2 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
+              <span className="text-[11px] font-bold uppercase tracking-wider">{available ? "Online" : "Offline"}</span>
+              <Switch
+                checked={available}
+                onCheckedChange={(v) => {
+                  setAvailable(v);
+                  supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
+                }}
+              />
+            </label>
+            <button
+              onClick={() => navigate("/messages")}
+              className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
+              aria-label="Notifications"
+            >
+              <MessageSquare className="h-5 w-5" />
+              {(unreadByType.message + unreadByType.booking) > 0 && (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+              )}
+            </button>
+          </div>
         </header>
 
         <motion.div
@@ -313,24 +326,6 @@ const WorkerDashboard = () => {
                     {available ? "Available Now" : "Offline"}
                   </span>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigate(`/worker/${workerData.id}`)}
-                  className="flex-1 rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-4 py-3 text-xs font-semibold text-hero-foreground transition hover:bg-hero-foreground/10 sm:flex-none"
-                >
-                  Visibility: {available ? "High" : "Low"}
-                </button>
-                <button
-                  onClick={() => {
-                    const v = !available;
-                    setAvailable(v);
-                    supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
-                  }}
-                  className="flex-1 rounded-xl bg-primary px-4 py-3 text-xs font-bold text-primary-foreground transition hover:opacity-90 sm:flex-none"
-                >
-                  {available ? "Go Offline" : "Go Online"}
-                </button>
               </div>
             </div>
           </div>
@@ -585,90 +580,41 @@ const WorkerDashboard = () => {
                     <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1 h-10 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">About</Label>
-                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
-                  </div>
-                  <div className="md:col-span-2">
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Contact options</Label>
                     <p className="mb-2 mt-1 text-xs text-hero-foreground/60">Phone is required. Add any other apps so clients can reach you.</p>
-                    <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone />
+                    <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone variant="hero" />
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 p-4">
-                  <div>
-                    <p className="font-semibold text-hero-foreground">Availability</p>
-                    <p className="text-xs text-hero-foreground/60">{available ? "You are visible to clients" : "You are hidden from search"}</p>
-                  </div>
-                  <Switch checked={available} onCheckedChange={setAvailable} />
-                </div>
-
-                <Button onClick={handleSave} disabled={saving} className="mt-4 h-10 gap-2 rounded-xl px-6">
-                  <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
-                </Button>
-              </div>
-
-              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
-                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                  <KeyRound className="h-4 w-4" /> Security
-                </h3>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-hero-foreground/5 p-3">
-                  <div className="min-w-[200px]">
-                    <p className="font-semibold text-hero-foreground">Password</p>
-                    <p className="text-xs text-hero-foreground/60">Change your account password regularly to stay secure.</p>
-                  </div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Button onClick={handleSave} disabled={saving} className="h-10 gap-2 rounded-xl px-5">
+                    <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+                  </Button>
                   <ChangePasswordDialog>
-                    <Button variant="outline" className="gap-2 rounded-xl h-10">
-                      <KeyRound className="h-3.5 w-3.5" /> Change Password
+                    <Button type="button" variant="outline" className="h-10 gap-1.5 rounded-xl border-hero-foreground/15 bg-transparent text-hero-foreground hover:bg-hero-foreground/10">
+                      <KeyRound className="h-3.5 w-3.5" /> Password
                     </Button>
                   </ChangePasswordDialog>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <div>
-                    <p className="font-semibold text-hero-foreground">Fixed service location</p>
-                    <p className="text-xs text-hero-foreground/60">
-                      {workerData.latitude && workerData.longitude
-                        ? "Permanent and locked to your shop or work spot."
-                        : "Set this once. It cannot be changed later."}
-                    </p>
-                  </div>
-                  {workerData.latitude && workerData.longitude && (
-                    <Badge variant="outline" className="gap-1 rounded-full">
-                      <Lock className="h-3 w-3" /> Locked
-                    </Badge>
+                  {workerData.latitude && workerData.longitude ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-2 text-[11px] text-hero-foreground/70">
+                      <Lock className="h-3 w-3" />
+                      <MapPin className="h-3 w-3" />
+                      {workerData.latitude.toFixed(3)}, {workerData.longitude.toFixed(3)}
+                      <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))}
+                        className="ml-1 font-semibold text-primary hover:underline"
+                      >
+                        Change
+                      </button>
+                    </span>
+                  ) : (
+                    <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-10 gap-1.5 rounded-xl border-hero-foreground/15 bg-transparent text-hero-foreground hover:bg-hero-foreground/10">
+                      <Navigation className="h-3.5 w-3.5" />
+                      {settingLocation ? "Detecting..." : "Set location"}
+                    </Button>
                   )}
                 </div>
-
-                {workerData.latitude && workerData.longitude ? (
-                  <>
-                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-hero-foreground/10 px-2.5 py-1 text-xs text-hero-foreground/60">
-                      <MapPin className="h-3 w-3" />
-                      {workerData.latitude.toFixed(5)}, {workerData.longitude.toFixed(5)}
-                    </div>
-                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-dashed border-hero-foreground/15 bg-hero-foreground/5 p-3">
-                      <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-hero-foreground/60" />
-                      <p className="text-xs text-hero-foreground/60">
-                        Need to change your fixed location?{" "}
-                        <button
-                          type="button"
-                          onClick={() => window.dispatchEvent(new CustomEvent("open-support-chat"))}
-                          className="font-semibold text-primary underline-offset-2 hover:underline"
-                        >
-                          Contact us
-                        </button>{" "}
-                        and our team will help you update it.
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <Button variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-10 gap-2 rounded-xl">
-                    <Navigation className="h-4 w-4" />
-                    {settingLocation ? "Detecting..." : "Use current location"}
-                  </Button>
-                )}
               </div>
             </TabsContent>
 
