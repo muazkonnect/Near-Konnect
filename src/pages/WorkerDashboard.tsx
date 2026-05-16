@@ -388,13 +388,13 @@ const WorkerDashboard = () => {
 
           {/* Sparks Wallet */}
           <div className="relative overflow-hidden rounded-xl bg-primary p-4 text-primary-foreground shadow-[0_20px_40px_-20px_hsl(var(--primary)/0.4)] sm:p-5">
-            <Zap className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 rotate-12 text-primary-foreground/10 animate-[spark-pulse_5s_ease-in-out_infinite] sm:h-52 sm:w-52" strokeWidth={1} fill="currentColor" />
-            <Zap className="pointer-events-none absolute -left-2 bottom-2 h-20 w-20 -rotate-12 text-primary-foreground/5 animate-[spark-pulse_6s_ease-in-out_infinite] sm:h-24 sm:w-24" strokeWidth={1} fill="currentColor" />
+            <Zap className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 rotate-12 text-primary-foreground/10 sm:h-52 sm:w-52" strokeWidth={1} fill="currentColor" />
+            <Zap className="pointer-events-none absolute -left-2 bottom-2 h-20 w-20 -rotate-12 text-primary-foreground/5 sm:h-24 sm:w-24" strokeWidth={1} fill="currentColor" />
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
                 <div className="group flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition-all duration-300 hover:bg-primary-foreground/25 hover:ring-2 hover:ring-primary-foreground/40 hover:shadow-[0_0_20px_hsl(var(--primary-foreground)/0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50" tabIndex={0}>
-                  <Zap className="h-6 w-6 animate-spark-pulse transition-transform duration-300 group-hover:scale-110 group-focus:scale-110" fill="currentColor" strokeWidth={1.5} />
+                  <Zap className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 group-focus:scale-110" fill="currentColor" strokeWidth={1.5} />
                 </div>
               </div>
               <div className="mt-4">
