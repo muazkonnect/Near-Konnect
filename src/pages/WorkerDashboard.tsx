@@ -327,24 +327,6 @@ const WorkerDashboard = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigate(`/worker/${workerData.id}`)}
-                  className="flex-1 rounded-xl border border-hero-foreground/15 bg-hero-foreground/5 px-4 py-3 text-xs font-semibold text-hero-foreground transition hover:bg-hero-foreground/10 sm:flex-none"
-                >
-                  Visibility: {available ? "High" : "Low"}
-                </button>
-                <button
-                  onClick={() => {
-                    const v = !available;
-                    setAvailable(v);
-                    supabase.from("workers").update({ available: v }).eq("id", workerData.id).then(() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] }));
-                  }}
-                  className="flex-1 rounded-xl bg-primary px-4 py-3 text-xs font-bold text-primary-foreground transition hover:opacity-90 sm:flex-none"
-                >
-                  {available ? "Go Offline" : "Go Online"}
-                </button>
-              </div>
             </div>
           </div>
 
