@@ -578,15 +578,15 @@ const WorkerDashboard = () => {
                   </div>
                   <div>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Profession (Display Name)</Label>
-                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                    <Input value={profession} onChange={(e) => setProfession(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Years of Experience</Label>
-                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
+                    <Input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">About</Label>
-                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl" />
+                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40" />
                   </div>
                   <div className="md:col-span-2">
                     <Label className="text-xs font-semibold uppercase tracking-wide text-hero-foreground/60">Contact options</Label>
