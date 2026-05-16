@@ -12,6 +12,9 @@ import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
 import FaceVerification from "@/components/FaceVerification";
+import PhoneField from "@/components/PhoneField";
+import { useDetectedCountry } from "@/hooks/useDetectedCountry";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
