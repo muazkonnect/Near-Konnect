@@ -375,6 +375,16 @@ const Register = () => {
                     <input type="number" min="0" className={fieldInput} placeholder="5" value={experience} onChange={(e) => setExperience(e.target.value)} required />
                   </div>
                 </div>
+
+                <div>
+                  <label className={labelCls}>Fixed Service Location</label>
+                  <div className="rounded-lg border border-[#444748]/20 bg-[#1c1b1b] p-3">
+                    <MapLocationPicker value={serviceLocation} onChange={setServiceLocation} />
+                  </div>
+                  <p className="mt-1 px-1 text-[11px] italic text-[#c4c7c7]/60">
+                    This location is permanent. To change it later you must contact an admin.
+                  </p>
+                </div>
               </div>
             )}
 
