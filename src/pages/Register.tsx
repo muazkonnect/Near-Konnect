@@ -11,6 +11,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { getAuthErrorMessage } from "@/lib/supabaseErrorMessages";
 import { sanitizePhone } from "@/lib/contactMethods";
 import logoImg from "@/assets/logo.svg";
+import FaceVerification from "@/components/FaceVerification";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -43,6 +44,8 @@ const Register = () => {
 
   const [loading, setLoading] = useState(false);
   const [existingAccountModal, setExistingAccountModal] = useState<{ open: boolean; email: string }>({ open: false, email: "" });
+  const [faceDataUrl, setFaceDataUrl] = useState<string | null>(null);
+  const [faceBlob, setFaceBlob] = useState<Blob | null>(null);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
   const expertiseChips = EXPERTISE_SUGGESTIONS[subCategory] || EXPERTISE_SUGGESTIONS.default;
@@ -84,6 +87,10 @@ const Register = () => {
       toast.error("Please agree to the Terms & Privacy Policy.");
       return;
     }
+    if (!faceDataUrl) {
+      toast.error("Please complete face verification first.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -120,6 +127,13 @@ const Register = () => {
         password,
         options: { data: metadata },
       });
+
+      // Upload verified face as permanent avatar (best-effort, non-blocking)
+      if (data?.user && faceDataUrl) {
+        supabase.functions
+          .invoke("set-verified-avatar", { body: { userId: data.user.id, imageBase64: faceDataUrl } })
+          .catch((e) => console.error("avatar upload failed", e));
+      }
 
       setLoading(false);
       if (error) {
@@ -201,7 +215,13 @@ const Register = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md">
+          <FaceVerification
+            verifiedDataUrl={faceDataUrl}
+            onVerified={(url, blob) => { setFaceDataUrl(url); setFaceBlob(blob); }}
+          />
+
+          <form onSubmit={handleSubmit} className={`space-y-5 rounded-xl border border-[#e5e2e1]/10 bg-[#1a1a1a]/80 p-5 backdrop-blur-md transition ${!faceDataUrl ? "pointer-events-none opacity-40" : ""}`}>
+            <fieldset disabled={!faceDataUrl} className="space-y-5">
             {/* Common fields */}
             <div>
               <label className={labelCls}>Full Name</label>
@@ -380,6 +400,7 @@ const Register = () => {
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : role === "worker" ? "Submit Pro Application" : "Create Account"}
             </button>
+            </fieldset>
           </form>
 
           <p className="pb-6 text-center text-sm text-[#c4c7c7]">

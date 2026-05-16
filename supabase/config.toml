@@ -7,6 +7,10 @@ project_id = "lxghuqiheaoinytrwhac"
     verify_jwt = true
   [functions.check-face-duplicate]
     verify_jwt = false
+  [functions.verify-face-human]
+    verify_jwt = false
+  [functions.set-verified-avatar]
+    verify_jwt = false
   [functions.vapid-public-key]
     verify_jwt = false
   [functions.send-push]
