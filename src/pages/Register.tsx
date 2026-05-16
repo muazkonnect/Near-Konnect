@@ -3,6 +3,8 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -170,8 +172,8 @@ const Register = () => {
     }
   };
 
-  const inputClass = "h-12 rounded-2xl border-border bg-background text-base";
-  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+  const inputClass = "h-12 rounded-lg border border-[#444748]/20 bg-[#1c1b1b] text-[#e5e2e1] placeholder:text-[#c4c7c7]/40 focus-visible:ring-0 focus-visible:border-[#d9ff7a] text-base";
+  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#c4c7c7]";
 
   return (
     <AuthShell
