@@ -469,6 +469,7 @@ const WorkerDashboard = () => {
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-card-foreground">{(workerData as any).profiles?.full_name}</p>
                     <p className="truncate text-sm text-muted-foreground">{(workerData as any).profiles?.phone}</p>
+                    <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>
 
