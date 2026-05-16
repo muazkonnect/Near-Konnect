@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Calendar,
+  BadgeCheck,
   CheckCircle,
+  Crown,
   Clock,
   Compass,
   Sparkles,
@@ -321,9 +323,14 @@ const WorkerDashboard = () => {
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   <span className="text-lg font-bold sm:text-2xl">{workerName}</span>
                   {workerData.verified && (
-                    <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                      Pro Verified
-                    </span>
+                    <>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                        <Crown className="h-3 w-3" fill="currentColor" /> Pro
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                        <BadgeCheck className="h-3 w-3" /> Verified
+                      </span>
+                    </>
                   )}
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-hero-foreground/70 sm:text-sm">
@@ -560,7 +567,7 @@ const WorkerDashboard = () => {
                       <p className="truncate text-sm font-semibold text-hero-foreground">{(workerData as any).profiles?.full_name}</p>
                       {workerData.verified && (
                         <Badge className="h-5 gap-1 rounded-full bg-success px-1.5 text-[9px] text-success-foreground">
-                          <CheckCircle className="h-2.5 w-2.5" /> Verified
+                          <BadgeCheck className="h-2.5 w-2.5" /> Verified
                         </Badge>
                       )}
                     </div>
