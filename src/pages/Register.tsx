@@ -43,6 +43,7 @@ const Register = () => {
   const [experience, setExperience] = useState("");
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
+  const [serviceLocation, setServiceLocation] = useState<Coords | null>(null);
 
   const [isBloodDonor, setIsBloodDonor] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
