@@ -97,9 +97,7 @@ const CustomerDashboard = () => {
             </div>
             <div>
               <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone Number</Label>
-              <div className="mt-1.5">
-                <PhoneField value={phone} onChange={setPhone} />
-              </div>
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="+1 234 567 8900" className="mt-1.5 h-11 rounded-xl" />
             </div>
           </div>
 
