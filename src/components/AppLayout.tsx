@@ -16,9 +16,10 @@ interface AppLayoutProps {
   action?: ReactNode;
   children: ReactNode;
   showSignOut?: boolean;
+  hideMobileHeader?: boolean;
 }
 
-const AppLayout = ({ title, subtitle, action, children, showSignOut = false }: AppLayoutProps) => {
+const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hideMobileHeader = false }: AppLayoutProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
