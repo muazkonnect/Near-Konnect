@@ -63,11 +63,12 @@ const WorkerProfile = () => {
     queryKey: ["worker", id],
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await supabase
+      const query = (supabase as any)
         .from("workers")
         .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
-        .eq(isUuid ? "id" : ("uid" as any), isUuid ? id : id.toUpperCase())
+        .eq(isUuid ? "id" : "uid", isUuid ? id : id.toUpperCase())
         .maybeSingle();
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
