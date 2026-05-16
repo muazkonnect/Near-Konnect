@@ -7,6 +7,7 @@ import {
   Clock,
   Compass,
   Sparkles,
+  Zap,
   Eye,
   HeartPulse,
   LayoutDashboard,
