@@ -45,7 +45,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NativeAdCard from "@/components/NativeAdCard";
 import type { NativeAd } from "@/hooks/useSponsored";
-import MapLocationPicker from "@/components/MapLocationPicker";
+import MapLocationPicker from "@/components/MapLocationPickerLazy";
 import { calculateDistance, type Coords } from "@/lib/geolocation";
 import { lazy, Suspense } from "react";
 const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));

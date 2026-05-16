@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import MapLocationPicker from "@/components/MapLocationPicker";
+import MapLocationPicker from "@/components/MapLocationPickerLazy";
 import type { Coords } from "@/lib/geolocation";
 import { MapPin } from "lucide-react";
 

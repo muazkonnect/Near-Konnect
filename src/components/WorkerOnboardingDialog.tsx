@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import MapLocationPicker from "@/components/MapLocationPicker";
+import MapLocationPicker from "@/components/MapLocationPickerLazy";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { type Coords } from "@/lib/geolocation";
