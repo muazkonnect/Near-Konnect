@@ -85,7 +85,7 @@ const AdminProfileTab = () => {
       {/* Identity card */}
       <div className="rounded-2xl border bg-card p-5">
         <div className="flex flex-wrap items-start gap-5">
-          <AvatarUpload currentUrl={avatarUrl} onUpload={handleAvatar} size={96} />
+          <AvatarUpload currentUrl={avatarUrl} size={96} />
           <div className="min-w-0 flex-1">
             <p className="text-lg font-bold text-card-foreground">{fullName || "Unnamed"}</p>
             <p className="flex items-center gap-1.5 text-sm text-muted-foreground">

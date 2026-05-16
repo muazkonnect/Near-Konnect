@@ -3,12 +3,11 @@ import { Lock } from "lucide-react";
 
 interface Props {
   currentUrl?: string | null;
-  onUpload?: (url: string) => void;
   size?: number;
 }
 
 // Profile photos are set once during signup via face verification and are
-// permanent. This component now renders a read-only avatar with a lock badge.
+// permanent. This component renders a read-only avatar with a lock badge.
 const AvatarUpload = ({ currentUrl, size = 96 }: Props) => {
   const { user } = useAuth();
 
