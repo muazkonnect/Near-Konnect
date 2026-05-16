@@ -32,6 +32,7 @@ import AvatarUpload from "@/components/AvatarUpload";
 import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import RequestLocationChangeDialog from "@/components/RequestLocationChangeDialog";
+import LocationLabel from "@/components/LocationLabel";
 import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
 
 import StarRating from "@/components/StarRating";
@@ -551,7 +552,7 @@ const WorkerDashboard = () => {
                       <span className="inline-flex h-9 items-center gap-1 rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-[10px] text-hero-foreground/70">
                         <Lock className="h-3 w-3" />
                         <MapPin className="h-3 w-3" />
-                        {workerData.latitude.toFixed(3)},{workerData.longitude.toFixed(3)}
+                        <LocationLabel latitude={workerData.latitude} longitude={workerData.longitude} />
                       </span>
                       <RequestLocationChangeDialog
                         workerUserId={workerData.user_id}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { MapPin } from "lucide-react";
+import LocationLabel from "@/components/LocationLabel";
 
 interface Row {
   id: string;
@@ -108,11 +109,11 @@ const LocationChangeRequestsTab = () => {
               <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <MapPin className="h-3.5 w-3.5" />
-                  Current: {r.current_latitude?.toFixed(5) ?? "—"}, {r.current_longitude?.toFixed(5) ?? "—"}
+                  Current: <LocationLabel latitude={r.current_latitude} longitude={r.current_longitude} />
                 </div>
                 <div className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-primary" />
-                  Requested: {r.requested_latitude.toFixed(5)}, {r.requested_longitude.toFixed(5)}
+                  Requested: <LocationLabel latitude={r.requested_latitude} longitude={r.requested_longitude} />
                 </div>
               </div>
               {r.reason && <p className="mt-2 text-sm"><span className="text-muted-foreground">Reason: </span>{r.reason}</p>}
