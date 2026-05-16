@@ -529,38 +529,6 @@ const WorkerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Compact field grid */}
-                {(() => {
-                  const fieldCls = "h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-xs text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-                  const labelCls = "block text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50";
-                  return (
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="col-span-1">
-                        <label className={labelCls}>Category</label>
-                        <select value={mainCategory} onChange={(e) => { setMainCategory(e.target.value); setSubCategory(""); }} className={`mt-0.5 ${fieldCls}`}>
-                          <option value="">Select</option>
-                          {mainCategories.map((cat) => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="col-span-1">
-                        <label className={labelCls}>Subcategory</label>
-                        <select value={subCategory} onChange={(e) => { setSubCategory(e.target.value); setProfession(e.target.value); }} disabled={!mainCategory} className={`mt-0.5 ${fieldCls} disabled:opacity-50`}>
-                          <option value="">Select</option>
-                          {subCategories.map((sub) => <option key={sub.id} value={sub.name}>{sub.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="col-span-2">
-                        <label className={labelCls}>Display name</label>
-                        <input value={profession} onChange={(e) => setProfession(e.target.value)} className={`mt-0.5 ${fieldCls}`} />
-                      </div>
-                      <div className="col-span-2">
-                        <label className={labelCls}>Years of experience</label>
-                        <input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} className={`mt-0.5 ${fieldCls}`} />
-                      </div>
-                    </div>
-                  );
-                })()}
-
                 {/* Contact options */}
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
