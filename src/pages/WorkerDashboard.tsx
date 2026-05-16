@@ -265,25 +265,16 @@ const WorkerDashboard = () => {
   const firstName = workerName.split(" ")[0];
 
   return (
-    <AppLayout showSignOut>
-      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-6 text-hero-foreground">
+    <AppLayout showSignOut hideMobileHeader>
+      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
         {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-white/5 bg-hero/85 px-5 py-3 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-white/20">
-              {(workerData as any).profiles?.avatar_url ? (
-                <img src={(workerData as any).profiles.avatar_url} alt={workerName} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-white/10 text-xs font-bold">
-                  {workerName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
-                </div>
-              )}
-            </div>
-            <h1 className="font-sora text-base font-bold uppercase tracking-wider sm:text-lg">Pro Dashboard</h1>
-          </div>
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+          <Link to="/" className="inline-flex items-center">
+            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+          </Link>
           <button
             onClick={() => navigate("/messages")}
-            className="relative rounded-full p-2 text-primary transition hover:bg-white/10"
+            className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
             aria-label="Notifications"
           >
             <MessageSquare className="h-5 w-5" />
