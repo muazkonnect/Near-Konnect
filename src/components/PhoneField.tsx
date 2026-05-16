@@ -23,7 +23,7 @@ interface PhoneFieldProps {
   placeholderLabel?: string;
   ariaLabel?: string;
   className?: string;
-  variant?: "default" | "hero";
+  variant?: "default" | "hero" | "dark";
 }
 
 const PhoneField = ({
@@ -35,6 +35,7 @@ const PhoneField = ({
   variant = "default",
 }: PhoneFieldProps) => {
   const hero = variant === "hero";
+  const dark = variant === "dark";
   // Determine the country either from the stored E.164 or the detected default
   const split = splitPhone(value, defaultCountry);
   const [country, setCountry] = useState<CountryCode>(split.country);
@@ -101,11 +102,15 @@ const PhoneField = ({
   return (
     <div className={className}>
       <div
-        className={`flex ${hero ? "h-10" : "h-11"} w-full items-stretch overflow-hidden rounded-xl border ${
-          hero ? "bg-hero-foreground/5" : "bg-background"
+        className={`flex ${hero ? "h-10" : "h-12"} w-full items-stretch overflow-hidden rounded-lg border ${
+          hero ? "bg-hero-foreground/5" : dark ? "bg-[#1c1b1b]" : "bg-background"
         } ${
           isValid
-            ? hero ? "border-hero-foreground/15" : "border-input"
+            ? hero
+              ? "border-hero-foreground/15"
+              : dark
+                ? "border-[#444748]/20 focus-within:border-[#d9ff7a] focus-within:shadow-[0_0_15px_-3px_rgba(217,255,122,0.3)] transition-all"
+                : "border-input"
             : "border-destructive/60"
         }`}
       >
@@ -116,13 +121,15 @@ const PhoneField = ({
               className={`flex shrink-0 items-center gap-1.5 border-r px-2.5 text-sm transition-colors ${
                 hero
                   ? "border-hero-foreground/15 bg-hero-foreground/10 text-hero-foreground hover:bg-hero-foreground/15"
-                  : "border-input bg-muted/30 hover:bg-muted/60"
+                  : dark
+                    ? "border-[#444748]/20 bg-[#20201f] text-[#e5e2e1] hover:bg-[#262625]"
+                    : "border-input bg-muted/30 hover:bg-muted/60"
               }`}
               aria-label="Select country"
             >
               <span className="text-base leading-none">{countryEntry.flag}</span>
               <span className="font-medium">+{countryEntry.dialCode}</span>
-              <ChevronDown className={`h-3.5 w-3.5 ${hero ? "text-hero-foreground/60" : "text-muted-foreground"}`} />
+              <ChevronDown className={`h-3.5 w-3.5 ${hero ? "text-hero-foreground/60" : dark ? "text-[#c4c7c7]" : "text-muted-foreground"}`} />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-72 p-0" align="start">
@@ -158,7 +165,11 @@ const PhoneField = ({
           aria-label={ariaLabel || "Phone number"}
           inputMode="tel"
           className={`h-full flex-1 rounded-none border-0 bg-transparent px-3 focus-visible:ring-0 ${
-            hero ? "text-hero-foreground placeholder:text-hero-foreground/40" : ""
+            hero
+              ? "text-hero-foreground placeholder:text-hero-foreground/40"
+              : dark
+                ? "text-[#e5e2e1] placeholder:text-[#c4c7c7]/40"
+                : ""
           }`}
         />
       </div>

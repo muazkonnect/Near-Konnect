@@ -259,6 +259,7 @@ const Register = () => {
                 onChange={setPhone}
                 defaultCountry={detectedCountry}
                 ariaLabel="Phone number"
+                variant="dark"
               />
             </div>
 
