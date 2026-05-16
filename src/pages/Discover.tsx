@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
   MapPin,
@@ -17,10 +17,14 @@ import {
   Zap,
   ShieldCheck,
   Clock3,
+  BadgeCheck,
+  Award,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import WorkerCard from "@/components/WorkerCard";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AuthRequiredDialog from "@/components/AuthRequiredDialog";
+import type { Worker } from "@/data/mockData";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
@@ -221,12 +225,7 @@ const Discover = () => {
     setSearchParams(next);
   };
 
-  const sortLabels: Record<SortKey, string> = {
-    distance: "Distance",
-    rating: "Rating",
-    experience: "Experience",
-    price: "Price",
-  };
+
 
   return (
     <AppLayout hideMobileHeader>
@@ -269,31 +268,35 @@ const Discover = () => {
           </div>
 
           {/* Search */}
-          <div className="relative mt-3">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
             <Input
               placeholder="Search for professional services..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 rounded-full border-white/10 bg-white/10 pl-11 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-primary/40"
+              className="h-12 rounded-none border-0 border-b border-white/15 bg-transparent pl-10 text-hero-foreground placeholder:text-hero-muted focus-visible:border-primary focus-visible:ring-0"
             />
           </div>
 
           {/* Quick filter chips */}
-          <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {(["distance", "rating", "experience"] as SortKey[]).map((s) => {
-              const active = sort === s;
+          <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {([
+              { key: "distance" as SortKey, label: "Nearby", Icon: Navigation },
+              { key: "rating" as SortKey, label: "Top Rated", Icon: Star },
+              { key: "experience" as SortKey, label: "Experienced", Icon: Briefcase },
+            ]).map(({ key, label, Icon }) => {
+              const active = sort === key;
               return (
                 <button
-                  key={s}
-                  onClick={() => setSort(s)}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+                  key={key}
+                  onClick={() => setSort(key)}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
                     active
                       ? "bg-primary text-primary-foreground shadow-md"
                       : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
                   }`}
                 >
-                  {sortLabels[s]}
+                  <Icon className="h-3.5 w-3.5" /> {label}
                 </button>
               );
             })}
@@ -305,25 +308,25 @@ const Discover = () => {
                   key={r}
                   onClick={() => setRadiusKm(radiusKm === r ? null : (r as any))}
                   disabled={!userCoords}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition disabled:opacity-40 ${
+                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition disabled:opacity-40 ${
                     active
                       ? "bg-primary text-primary-foreground shadow-md"
                       : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
                   }`}
                 >
-                  {r} km
+                  <MapPin className="h-3.5 w-3.5" /> {r} km
                 </button>
               );
             })}
             <button
               onClick={() => setRadiusKm(null)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
+              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-[11px] font-semibold transition ${
                 radiusKm === null
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
               }`}
             >
-              Any
+              <Compass className="h-3.5 w-3.5" /> Any
             </button>
           </div>
 
@@ -502,14 +505,7 @@ const Discover = () => {
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {featuredWorkers.map((w, i) => (
-                <div
-                  key={`feat-${w.id}-${i}`}
-                  className="rounded-2xl bg-gradient-to-br from-primary/10 to-transparent p-[1px]"
-                >
-                  <div className="rounded-2xl bg-hero/60">
-                    <WorkerCard worker={w} index={i} sponsored />
-                  </div>
-                </div>
+                <ExploreCard key={`feat-${w.id}-${i}`} worker={w as any} premium isAuthed={!!user} />
               ))}
             </div>
           </section>
@@ -539,7 +535,7 @@ const Discover = () => {
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {allOthers.map((w, i) => (
-                <WorkerCard key={`worker-${w.id}-${i}`} worker={w} index={i} sponsored={false} />
+                <ExploreCard key={`worker-${w.id}-${i}`} worker={w as any} isAuthed={!!user} />
               ))}
             </div>
           )}
@@ -556,6 +552,102 @@ const Discover = () => {
         </section>
       </div>
     </AppLayout>
+  );
+};
+
+interface ExploreCardProps {
+  worker: Worker & { distance: number };
+  premium?: boolean;
+  isAuthed: boolean;
+}
+
+const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) => {
+  const navigate = useNavigate();
+  const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+  const distLabel = worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km away` : "Distance unknown";
+
+  return (
+    <article
+      className={`relative flex flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
+        premium
+          ? "border-primary/20 bg-gradient-to-br from-white/[0.06] to-white/[0.02] shadow-[0_0_24px_-12px_hsl(var(--primary)/0.5)] hover:border-primary/40"
+          : "border-white/10 bg-white/[0.04] hover:border-white/20"
+      }`}
+    >
+      {premium && (
+        <div className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-bl-lg bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
+          <Award className="h-3 w-3" /> Premium
+        </div>
+      )}
+
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="relative shrink-0">
+            <Avatar className="h-14 w-14 rounded-xl border border-white/10">
+              <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
+              <AvatarFallback className="rounded-xl bg-white/10 text-sm font-bold text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <span
+              className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-hero ${
+                worker.available ? "bg-primary" : "bg-white/30"
+              }`}
+            />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1">
+              <h3 className="truncate text-sm font-bold text-hero-foreground">{worker.name}</h3>
+              {worker.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" />}
+            </div>
+            <p className="truncate text-xs text-primary/80">{worker.profession}</p>
+          </div>
+        </div>
+        <div className="shrink-0 text-right">
+          <div className="inline-flex items-center gap-1 text-primary">
+            <Star className="h-3.5 w-3.5 fill-current" />
+            <span className="text-sm font-bold">{worker.rating?.toFixed(1) || "—"}</span>
+          </div>
+          <p className="mt-0.5 text-[10px] text-hero-muted">{distLabel}</p>
+        </div>
+      </div>
+
+      {(worker.mainCategory || worker.subCategory) && (
+        <div className="mb-3 flex flex-wrap items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-muted">
+          {worker.mainCategory && <span className="text-hero-foreground">{worker.mainCategory}</span>}
+          {worker.mainCategory && worker.subCategory && <span className="opacity-40">•</span>}
+          {worker.subCategory && <span>{worker.subCategory}</span>}
+          {worker.experience > 0 && (
+            <>
+              <span className="opacity-40">•</span>
+              <span className="text-primary/80">{worker.experience}+ yrs</span>
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="mt-auto flex gap-2 border-t border-white/5 pt-3">
+        <Button
+          variant="ghost"
+          className="flex-1 rounded-lg bg-white/5 text-xs font-semibold text-hero-foreground hover:bg-white/10"
+          onClick={() => navigate(`/worker/${worker.id}`)}
+        >
+          View Profile
+        </Button>
+        {isAuthed ? (
+          <Button
+            className="flex-1 rounded-lg text-xs font-semibold"
+            onClick={() => navigate(`/worker/${worker.id}`)}
+          >
+            Contact
+          </Button>
+        ) : (
+          <AuthRequiredDialog title="Log in to contact" description="Sign in or create an account to contact this provider.">
+            <Button className="flex-1 rounded-lg text-xs font-semibold">Contact</Button>
+          </AuthRequiredDialog>
+        )}
+      </div>
+    </article>
   );
 };
 
