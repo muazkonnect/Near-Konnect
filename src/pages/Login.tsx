@@ -38,17 +38,6 @@ const Login = () => {
     navigate(redirect, { replace: true });
   };
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
-    });
-    if (error) {
-      setLoading(false);
-      toast.error(getAuthErrorMessage(error));
-    }
-  };
 
   return (
     <div className="relative flex min-h-screen flex-col justify-between overflow-x-hidden bg-[#131313] text-[#e5e2e1]">
@@ -141,39 +130,6 @@ const Login = () => {
             )}
           </button>
 
-          {/* Divider */}
-          <div className="flex items-center gap-6 py-2">
-            <div className="h-px flex-grow bg-[#444748]/20" />
-            <span className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-wider text-[#c4c7c7]">
-              Or continue with
-            </span>
-            <div className="h-px flex-grow bg-[#444748]/20" />
-          </div>
-
-          {/* Socials */}
-          <div className="grid grid-cols-2 gap-6">
-            <button
-              type="button"
-              onClick={handleGoogle}
-              disabled={loading}
-              className="flex h-14 items-center justify-center gap-2 rounded-lg border border-[#444748]/30 text-[#e5e2e1] transition-colors hover:bg-[#2a2a2a]"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="currentColor" d="M21.35 11.1H12v2.8h5.35c-.23 1.36-1.7 4-5.35 4-3.22 0-5.85-2.66-5.85-5.9s2.63-5.9 5.85-5.9c1.83 0 3.06.78 3.76 1.45l2.56-2.46C16.86 3.6 14.66 2.6 12 2.6 6.96 2.6 2.9 6.66 2.9 11.7s4.06 9.1 9.1 9.1c5.26 0 8.74-3.7 8.74-8.9 0-.6-.07-1.06-.17-1.5z"/>
-              </svg>
-              <span className="text-sm font-medium">Google</span>
-            </button>
-            <button
-              type="button"
-              disabled
-              className="flex h-14 items-center justify-center gap-2 rounded-lg border border-[#444748]/30 text-[#e5e2e1] opacity-60 transition-colors hover:bg-[#2a2a2a]"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.49 0-2.534-1.27-3.508-2.61-1.984-2.69-3.5-7.63-1.464-10.91 1.012-1.63 2.822-2.66 4.762-2.69 1.464-.03 2.846.98 3.74.98.893 0 2.574-1.21 4.34-1.03.741.03 2.82.3 4.158 2.24-.108.072-2.48 1.45-2.456 4.32.024 3.41 2.997 4.55 3.026 4.56z"/>
-              </svg>
-              <span className="text-sm font-medium">Apple</span>
-            </button>
-          </div>
         </form>
 
         {/* Footer link */}
