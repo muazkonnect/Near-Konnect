@@ -273,13 +273,13 @@ const Discover = () => {
           </div>
 
           {/* Search */}
-          <div className="relative mt-3">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-muted" />
             <Input
               placeholder="Search for professional services..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 rounded-full border-white/10 bg-white/10 pl-11 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-primary/40"
+              className="h-12 rounded-none border-0 border-b border-white/15 bg-transparent pl-10 text-hero-foreground placeholder:text-hero-muted focus-visible:border-primary focus-visible:ring-0"
             />
           </div>
 
