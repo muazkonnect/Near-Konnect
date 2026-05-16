@@ -74,6 +74,10 @@ const Register = () => {
       toast.error("Please fill in all required fields.");
       return;
     }
+    if (!isValidPhoneNumber(normalizedPhone)) {
+      toast.error("Please enter a valid phone number with country code.");
+      return;
+    }
     const pw = validatePassword(password);
     if (!pw.isValid) {
       toast.error("Password: " + pw.errors[0]);
