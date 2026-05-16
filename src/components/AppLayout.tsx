@@ -47,7 +47,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* MOBILE: bold compact hero header */}
       <div className="md:hidden">
-        {title ? (
+        {hideMobileHeader ? null : title ? (
           <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-6">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
