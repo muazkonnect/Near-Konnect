@@ -158,7 +158,7 @@ const Home = () => {
   };
 
   return (
-    <AppLayout>
+    <AppLayout hideMobileHeader>
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[70px] mb-[-70px] bg-hero text-hero-foreground">
         {/* TICKER */}
@@ -185,13 +185,21 @@ const Home = () => {
           <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
         </div>
 
+        {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
+        <div className="relative flex items-center justify-between px-5 pt-5 md:hidden">
+          <Link to="/" className="inline-flex items-center">
+            <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
+          </Link>
+          {user && <NotificationBell />}
+        </div>
+
         {/* HERO */}
         <motion.section
           initial="hidden"
           animate="visible"
           variants={fadeUp}
           custom={0}
-          className="relative px-5 pb-10 pt-10 text-center"
+          className="relative px-5 pb-10 pt-6 text-center"
         >
           <div aria-hidden className="pointer-events-none absolute -right-20 -top-10 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -left-20 top-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
