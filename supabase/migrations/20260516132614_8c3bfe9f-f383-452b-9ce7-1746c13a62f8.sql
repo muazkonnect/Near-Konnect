@@ -1,0 +1,1 @@
+ALTER TABLE public.workers ADD COLUMN IF NOT EXISTS expertise_tags text[] NOT NULL DEFAULT '{}'::text[];
