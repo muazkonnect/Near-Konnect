@@ -1,32 +1,29 @@
-## Problem
-The `workers` list query is failing with HTTP 400:
-> `column profiles_1.profession_override does not exist`
+# Show place names instead of coordinates
 
-This crashes the entire worker fetch, so **no workers display** anywhere — not on the Home "Nearby Services" section, not on Explore, not on the Map. "Ijaz Ansari" exists in the database (the `get_nearby_workers` RPC even returned him), but the listing query never resolves.
+Yes — replace raw `lat, lng` strings with a human-readable place name via reverse geocoding.
 
-## Root Cause
-`src/hooks/useWorkers.ts` selects:
-```ts
-profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, profession_override)
-```
-The `profession_override` column was never added to the `profiles` table (verified in schema).
+## Approach
 
-## Fix — Pick ONE option
+1. **Add a tiny helper** `src/lib/reverseGeocode.ts`
+   - `reverseGeocode(lat, lng): Promise<string>` using free OpenStreetMap Nominatim (`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=..&lon=..&zoom=14`).
+   - Returns a short label like `"Gulshan-e-Iqbal, Karachi"` built from `address.suburb / city / town / village / state / country`.
+   - In-memory cache + `localStorage` cache keyed by rounded coords (5 decimals) so we don't hit the API repeatedly.
+   - Graceful fallback to `lat.toFixed(3), lng.toFixed(3)` on failure/offline.
 
-### ✅ Option A (recommended, fastest): Remove `profession_override` from the query
-- Edit `src/hooks/useWorkers.ts`:
-  - Remove `profession_override` from the `profiles(...)` select.
-  - Replace the override fallback with simply: `w.profession || "General Service"`.
-- Search the codebase for any other references to `profession_override` and clean them up (likely none in active use).
+2. **Add a reusable component** `src/components/LocationLabel.tsx`
+   - Props: `latitude`, `longitude`, optional `fallback`, `className`, `iconClassName`.
+   - Internally uses the helper, shows a small skeleton ("Locating…") while loading, then the resolved name.
 
-This restores all worker listings immediately. No DB migration needed.
+3. **Swap coordinate displays** to use `<LocationLabel />`:
+   - `src/pages/WorkerDashboard.tsx` — the locked location chip (`{lat.toFixed(3)},{lng.toFixed(3)}`).
+   - `src/components/MapLocationPicker.tsx` — "Selected: x, y" line under the map.
+   - `src/components/admin/LocationChangeRequestsTab.tsx` — both "Current" and "Requested" rows.
+   - Any other spots that print raw coordinates (Worker cards / profile popups if present) — quick grep for `toFixed(` in `src/`.
 
-### Option B: Add the column to the database
-- Run a migration to add `profession_override TEXT` to `profiles`.
-- Keep the existing query as-is.
-- Only worth doing if you actually want workers to override their profession label from their profile (separate from the `workers.profession` column). Based on current UI, this isn't used anywhere meaningful.
+4. **Keep raw coords accessible** as a tooltip / `title` attribute on the label so admins can still see exact values on hover.
 
-## Recommendation
-Go with **Option A** — it's a one-file change that immediately unblocks Ijaz Ansari and every other worker from showing up on Home and Explore.
+## Notes / trade-offs
 
-After the fix, "Ijaz Ansari" will appear in Nearby Services (he's ~4km away, well within the 10km default radius).
+- Nominatim is free but rate-limited (1 req/sec, must send a `User-Agent`/referer). With the cache this is fine for typical app usage.
+- If you'd rather use a paid/faster provider (Google, Mapbox), swap the helper's implementation — the rest of the code stays the same.
+- No DB changes; resolution happens client-side and is cached.
