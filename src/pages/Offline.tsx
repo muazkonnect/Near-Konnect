@@ -41,9 +41,9 @@ const Offline = () => {
               </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-1 rounded-full border border-destructive/20 bg-destructive/10 px-3 py-1">
-              <span className="h-2 w-2 rounded-full bg-destructive" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
+            <div className="mt-2 flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">
                 Connection Interrupted
               </span>
             </div>
