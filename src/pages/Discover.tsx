@@ -51,6 +51,8 @@ const Discover = () => {
   const [sort, setSort] = useState<SortKey>("distance");
   const [priceBand] = useState<"all" | "budget" | "mid" | "premium">("all");
   const [minRating, setMinRating] = useState(0);
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [availableOnly, setAvailableOnly] = useState(false);
   const selectedMainCategory = searchParams.get("main_category") || "";
   const selectedSubCategory = searchParams.get("sub_category") || "";
   const [expandedMainCategory, setExpandedMainCategory] = useState(selectedMainCategory);
