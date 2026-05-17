@@ -1,29 +1,29 @@
-# Show place names instead of coordinates
+## Goal
+Make `/w/NK-XXXXXX` share links work on your Vercel-hosted domain.
 
-Yes — replace raw `lat, lng` strings with a human-readable place name via reverse geocoding.
+## Changes
 
-## Approach
+**1. Create `vercel.json` at repo root**
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+This makes Vercel serve `index.html` for any deep link (`/w/...`, `/worker/...`, `/discover`, etc.) so React Router can handle it. Without this, refreshing or opening a share link directly returns 404.
 
-1. **Add a tiny helper** `src/lib/reverseGeocode.ts`
-   - `reverseGeocode(lat, lng): Promise<string>` using free OpenStreetMap Nominatim (`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=..&lon=..&zoom=14`).
-   - Returns a short label like `"Gulshan-e-Iqbal, Karachi"` built from `address.suburb / city / town / village / state / country`.
-   - In-memory cache + `localStorage` cache keyed by rounded coords (5 decimals) so we don't hit the API repeatedly.
-   - Graceful fallback to `lat.toFixed(3), lng.toFixed(3)` on failure/offline.
+## Manual steps for you (Vercel dashboard)
 
-2. **Add a reusable component** `src/components/LocationLabel.tsx`
-   - Props: `latitude`, `longitude`, optional `fallback`, `className`, `iconClassName`.
-   - Internally uses the helper, shows a small skeleton ("Locating…") while loading, then the resolved name.
+**2. Add environment variables**
+In Vercel → Project → Settings → Environment Variables, add (for Production, Preview, Development):
+- `VITE_SUPABASE_URL` = `https://lxghuqiheaoinytrwhac.supabase.co`
+- `VITE_SUPABASE_PUBLISHABLE_KEY` = (the anon key from `.env`)
+- `VITE_SUPABASE_PROJECT_ID` = `lxghuqiheaoinytrwhac`
 
-3. **Swap coordinate displays** to use `<LocationLabel />`:
-   - `src/pages/WorkerDashboard.tsx` — the locked location chip (`{lat.toFixed(3)},{lng.toFixed(3)}`).
-   - `src/components/MapLocationPicker.tsx` — "Selected: x, y" line under the map.
-   - `src/components/admin/LocationChangeRequestsTab.tsx` — both "Current" and "Requested" rows.
-   - Any other spots that print raw coordinates (Worker cards / profile popups if present) — quick grep for `toFixed(` in `src/`.
+**3. Redeploy** (Vercel → Deployments → Redeploy latest, or push a commit).
 
-4. **Keep raw coords accessible** as a tooltip / `title` attribute on the label so admins can still see exact values on hover.
+## How it will work after this
+- Visitor opens `https://yourdomain.com/w/NK-64M56M` → Vercel serves `index.html` → React Router mounts `WorkerShareRedirect` → it calls the Supabase `worker-share` edge function → gets the real worker UUID → navigates to `/worker/{uuid}`.
+- Share links generated in the app already use `window.location.origin`, so they'll automatically use your Vercel domain.
 
-## Notes / trade-offs
-
-- Nominatim is free but rate-limited (1 req/sec, must send a `User-Agent`/referer). With the cache this is fine for typical app usage.
-- If you'd rather use a paid/faster provider (Google, Mapbox), swap the helper's implementation — the rest of the code stays the same.
-- No DB changes; resolution happens client-side and is cached.
+## Not included
+- Rich link previews (WhatsApp/iMessage unfurls) under your domain — currently they only render correctly if visitors hit the edge function URL directly.
