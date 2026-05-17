@@ -11,13 +11,19 @@ interface Props {
 }
 
 const SHARE_DOMAIN = "https://www.nearkonnect.com";
+const SHARE_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/worker-share`;
 
 const WorkerShareCard = ({ uid, name }: Props) => {
   const [showQr, setShowQr] = useState(false);
   const qrRef = useRef<HTMLDivElement | null>(null);
 
   const validUid = isValidWorkerUid(uid);
-  const url = useMemo(() => `${SHARE_DOMAIN}/w/${uid}`, [uid]);
+  // Public share URL goes through the edge function so link previews unfurl
+  // with the worker's photo, name, and profession on WhatsApp / iMessage /
+  // Twitter / Facebook / Slack / Telegram, etc. Humans get redirected to
+  // the SPA profile.
+  const url = useMemo(() => `${SHARE_BASE}/${uid}`, [uid]);
+  const prettyUrl = useMemo(() => `${SHARE_DOMAIN}/w/${uid}`, [uid]);
 
   if (!validUid) {
     return (
