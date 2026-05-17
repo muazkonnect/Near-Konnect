@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Save, KeyRound, User, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Save, KeyRound, LogOut, MessageSquare } from "lucide-react";
+import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,17 +73,31 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <AppLayout showSignOut>
-      <div className="-mx-4 -my-[70px] min-h-screen bg-hero text-hero-foreground">
-        <section className="mx-auto max-w-xl space-y-5 px-5 pt-6 pb-32">
-          <div className="rounded-3xl border border-primary/15 bg-primary/5 p-6 backdrop-blur sm:p-8">
+    <AppLayout showSignOut hideMobileHeader>
+      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
+        {/* Top App Bar */}
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+          <Link to="/" className="inline-flex items-center">
+            <img src={logoImg} alt="Near Konnect" className="block h-6 w-auto max-w-[55vw] object-contain" />
+          </Link>
+          <button
+            onClick={() => navigate("/messages")}
+            className="relative rounded-full p-2 text-primary transition hover:bg-hero-foreground/10"
+            aria-label="Messages"
+          >
+            <MessageSquare className="h-5 w-5" />
+          </button>
+        </header>
+
+        <div className="mx-auto max-w-xl space-y-4">
+          <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
             <div className="mb-6 flex items-center gap-4">
               <AvatarUpload currentUrl={profile?.avatar_url} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-sora text-lg font-bold text-hero-foreground">
                   {profile?.full_name || "Your profile"}
                 </p>
-                <p className="truncate text-sm text-hero-muted">{user?.email}</p>
+                <p className="truncate text-sm text-hero-foreground/60">{user?.email}</p>
                 <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_profile"] })} />
               </div>
             </div>
@@ -95,21 +110,21 @@ const CustomerDashboard = () => {
 
             <div className="space-y-4">
               <div>
-                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Full Name</Label>
+                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Full Name</Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1.5 h-11 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                  className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:border-primary/60 focus-visible:ring-0"
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Phone Number</Label>
+                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Phone Number</Label>
                 <Input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
                   placeholder="+1 234 567 8900"
-                  className="mt-1.5 h-11 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                  className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:border-primary/60 focus-visible:ring-0"
                 />
               </div>
             </div>
@@ -119,16 +134,16 @@ const CustomerDashboard = () => {
             </Button>
           </div>
 
-          <div className="rounded-3xl border border-primary/15 bg-primary/5 p-6 backdrop-blur">
+          <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-sora font-semibold text-hero-foreground">Password</p>
-                <p className="text-xs text-hero-muted">Change your account password.</p>
+                <p className="text-xs text-hero-foreground/60">Change your account password.</p>
               </div>
               <ChangePasswordDialog>
                 <Button
                   variant="outline"
-                  className="h-10 gap-2 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground hover:bg-primary/10 hover:text-hero-foreground"
+                  className="h-10 gap-2 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"
                 >
                   <KeyRound className="h-3.5 w-3.5" /> Change
                 </Button>
@@ -139,12 +154,12 @@ const CustomerDashboard = () => {
           <Button
             variant="outline"
             onClick={async () => { await signOut(); navigate("/login"); }}
-            className="h-11 w-full gap-2 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground hover:bg-primary/10 hover:text-hero-foreground"
+            className="h-11 w-full gap-2 rounded-xl border-destructive/40 bg-transparent text-destructive hover:bg-destructive hover:text-destructive-foreground"
           >
             <LogOut className="h-4 w-4" /> Sign out
           </Button>
-        </section>
-      </div>
+        </div>
+      </section>
     </AppLayout>
   );
 };
