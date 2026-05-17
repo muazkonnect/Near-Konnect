@@ -101,7 +101,7 @@ const FeaturedWorkersCarousel = ({
                 className="shrink-0"
               >
                 <Link
-                  to={`/worker/${(w as any).uid || w.id}`}
+                  to={`/w/${(w as any).uid || w.id}`}
                   onClick={() => trackFeaturedEvent(w.id, "contact_click", user?.id)}
                   className="group relative flex w-[200px] flex-col items-center gap-2 rounded-2xl border border-star/30 bg-gradient-to-b from-star/5 to-transparent p-3 transition-all hover:-translate-y-0.5 hover:border-star/50 hover:shadow-md"
                 >
