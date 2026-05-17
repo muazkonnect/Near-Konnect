@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -35,14 +35,19 @@ import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { getExpertise } from "@/lib/categoryExpertise";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
+import { calculateDistance, getCurrentPosition, type Coords } from "@/lib/geolocation";
 
 const WorkerProfile = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const navDistance = (location.state as any)?.distance;
-  const hasDist = typeof navDistance === "number" && navDistance > 0 && isFinite(navDistance);
+  const navDistanceRaw = (location.state as any)?.distance;
+  const navDistance =
+    typeof navDistanceRaw === "number" && navDistanceRaw > 0 && isFinite(navDistanceRaw)
+      ? navDistanceRaw
+      : null;
+  const [userCoords, setUserCoords] = useState<Coords | null>(null);
   const queryClient = useQueryClient();
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
@@ -98,6 +103,29 @@ const WorkerProfile = () => {
     void trackEvent("profile_view");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, dbWorker?.user_id]);
+
+  // Fetch user geolocation only if we don't have a distance from nav state
+  useEffect(() => {
+    if (navDistance != null || userCoords) return;
+    let cancelled = false;
+    getCurrentPosition()
+      .then((c) => { if (!cancelled) setUserCoords(c); })
+      .catch(() => { /* permission denied or unavailable */ });
+    return () => { cancelled = true; };
+  }, [navDistance, userCoords]);
+
+  const distanceKm = useMemo<number | null>(() => {
+    if (navDistance != null) return navDistance;
+    const wLat = (dbWorker as any)?.latitude;
+    const wLng = (dbWorker as any)?.longitude;
+    if (userCoords && typeof wLat === "number" && typeof wLng === "number") {
+      const d = calculateDistance(userCoords.latitude, userCoords.longitude, wLat, wLng);
+      return isFinite(d) && d >= 0 ? parseFloat(d.toFixed(d < 10 ? 1 : 0)) : null;
+    }
+    return null;
+  }, [navDistance, userCoords, dbWorker]);
+
+  const hasDist = distanceKm != null;
 
   if (workerLoading) {
     return (
@@ -246,7 +274,7 @@ const WorkerProfile = () => {
                   <span className="h-3 w-px bg-primary/30" />
                   {hasDist ? (
                     <>
-                      <span className="font-sora text-sm font-bold leading-none">{navDistance} km</span>
+                      <span className="font-sora text-sm font-bold leading-none">{distanceKm} km</span>
                       <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">away</span>
                     </>
                   ) : (
