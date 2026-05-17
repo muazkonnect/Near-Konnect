@@ -95,7 +95,7 @@ const LocationChangeRequestsTab = () => {
             {r.profile?.avatar_url ? (
               <img src={r.profile.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
             ) : (
-              <div className="h-12 w-12 rounded-full bg-muted" />
+              <div className="h-12 w-12 rounded-full bg-hero-foreground/10" />
             )}
             <div className="min-w-0 flex-1">
               <p className="font-semibold">{r.profile?.full_name || r.worker_user_id}</p>
@@ -125,7 +125,7 @@ const LocationChangeRequestsTab = () => {
                 View on map
               </a>
               {r.admin_comment && r.status !== "pending" && (
-                <p className="mt-2 rounded-md bg-muted/40 p-2 text-xs">
+                <p className="mt-2 rounded-md bg-hero-foreground/[0.06] p-2 text-xs">
                   <span className="font-semibold">Admin comment: </span>{r.admin_comment}
                 </p>
               )}

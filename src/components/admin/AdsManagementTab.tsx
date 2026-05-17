@@ -376,7 +376,7 @@ const AdsManagementTab = () => {
             </div>
 
             {/* Scheduling */}
-            <div className="rounded-xl border bg-muted/30 p-3">
+            <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.05] p-3">
               <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
                 <Calendar className="h-3.5 w-3.5 text-primary" /> Scheduling (optional)
               </div>
@@ -434,7 +434,7 @@ const AdsManagementTab = () => {
                   <img src={adImageUrl} alt="" className="h-32 w-full object-cover" />
                 </div>
               ) : (
-                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed bg-muted/20 text-hero-foreground/60">
+                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed border-hero-foreground/15 bg-hero-foreground/[0.04] text-hero-foreground/60">
                   <ImageIcon className="mr-2 h-4 w-4" /> No image yet
                 </div>
               )}
@@ -468,7 +468,7 @@ const AdsManagementTab = () => {
         </div>
 
         {/* Geo-targeting */}
-        <div className="mt-5 rounded-xl border bg-muted/20 p-4">
+        <div className="mt-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
@@ -545,7 +545,7 @@ const AdsManagementTab = () => {
             <div key={ad.id} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                 <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 bg-hero-foreground/10">
                     {ad.image_url ? (
                       <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                     ) : (

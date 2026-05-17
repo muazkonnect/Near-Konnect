@@ -60,7 +60,7 @@ const AvatarResetsTab = () => {
           {r.profile?.avatar_url ? (
             <img src={r.profile.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
           ) : (
-            <div className="h-12 w-12 rounded-full bg-muted" />
+            <div className="h-12 w-12 rounded-full bg-hero-foreground/10" />
           )}
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{r.profile?.full_name || r.user_id}</p>
