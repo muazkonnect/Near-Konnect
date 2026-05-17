@@ -283,7 +283,7 @@ const WorkerProfile = () => {
                   <span className="h-3 w-px bg-primary/30" />
                   {hasDist ? (
                     <>
-                      <span className="font-sora text-sm font-bold leading-none">{distanceKm} km</span>
+                      <span className="font-sora text-sm font-bold leading-none">{distanceLabel}</span>
                       <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">away</span>
                     </>
                   ) : (
