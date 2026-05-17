@@ -7,7 +7,20 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const WORKER_UID_REGEX = /^NK-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
-const SITE = "https://www.nearkonnect.com";
+const FALLBACK_SITE = Deno.env.get("PUBLIC_SHARE_DOMAIN")?.replace(/\/$/, "") || "https://nearkonnectapp.lovable.app";
+
+const resolveSite = (req: Request): string => {
+  // Prefer forwarded host (set by reverse proxies / custom domains)
+  const fwdHost = req.headers.get("x-forwarded-host") || req.headers.get("x-original-host");
+  const fwdProto = req.headers.get("x-forwarded-proto") || "https";
+  if (fwdHost && !fwdHost.includes("supabase.co") && !fwdHost.includes("functions.")) {
+    return `${fwdProto}://${fwdHost}`.replace(/\/$/, "");
+  }
+  // Fallback to Origin/Referer header
+  const origin = req.headers.get("origin");
+  if (origin && !origin.includes("supabase.co")) return origin.replace(/\/$/, "");
+  return FALLBACK_SITE;
+};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY =
