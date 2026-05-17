@@ -212,7 +212,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
             <div className="text-center">
               <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/worker/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } }); onOpenChange(false); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } }); onOpenChange(false); }}
                 className="inline-block py-2 text-sm text-hero-muted underline decoration-primary/30 transition hover:text-primary"
               >
                 View Full Profile

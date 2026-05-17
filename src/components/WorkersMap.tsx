@@ -175,7 +175,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       if (clickable) {
         m.on("popupopen", (e: any) => {
           e.popup.getElement()?.querySelector(`[data-worker-link="${w.id}"]`)
-            ?.addEventListener("click", () => navigate(`/worker/${(w as any).uid || w.id}`));
+            ?.addEventListener("click", () => navigate(`/w/${(w as any).uid || w.id}`));
         });
       }
       m.addTo(layer);
