@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { ArrowLeft, Paperclip, Send } from "lucide-react";
+import { ArrowLeft, Plus, Send, MoreVertical, Phone, Video, CheckCheck, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 interface Props {
   otherUserId: string;
   otherUserName: string;
+  otherUserAvatar?: string | null;
   backLink: string;
 }
 
@@ -25,7 +27,19 @@ type ChatMessage = {
   status: "sent" | "delivered" | "seen" | "failed";
 };
 
-const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
+const formatDateLabel = (iso: string) => {
+  const d = new Date(iso);
+  const today = new Date();
+  const yest = new Date();
+  yest.setDate(today.getDate() - 1);
+  const same = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  if (same(d, today)) return "Today";
+  if (same(d, yest)) return "Yesterday";
+  return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+};
+
+const ChatWindow = ({ otherUserId, otherUserName, otherUserAvatar, backLink }: Props) => {
   const { user } = useAuth();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -239,33 +253,94 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
     setLoadingOlder(false);
   };
 
+  const initials = (otherUserName || "?")
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  // Group messages by date for separators
+  let lastDateKey = "";
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="sticky top-0 z-10 relative overflow-hidden bg-hero text-hero-foreground p-4 rounded-t-2xl">
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
-        <div className="relative flex items-center gap-3 min-w-0">
-          <Link to={backLink} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-hero-foreground hover:bg-white/15">
-            <ArrowLeft className="h-4 w-4" />
+    <div className="flex h-full flex-col bg-hero text-hero-foreground">
+      {/* Top App Bar */}
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/80 px-4 py-3 backdrop-blur-md">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link
+            to={backLink}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-hero-foreground transition hover:bg-hero-foreground/10"
+            aria-label="Back"
+          >
+            <ArrowLeft className="h-5 w-5" />
           </Link>
-          <div className="min-w-0">
-            <h3 className="truncate font-bold">{otherUserName}</h3>
-            <p className="text-xs text-primary">● Online</p>
+          <div className="relative shrink-0">
+            <Avatar className="h-10 w-10 border border-hero-foreground/15">
+              <AvatarImage src={otherUserAvatar || undefined} alt={otherUserName} />
+              <AvatarFallback className="bg-hero-foreground/10 text-xs font-bold text-hero-foreground">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-primary ring-2 ring-hero" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-sora text-sm font-bold tracking-tight">{otherUserName}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-primary">Online</p>
           </div>
         </div>
-        
-      </div>
+        <div className="flex items-center gap-1">
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-full text-hero-foreground/70 transition hover:bg-hero-foreground/10 hover:text-hero-foreground"
+            aria-label="Voice call"
+            type="button"
+          >
+            <Phone className="h-4 w-4" />
+          </button>
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-full text-hero-foreground/70 transition hover:bg-hero-foreground/10 hover:text-hero-foreground"
+            aria-label="Video call"
+            type="button"
+          >
+            <Video className="h-4 w-4" />
+          </button>
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-full text-hero-foreground/70 transition hover:bg-hero-foreground/10 hover:text-hero-foreground"
+            aria-label="More"
+            type="button"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </button>
+        </div>
+      </header>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/30">
+      {/* Messages */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-4 py-5 space-y-2"
+        style={{
+          backgroundImage:
+            "radial-gradient(hsl(var(--hero-foreground)/0.04) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      >
         {hasOlder && (
-          <div className="flex justify-center">
-            <Button variant="outline" size="sm" className="rounded-full" onClick={loadOlderMessages} disabled={loadingOlder}>
+          <div className="flex justify-center pb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"
+              onClick={loadOlderMessages}
+              disabled={loadingOlder}
+            >
               {loadingOlder ? "Loading..." : "Load older messages"}
             </Button>
           </div>
         )}
 
         {isLoading && messages.length === 0 && (
-          <p className="text-center text-sm text-muted-foreground py-8">Loading chat...</p>
+          <p className="py-8 text-center text-sm text-hero-foreground/60">Loading chat...</p>
         )}
 
         {error && messages.length === 0 && (
@@ -280,69 +355,106 @@ const ChatWindow = ({ otherUserId, otherUserName, backLink }: Props) => {
         {messages.map((msg) => {
           const isMine = msg.sender_id === user?.id;
           const isFailed = msg.status === "failed";
+          const dateKey = new Date(msg.created_at).toDateString();
+          const showDate = dateKey !== lastDateKey;
+          lastDateKey = dateKey;
+
           return (
-            <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[78%] px-4 py-2.5 text-sm shadow-sm ${
-                  isMine
-                    ? isFailed
-                      ? "bg-destructive/15 text-foreground rounded-3xl rounded-br-md border border-destructive/30"
-                      : "bg-primary text-primary-foreground rounded-3xl rounded-br-md"
-                    : "bg-hero text-hero-foreground rounded-3xl rounded-bl-md"
-                }`}
-              >
-                <p>{msg.message_text}</p>
-                <p className={`text-[10px] mt-1 ${isMine ? "text-primary-foreground/70" : "text-hero-muted"}`}>
-                  {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  {isMine && <span className="ml-1">· {msg.status === "failed" ? "failed" : msg.status}</span>}
-                </p>
-                {isMine && isFailed && (
-                  <button
-                    type="button"
-                    className="mt-1 text-[11px] font-semibold text-destructive underline"
-                    onClick={() => handleRetry(msg)}
-                    disabled={retryingId === msg.id}
+            <div key={msg.id}>
+              {showDate && (
+                <div className="my-4 flex justify-center">
+                  <span className="rounded-full bg-hero-foreground/5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-hero-foreground/50">
+                    {formatDateLabel(msg.created_at)}
+                  </span>
+                </div>
+              )}
+
+              <div className={`flex w-full ${isMine ? "justify-end" : "justify-start"}`}>
+                <div className={`flex max-w-[85%] flex-col gap-1 md:max-w-[70%] ${isMine ? "items-end" : "items-start"}`}>
+                  <div
+                    className={`px-4 py-2.5 text-sm leading-snug shadow-sm ${
+                      isMine
+                        ? isFailed
+                          ? "rounded-2xl rounded-br-md border border-destructive/30 bg-destructive/15 text-hero-foreground"
+                          : "rounded-2xl rounded-br-md border border-primary/30 bg-primary/15 text-hero-foreground shadow-[0_0_18px_-8px_hsl(var(--primary)/0.6)]"
+                        : "rounded-2xl rounded-bl-md border border-hero-foreground/10 bg-hero-foreground/[0.06] text-hero-foreground"
+                    }`}
                   >
-                    {retryingId === msg.id ? "Retrying..." : "Retry"}
-                  </button>
-                )}
+                    <p className="whitespace-pre-wrap break-words">{msg.message_text}</p>
+                  </div>
+
+                  <div className="flex items-center gap-1 px-1">
+                    <span className="text-[10px] text-hero-foreground/40">
+                      {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    {isMine && !isFailed && (
+                      msg.status === "seen" ? (
+                        <CheckCheck className="h-3 w-3 text-primary" />
+                      ) : (
+                        <Check className="h-3 w-3 text-hero-foreground/40" />
+                      )
+                    )}
+                    {isMine && isFailed && (
+                      <button
+                        type="button"
+                        className="text-[10px] font-semibold text-destructive underline"
+                        onClick={() => handleRetry(msg)}
+                        disabled={retryingId === msg.id}
+                      >
+                        {retryingId === msg.id ? "Retrying..." : "Retry"}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           );
         })}
+
         {!isLoading && messages.length === 0 && !error && (
-          <p className="text-center text-sm text-muted-foreground py-8">Start a conversation</p>
+          <p className="py-8 text-center text-sm text-hero-foreground/60">Start a conversation</p>
         )}
       </div>
 
-      <div className="sticky bottom-0 p-3 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      {/* Bottom Input */}
+      <div className="sticky bottom-0 z-20 border-t border-hero-foreground/10 bg-hero/80 px-4 py-3 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <form
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-          className="flex items-center gap-2 rounded-full bg-muted p-1.5"
+          className="flex items-center gap-2"
         >
-          <Button type="button" variant="ghost" size="icon" className="rounded-full">
-            <Paperclip className="w-4 h-4" />
-          </Button>
-          <Input
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            className="flex-1 rounded-full border-none bg-transparent shadow-none focus-visible:ring-0"
-          />
-          <Button type="submit" size="icon" className="rounded-full" disabled={!text.trim() || sending}>
-            <Send className="w-4 h-4" />
-          </Button>
+          <button
+            type="button"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-hero-foreground/70 transition hover:bg-hero-foreground/10 hover:text-hero-foreground"
+            aria-label="Attach"
+          >
+            <Plus className="h-5 w-5" />
+          </button>
+          <div className="relative flex-1">
+            <Input
+              placeholder="Type your message..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              className="h-11 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 px-4 text-sm text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:border-primary/40 focus-visible:ring-1 focus-visible:ring-primary/30"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={!text.trim() || sending}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.5)] transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+            aria-label="Send"
+          >
+            <Send className="h-5 w-5" />
+          </button>
         </form>
       </div>
     </div>
   );
 };
-
 
 export default ChatWindow;
