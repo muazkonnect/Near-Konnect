@@ -1,5 +1,6 @@
 export interface Worker {
   id: string;
+  uid?: string;
   name: string;
   profession: string;
   rating: number;

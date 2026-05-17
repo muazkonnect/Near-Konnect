@@ -56,6 +56,7 @@ export function useWorkers() {
 
         return {
           id: w.id,
+          uid: w.uid || undefined,
           name: profile?.full_name || "Worker",
           profession: finalProfession,
           rating,
