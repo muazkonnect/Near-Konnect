@@ -74,9 +74,9 @@ const CustomerDashboard = () => {
 
   return (
     <AppLayout hideMobileHeader>
-      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
-        {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+      <section className="min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground -mx-4 -mt-[90px] -mb-[166px] md:mx-0 md:mt-0 md:mb-0 md:min-h-0 md:rounded-3xl md:px-8 md:pt-8 md:pb-10">
+        {/* Top App Bar — mobile only (desktop has AppLayout nav) */}
+        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md md:hidden">
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="block h-6 w-auto max-w-[55vw] object-contain" />
           </Link>
@@ -89,7 +89,7 @@ const CustomerDashboard = () => {
           </button>
         </header>
 
-        <div className="mx-auto max-w-xl space-y-4">
+        <div className="mx-auto max-w-xl space-y-4 md:max-w-2xl">
           <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
             <div className="mb-6 flex items-center gap-4">
               <AvatarUpload currentUrl={profile?.avatar_url} />
