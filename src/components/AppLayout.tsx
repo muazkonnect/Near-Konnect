@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Compass, HeartPulse, Home, KeyRound, LogOut, MapPin, MessageSquare, Search } from "lucide-react";
+import { Compass, HeartPulse, Home, KeyRound, LogOut, MapPin, MessageSquare } from "lucide-react";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
