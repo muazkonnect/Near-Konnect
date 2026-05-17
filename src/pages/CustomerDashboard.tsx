@@ -75,7 +75,7 @@ const CustomerDashboard = () => {
     <AppLayout showSignOut>
       <div className="-mx-4 -my-[70px] min-h-screen bg-hero text-hero-foreground">
         <section className="mx-auto max-w-xl space-y-5 px-5 pt-6 pb-32">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+          <div className="rounded-3xl border border-primary/15 bg-primary/5 p-6 backdrop-blur sm:p-8">
             <div className="mb-6 flex items-center gap-4">
               <AvatarUpload currentUrl={profile?.avatar_url} />
               <div className="min-w-0 flex-1">
@@ -99,7 +99,7 @@ const CustomerDashboard = () => {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1.5 h-11 rounded-xl border-white/15 bg-white/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                  className="mt-1.5 h-11 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
                 />
               </div>
               <div>
@@ -109,7 +109,7 @@ const CustomerDashboard = () => {
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
                   placeholder="+1 234 567 8900"
-                  className="mt-1.5 h-11 rounded-xl border-white/15 bg-white/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                  className="mt-1.5 h-11 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ const CustomerDashboard = () => {
             </Button>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <div className="rounded-3xl border border-primary/15 bg-primary/5 p-6 backdrop-blur">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-sora font-semibold text-hero-foreground">Password</p>
@@ -128,7 +128,7 @@ const CustomerDashboard = () => {
               <ChangePasswordDialog>
                 <Button
                   variant="outline"
-                  className="h-10 gap-2 rounded-xl border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
+                  className="h-10 gap-2 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground hover:bg-primary/10 hover:text-hero-foreground"
                 >
                   <KeyRound className="h-3.5 w-3.5" /> Change
                 </Button>
@@ -139,7 +139,7 @@ const CustomerDashboard = () => {
           <Button
             variant="outline"
             onClick={async () => { await signOut(); navigate("/login"); }}
-            className="h-11 w-full gap-2 rounded-xl border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
+            className="h-11 w-full gap-2 rounded-xl border-primary/20 bg-primary/5 text-hero-foreground hover:bg-primary/10 hover:text-hero-foreground"
           >
             <LogOut className="h-4 w-4" /> Sign out
           </Button>
