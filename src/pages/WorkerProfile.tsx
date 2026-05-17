@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Copy } from "lucide-react";
 import {
   ArrowLeft,
   MoreVertical,
@@ -222,27 +222,37 @@ const WorkerProfile = () => {
                   </span>
                 )}
               </div>
-              {(dbWorker as any).uid && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard?.writeText((dbWorker as any).uid);
-                    toast.success("Worker ID copied");
-                  }}
-                  className="mt-2 inline-block rounded-full border border-border/40 bg-muted/40 px-2.5 py-0.5 font-mono text-[11px] tracking-wider text-muted-foreground transition hover:bg-muted/70"
-                  title="Click to copy"
-                >
-                  {(dbWorker as any).uid}
-                </button>
-              )}
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/20 px-5 py-2 text-primary shadow-[0_0_24px_-4px_hsl(var(--primary)/0.7)]">
-                <MapPin className="h-5 w-5" />
-                <span className="font-sora text-lg font-bold leading-none">
-                  {hasDist ? `${navDistance} km` : "—"}
-                </span>
-                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                  {hasDist ? "away" : "distance n/a"}
-                </span>
+              <div className="mt-3 flex flex-wrap items-stretch justify-center gap-2">
+                {(dbWorker as any).uid && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText((dbWorker as any).uid);
+                      toast.success("Worker ID copied");
+                    }}
+                    title="Click to copy"
+                    className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:border-primary/40 hover:bg-white/10"
+                  >
+                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-hero-muted">ID</span>
+                    <span className="h-3 w-px bg-white/15" />
+                    <span className="font-mono text-xs font-semibold tracking-wider text-hero-foreground">
+                      {(dbWorker as any).uid}
+                    </span>
+                    <Copy className="h-3 w-3 text-hero-muted opacity-0 transition group-hover:opacity-100" />
+                  </button>
+                )}
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3.5 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.8)]">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="h-3 w-px bg-primary/30" />
+                  {hasDist ? (
+                    <>
+                      <span className="font-sora text-sm font-bold leading-none">{navDistance} km</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">away</span>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">distance n/a</span>
+                  )}
+                </div>
               </div>
               <div className="mt-2 flex items-center justify-center gap-1.5 text-primary">
                 <Star className="h-4 w-4 fill-current" />
