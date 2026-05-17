@@ -29,7 +29,7 @@ const WorkerShareCard = ({ uid, name }: Props) => {
   const qrRef = useRef<HTMLDivElement | null>(null);
 
   const validUid = isValidWorkerUid(uid);
-  const url = useMemo(() => `${SHARE_DOMAIN}/w/${uid}`, [uid]);
+  const url = useMemo(() => `${getShareDomain()}/w/${uid}`, [uid]);
 
   if (!validUid) {
     return (
