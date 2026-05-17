@@ -104,6 +104,29 @@ const WorkerProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, dbWorker?.user_id]);
 
+  // Fetch user geolocation only if we don't have a distance from nav state
+  useEffect(() => {
+    if (navDistance != null || userCoords) return;
+    let cancelled = false;
+    getCurrentPosition()
+      .then((c) => { if (!cancelled) setUserCoords(c); })
+      .catch(() => { /* permission denied or unavailable */ });
+    return () => { cancelled = true; };
+  }, [navDistance, userCoords]);
+
+  const distanceKm = useMemo<number | null>(() => {
+    if (navDistance != null) return navDistance;
+    const wLat = (dbWorker as any)?.latitude;
+    const wLng = (dbWorker as any)?.longitude;
+    if (userCoords && typeof wLat === "number" && typeof wLng === "number") {
+      const d = calculateDistance(userCoords.latitude, userCoords.longitude, wLat, wLng);
+      return isFinite(d) && d >= 0 ? parseFloat(d.toFixed(d < 10 ? 1 : 0)) : null;
+    }
+    return null;
+  }, [navDistance, userCoords, dbWorker]);
+
+  const hasDist = distanceKm != null;
+
   if (workerLoading) {
     return (
       <AppLayout hideMobileHeader>
