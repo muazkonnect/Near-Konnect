@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
 import AppLayout from "@/components/AppLayout";
 
@@ -24,16 +23,25 @@ const WorkerShareRedirect = () => {
         navigate("/discover", { replace: true });
         return;
       }
-      const { data } = await (supabase as any)
-        .from("workers")
-        .select("id")
-        .eq("uid", uid)
-        .maybeSingle();
-      if (data?.id) {
-        navigate(`/worker/${data.id}`, { replace: true });
-      } else {
-        navigate("/discover", { replace: true });
+      try {
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/worker-share/${uid}?format=json`;
+        const res = await fetch(url, {
+          headers: {
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+            accept: "application/json",
+          },
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.id) {
+            navigate(`/worker/${json.id}`, { replace: true });
+            return;
+          }
+        }
+      } catch {
+        // fall through
       }
+      navigate("/discover", { replace: true });
     };
     void run();
   }, [id, navigate]);
