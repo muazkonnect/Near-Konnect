@@ -54,7 +54,7 @@ const WorkerCard = ({ worker, index = 0, sponsored = false }: Props) => {
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.04 }}>
       <Link
         ref={cardRef}
-        to={`/worker/${worker.id}`}
+        to={`/worker/${worker.uid || worker.id}`}
         onClick={() => sponsored && trackFeaturedEvent(worker.id, "contact_click", user?.id)}
         className={`tap-feedback group relative flex items-center gap-3 rounded-2xl border bg-card p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-md ${
           sponsored ? "border-star/40 bg-gradient-to-br from-star/5 to-transparent" : ""
