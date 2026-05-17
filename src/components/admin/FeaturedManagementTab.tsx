@@ -196,35 +196,35 @@ const FeaturedManagementTab = () => {
     <div className="space-y-6">
       {/* Stats overview */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <div className="rounded-2xl border bg-card p-4">
+        <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Active</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Active</p>
             <Star className="h-4 w-4 text-star" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground">
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">
             {(featuredServices as any[]).filter((f) => f.is_active).length}
           </p>
         </div>
-        <div className="rounded-2xl border bg-card p-4">
+        <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Impressions (30d)</p>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Impressions (30d)</p>
+            <Eye className="h-4 w-4 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground">{totalImpressions.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{totalImpressions.toLocaleString()}</p>
         </div>
-        <div className="rounded-2xl border bg-card p-4">
+        <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Clicks (30d)</p>
-            <MousePointerClick className="h-4 w-4 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Clicks (30d)</p>
+            <MousePointerClick className="h-4 w-4 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground">{totalClicks.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{totalClicks.toLocaleString()}</p>
         </div>
-        <div className="rounded-2xl border bg-card p-4">
+        <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">CTR</p>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">CTR</p>
+            <TrendingUp className="h-4 w-4 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground">{overallCtr}%</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{overallCtr}%</p>
         </div>
       </div>
 
@@ -232,8 +232,8 @@ const FeaturedManagementTab = () => {
       {pendingRequests.length > 0 && (
         <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
           <div className="mb-3 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-foreground" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
+            <Clock className="h-4 w-4 text-hero-foreground" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground">
               Pending Requests ({pendingRequests.length})
             </h3>
           </div>
@@ -241,15 +241,15 @@ const FeaturedManagementTab = () => {
             {pendingRequests.map((req: any) => {
               const worker = workerMap.get(req.worker_id);
               return (
-                <div key={req.id} className="flex flex-col gap-3 rounded-xl border bg-card p-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <div key={req.id} className="flex flex-col gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:flex-wrap sm:items-center">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-card-foreground">
-                      {worker?.profiles?.full_name || "Unknown"} · <span className="font-medium text-muted-foreground/70">{worker?.profession}</span>
+                    <p className="truncate text-sm font-semibold text-hero-foreground">
+                      {worker?.profiles?.full_name || "Unknown"} · <span className="font-medium text-hero-foreground/50">{worker?.profession}</span>
                     </p>
                     {req.message && (
-                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">"{req.message}"</p>
+                      <p className="mt-1 line-clamp-2 text-xs text-hero-foreground/60">"{req.message}"</p>
                     )}
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[10px] text-hero-foreground/60">
                       Requested {new Date(req.created_at).toLocaleString()}
                     </p>
                   </div>
@@ -269,8 +269,8 @@ const FeaturedManagementTab = () => {
       )}
 
       {/* Add featured form */}
-      <div className="rounded-2xl border bg-card p-4">
-        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Add Featured Worker</h3>
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Add Featured Worker</h3>
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5">
           <div className="md:col-span-2">
             <Select value={selectedWorkerId} onValueChange={setSelectedWorkerId}>
@@ -294,7 +294,7 @@ const FeaturedManagementTab = () => {
           />
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("justify-start font-normal", !startsAt && "text-muted-foreground")}>
+              <Button variant="outline" className={cn("justify-start font-normal", !startsAt && "text-hero-foreground/60")}>
                 <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                 <span className="truncate">{startsAt ? format(startsAt, "PP") : "Start date"}</span>
               </Button>
@@ -305,7 +305,7 @@ const FeaturedManagementTab = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("justify-start font-normal", !endsAt && "text-muted-foreground")}>
+              <Button variant="outline" className={cn("justify-start font-normal", !endsAt && "text-hero-foreground/60")}>
                 <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                 <span className="truncate">{endsAt ? format(endsAt, "PP") : "End date"}</span>
               </Button>
@@ -325,7 +325,7 @@ const FeaturedManagementTab = () => {
       {/* Featured list */}
       <div>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
             Active Featured ({filteredFeatured.length})
           </h3>
           <Input
@@ -340,14 +340,14 @@ const FeaturedManagementTab = () => {
             const w = workerMap.get(f.service_id);
             const s = statsMap.get(f.service_id);
             return (
-              <div key={f.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div key={f.id} className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <div className="flex flex-1 items-center gap-2">
-                  <Star className={`h-4 w-4 shrink-0 ${f.is_active ? "fill-star text-star" : "text-muted-foreground"}`} />
+                  <Star className={`h-4 w-4 shrink-0 ${f.is_active ? "fill-star text-star" : "text-hero-foreground/60"}`} />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-card-foreground">
+                    <p className="truncate text-sm font-semibold text-hero-foreground">
                       {w?.profiles?.full_name || w?.profession || "Service"}
                     </p>
-                    <p className="truncate text-[11px] text-muted-foreground/70">
+                    <p className="truncate text-[11px] text-hero-foreground/50">
                       {w?.profession}
                       {f.starts_at && ` · from ${format(new Date(f.starts_at), "MMM d")}`}
                       {f.ends_at && ` · until ${format(new Date(f.ends_at), "MMM d")}`}
@@ -355,7 +355,7 @@ const FeaturedManagementTab = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-3 text-[11px] text-hero-foreground/60">
                   <span className="inline-flex items-center gap-1">
                     <Eye className="h-3 w-3" /> {s?.impressions ?? 0}
                   </span>
@@ -386,7 +386,7 @@ const FeaturedManagementTab = () => {
             );
           })}
           {filteredFeatured.length === 0 && (
-            <p className="py-8 text-center text-sm text-muted-foreground">No featured workers yet.</p>
+            <p className="py-8 text-center text-sm text-hero-foreground/60">No featured workers yet.</p>
           )}
         </div>
       </div>

@@ -257,10 +257,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
       <div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight text-foreground">
+            <h2 className="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight text-hero-foreground">
               <Shield className="h-5 w-5 text-primary shrink-0" /> Service Categories
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-hero-foreground/60">
               Manage the taxonomy of services available on the platform.
             </p>
           </div>
@@ -282,10 +282,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
       </div>
 
       {/* Add New Category */}
-      <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:p-4 sm:flex-row sm:items-end sm:flex-wrap">
+      <div className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:p-4 sm:flex-row sm:items-end sm:flex-wrap">
         <div className="flex gap-3 sm:contents">
           <div className="flex-1 space-y-1.5 min-w-0">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
               Category Name
             </label>
             <Input
@@ -296,7 +296,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
             />
           </div>
           <div className="w-20 sm:w-24 space-y-1.5 shrink-0">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
               Icon
             </label>
             <Input
@@ -308,7 +308,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
           </div>
         </div>
         <div className="w-full sm:w-48 space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
             Parent
           </label>
           <Select
@@ -350,7 +350,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
           return (
             <div key={main.id} className="space-y-2">
               <div
-                className={`flex items-center gap-2 sm:gap-3 rounded-2xl border bg-card p-2 sm:p-3 transition-all ${
+                className={`flex items-center gap-2 sm:gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-2 sm:p-3 transition-all ${
                   isEditingMain ? "ring-2 ring-primary/20" : ""
                 } ${isBusyMain ? "opacity-60 pointer-events-none" : ""}`}
               >
@@ -359,9 +359,9 @@ export default function CategoriesManagementTab({ categories }: Props) {
                   className="p-1 hover:bg-accent rounded-lg"
                 >
                   {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-hero-foreground/60" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <ChevronRight className="h-4 w-4 text-hero-foreground/60" />
                   )}
                 </button>
                 {isEditingMain ? (
@@ -382,7 +382,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                         <Check className="h-4 w-4 text-primary" />
                       </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEdit}>
-                        <X className="h-4 w-4 text-muted-foreground" />
+                        <X className="h-4 w-4 text-hero-foreground/60" />
                       </Button>
                     </div>
                   </>
@@ -392,8 +392,8 @@ export default function CategoriesManagementTab({ categories }: Props) {
                       {main.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-card-foreground truncate text-sm sm:text-base">{main.name}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest truncate">
+                      <p className="font-semibold text-hero-foreground truncate text-sm sm:text-base">{main.name}</p>
+                      <p className="text-[10px] text-hero-foreground/60 uppercase tracking-widest truncate">
                         {subs.length} subcategories
                       </p>
                     </div>
@@ -406,7 +406,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                         disabled={mainIdx === 0}
                         title="Move up"
                       >
-                        <ArrowUp className="h-4 w-4 text-muted-foreground" />
+                        <ArrowUp className="h-4 w-4 text-hero-foreground/60" />
                       </Button>
                       <Button
                         size="icon"
@@ -416,10 +416,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
                         disabled={mainIdx === mainCategories.length - 1}
                         title="Move down"
                       >
-                        <ArrowDown className="h-4 w-4 text-muted-foreground" />
+                        <ArrowDown className="h-4 w-4 text-hero-foreground/60" />
                       </Button>
                       <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(main)}>
-                        <Edit2 className="h-4 w-4 text-muted-foreground" />
+                        <Edit2 className="h-4 w-4 text-hero-foreground/60" />
                       </Button>
                       <Button
                         size="icon"
@@ -442,7 +442,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                     return (
                       <div
                         key={sub.id}
-                        className={`flex items-center gap-3 rounded-xl border bg-card/50 p-2 transition-all ${
+                        className={`flex items-center gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04]/50 p-2 transition-all ${
                           isEditingSub ? "ring-2 ring-primary/20" : ""
                         } ${isBusySub ? "opacity-60 pointer-events-none" : ""}`}
                       >
@@ -459,14 +459,14 @@ export default function CategoriesManagementTab({ categories }: Props) {
                                 <Check className="h-4 w-4 text-primary" />
                               </Button>
                               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEdit}>
-                                <X className="h-4 w-4 text-muted-foreground" />
+                                <X className="h-4 w-4 text-hero-foreground/60" />
                               </Button>
                             </div>
                           </>
                         ) : (
                           <>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-card-foreground truncate">{sub.name}</p>
+                              <p className="text-sm font-medium text-hero-foreground truncate">{sub.name}</p>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 shrink-0 w-[72px] sm:w-auto">
                               <Button
@@ -477,7 +477,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                                 disabled={subIdx === 0}
                                 title="Move up"
                               >
-                                <ArrowUp className="h-3.5 w-3.5 text-muted-foreground" />
+                                <ArrowUp className="h-3.5 w-3.5 text-hero-foreground/60" />
                               </Button>
                               <Button
                                 size="icon"
@@ -487,10 +487,10 @@ export default function CategoriesManagementTab({ categories }: Props) {
                                 disabled={subIdx === subs.length - 1}
                                 title="Move down"
                               >
-                                <ArrowDown className="h-3.5 w-3.5 text-muted-foreground" />
+                                <ArrowDown className="h-3.5 w-3.5 text-hero-foreground/60" />
                               </Button>
                               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(sub)}>
-                                <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
+                                <Edit2 className="h-3.5 w-3.5 text-hero-foreground/60" />
                               </Button>
                               <Button
                                 size="icon"
@@ -511,7 +511,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                       setNewParentId(main.id);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-dashed p-2 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-full"
+                    className="flex items-center gap-2 rounded-xl border border-dashed p-2 text-xs text-hero-foreground/60 hover:bg-accent hover:text-accent-foreground transition-colors w-full"
                   >
                     <Plus className="h-3 w-3" /> Add subcategory to {main.name}
                   </button>
@@ -522,7 +522,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
         })}
 
         {mainCategories.length === 0 && (
-          <div className="rounded-2xl border border-dashed p-12 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed p-12 text-center text-sm text-hero-foreground/60">
             No categories found. Start by adding one above.
           </div>
         )}

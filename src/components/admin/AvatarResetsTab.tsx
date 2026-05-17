@@ -50,13 +50,13 @@ const AvatarResetsTab = () => {
     load();
   };
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading…</p>;
-  if (!rows.length) return <p className="text-sm text-muted-foreground">No pending avatar reset requests.</p>;
+  if (loading) return <p className="text-sm text-hero-foreground/60">Loading…</p>;
+  if (!rows.length) return <p className="text-sm text-hero-foreground/60">No pending avatar reset requests.</p>;
 
   return (
     <div className="space-y-3">
       {rows.map((r) => (
-        <div key={r.id} className="flex items-start gap-3 rounded-xl border bg-card p-4">
+        <div key={r.id} className="flex items-start gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           {r.profile?.avatar_url ? (
             <img src={r.profile.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
           ) : (
@@ -64,7 +64,7 @@ const AvatarResetsTab = () => {
           )}
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{r.profile?.full_name || r.user_id}</p>
-            <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()} · {r.status}</p>
+            <p className="text-xs text-hero-foreground/60">{new Date(r.created_at).toLocaleString()} · {r.status}</p>
             {r.reason && <p className="mt-1 text-sm">{r.reason}</p>}
           </div>
           {r.status === "pending" && (

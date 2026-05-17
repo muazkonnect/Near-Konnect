@@ -40,19 +40,19 @@ const PLACEMENT_OPTIONS: { value: Placement; label: string; hint: string; varian
 const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) => (
   <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
     <div>
-      <h2 className="text-xl font-bold tracking-tight text-foreground">{title}</h2>
-      {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      <h2 className="text-xl font-bold tracking-tight text-hero-foreground">{title}</h2>
+      {subtitle && <p className="text-sm text-hero-foreground/60">{subtitle}</p>}
     </div>
     {action}
   </div>
 );
 
 const StatChip = ({ icon: Icon, label, value }: { icon: typeof Eye; label: string; value: string | number }) => (
-  <div className="rounded-xl border bg-card px-3 py-2">
-    <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+  <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] px-3 py-2">
+    <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">
       <Icon className="h-3 w-3" /> {label}
     </div>
-    <p className="mt-0.5 text-sm font-bold text-card-foreground tabular-nums">{value}</p>
+    <p className="mt-0.5 text-sm font-bold text-hero-foreground tabular-nums">{value}</p>
   </div>
 );
 
@@ -284,23 +284,23 @@ const AdsManagementTab = () => {
 
       {/* TOTALS */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-card p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Total ads</p>
-          <p className="mt-1 text-2xl font-bold text-card-foreground tabular-nums">{nativeAds.length}</p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Total ads</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground tabular-nums">{nativeAds.length}</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-card p-4">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Impressions (30d)</p>
-            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Impressions (30d)</p>
+            <Eye className="h-3.5 w-3.5 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground tabular-nums">{totals.impressions.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground tabular-nums">{totals.impressions.toLocaleString()}</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-card p-4">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Clicks (30d)</p>
-            <MousePointerClick className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Clicks (30d)</p>
+            <MousePointerClick className="h-3.5 w-3.5 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-card-foreground tabular-nums">{totals.clicks.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground tabular-nums">{totals.clicks.toLocaleString()}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-hero p-4 text-hero-foreground">
           <div className="flex items-center justify-between">
@@ -312,9 +312,9 @@ const AdsManagementTab = () => {
       </div>
 
       {/* CREATE / EDIT */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
             {editingAdId ? "Edit ad" : "Create new ad"}
           </h3>
           {editingAdId && (
@@ -357,7 +357,7 @@ const AdsManagementTab = () => {
                 <select
                   value={adPlacement}
                   onChange={(e) => setAdPlacement(e.target.value as Placement)}
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-hero px-3 text-sm"
                 >
                   {PLACEMENT_OPTIONS.map((p) => (
                     <option key={p.value} value={p.value}>
@@ -365,7 +365,7 @@ const AdsManagementTab = () => {
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-[11px] text-muted-foreground">
+                <p className="mt-1 text-[11px] text-hero-foreground/60">
                   {PLACEMENT_OPTIONS.find((p) => p.value === adPlacement)?.hint}
                 </p>
               </div>
@@ -377,20 +377,20 @@ const AdsManagementTab = () => {
 
             {/* Scheduling */}
             <div className="rounded-xl border bg-muted/30 p-3">
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-card-foreground">
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
                 <Calendar className="h-3.5 w-3.5 text-primary" /> Scheduling (optional)
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[11px] text-muted-foreground">Starts at</Label>
+                  <Label className="text-[11px] text-hero-foreground/60">Starts at</Label>
                   <Input type="datetime-local" value={adStartsAt} onChange={(e) => setAdStartsAt(e.target.value)} />
                 </div>
                 <div>
-                  <Label className="text-[11px] text-muted-foreground">Ends at</Label>
+                  <Label className="text-[11px] text-hero-foreground/60">Ends at</Label>
                   <Input type="datetime-local" value={adEndsAt} onChange={(e) => setAdEndsAt(e.target.value)} />
                 </div>
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 text-[11px] text-hero-foreground/60">
                 Leave both empty for an always-on ad. Outside this window, the ad is automatically hidden.
               </p>
             </div>
@@ -434,7 +434,7 @@ const AdsManagementTab = () => {
                   <img src={adImageUrl} alt="" className="h-32 w-full object-cover" />
                 </div>
               ) : (
-                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed bg-muted/20 text-muted-foreground">
+                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed bg-muted/20 text-hero-foreground/60">
                   <ImageIcon className="mr-2 h-4 w-4" /> No image yet
                 </div>
               )}
@@ -442,7 +442,7 @@ const AdsManagementTab = () => {
 
             <div>
               <Label className="text-xs">Live preview</Label>
-              <div className="mt-1 rounded-xl border bg-background p-3">
+              <div className="mt-1 rounded-xl border bg-hero p-3">
                 {adTitle.trim() && adLink.trim() ? (
                   <NativeAdCard
                     preview
@@ -460,7 +460,7 @@ const AdsManagementTab = () => {
                     }}
                   />
                 ) : (
-                  <p className="py-6 text-center text-sm text-muted-foreground">Add a title and CTA link to preview.</p>
+                  <p className="py-6 text-center text-sm text-hero-foreground/60">Add a title and CTA link to preview.</p>
                 )}
               </div>
             </div>
@@ -473,8 +473,8 @@ const AdsManagementTab = () => {
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
               <div>
-                <p className="text-sm font-semibold text-card-foreground">Geo-targeting (optional)</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm font-semibold text-hero-foreground">Geo-targeting (optional)</p>
+                <p className="text-xs text-hero-foreground/60">
                   Tap the map to set a center. Default radius 3 km. Leave empty for global delivery.
                 </p>
               </div>
@@ -514,11 +514,11 @@ const AdsManagementTab = () => {
       </div>
 
       {/* TEST VIEWER LOCATION */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Test viewer location</h3>
-            <p className="text-xs text-muted-foreground">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Test viewer location</h3>
+            <p className="text-xs text-hero-foreground/60">
               Pretend to be a user at this point on the map. Distances and IN/OUT status update below.
             </p>
           </div>
@@ -535,21 +535,21 @@ const AdsManagementTab = () => {
 
       {/* ALL ADS */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">All ads ({nativeAds.length})</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">All ads ({nativeAds.length})</h3>
         {adsWithMeta.length === 0 && (
-          <p className="rounded-2xl border bg-card py-8 text-center text-muted-foreground">No ads yet. Create your first one above.</p>
+          <p className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] py-8 text-center text-hero-foreground/60">No ads yet. Create your first one above.</p>
         )}
         {adsWithMeta.map(({ ad, hasTarget, distanceKm, inRadius, scheduled, expired }) => {
           const s = statsByAd.get(ad.id) || { impressions: 0, clicks: 0, ctr: 0 };
           return (
-            <div key={ad.id} className="rounded-2xl border bg-card p-4">
+            <div key={ad.id} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                 <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
                   <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
                     {ad.image_url ? (
                       <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <div className="flex h-full w-full items-center justify-center text-hero-foreground/60">
                         <ImageIcon className="h-4 w-4" />
                       </div>
                     )}
@@ -557,14 +557,14 @@ const AdsManagementTab = () => {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-semibold text-card-foreground">{ad.title}</p>
+                      <p className="truncate font-semibold text-hero-foreground">{ad.title}</p>
                       <Badge variant="outline" className="text-[10px]">{ad.placement}</Badge>
                       <Badge variant="outline" className="text-[10px]">P{ad.priority}</Badge>
                       {!ad.is_active && <Badge variant="secondary" className="text-[10px]">Disabled</Badge>}
                       {scheduled && <Badge className="bg-warning text-warning-foreground text-[10px]">Scheduled</Badge>}
                       {expired && <Badge className="bg-destructive text-destructive-foreground text-[10px]">Expired</Badge>}
                     </div>
-                    <p className="mt-1 break-words text-xs text-muted-foreground">
+                    <p className="mt-1 break-words text-xs text-hero-foreground/60">
                       {hasTarget
                         ? `📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} · ${ad.target_radius_km} km`
                         : "🌍 Global"}

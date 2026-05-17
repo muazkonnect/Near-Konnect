@@ -84,23 +84,23 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   return (
-    <Sidebar collapsible="icon" className="border-r">
+    <Sidebar collapsible="icon" className="border-r border-hero-foreground/10 [&>div]:bg-hero [&>div]:text-hero-foreground">
       <SidebarHeader className="px-3 pt-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.5)]">
             <Crown className="h-4 w-4" />
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-bold tracking-tight text-sidebar-foreground">Admin</p>
-              <p className="truncate text-[11px] text-muted-foreground">Control center</p>
+              <p className="text-sm font-bold tracking-tight text-hero-foreground">Admin</p>
+              <p className="truncate text-[11px] text-hero-foreground/60">Control center</p>
             </div>
           )}
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Manage</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-hero-foreground/50">Manage</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV_ITEMS.map((it) => {
@@ -112,8 +112,8 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
                       onClick={() => setTab(it.key)}
                       className={
                         active
-                          ? "bg-primary/15 font-semibold text-foreground hover:bg-primary/20"
-                          : "hover:bg-muted"
+                          ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
+                          : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
                       }
                     >
                       <Icon className="h-4 w-4" />
@@ -129,7 +129,7 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
       <SidebarFooter className="p-2 space-y-1">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-muted-foreground hover:bg-muted">
+            <SidebarMenuButton asChild className="text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground">
               <Link to="/">
                 <Home className="h-4 w-4" />
                 <span>Back to Home</span>
@@ -137,7 +137,7 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={onSignOut} className="text-muted-foreground hover:bg-muted">
+            <SidebarMenuButton onClick={onSignOut} className="text-destructive/80 hover:bg-destructive/15 hover:text-destructive">
               <LogOut className="h-4 w-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
@@ -152,23 +152,23 @@ const StatCard = ({ label, value, icon: Icon, accent }: { label: string; value: 
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    className={`relative overflow-hidden rounded-2xl border p-4 ${accent ? "bg-hero text-hero-foreground" : "bg-card"}`}
+    className={`relative overflow-hidden rounded-2xl border p-4 ${accent ? "border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 text-hero-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.5)]" : "border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground"}`}
   >
     <div className="flex items-center justify-between">
-      <p className={`text-xs font-medium uppercase tracking-wider ${accent ? "text-hero-foreground/70" : "text-muted-foreground"}`}>
+      <p className={`text-xs font-medium uppercase tracking-wider ${accent ? "text-hero-foreground/80" : "text-hero-foreground/60"}`}>
         {label}
       </p>
-      <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-muted-foreground"}`} />
+      <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-hero-foreground/50"}`} />
     </div>
-    <p className={`mt-2 text-2xl font-bold ${accent ? "text-hero-foreground" : "text-card-foreground"}`}>{value}</p>
+    <p className="mt-2 text-2xl font-bold text-hero-foreground">{value}</p>
   </motion.div>
 );
 
 const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) => (
   <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
     <div>
-      <h2 className="text-xl font-bold tracking-tight text-foreground">{title}</h2>
-      {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      <h2 className="text-xl font-bold tracking-tight text-hero-foreground">{title}</h2>
+      {subtitle && <p className="text-sm text-hero-foreground/60">{subtitle}</p>}
     </div>
     {action}
   </div>
@@ -566,7 +566,7 @@ const AdminDashboard = () => {
 
   if (authLoading || roleLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-hero">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
@@ -575,20 +575,20 @@ const AdminDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex min-h-screen w-full bg-hero text-hero-foreground">
         <AdminSidebar tab={tab} setTab={setTab} onSignOut={onSignOut} />
 
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col min-w-0">
           {/* Top bar */}
-          <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md">
-            <SidebarTrigger />
-            <div className="flex-1">
-              <p className="text-sm font-semibold tracking-tight text-foreground">
+          <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-hero-foreground/10 bg-hero/80 px-3 sm:px-4 backdrop-blur-md">
+            <SidebarTrigger className="text-hero-foreground hover:bg-hero-foreground/10" />
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-semibold tracking-tight text-hero-foreground">
                 {NAV_ITEMS.find((n) => n.key === tab)?.label}
               </p>
-              <p className="text-[11px] text-muted-foreground">Signed in as {user?.email}</p>
+              <p className="truncate text-[11px] text-hero-foreground/60">Signed in as {user?.email}</p>
             </div>
-            <Badge className="bg-primary text-primary-foreground">Admin</Badge>
+            <Badge className="bg-primary text-primary-foreground shrink-0">Admin</Badge>
           </header>
 
           <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
@@ -606,35 +606,35 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border bg-card p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Latest workers</h3>
+                  <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
                     <ul className="mt-3 space-y-2">
                       {workers.slice(0, 5).map((w: any) => (
                         <li key={w.id} className="flex items-center justify-between gap-3">
-                          <span className="truncate text-sm font-medium text-card-foreground">
+                          <span className="truncate text-sm font-medium text-hero-foreground">
                             {w.profiles?.full_name || "Unnamed"}
                           </span>
                           <div className="flex flex-col items-end">
-                            <span className="text-xs text-muted-foreground/70">{w.profession}</span>
-                            <span className="text-[10px] text-muted-foreground/60">{w.main_category} · {w.sub_category}</span>
+                            <span className="text-xs text-hero-foreground/50">{w.profession}</span>
+                            <span className="text-[10px] text-hero-foreground/40">{w.main_category} · {w.sub_category}</span>
                           </div>
                         </li>
                       ))}
-                      {workers.length === 0 && <li className="text-sm text-muted-foreground">No workers yet.</li>}
+                      {workers.length === 0 && <li className="text-sm text-hero-foreground/60">No workers yet.</li>}
                     </ul>
                   </div>
-                  <div className="rounded-2xl border bg-card p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Latest ads</h3>
+                  <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest ads</h3>
                     <ul className="mt-3 space-y-2">
                       {(nativeAds as any[]).slice(0, 5).map((a) => (
                         <li key={a.id} className="flex items-center justify-between gap-3">
-                          <span className="truncate text-sm font-medium text-card-foreground">{a.title}</span>
+                          <span className="truncate text-sm font-medium text-hero-foreground">{a.title}</span>
                           <Badge variant="outline" className="text-[10px]">
                             {a.placement}
                           </Badge>
                         </li>
                       ))}
-                      {nativeAds.length === 0 && <li className="text-sm text-muted-foreground">No ads yet.</li>}
+                      {nativeAds.length === 0 && <li className="text-sm text-hero-foreground/60">No ads yet.</li>}
                     </ul>
                   </div>
                 </div>
@@ -649,16 +649,16 @@ const AdminDashboard = () => {
                   {workers.map((w: any) => (
                     <div
                       key={w.id}
-                      className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center"
+                      className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:flex-row sm:flex-wrap sm:items-center"
                     >
                       <div className="flex items-start gap-3 sm:flex-1">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-foreground">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-sm font-bold text-primary">
                           {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-card-foreground">{w.profiles?.full_name}</p>
-                          <p className="truncate text-xs text-muted-foreground/70">{w.profession} · {w.experience} yrs</p>
-                          <p className="mt-0.5 truncate text-[11px] text-muted-foreground/70">
+                          <p className="truncate font-semibold text-hero-foreground">{w.profiles?.full_name}</p>
+                          <p className="truncate text-xs text-hero-foreground/50">{w.profession} · {w.experience} yrs</p>
+                          <p className="mt-0.5 truncate text-[11px] text-hero-foreground/50">
                             {w.main_category} / {w.sub_category}
                           </p>
                           <div className="mt-1.5 flex flex-wrap gap-1">
@@ -736,7 +736,7 @@ const AdminDashboard = () => {
                     </div>
                   ))}
                   {workers.length === 0 && (
-                    <p className="py-8 text-center text-muted-foreground">No workers registered.</p>
+                    <p className="py-8 text-center text-hero-foreground/60">No workers registered.</p>
                   )}
                 </div>
                 <EditWorkerDialog
@@ -795,14 +795,14 @@ const AdminDashboard = () => {
                   {bloodDonors
                     .filter((d: any) => !donorFilter || d.blood_group === donorFilter)
                     .map((d: any) => (
-                      <div key={d.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center">
+                      <div key={d.id} className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:flex-row sm:flex-wrap sm:items-center">
                         <div className="flex flex-1 items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-sm font-bold text-destructive">
                             {d.full_name?.slice(0, 2).toUpperCase() || "??"}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate font-semibold text-card-foreground">{d.full_name || "Unnamed"}</p>
-                            <p className="truncate text-xs text-muted-foreground">
+                            <p className="truncate font-semibold text-hero-foreground">{d.full_name || "Unnamed"}</p>
+                            <p className="truncate text-xs text-hero-foreground/60">
                               {d.city || "No city"} · {d.blood_group || "?"}
                             </p>
                           </div>
@@ -830,7 +830,7 @@ const AdminDashboard = () => {
                       </div>
                     ))}
                   {bloodDonors.filter((d: any) => !donorFilter || d.blood_group === donorFilter).length === 0 && (
-                    <p className="py-8 text-center text-muted-foreground">No blood donors found.</p>
+                    <p className="py-8 text-center text-hero-foreground/60">No blood donors found.</p>
                   )}
                 </div>
               </div>

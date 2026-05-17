@@ -84,13 +84,13 @@ const LocationChangeRequestsTab = () => {
     }
   };
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading…</p>;
-  if (!rows.length) return <p className="text-sm text-muted-foreground">No location change requests.</p>;
+  if (loading) return <p className="text-sm text-hero-foreground/60">Loading…</p>;
+  if (!rows.length) return <p className="text-sm text-hero-foreground/60">No location change requests.</p>;
 
   return (
     <div className="space-y-3">
       {rows.map((r) => (
-        <div key={r.id} className="rounded-xl border bg-card p-4">
+        <div key={r.id} className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-start gap-3">
             {r.profile?.avatar_url ? (
               <img src={r.profile.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
@@ -99,7 +99,7 @@ const LocationChangeRequestsTab = () => {
             )}
             <div className="min-w-0 flex-1">
               <p className="font-semibold">{r.profile?.full_name || r.worker_user_id}</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-hero-foreground/60">
                 {new Date(r.created_at).toLocaleString()} ·{" "}
                 <span className={
                   r.status === "pending" ? "text-amber-600" :
@@ -107,7 +107,7 @@ const LocationChangeRequestsTab = () => {
                 }>{r.status}</span>
               </p>
               <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
-                <div className="flex items-center gap-1 text-muted-foreground">
+                <div className="flex items-center gap-1 text-hero-foreground/60">
                   <MapPin className="h-3.5 w-3.5" />
                   Current: <LocationLabel latitude={r.current_latitude} longitude={r.current_longitude} />
                 </div>
@@ -116,7 +116,7 @@ const LocationChangeRequestsTab = () => {
                   Requested: <LocationLabel latitude={r.requested_latitude} longitude={r.requested_longitude} />
                 </div>
               </div>
-              {r.reason && <p className="mt-2 text-sm"><span className="text-muted-foreground">Reason: </span>{r.reason}</p>}
+              {r.reason && <p className="mt-2 text-sm"><span className="text-hero-foreground/60">Reason: </span>{r.reason}</p>}
               <a
                 href={`https://www.openstreetmap.org/?mlat=${r.requested_latitude}&mlon=${r.requested_longitude}#map=16/${r.requested_latitude}/${r.requested_longitude}`}
                 target="_blank" rel="noreferrer"

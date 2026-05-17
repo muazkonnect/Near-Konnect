@@ -31,9 +31,9 @@ const ROLE_META: Record<AppRole, { label: string; tone: string; icon: string }> 
   admin: { label: "Admin", tone: "bg-primary text-primary-foreground", icon: "👑" },
   manager: { label: "Manager", tone: "bg-accent text-accent-foreground", icon: "🛡️" },
   ads_manager: { label: "Ads Manager", tone: "bg-secondary text-secondary-foreground", icon: "📣" },
-  moderator: { label: "Moderator", tone: "bg-muted text-foreground", icon: "🧰" },
-  worker: { label: "Worker", tone: "bg-muted text-muted-foreground", icon: "🔧" },
-  customer: { label: "Customer", tone: "bg-muted text-muted-foreground", icon: "👤" },
+  moderator: { label: "Moderator", tone: "bg-muted text-hero-foreground", icon: "🧰" },
+  worker: { label: "Worker", tone: "bg-muted text-hero-foreground/60", icon: "🔧" },
+  customer: { label: "Customer", tone: "bg-muted text-hero-foreground/60", icon: "👤" },
 };
 
 const ASSIGNABLE_ROLES: AppRole[] = ["admin", "manager", "ads_manager", "moderator", "worker", "customer"];
@@ -201,10 +201,10 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
     <div>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
+          <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-hero-foreground">
             <Shield className="h-5 w-5 text-primary" /> Users & Roles
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-hero-foreground/60">
             Invite team members and assign roles like Admin, Manager, Ads Manager, or Moderator.
           </p>
         </div>
@@ -226,7 +226,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                 <button
                   onClick={() => setInviteMode("invite")}
                   className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-                    inviteMode === "invite" ? "bg-background shadow" : "text-muted-foreground"
+                    inviteMode === "invite" ? "bg-hero shadow" : "text-hero-foreground/60"
                   }`}
                 >
                   Invite by email
@@ -234,7 +234,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                 <button
                   onClick={() => setInviteMode("create")}
                   className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-                    inviteMode === "create" ? "bg-background shadow" : "text-muted-foreground"
+                    inviteMode === "create" ? "bg-hero shadow" : "text-hero-foreground/60"
                   }`}
                 >
                   Create directly
@@ -293,9 +293,9 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="mb-4 flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:flex-row sm:items-center">
+      <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-foreground/60" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -334,7 +334,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
           return (
             <div
               key={p.user_id}
-              className={`flex flex-col gap-3 rounded-2xl border bg-card p-4 transition-opacity sm:flex-row sm:items-center ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
+              className={`flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 transition-opacity sm:flex-row sm:items-center ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
             >
               <div className="flex flex-1 items-center gap-3">
                 <div className="relative">
@@ -346,22 +346,22 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                     )}
                   </div>
                   {isUpdating && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/40">
+                    <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-hero/40">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="font-semibold text-card-foreground">{p.full_name || "Unnamed"}</p>
+                    <p className="font-semibold text-hero-foreground">{p.full_name || "Unnamed"}</p>
                     {roles.includes("admin") && (
                       <Crown className="h-3.5 w-3.5 text-primary" aria-label="Admin" />
                     )}
                   </div>
-                  <p className="truncate text-xs text-muted-foreground">{p.phone || "No phone"}</p>
+                  <p className="truncate text-xs text-hero-foreground/60">{p.phone || "No phone"}</p>
                   <div className="mt-1.5 flex flex-wrap gap-1">
                     {roles.length === 0 && (
-                      <span className="text-[10px] text-muted-foreground">No roles assigned</span>
+                      <span className="text-[10px] text-hero-foreground/60">No roles assigned</span>
                     )}
                     {roles.map((r) => (
                       <span
@@ -416,7 +416,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
           );
         })}
         {visible.length === 0 && (
-          <div className="rounded-2xl border bg-card p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-8 text-center text-sm text-hero-foreground/60">
             No users match your filters.
           </div>
         )}
