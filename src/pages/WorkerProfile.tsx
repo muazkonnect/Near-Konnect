@@ -115,17 +115,26 @@ const WorkerProfile = () => {
   }, [navDistance, userCoords]);
 
   const distanceKm = useMemo<number | null>(() => {
-    if (navDistance != null) return navDistance;
-    const wLat = (dbWorker as any)?.latitude;
-    const wLng = (dbWorker as any)?.longitude;
-    if (userCoords && typeof wLat === "number" && typeof wLng === "number") {
-      const d = calculateDistance(userCoords.latitude, userCoords.longitude, wLat, wLng);
-      return isFinite(d) && d >= 0 ? parseFloat(d.toFixed(d < 10 ? 1 : 0)) : null;
+    let raw: number | null = null;
+    if (navDistance != null) {
+      raw = navDistance;
+    } else {
+      const wLat = (dbWorker as any)?.latitude;
+      const wLng = (dbWorker as any)?.longitude;
+      if (userCoords && typeof wLat === "number" && typeof wLng === "number") {
+        raw = calculateDistance(userCoords.latitude, userCoords.longitude, wLat, wLng);
+      }
     }
-    return null;
+    if (raw == null || !isFinite(raw) || raw < 0) return null;
+    return parseFloat(raw.toFixed(raw < 10 ? 1 : 0));
   }, [navDistance, userCoords, dbWorker]);
 
   const hasDist = distanceKm != null;
+  const distanceLabel = hasDist
+    ? distanceKm! < 1
+      ? `${Math.round(distanceKm! * 1000)} m`
+      : `${distanceKm} km`
+    : null;
 
   if (workerLoading) {
     return (
@@ -274,7 +283,7 @@ const WorkerProfile = () => {
                   <span className="h-3 w-px bg-primary/30" />
                   {hasDist ? (
                     <>
-                      <span className="font-sora text-sm font-bold leading-none">{distanceKm} km</span>
+                      <span className="font-sora text-sm font-bold leading-none">{distanceLabel}</span>
                       <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">away</span>
                     </>
                   ) : (
