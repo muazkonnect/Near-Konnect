@@ -34,6 +34,7 @@ import BookingDialog from "@/components/BookingDialog";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { getExpertise } from "@/lib/categoryExpertise";
+import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
 
 const WorkerProfile = () => {
   const { id } = useParams();
