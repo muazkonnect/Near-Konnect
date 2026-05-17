@@ -24,16 +24,38 @@ const WorkerShareRedirect = () => {
         navigate("/discover", { replace: true });
         return;
       }
-      const { data } = await (supabase as any)
-        .from("workers")
-        .select("id")
-        .eq("uid", uid)
-        .maybeSingle();
-      if (data?.id) {
-        navigate(`/worker/${data.id}`, { replace: true });
-      } else {
-        navigate("/discover", { replace: true });
+      // Server-side authoritative resolution — UID → real worker UUID.
+      try {
+        const { data, error } = await supabase.functions.invoke("worker-share", {
+          method: "GET" as any,
+          body: undefined,
+          headers: { accept: "application/json" },
+          // path suffix
+          // @ts-ignore - supabase-js supports query via URL builder; fallback below
+        });
+        // Fallback: direct fetch since invoke doesn't support path segments
+        let workerId: string | undefined = (data as any)?.id;
+        if (!workerId) {
+          const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/worker-share/${uid}?format=json`;
+          const res = await fetch(url, {
+            headers: {
+              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+              accept: "application/json",
+            },
+          });
+          if (res.ok) {
+            const json = await res.json();
+            workerId = json?.id;
+          }
+        }
+        if (workerId) {
+          navigate(`/worker/${workerId}`, { replace: true });
+          return;
+        }
+      } catch {
+        // fall through
       }
+      navigate("/discover", { replace: true });
     };
     void run();
   }, [id, navigate]);
