@@ -435,7 +435,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
               </div>
 
               {isExpanded && (
-                <div className="ml-4 sm:ml-9 space-y-2 border-l-2 border-muted pl-3 sm:pl-4">
+                <div className="ml-4 sm:ml-9 space-y-2 border-l-2 border-hero-foreground/15 pl-3 sm:pl-4">
                   {subs.map((sub, subIdx) => {
                     const isEditingSub = editingId === sub.id;
                     const isBusySub = busyId === sub.id;

@@ -145,7 +145,7 @@ const AdminProfileTab = () => {
         <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
           <KeyRound className="h-4 w-4" /> Security
         </h3>
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/30 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.05] p-4">
           <div>
             <p className="text-sm font-semibold text-hero-foreground">Password</p>
             <p className="text-xs text-hero-foreground/60">Change your account password regularly to stay secure.</p>

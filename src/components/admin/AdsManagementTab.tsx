@@ -302,7 +302,7 @@ const AdsManagementTab = () => {
           </div>
           <p className="mt-1 text-2xl font-bold text-hero-foreground tabular-nums">{totals.clicks.toLocaleString()}</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-hero p-4 text-hero-foreground">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 text-hero-foreground">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/70">CTR (30d)</p>
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -376,7 +376,7 @@ const AdsManagementTab = () => {
             </div>
 
             {/* Scheduling */}
-            <div className="rounded-xl border bg-muted/30 p-3">
+            <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.05] p-3">
               <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
                 <Calendar className="h-3.5 w-3.5 text-primary" /> Scheduling (optional)
               </div>
@@ -430,11 +430,11 @@ const AdsManagementTab = () => {
                 </Button>
               </div>
               {adImageUrl ? (
-                <div className="mt-2 overflow-hidden rounded-lg border">
+                <div className="mt-2 overflow-hidden rounded-lg border border-hero-foreground/10">
                   <img src={adImageUrl} alt="" className="h-32 w-full object-cover" />
                 </div>
               ) : (
-                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed bg-muted/20 text-hero-foreground/60">
+                <div className="mt-2 flex h-32 items-center justify-center rounded-lg border border-dashed border-hero-foreground/15 bg-hero-foreground/[0.04] text-hero-foreground/60">
                   <ImageIcon className="mr-2 h-4 w-4" /> No image yet
                 </div>
               )}
@@ -442,7 +442,7 @@ const AdsManagementTab = () => {
 
             <div>
               <Label className="text-xs">Live preview</Label>
-              <div className="mt-1 rounded-xl border bg-hero p-3">
+              <div className="mt-1 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3">
                 {adTitle.trim() && adLink.trim() ? (
                   <NativeAdCard
                     preview
@@ -468,7 +468,7 @@ const AdsManagementTab = () => {
         </div>
 
         {/* Geo-targeting */}
-        <div className="mt-5 rounded-xl border bg-muted/20 p-4">
+        <div className="mt-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
@@ -495,7 +495,7 @@ const AdsManagementTab = () => {
               )}
             </div>
           </div>
-          <div className="overflow-hidden rounded-lg border" style={{ height: 260 }}>
+          <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 260 }}>
             <MapLocationPicker value={adTargetCoords} onChange={setAdTargetCoords} />
           </div>
         </div>
@@ -528,7 +528,7 @@ const AdsManagementTab = () => {
             </Button>
           )}
         </div>
-        <div className="overflow-hidden rounded-lg border" style={{ height: 220 }}>
+        <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 220 }}>
           <MapLocationPicker value={viewerCoords} onChange={setViewerCoords} />
         </div>
       </div>
@@ -545,7 +545,7 @@ const AdsManagementTab = () => {
             <div key={ad.id} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                 <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 border-hero-foreground/10 bg-hero-foreground/10">
                     {ad.image_url ? (
                       <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                     ) : (

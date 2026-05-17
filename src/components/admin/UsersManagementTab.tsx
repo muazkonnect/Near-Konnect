@@ -30,10 +30,10 @@ type AppRole = "admin" | "manager" | "ads_manager" | "moderator" | "worker" | "c
 const ROLE_META: Record<AppRole, { label: string; tone: string; icon: string }> = {
   admin: { label: "Admin", tone: "bg-primary text-primary-foreground", icon: "👑" },
   manager: { label: "Manager", tone: "bg-accent text-accent-foreground", icon: "🛡️" },
-  ads_manager: { label: "Ads Manager", tone: "bg-secondary text-secondary-foreground", icon: "📣" },
-  moderator: { label: "Moderator", tone: "bg-muted text-hero-foreground", icon: "🧰" },
-  worker: { label: "Worker", tone: "bg-muted text-hero-foreground/60", icon: "🔧" },
-  customer: { label: "Customer", tone: "bg-muted text-hero-foreground/60", icon: "👤" },
+  ads_manager: { label: "Ads Manager", tone: "bg-primary/15 text-primary", icon: "📣" },
+  moderator: { label: "Moderator", tone: "bg-hero-foreground/10 text-hero-foreground", icon: "🧰" },
+  worker: { label: "Worker", tone: "bg-hero-foreground/10 text-hero-foreground/60", icon: "🔧" },
+  customer: { label: "Customer", tone: "bg-hero-foreground/10 text-hero-foreground/60", icon: "👤" },
 };
 
 const ASSIGNABLE_ROLES: AppRole[] = ["admin", "manager", "ads_manager", "moderator", "worker", "customer"];
@@ -222,7 +222,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div className="flex gap-2 rounded-xl bg-muted p-1">
+              <div className="flex gap-2 rounded-xl bg-hero-foreground/10 p-1">
                 <button
                   onClick={() => setInviteMode("invite")}
                   className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
@@ -366,7 +366,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
                     {roles.map((r) => (
                       <span
                         key={r}
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${ROLE_META[r as AppRole]?.tone ?? "bg-muted"}`}
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${ROLE_META[r as AppRole]?.tone ?? "bg-hero-foreground/10"}`}
                       >
                         {ROLE_META[r as AppRole]?.icon} {ROLE_META[r as AppRole]?.label ?? r}
                         <button
