@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
 import AppLayout from "@/components/AppLayout";
 
 const WorkerShareRedirect = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const forwardState = location.state ?? undefined;
 
   useEffect(() => {
     const run = async () => {
@@ -15,7 +17,7 @@ const WorkerShareRedirect = () => {
       }
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
       if (isUuid) {
-        navigate(`/worker/${id}`, { replace: true });
+        navigate(`/worker/${id}`, { replace: true, state: forwardState });
         return;
       }
       const uid = normalizeWorkerUid(id);
@@ -34,7 +36,7 @@ const WorkerShareRedirect = () => {
         if (res.ok) {
           const json = await res.json();
           if (json?.id) {
-            navigate(`/worker/${json.id}`, { replace: true });
+            navigate(`/worker/${json.id}`, { replace: true, state: forwardState });
             return;
           }
         }
@@ -44,7 +46,7 @@ const WorkerShareRedirect = () => {
       navigate("/discover", { replace: true });
     };
     void run();
-  }, [id, navigate]);
+  }, [id, navigate, forwardState]);
 
   return (
     <AppLayout hideMobileHeader>
