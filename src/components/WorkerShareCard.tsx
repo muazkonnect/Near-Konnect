@@ -10,14 +10,26 @@ interface Props {
   name?: string;
 }
 
-const SHARE_DOMAIN = "https://nearkonnectapp.lovable.app";
+const FALLBACK_SHARE_DOMAIN = "https://nearkonnectapp.lovable.app";
+const getShareDomain = () => {
+  const envDomain = (import.meta.env.VITE_PUBLIC_SHARE_DOMAIN as string | undefined)?.trim();
+  if (envDomain) return envDomain.replace(/\/$/, "");
+  if (typeof window !== "undefined") {
+    const { hostname, origin } = window.location;
+    // Use current origin for any non-preview/non-sandbox host (custom domain or published lovable.app)
+    if (hostname && !hostname.includes("id-preview--") && !hostname.includes("lovable.dev") && hostname !== "localhost" && !hostname.startsWith("127.")) {
+      return origin.replace(/\/$/, "");
+    }
+  }
+  return FALLBACK_SHARE_DOMAIN;
+};
 
 const WorkerShareCard = ({ uid, name }: Props) => {
   const [showQr, setShowQr] = useState(false);
   const qrRef = useRef<HTMLDivElement | null>(null);
 
   const validUid = isValidWorkerUid(uid);
-  const url = useMemo(() => `${SHARE_DOMAIN}/w/${uid}`, [uid]);
+  const url = useMemo(() => `${getShareDomain()}/w/${uid}`, [uid]);
 
   if (!validUid) {
     return (
