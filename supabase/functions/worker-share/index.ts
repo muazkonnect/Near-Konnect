@@ -126,6 +126,7 @@ Deno.serve(async (req) => {
     });
   }
 
+  const SITE = resolveSite(req);
   const profileUrl = `${SITE}/w/${uid}`;
   const ua = req.headers.get("user-agent") || "";
   const crawler = isCrawler(ua);
