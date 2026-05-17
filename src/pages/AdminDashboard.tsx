@@ -201,6 +201,12 @@ const AdminDashboard = () => {
     if (c && !adRadiusKm.trim()) setAdRadiusKm("3");
   };
 
+  // Apply admin-shell scope to body so portaled popovers/dialogs inherit dark theme
+  useEffect(() => {
+    document.body.classList.add("admin-shell");
+    return () => { document.body.classList.remove("admin-shell"); };
+  }, []);
+
   useEffect(() => {
     if (!authLoading && !roleLoading && !isStaff) {
       toast.error("Access denied. Staff only.");

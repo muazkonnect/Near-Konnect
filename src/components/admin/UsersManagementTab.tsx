@@ -29,7 +29,7 @@ type AppRole = "admin" | "manager" | "ads_manager" | "moderator" | "worker" | "c
 
 const ROLE_META: Record<AppRole, { label: string; tone: string; icon: string }> = {
   admin: { label: "Admin", tone: "bg-primary text-primary-foreground", icon: "👑" },
-  manager: { label: "Manager", tone: "bg-accent text-accent-foreground", icon: "🛡️" },
+  manager: { label: "Manager", tone: "bg-primary/15 text-primary", icon: "🛡️" },
   ads_manager: { label: "Ads Manager", tone: "bg-primary/15 text-primary", icon: "📣" },
   moderator: { label: "Moderator", tone: "bg-hero-foreground/10 text-hero-foreground", icon: "🧰" },
   worker: { label: "Worker", tone: "bg-hero-foreground/10 text-hero-foreground/60", icon: "🔧" },
@@ -338,7 +338,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
             >
               <div className="flex flex-1 items-center gap-3">
                 <div className="relative">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent text-sm font-bold text-accent-foreground">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary/15 text-sm font-bold text-primary">
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="h-full w-full object-cover" />
                     ) : (
