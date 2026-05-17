@@ -25,6 +25,7 @@ import Home from "./pages/Home";
 // Lazy: every other route — they only load when the user actually navigates.
 const Discover = lazy(() => import("./pages/Discover"));
 const WorkerProfile = lazy(() => import("./pages/WorkerProfile"));
+const WorkerShareRedirect = lazy(() => import("./pages/WorkerShareRedirect"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const VerifyOtp = lazy(() => import("./pages/VerifyOtp"));
