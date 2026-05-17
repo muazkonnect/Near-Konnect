@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Copy } from "lucide-react";
 import {
   ArrowLeft,
   MoreVertical,
