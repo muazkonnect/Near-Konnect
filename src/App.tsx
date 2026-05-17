@@ -89,7 +89,7 @@ const AppContent = () => {
             <Route path="/" element={<Home />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/worker/:id" element={<WorkerProfile />} />
-            <Route path="/w/:id" element={<WorkerProfile />} />
+            <Route path="/w/:id" element={<WorkerShareRedirect />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-otp" element={<VerifyOtp />} />
