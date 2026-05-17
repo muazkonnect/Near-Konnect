@@ -302,7 +302,7 @@ const AdsManagementTab = () => {
           </div>
           <p className="mt-1 text-2xl font-bold text-hero-foreground tabular-nums">{totals.clicks.toLocaleString()}</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border bg-hero p-4 text-hero-foreground">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 text-hero-foreground">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/70">CTR (30d)</p>
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -430,7 +430,7 @@ const AdsManagementTab = () => {
                 </Button>
               </div>
               {adImageUrl ? (
-                <div className="mt-2 overflow-hidden rounded-lg border">
+                <div className="mt-2 overflow-hidden rounded-lg border border-hero-foreground/10">
                   <img src={adImageUrl} alt="" className="h-32 w-full object-cover" />
                 </div>
               ) : (
@@ -442,7 +442,7 @@ const AdsManagementTab = () => {
 
             <div>
               <Label className="text-xs">Live preview</Label>
-              <div className="mt-1 rounded-xl border bg-hero p-3">
+              <div className="mt-1 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3">
                 {adTitle.trim() && adLink.trim() ? (
                   <NativeAdCard
                     preview
@@ -495,7 +495,7 @@ const AdsManagementTab = () => {
               )}
             </div>
           </div>
-          <div className="overflow-hidden rounded-lg border" style={{ height: 260 }}>
+          <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 260 }}>
             <MapLocationPicker value={adTargetCoords} onChange={setAdTargetCoords} />
           </div>
         </div>
@@ -528,7 +528,7 @@ const AdsManagementTab = () => {
             </Button>
           )}
         </div>
-        <div className="overflow-hidden rounded-lg border" style={{ height: 220 }}>
+        <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 220 }}>
           <MapLocationPicker value={viewerCoords} onChange={setViewerCoords} />
         </div>
       </div>
@@ -545,7 +545,7 @@ const AdsManagementTab = () => {
             <div key={ad.id} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                 <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 bg-hero-foreground/10">
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 border-hero-foreground/10 bg-hero-foreground/10">
                     {ad.image_url ? (
                       <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                     ) : (
