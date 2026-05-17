@@ -84,23 +84,23 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   return (
-    <Sidebar collapsible="icon" className="border-r">
+    <Sidebar collapsible="icon" className="border-r border-hero-foreground/10 [&>div]:bg-hero [&>div]:text-hero-foreground">
       <SidebarHeader className="px-3 pt-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.5)]">
             <Crown className="h-4 w-4" />
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-bold tracking-tight text-sidebar-foreground">Admin</p>
-              <p className="truncate text-[11px] text-muted-foreground">Control center</p>
+              <p className="text-sm font-bold tracking-tight text-hero-foreground">Admin</p>
+              <p className="truncate text-[11px] text-hero-foreground/60">Control center</p>
             </div>
           )}
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Manage</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-hero-foreground/50">Manage</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV_ITEMS.map((it) => {
@@ -112,8 +112,8 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
                       onClick={() => setTab(it.key)}
                       className={
                         active
-                          ? "bg-primary/15 font-semibold text-foreground hover:bg-primary/20"
-                          : "hover:bg-muted"
+                          ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
+                          : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
                       }
                     >
                       <Icon className="h-4 w-4" />
@@ -129,7 +129,7 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
       <SidebarFooter className="p-2 space-y-1">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-muted-foreground hover:bg-muted">
+            <SidebarMenuButton asChild className="text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground">
               <Link to="/">
                 <Home className="h-4 w-4" />
                 <span>Back to Home</span>
@@ -137,7 +137,7 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={onSignOut} className="text-muted-foreground hover:bg-muted">
+            <SidebarMenuButton onClick={onSignOut} className="text-destructive/80 hover:bg-destructive/15 hover:text-destructive">
               <LogOut className="h-4 w-4" />
               <span>Sign out</span>
             </SidebarMenuButton>
@@ -152,23 +152,23 @@ const StatCard = ({ label, value, icon: Icon, accent }: { label: string; value: 
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    className={`relative overflow-hidden rounded-2xl border p-4 ${accent ? "bg-hero text-hero-foreground" : "bg-card"}`}
+    className={`relative overflow-hidden rounded-2xl border p-4 ${accent ? "border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 text-hero-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.5)]" : "border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground"}`}
   >
     <div className="flex items-center justify-between">
-      <p className={`text-xs font-medium uppercase tracking-wider ${accent ? "text-hero-foreground/70" : "text-muted-foreground"}`}>
+      <p className={`text-xs font-medium uppercase tracking-wider ${accent ? "text-hero-foreground/80" : "text-hero-foreground/60"}`}>
         {label}
       </p>
-      <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-muted-foreground"}`} />
+      <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-hero-foreground/50"}`} />
     </div>
-    <p className={`mt-2 text-2xl font-bold ${accent ? "text-hero-foreground" : "text-card-foreground"}`}>{value}</p>
+    <p className="mt-2 text-2xl font-bold text-hero-foreground">{value}</p>
   </motion.div>
 );
 
 const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) => (
   <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
     <div>
-      <h2 className="text-xl font-bold tracking-tight text-foreground">{title}</h2>
-      {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      <h2 className="text-xl font-bold tracking-tight text-hero-foreground">{title}</h2>
+      {subtitle && <p className="text-sm text-hero-foreground/60">{subtitle}</p>}
     </div>
     {action}
   </div>
