@@ -606,35 +606,35 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border bg-card p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Latest workers</h3>
+                  <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
                     <ul className="mt-3 space-y-2">
                       {workers.slice(0, 5).map((w: any) => (
                         <li key={w.id} className="flex items-center justify-between gap-3">
-                          <span className="truncate text-sm font-medium text-card-foreground">
+                          <span className="truncate text-sm font-medium text-hero-foreground">
                             {w.profiles?.full_name || "Unnamed"}
                           </span>
                           <div className="flex flex-col items-end">
-                            <span className="text-xs text-muted-foreground/70">{w.profession}</span>
-                            <span className="text-[10px] text-muted-foreground/60">{w.main_category} · {w.sub_category}</span>
+                            <span className="text-xs text-hero-foreground/50">{w.profession}</span>
+                            <span className="text-[10px] text-hero-foreground/40">{w.main_category} · {w.sub_category}</span>
                           </div>
                         </li>
                       ))}
-                      {workers.length === 0 && <li className="text-sm text-muted-foreground">No workers yet.</li>}
+                      {workers.length === 0 && <li className="text-sm text-hero-foreground/60">No workers yet.</li>}
                     </ul>
                   </div>
-                  <div className="rounded-2xl border bg-card p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Latest ads</h3>
+                  <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest ads</h3>
                     <ul className="mt-3 space-y-2">
                       {(nativeAds as any[]).slice(0, 5).map((a) => (
                         <li key={a.id} className="flex items-center justify-between gap-3">
-                          <span className="truncate text-sm font-medium text-card-foreground">{a.title}</span>
+                          <span className="truncate text-sm font-medium text-hero-foreground">{a.title}</span>
                           <Badge variant="outline" className="text-[10px]">
                             {a.placement}
                           </Badge>
                         </li>
                       ))}
-                      {nativeAds.length === 0 && <li className="text-sm text-muted-foreground">No ads yet.</li>}
+                      {nativeAds.length === 0 && <li className="text-sm text-hero-foreground/60">No ads yet.</li>}
                     </ul>
                   </div>
                 </div>
@@ -649,16 +649,16 @@ const AdminDashboard = () => {
                   {workers.map((w: any) => (
                     <div
                       key={w.id}
-                      className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center"
+                      className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:flex-row sm:flex-wrap sm:items-center"
                     >
                       <div className="flex items-start gap-3 sm:flex-1">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-foreground">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-sm font-bold text-primary">
                           {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-card-foreground">{w.profiles?.full_name}</p>
-                          <p className="truncate text-xs text-muted-foreground/70">{w.profession} · {w.experience} yrs</p>
-                          <p className="mt-0.5 truncate text-[11px] text-muted-foreground/70">
+                          <p className="truncate font-semibold text-hero-foreground">{w.profiles?.full_name}</p>
+                          <p className="truncate text-xs text-hero-foreground/50">{w.profession} · {w.experience} yrs</p>
+                          <p className="mt-0.5 truncate text-[11px] text-hero-foreground/50">
                             {w.main_category} / {w.sub_category}
                           </p>
                           <div className="mt-1.5 flex flex-wrap gap-1">
@@ -736,7 +736,7 @@ const AdminDashboard = () => {
                     </div>
                   ))}
                   {workers.length === 0 && (
-                    <p className="py-8 text-center text-muted-foreground">No workers registered.</p>
+                    <p className="py-8 text-center text-hero-foreground/60">No workers registered.</p>
                   )}
                 </div>
                 <EditWorkerDialog
@@ -795,14 +795,14 @@ const AdminDashboard = () => {
                   {bloodDonors
                     .filter((d: any) => !donorFilter || d.blood_group === donorFilter)
                     .map((d: any) => (
-                      <div key={d.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center">
+                      <div key={d.id} className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:flex-row sm:flex-wrap sm:items-center">
                         <div className="flex flex-1 items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-sm font-bold text-destructive">
                             {d.full_name?.slice(0, 2).toUpperCase() || "??"}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate font-semibold text-card-foreground">{d.full_name || "Unnamed"}</p>
-                            <p className="truncate text-xs text-muted-foreground">
+                            <p className="truncate font-semibold text-hero-foreground">{d.full_name || "Unnamed"}</p>
+                            <p className="truncate text-xs text-hero-foreground/60">
                               {d.city || "No city"} · {d.blood_group || "?"}
                             </p>
                           </div>
@@ -830,7 +830,7 @@ const AdminDashboard = () => {
                       </div>
                     ))}
                   {bloodDonors.filter((d: any) => !donorFilter || d.blood_group === donorFilter).length === 0 && (
-                    <p className="py-8 text-center text-muted-foreground">No blood donors found.</p>
+                    <p className="py-8 text-center text-hero-foreground/60">No blood donors found.</p>
                   )}
                 </div>
               </div>
