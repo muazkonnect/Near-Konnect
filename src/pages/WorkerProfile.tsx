@@ -59,21 +59,24 @@ const WorkerProfile = () => {
   };
 
   const isUuid = !!id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const normalizedUid = id ? normalizeWorkerUid(id) : "";
+  const isValidUid = !isUuid && isValidWorkerUid(normalizedUid);
+  const lookupValid = isUuid || isValidUid;
 
   const { data: dbWorker, isLoading: workerLoading, isError: workerError } = useQuery({
     queryKey: ["worker", id],
     queryFn: async () => {
-      if (!id) return null;
+      if (!id || !lookupValid) return null;
       const query = (supabase as any)
         .from("workers")
         .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
-        .eq(isUuid ? "id" : "uid", isUuid ? id : id.toUpperCase())
+        .eq(isUuid ? "id" : "uid", isUuid ? id : normalizedUid)
         .maybeSingle();
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: !!id,
+    enabled: !!id && lookupValid,
   });
 
   const { data: dbReviews = [] } = useQuery({
