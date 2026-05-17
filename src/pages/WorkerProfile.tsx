@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -35,14 +35,19 @@ import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { getExpertise } from "@/lib/categoryExpertise";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
+import { calculateDistance, getCurrentPosition, type Coords } from "@/lib/geolocation";
 
 const WorkerProfile = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const navDistance = (location.state as any)?.distance;
-  const hasDist = typeof navDistance === "number" && navDistance > 0 && isFinite(navDistance);
+  const navDistanceRaw = (location.state as any)?.distance;
+  const navDistance =
+    typeof navDistanceRaw === "number" && navDistanceRaw > 0 && isFinite(navDistanceRaw)
+      ? navDistanceRaw
+      : null;
+  const [userCoords, setUserCoords] = useState<Coords | null>(null);
   const queryClient = useQueryClient();
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
