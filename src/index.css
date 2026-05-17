@@ -52,6 +52,20 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 75 100% 62%;
 
+  }
+
+  /* Admin panel: dark hero-themed sidebar (mobile sheet + desktop rail) */
+  .admin-shell,
+  [data-sidebar="sidebar"][data-mobile="true"] {
+    --sidebar-background: var(--hero);
+    --sidebar-foreground: var(--hero-foreground);
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: var(--hero-foreground);
+    --sidebar-border: 0 0% 100% / 0.1;
+  }
+
+  :root {
+
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 38 100% 50%;
