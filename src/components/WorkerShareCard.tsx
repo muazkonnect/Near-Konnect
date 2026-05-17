@@ -1,8 +1,9 @@
 import { useMemo, useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { Copy, Download, Share2, QrCode } from "lucide-react";
+import { Copy, Download, Share2, QrCode, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { isValidWorkerUid } from "@/lib/workerUid";
 
 interface Props {
   uid: string;
@@ -15,7 +16,20 @@ const WorkerShareCard = ({ uid, name }: Props) => {
   const [showQr, setShowQr] = useState(false);
   const qrRef = useRef<HTMLDivElement | null>(null);
 
+  const validUid = isValidWorkerUid(uid);
   const url = useMemo(() => `${SHARE_DOMAIN}/w/${uid}`, [uid]);
+
+  if (!validUid) {
+    return (
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero text-hero-foreground p-4 flex items-start gap-3">
+        <AlertTriangle className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+        <div className="space-y-0.5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-hero-muted">Share link unavailable</p>
+          <p className="text-xs text-hero-muted">Your worker ID isn't in the expected NK-XXXXXX format yet. Refresh in a moment or contact support.</p>
+        </div>
+      </div>
+    );
+  }
 
   const copy = async () => {
     try {
