@@ -53,7 +53,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
             <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="block h-6 w-auto max-w-[55vw] object-contain" />
               </Link>
               {user && <NotificationBell />}
             </div>
