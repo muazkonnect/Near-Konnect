@@ -10,7 +10,7 @@ interface Props {
   name?: string;
 }
 
-const SHARE_DOMAIN = "https://www.nearkonnect.com";
+const SHARE_DOMAIN = "https://nearkonnectapp.lovable.app";
 
 const WorkerShareCard = ({ uid, name }: Props) => {
   const [showQr, setShowQr] = useState(false);
