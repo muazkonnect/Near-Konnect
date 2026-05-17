@@ -352,7 +352,7 @@ const Home = () => {
                   worker={w}
                   index={i}
                   featured={featuredIds.has(w.id)}
-                  onConnect={() => navigate(`/w/${(w as any).uid || w.id}`)}
+                  onConnect={() => navigate(`/w/${(w as any).uid || w.id}`, { state: { distance: w.distance } })}
                 />
               ))}
             </div>
