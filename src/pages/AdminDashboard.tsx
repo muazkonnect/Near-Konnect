@@ -566,7 +566,7 @@ const AdminDashboard = () => {
 
   if (authLoading || roleLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-hero">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
@@ -575,20 +575,20 @@ const AdminDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex min-h-screen w-full bg-hero text-hero-foreground">
         <AdminSidebar tab={tab} setTab={setTab} onSignOut={onSignOut} />
 
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col min-w-0">
           {/* Top bar */}
-          <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md">
-            <SidebarTrigger />
-            <div className="flex-1">
-              <p className="text-sm font-semibold tracking-tight text-foreground">
+          <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-hero-foreground/10 bg-hero/80 px-3 sm:px-4 backdrop-blur-md">
+            <SidebarTrigger className="text-hero-foreground hover:bg-hero-foreground/10" />
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-semibold tracking-tight text-hero-foreground">
                 {NAV_ITEMS.find((n) => n.key === tab)?.label}
               </p>
-              <p className="text-[11px] text-muted-foreground">Signed in as {user?.email}</p>
+              <p className="truncate text-[11px] text-hero-foreground/60">Signed in as {user?.email}</p>
             </div>
-            <Badge className="bg-primary text-primary-foreground">Admin</Badge>
+            <Badge className="bg-primary text-primary-foreground shrink-0">Admin</Badge>
           </header>
 
           <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
