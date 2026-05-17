@@ -73,8 +73,8 @@ const CustomerDashboard = () => {
 
   return (
     <AppLayout showSignOut>
-      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
-        <section className="mx-auto max-w-xl space-y-5 px-5 pt-[110px] pb-[180px]">
+      <div className="-mx-4 -my-[70px] min-h-screen bg-hero text-hero-foreground">
+        <section className="mx-auto max-w-xl space-y-5 px-5 pt-6 pb-32">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
             <div className="mb-6 flex items-center gap-4">
               <AvatarUpload currentUrl={profile?.avatar_url} />
