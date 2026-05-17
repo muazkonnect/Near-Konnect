@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Compass, HeartPulse, Home, KeyRound, LogOut, MapPin, MessageSquare, Search } from "lucide-react";
+import { Compass, HeartPulse, Home, KeyRound, LogOut, MapPin, MessageSquare } from "lucide-react";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -155,12 +155,6 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
         </header>
 
         <div className="min-w-0 flex-1 space-y-5">
-          <button
-            onClick={() => navigate("/discover")}
-            className="flex w-full items-center gap-2 rounded-full border border-hero-foreground/10 bg-hero-foreground/5 px-5 py-3 text-left text-sm text-hero-foreground/60 transition hover:bg-hero-foreground/10 hover:text-hero-foreground"
-          >
-            <Search className="h-4 w-4" /> Find help near you...
-          </button>
 
           {title && (
             <div className="relative overflow-hidden border border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
