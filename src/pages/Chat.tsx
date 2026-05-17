@@ -46,18 +46,15 @@ const Chat = () => {
 
   return (
     <div
-      className="fixed inset-0 z-40 flex flex-col bg-background"
+      className="fixed inset-0 z-40 flex flex-col bg-hero"
       style={{ height: "100dvh" }}
     >
-      <div className="mx-auto flex h-full w-full max-w-[720px] flex-col overflow-hidden p-2 sm:p-4 md:py-6">
-        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card shadow-premium">
-          <ChatWindow
-            otherUserId={userId}
-            otherUserName={otherProfile?.full_name || "Client"}
-            backLink={backLink}
-          />
-        </div>
-      </div>
+      <ChatWindow
+        otherUserId={userId}
+        otherUserName={otherProfile?.full_name || "Client"}
+        otherUserAvatar={otherProfile?.avatar_url}
+        backLink={backLink}
+      />
     </div>
   );
 };
