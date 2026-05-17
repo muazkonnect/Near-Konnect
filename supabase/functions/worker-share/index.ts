@@ -118,8 +118,28 @@ Deno.serve(async (req) => {
   const parts = url.pathname.split("/").filter(Boolean);
   const raw = (parts[parts.length - 1] || "").toUpperCase();
   const uid = raw.trim();
+  const wantsJson =
+    url.searchParams.get("format") === "json" ||
+    (req.headers.get("accept") || "").includes("application/json");
+
+  const jsonHeaders = {
+    "content-type": "application/json; charset=utf-8",
+    "access-control-allow-origin": "*",
+    "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
+    "cache-control": "public, max-age=60",
+  };
+
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: jsonHeaders });
+  }
 
   if (!WORKER_UID_REGEX.test(uid)) {
+    if (wantsJson) {
+      return new Response(JSON.stringify({ error: "invalid_uid" }), {
+        status: 400,
+        headers: jsonHeaders,
+      });
+    }
     return new Response("Invalid worker ID", {
       status: 400,
       headers: { "content-type": "text/plain; charset=utf-8" },
@@ -140,6 +160,12 @@ Deno.serve(async (req) => {
     .maybeSingle();
 
   if (!worker) {
+    if (wantsJson) {
+      return new Response(JSON.stringify({ error: "not_found", uid }), {
+        status: 404,
+        headers: jsonHeaders,
+      });
+    }
     return new Response(
       page({
         uid,
@@ -156,6 +182,13 @@ Deno.serve(async (req) => {
           "cache-control": "public, max-age=60",
         },
       },
+    );
+  }
+
+  if (wantsJson) {
+    return new Response(
+      JSON.stringify({ id: worker.id, uid, user_id: worker.user_id }),
+      { status: 200, headers: jsonHeaders },
     );
   }
 
