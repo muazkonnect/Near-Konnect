@@ -65,7 +65,7 @@ const CustomerDashboard = () => {
 
   if (authLoading) {
     return (
-      <div className="grid min-h-screen place-items-center bg-background">
+      <div className="grid min-h-screen place-items-center bg-hero">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
@@ -73,61 +73,78 @@ const CustomerDashboard = () => {
 
   return (
     <AppLayout showSignOut>
-      <section className="mx-auto max-w-xl space-y-5">
-        <div className="rounded-3xl border bg-card p-6 sm:p-8">
-          <div className="mb-6 flex items-center gap-4">
-            <AvatarUpload currentUrl={profile?.avatar_url} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-lg font-bold text-card-foreground">{profile?.full_name || "Your profile"}</p>
-              <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
-              <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_profile"] })} />
+      <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
+        <section className="mx-auto max-w-xl space-y-5 px-5 pt-[110px] pb-[180px]">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+            <div className="mb-6 flex items-center gap-4">
+              <AvatarUpload currentUrl={profile?.avatar_url} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-sora text-lg font-bold text-hero-foreground">
+                  {profile?.full_name || "Your profile"}
+                </p>
+                <p className="truncate text-sm text-hero-muted">{user?.email}</p>
+                <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_profile"] })} />
+              </div>
+            </div>
+
+            {role !== "worker" && (
+              <div className="mb-6">
+                <UpgradeToWorker />
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Full Name</Label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1.5 h-11 rounded-xl border-white/15 bg-white/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Phone Number</Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  type="tel"
+                  placeholder="+1 234 567 8900"
+                  className="mt-1.5 h-11 rounded-xl border-white/15 bg-white/5 text-hero-foreground placeholder:text-hero-muted/60 focus-visible:border-primary/60 focus-visible:ring-0"
+                />
+              </div>
+            </div>
+
+            <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 w-full gap-2 rounded-xl">
+              <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+            </Button>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-sora font-semibold text-hero-foreground">Password</p>
+                <p className="text-xs text-hero-muted">Change your account password.</p>
+              </div>
+              <ChangePasswordDialog>
+                <Button
+                  variant="outline"
+                  className="h-10 gap-2 rounded-xl border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
+                >
+                  <KeyRound className="h-3.5 w-3.5" /> Change
+                </Button>
+              </ChangePasswordDialog>
             </div>
           </div>
 
-          {role !== "worker" && (
-            <div className="mb-6">
-              <UpgradeToWorker />
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5 h-11 rounded-xl" />
-            </div>
-            <div>
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Phone Number</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="+1 234 567 8900" className="mt-1.5 h-11 rounded-xl" />
-            </div>
-          </div>
-
-          <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 w-full gap-2 rounded-xl">
-            <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
+          <Button
+            variant="outline"
+            onClick={async () => { await signOut(); navigate("/login"); }}
+            className="h-11 w-full gap-2 rounded-xl border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10 hover:text-hero-foreground"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
           </Button>
-        </div>
-
-        <div className="rounded-3xl border bg-card p-6">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-semibold text-card-foreground">Password</p>
-              <p className="text-xs text-muted-foreground">Change your account password.</p>
-            </div>
-            <ChangePasswordDialog>
-              <Button variant="outline" className="h-10 gap-2 rounded-xl">
-                <KeyRound className="h-3.5 w-3.5" /> Change
-              </Button>
-            </ChangePasswordDialog>
-          </div>
-        </div>
-
-        <Button
-          variant="outline"
-          onClick={async () => { await signOut(); navigate("/login"); }}
-          className="h-11 w-full gap-2 rounded-xl"
-        >
-          <LogOut className="h-4 w-4" /> Sign out
-        </Button>
-      </section>
+        </section>
+      </div>
     </AppLayout>
   );
 };
