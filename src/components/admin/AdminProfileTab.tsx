@@ -72,23 +72,23 @@ const AdminProfileTab = () => {
     qc.invalidateQueries({ queryKey: ["admin_self_profile", user.id] });
   };
 
-  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground";
-  const inputClass = "h-11 rounded-xl border-border bg-background text-base";
+  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hero-foreground/60";
+  const inputClass = "h-11 rounded-xl border-border bg-hero text-base";
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-foreground">My Profile</h2>
-        <p className="text-sm text-muted-foreground">Update your personal info and account security.</p>
+        <h2 className="text-xl font-bold tracking-tight text-hero-foreground">My Profile</h2>
+        <p className="text-sm text-hero-foreground/60">Update your personal info and account security.</p>
       </div>
 
       {/* Identity card */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
         <div className="flex flex-wrap items-start gap-5">
           <AvatarUpload currentUrl={avatarUrl} size={96} />
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-bold text-card-foreground">{fullName || "Unnamed"}</p>
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <p className="text-lg font-bold text-hero-foreground">{fullName || "Unnamed"}</p>
+            <p className="flex items-center gap-1.5 text-sm text-hero-foreground/60">
               <Mail className="h-3.5 w-3.5" /> {user?.email}
             </p>
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -103,8 +103,8 @@ const AdminProfileTab = () => {
       </div>
 
       {/* Personal details */}
-      <div className="rounded-2xl border bg-card p-5">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
           <UserIcon className="h-4 w-4" /> Personal Details
         </h3>
         <div className="grid gap-4 md:grid-cols-2">
@@ -141,14 +141,14 @@ const AdminProfileTab = () => {
       </div>
 
       {/* Security */}
-      <div className="rounded-2xl border bg-card p-5">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
           <KeyRound className="h-4 w-4" /> Security
         </h3>
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/30 p-4">
           <div>
-            <p className="text-sm font-semibold text-card-foreground">Password</p>
-            <p className="text-xs text-muted-foreground">Change your account password regularly to stay secure.</p>
+            <p className="text-sm font-semibold text-hero-foreground">Password</p>
+            <p className="text-xs text-hero-foreground/60">Change your account password regularly to stay secure.</p>
           </div>
           <ChangePasswordDialog>
             <Button variant="outline" className="gap-1">
