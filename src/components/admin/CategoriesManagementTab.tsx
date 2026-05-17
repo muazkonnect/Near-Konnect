@@ -356,7 +356,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
               >
                 <button
                   onClick={() => toggleExpand(main.id)}
-                  className="p-1 hover:bg-accent rounded-lg"
+                  className="p-1 hover:bg-hero-foreground/10 rounded-lg"
                 >
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4 text-hero-foreground/60" />
@@ -511,7 +511,7 @@ export default function CategoriesManagementTab({ categories }: Props) {
                       setNewParentId(main.id);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-dashed p-2 text-xs text-hero-foreground/60 hover:bg-accent hover:text-accent-foreground transition-colors w-full"
+                    className="flex items-center gap-2 rounded-xl border border-dashed p-2 text-xs text-hero-foreground/60 hover:bg-hero-foreground/10 hover:text-hero-foreground transition-colors w-full"
                   >
                     <Plus className="h-3 w-3" /> Add subcategory to {main.name}
                   </button>
