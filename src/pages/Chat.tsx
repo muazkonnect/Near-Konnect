@@ -49,12 +49,14 @@ const Chat = () => {
       className="fixed inset-0 z-40 flex flex-col bg-hero"
       style={{ height: "100dvh" }}
     >
-      <ChatWindow
-        otherUserId={userId}
-        otherUserName={otherProfile?.full_name || "Client"}
-        otherUserAvatar={otherProfile?.avatar_url}
-        backLink={backLink}
-      />
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col">
+        <ChatWindow
+          otherUserId={userId}
+          otherUserName={otherProfile?.full_name || "Client"}
+          otherUserAvatar={otherProfile?.avatar_url}
+          backLink={backLink}
+        />
+      </div>
     </div>
   );
 };
