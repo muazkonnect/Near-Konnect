@@ -425,7 +425,7 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="relative shrink-0 group">
-              <Avatar className="h-16 w-16 rounded-lg border border-white/10 [&_img]:grayscale [&_img]:transition-all [&_img]:duration-500 group-hover:[&_img]:grayscale-0">
+              <Avatar className="h-16 w-16 rounded-lg border border-white/10">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
                 <AvatarFallback className="rounded-lg bg-white/10 text-sm font-bold text-primary">
                   {initials}
