@@ -165,12 +165,15 @@ const Discover = () => {
         return a.distance - b.distance;
       });
     }
-    if (radiusKm && nearbyIds) {
-      list = list
-        .filter((w) => nearbyIds[w.id] !== undefined)
-        .map((w) => ({ ...w, matchedDistanceMeters: nearbyIds[w.id] }));
-    } else if (radiusKm && userCoords) {
-      list = list.filter((w) => w.distance <= (radiusKm as number));
+    if (radiusKm && userCoords) {
+      list = list.filter((w) => {
+        if (w.latitude == null || w.longitude == null) return false;
+        const meters = calculateDistance(userCoords.latitude, userCoords.longitude, w.latitude, w.longitude) * 1000;
+        return meters <= (radiusKm as number) * 1000;
+      }).map((w) => {
+        const meters = calculateDistance(userCoords.latitude, userCoords.longitude, w.latitude!, w.longitude!) * 1000;
+        return { ...w, matchedDistanceMeters: meters };
+      });
     }
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
