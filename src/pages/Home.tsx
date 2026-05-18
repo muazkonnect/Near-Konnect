@@ -381,13 +381,9 @@ const Home = () => {
           ) : (
             <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {top5km.map((w, i) => (
-                <DarkWorkerCard
-                  key={`t-${w.id}`}
-                  worker={w}
-                  index={i}
-                  featured={featuredIds.has(w.id)}
-                  onConnect={() => navigate(`/w/${(w as any).uid || w.id}`, { state: { distance: w.distance } })}
-                />
+                <div key={`t-${w.id}`} className="w-[280px] shrink-0">
+                  <WorkerCard worker={w} index={i} sponsored={featuredIds.has(w.id)} />
+                </div>
               ))}
             </div>
           )}
