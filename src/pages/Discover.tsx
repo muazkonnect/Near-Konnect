@@ -279,6 +279,23 @@ const Discover = () => {
               </button>
             ))}
           </div>
+
+          <div className="-mx-1 mt-2 flex items-center gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-hero-muted">Radius</span>
+            {([1, 2, 3, 5, 10, 20, null] as RadiusKm[]).map((r) => (
+              <button
+                key={String(r)}
+                onClick={() => setRadiusKm(r)}
+                className={`inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  radiusKm === r
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "border border-white/10 bg-white/5 text-hero-foreground hover:bg-white/10"
+                }`}
+              >
+                {r === null ? "Any" : `${r} km`}
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* FEATURED ADS marquee */}
