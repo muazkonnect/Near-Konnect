@@ -15,18 +15,18 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 const slides = [
   {
     eyebrow: "We connect — they deliver",
-    title: ["The bridge between", "clients & providers"],
-    description: "Near Konnect doesn't provide services. We connect you with trusted local providers who do — quickly, directly, and on your terms.",
+    title: ["Clients &", "providers"],
+    description: "Connect with trusted local providers quickly and directly.",
   },
   {
-    eyebrow: "Verified local network",
-    title: ["Trusted providers,", "verified profiles"],
-    description: "Browse identity-checked service providers near you, read real client reviews, and reach out directly through the app.",
+    eyebrow: "Verified network",
+    title: ["Trusted", "providers"],
+    description: "Browse verified profiles and reviews near you.",
   },
   {
-    eyebrow: "Live community help",
-    title: ["Urgent needs,", "instant connections"],
-    description: "From blood requests to emergency repairs, we connect people who need help with people ready to help — in real time.",
+    eyebrow: "Live community",
+    title: ["Urgent help,", "instant replies"],
+    description: "From blood requests to repairs — get help in real time.",
   },
 ];
 
