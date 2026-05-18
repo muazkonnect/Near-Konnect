@@ -85,7 +85,7 @@ const Discover = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const [radiusKm, setRadiusKm] = useState<RadiusKm>(10 as any);
+  const [radiusKm, setRadiusKm] = useState<RadiusKm>(null);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
