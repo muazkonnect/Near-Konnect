@@ -383,6 +383,6 @@ const Discover = () => {
   );
 };
 
-import ExploreCard from "@/components/ExploreCard";
+
 
 export default Discover;
