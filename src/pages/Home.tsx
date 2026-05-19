@@ -31,6 +31,7 @@ import NativeAdCard from "@/components/NativeAdCard";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -57,6 +58,9 @@ const Home = () => {
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
+  const donorsSliderRef = useAutoScroll<HTMLDivElement>(4000);
+  const nearby3kmRef = useAutoScroll<HTMLDivElement>(4000);
+  const top5kmRef = useAutoScroll<HTMLDivElement>(4500);
 
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
