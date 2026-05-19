@@ -31,6 +31,7 @@ import NativeAdCard from "@/components/NativeAdCard";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -57,6 +58,9 @@ const Home = () => {
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
+  const donorsSliderRef = useAutoScroll<HTMLDivElement>(4000);
+  const nearby3kmRef = useAutoScroll<HTMLDivElement>(4000);
+  const top5kmRef = useAutoScroll<HTMLDivElement>(4500);
 
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
@@ -273,7 +277,7 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/blood-donors")}>Become a Donor</Button>
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={donorsSliderRef} className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {donors.map((d, i) => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
@@ -345,7 +349,7 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={nearby3kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {nearby3km.map((w, i) => (
                 <div key={`n-${w.id}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
@@ -379,7 +383,7 @@ const Home = () => {
               No top-rated providers in your 5 KM radius yet.
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={top5kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {top5km.map((w, i) => (
                 <div key={`t-${w.id}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
