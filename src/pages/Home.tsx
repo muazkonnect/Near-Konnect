@@ -345,9 +345,11 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div className="grid gap-3 px-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {nearby3km.map((w, i) => (
-                <ExploreCard key={`n-${w.id}`} worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`n-${w.id}`} className="w-[280px] shrink-0">
+                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                </div>
               ))}
             </div>
           )}
@@ -377,9 +379,11 @@ const Home = () => {
               No top-rated providers in your 5 KM radius yet.
             </div>
           ) : (
-            <div className="grid gap-3 px-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {top5km.map((w, i) => (
-                <ExploreCard key={`t-${w.id}`} worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`t-${w.id}`} className="w-[280px] shrink-0">
+                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                </div>
               ))}
             </div>
           )}
