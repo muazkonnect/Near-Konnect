@@ -349,7 +349,7 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={nearby3kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {nearby3km.map((w, i) => (
                 <div key={`n-${w.id}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
@@ -383,7 +383,7 @@ const Home = () => {
               No top-rated providers in your 5 KM radius yet.
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={top5kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {top5km.map((w, i) => (
                 <div key={`t-${w.id}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
