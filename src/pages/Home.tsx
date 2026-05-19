@@ -277,7 +277,7 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/blood-donors")}>Become a Donor</Button>
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={donorsSliderRef} className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {donors.map((d, i) => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
