@@ -18,7 +18,7 @@ import NotificationBell from "@/components/NotificationBell";
 import CurrentLocationChip from "@/components/CurrentLocationChip";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import WorkerCard from "@/components/WorkerCard";
+import ExploreCard from "@/components/ExploreCard";
 import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -345,11 +345,9 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="grid gap-3 px-5 md:grid-cols-2 xl:grid-cols-3">
               {nearby3km.map((w, i) => (
-                <div key={`n-${w.id}`} className="w-[280px] shrink-0">
-                  <WorkerCard worker={w} index={i} sponsored={featuredIds.has(w.id)} />
-                </div>
+                <ExploreCard key={`n-${w.id}`} worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
               ))}
             </div>
           )}
@@ -379,11 +377,9 @@ const Home = () => {
               No top-rated providers in your 5 KM radius yet.
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="grid gap-3 px-5 md:grid-cols-2 xl:grid-cols-3">
               {top5km.map((w, i) => (
-                <div key={`t-${w.id}`} className="w-[280px] shrink-0">
-                  <WorkerCard worker={w} index={i} sponsored={featuredIds.has(w.id)} />
-                </div>
+                <ExploreCard key={`t-${w.id}`} worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
               ))}
             </div>
           )}
