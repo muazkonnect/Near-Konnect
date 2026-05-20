@@ -388,10 +388,14 @@ const Home = () => {
             </div>
           ) : (
             <div className="overflow-hidden pb-3">
-              <div className="flex w-max gap-3 px-5 animate-[auto-carousel_24s_linear_infinite]">
-              {[...top5km, ...top5km].map((w, i) => (
-                <div key={`t-${w.id}-${i}`} className="w-[280px] shrink-0">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+              <div className="auto-carousel-track flex w-max gap-3 animate-[auto-carousel_70s_linear_infinite]">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex shrink-0 gap-3 pl-5" aria-hidden={copy === 1}>
+                {top5km.map((w, i) => (
+                  <div key={`t-${w.id}-${copy}-${i}`} className="w-[280px] shrink-0">
+                    <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                  </div>
+                ))}
                 </div>
               ))}
               </div>
