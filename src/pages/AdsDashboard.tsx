@@ -353,6 +353,9 @@ const CampaignWizard = ({
       });
 
       toast.success("Campaign launched 🚀");
+      queryClient.invalidateQueries({ queryKey: ["sparks_wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["my_campaigns"] });
       onOpenChange(false);
     } catch (e: any) {
       const msg = String(e?.message || "");
