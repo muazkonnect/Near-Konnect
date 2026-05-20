@@ -323,6 +323,22 @@ const CampaignWizard = ({
   };
 
   const launch = async () => {
+    if (adType === "international") {
+      if (!countryCode) return toast.error("Select a country.");
+      if (!center) {
+        // try to derive center from selected city/state/country
+        const cityObj = cityName && cities.find((c) => c.name === cityName);
+        const stateObj = stateCode ? states.find((s) => s.isoCode === stateCode) : null;
+        const countryObj = Country.getCountryByCode(countryCode);
+        const lat = Number(cityObj?.latitude ?? stateObj?.latitude ?? countryObj?.latitude);
+        const lng = Number(cityObj?.longitude ?? stateObj?.longitude ?? countryObj?.longitude);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          setCenter({ latitude: lat, longitude: lng });
+        } else {
+          return toast.error("Pin a center on the map.");
+        }
+      }
+    }
     if (!center) return toast.error("Set a location first.");
     if (cost > balance) return toast.error(`Need ${cost - balance} more Sparks. Ask an admin to top up.`);
     setSubmitting(true);
@@ -330,9 +346,9 @@ const CampaignWizard = ({
       await createCampaign({
         workerId, adType, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
-        country: adType === "international" ? country || null : null,
-        city: adType === "international" ? city || null : null,
-        area: adType === "international" ? area || null : null,
+        country: adType === "international" ? countryName || null : null,
+        city: adType === "international" ? stateName || null : null,
+        area: adType === "international" ? cityName || null : null,
       });
       toast.success("Campaign launched 🚀");
       onOpenChange(false);
