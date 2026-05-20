@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, useSparksTransactions, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign } from "@/hooks/useAdCampaigns";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
+import { Country, State, City } from "country-state-city";
 
 const RADII = [5, 10, 15] as const;
 const DURATIONS = [1, 7, 15, 30] as const;
