@@ -18,11 +18,21 @@ export function useAutoScroll<T extends HTMLElement>(intervalMs = 3500, stepPx?:
     el.addEventListener("touchstart", pause, { passive: true });
     el.addEventListener("touchend", resume);
 
+    const getStep = () => {
+      if (stepPx) return stepPx;
+      const first = el.firstElementChild as HTMLElement | null;
+      const second = first?.nextElementSibling as HTMLElement | null;
+      if (first && second) {
+        return second.offsetLeft - first.offsetLeft;
+      }
+      return first?.offsetWidth ?? el.clientWidth;
+    };
+
     const id = window.setInterval(() => {
       if (paused) return;
       const max = el.scrollWidth - el.clientWidth;
       if (max <= 4) return;
-      const step = stepPx ?? Math.min(el.clientWidth * 0.9, 300);
+      const step = getStep();
       const next = el.scrollLeft + step;
       if (next >= max - 4) {
         el.scrollTo({ left: 0, behavior: "smooth" });
