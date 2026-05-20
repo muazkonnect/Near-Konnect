@@ -6,7 +6,6 @@ import {
   BadgeCheck,
   Droplet,
   HeartPulse,
-  Info,
   MapPin,
   Search,
   Sparkles,
