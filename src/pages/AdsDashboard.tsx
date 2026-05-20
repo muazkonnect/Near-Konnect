@@ -276,7 +276,7 @@ const CampaignWizard = ({
 
   useEffect(() => {
     if (!open) return;
-    setStep(0); setAdType("local"); setRadius(5); setDuration(7);
+    setStep(0); setPlacement("homepage"); setAdType("local"); setRadius(5); setDuration(7);
     setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName(""); setAreaText("");
   }, [open, defaultCenter]);
 
