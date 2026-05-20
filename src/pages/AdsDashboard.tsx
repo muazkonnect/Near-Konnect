@@ -409,7 +409,7 @@ const CampaignWizard = ({
 
         {/* Step indicator */}
         <div className="flex items-center gap-1.5">
-          {["Type", "Target", "Duration", "Review"].map((label, i) => (
+          {["Where", "Reach", "Duration", "Review"].map((label, i) => (
             <div key={label} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />
           ))}
         </div>
