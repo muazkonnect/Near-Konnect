@@ -352,11 +352,12 @@ const Home = () => {
               trackClassName="pl-5 pr-5"
               dwellMs={2800}
               items={nearby3km.map((w) => (
-                <div key={`n-${w.id}`} className="w-[280px]">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`n-${w.id}`}>
+                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
             />
+
           )}
         </motion.section>
 
