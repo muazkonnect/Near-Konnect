@@ -242,6 +242,7 @@ const CampaignWizard = ({
   balance: number;
 }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [adType, setAdType] = useState<"local" | "international">("local");
   const [radius, setRadius] = useState<number>(5);
