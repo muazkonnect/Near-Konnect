@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Search, Navigation, Check } from "lucide-react";
+import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Search, Navigation, Check, Home as HomeIcon, Compass } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
-import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign } from "@/hooks/useAdCampaigns";
+import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign, type AdPlacement } from "@/hooks/useAdCampaigns";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
@@ -128,6 +128,10 @@ const AdsDashboard = () => {
                           {c.status}
                         </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                          {c.placement_type === "homepage" ? <HomeIcon className="h-3 w-3" /> : <Compass className="h-3 w-3" />}
+                          {c.placement_type === "homepage" ? "Homepage" : "Explore"}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground/70">
                           {c.ad_type === "local" ? <MapPin className="h-3 w-3" /> : <Globe className="h-3 w-3" />}
                           {c.ad_type}
                         </span>
@@ -244,6 +248,7 @@ const CampaignWizard = ({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [placement, setPlacement] = useState<AdPlacement>("homepage");
   const [adType, setAdType] = useState<"local" | "international">("local");
   const [radius, setRadius] = useState<number>(5);
   const [duration, setDuration] = useState<number>(7);
@@ -275,7 +280,7 @@ const CampaignWizard = ({
 
   useEffect(() => {
     if (!open) return;
-    setStep(0); setAdType("local"); setRadius(5); setDuration(7);
+    setStep(0); setPlacement("homepage"); setAdType("local"); setRadius(5); setDuration(7);
     setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName(""); setAreaText("");
   }, [open, defaultCenter]);
 
@@ -351,7 +356,7 @@ const CampaignWizard = ({
     setSubmitting(true);
     try {
       await createCampaign({
-        workerId, adType, durationDays: duration, radiusKm: radius,
+        workerId, adType, placementType: placement, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
         country: adType === "international" ? countryName || null : null,
         city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
@@ -383,7 +388,7 @@ const CampaignWizard = ({
 
         {/* Step indicator */}
         <div className="flex items-center gap-1.5">
-          {["Where", "Reach", "Duration", "Review"].map((label, i) => (
+          {["Placement", "Where", "Reach", "Duration", "Review"].map((label, i) => (
             <div key={label} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />
           ))}
         </div>
@@ -391,7 +396,33 @@ const CampaignWizard = ({
         {step === 0 && (
           <div className="space-y-4">
             <div>
-              <p className="text-base font-bold">Where do you want your ad to appear?</p>
+              <p className="text-base font-bold">Where should your ad appear?</p>
+              <p className="text-xs text-muted-foreground">Pick the placement — homepage or explore feed.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <TargetCard
+                active={placement === "homepage"}
+                icon={HomeIcon}
+                title="Homepage Ads"
+                desc="Promoted in Top Rated & Nearby sections on the homepage."
+                badge="Premium reach"
+                onClick={() => setPlacement("homepage")}
+              />
+              <TargetCard
+                active={placement === "explore"}
+                icon={Compass}
+                title="Explore Page Ads"
+                desc="Mixed into the explore feed as sponsored cards."
+                onClick={() => setPlacement("explore")}
+              />
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <p className="text-base font-bold">Who should see it?</p>
               <p className="text-xs text-muted-foreground">Pick a vibe — we'll handle the rest.</p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -417,7 +448,7 @@ const CampaignWizard = ({
           </div>
         )}
 
-        {step === 1 && (
+        {step === 2 && (
           <div className="space-y-4">
             {adType === "international" && (
               <div>
@@ -482,7 +513,7 @@ const CampaignWizard = ({
 
 
 
-        {step === 2 && (
+        {step === 3 && (
           <div className="space-y-3">
             <Label>Duration</Label>
             <div className="grid grid-cols-4 gap-2">
@@ -500,18 +531,18 @@ const CampaignWizard = ({
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="space-y-4">
             <div className="rounded-xl border bg-card p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Summary</p>
               <ul className="mt-2 space-y-1 text-sm">
-                <li>Type: <b className="capitalize">{adType}</b></li>
+                <li>Placement: <b className="capitalize">{placement === "homepage" ? "Homepage" : "Explore Page"}</b></li>
+                <li>Targeting: <b className="capitalize">{adType}</b></li>
                 <li>Radius: <b>{radius} km</b></li>
                 <li>Duration: <b>{duration} days</b></li>
                 {adType === "international" && (
                   <li>Target: <b>{[areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
-
               </ul>
             </div>
             <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-primary/15 to-primary/5 p-4">
@@ -537,8 +568,8 @@ const CampaignWizard = ({
 
         <div className="flex items-center justify-between gap-2 pt-2">
           <Button variant="ghost" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>Back</Button>
-          {step < 3 ? (
-            <Button onClick={() => setStep((s) => s + 1)} disabled={step === 1 && !center}>Next</Button>
+          {step < 4 ? (
+            <Button onClick={() => setStep((s) => s + 1)} disabled={step === 2 && !center}>Next</Button>
           ) : (
             <Button onClick={launch} disabled={submitting || cost > balance} className="gap-2">
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Launch ({cost} Sparks)

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Coords } from "@/lib/geolocation";
@@ -53,13 +53,14 @@ function join(rows: PromotedRow[], workers: Worker[]): PromotedWorker[] {
 export function usePromotedNearby(coords: Coords | null, radiusKm: number) {
   const { data: workers = [] } = useWorkers();
   const { data: rows = [] } = useRows(
-    ["promoted_nearby", radiusKm, coords?.latitude, coords?.longitude],
+    ["promoted_nearby", "homepage", radiusKm, coords?.latitude, coords?.longitude],
     "get_promoted_workers",
     {
       _viewer_lat: coords?.latitude ?? null,
       _viewer_lng: coords?.longitude ?? null,
       _max_viewer_radius_km: radiusKm,
       _limit: 12,
+      _placement: "homepage",
     },
     !!coords
   );
@@ -69,16 +70,57 @@ export function usePromotedNearby(coords: Coords | null, radiusKm: number) {
 export function usePromotedTopRated(coords: Coords | null) {
   const { data: workers = [] } = useWorkers();
   const { data: rows = [] } = useRows(
-    ["promoted_top_rated", coords?.latitude, coords?.longitude],
+    ["promoted_top_rated", "homepage", coords?.latitude, coords?.longitude],
     "get_top_rated_promoted",
     {
       _viewer_lat: coords?.latitude ?? null,
       _viewer_lng: coords?.longitude ?? null,
       _limit: 12,
+      _placement: "homepage",
     },
     !!coords
   );
   return useMemo(() => join(rows, workers), [rows, workers]);
+}
+
+const EXPLORE_PAGE_SIZE = 8;
+
+export function usePromotedExploreInfinite(coords: Coords | null) {
+  const { data: workers = [] } = useWorkers();
+  const q = useInfiniteQuery({
+    queryKey: ["promoted_explore", coords?.latitude, coords?.longitude],
+    enabled: !!coords,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }) => {
+      const { data, error } = await (supabase as any).rpc("get_promoted_explore", {
+        _viewer_lat: coords!.latitude,
+        _viewer_lng: coords!.longitude,
+        _limit: EXPLORE_PAGE_SIZE,
+        _offset: pageParam,
+        _exclude_campaign_ids: [],
+      });
+      if (error) throw error;
+      return { rows: (data || []) as PromotedRow[], nextOffset: pageParam + EXPLORE_PAGE_SIZE };
+    },
+    getNextPageParam: (last) => (last.rows.length === EXPLORE_PAGE_SIZE ? last.nextOffset : undefined),
+    staleTime: 60_000,
+  });
+
+  const flatRows = useMemo(() => {
+    const seen = new Set<string>();
+    const out: PromotedRow[] = [];
+    for (const p of q.data?.pages ?? []) {
+      for (const r of p.rows) {
+        if (seen.has(r.campaign_id)) continue;
+        seen.add(r.campaign_id);
+        out.push(r);
+      }
+    }
+    return out;
+  }, [q.data]);
+
+  const items = useMemo(() => join(flatRows, workers), [flatRows, workers]);
+  return { items, fetchNextPage: q.fetchNextPage, hasNextPage: !!q.hasNextPage, isFetchingNextPage: q.isFetchingNextPage };
 }
 
 // Fire-and-forget tracking

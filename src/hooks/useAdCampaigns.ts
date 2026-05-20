@@ -3,11 +3,14 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+export type AdPlacement = "homepage" | "explore";
+
 export type AdCampaign = {
   id: string;
   worker_id: string;
   owner_user_id: string;
   ad_type: "local" | "international";
+  placement_type: AdPlacement;
   status: "active" | "paused" | "expired" | "rejected";
   duration_days: number;
   starts_at: string;
@@ -41,7 +44,7 @@ export function useMyCampaigns() {
       const { data, error } = await (supabase as any)
         .from("ad_campaigns")
         .select(
-          "id, worker_id, owner_user_id, ad_type, status, duration_days, starts_at, ends_at, sparks_cost, priority, created_at, ad_geo_targets(radius_km, country, city, area)"
+          "id, worker_id, owner_user_id, ad_type, placement_type, status, duration_days, starts_at, ends_at, sparks_cost, priority, created_at, ad_geo_targets(radius_km, country, city, area)"
         )
         .eq("owner_user_id", user!.id)
         .order("created_at", { ascending: false });
@@ -103,6 +106,7 @@ export async function setCampaignStatus(campaignId: string, status: "active" | "
 export async function createCampaign(params: {
   workerId: string;
   adType: "local" | "international";
+  placementType: AdPlacement;
   durationDays: number;
   radiusKm: number;
   centerLat: number;
@@ -121,6 +125,7 @@ export async function createCampaign(params: {
     _country: params.country ?? null,
     _city: params.city ?? null,
     _area: params.area ?? null,
+    _placement_type: params.placementType,
   });
   if (error) throw error;
   return data as string;

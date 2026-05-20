@@ -42,6 +42,8 @@ import { useWorkers } from "@/hooks/useWorkers";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
+import WorkerAdCard from "@/components/WorkerAdCard";
+import { usePromotedExploreInfinite } from "@/hooks/usePromoted";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
@@ -92,6 +94,19 @@ const Discover = () => {
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
+
+  const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    }, { rootMargin: "400px 0px" });
+    io.observe(sentinelRef.current);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
@@ -356,11 +371,35 @@ const Discover = () => {
               <p className="mt-1 text-xs text-hero-muted">Try widening distance, rating, or category filters.</p>
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {allOthers.map((w, i) => (
-                <ExploreCard key={`worker-${w.id}-${i}`} worker={w as any} isAuthed={!!user} />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {allOthers.map((w, i) => {
+                  const adIndex = Math.floor(i / 6);
+                  const showAd = i > 0 && i % 6 === 0 && exploreAds[adIndex - 1];
+                  const ad = showAd ? exploreAds[adIndex - 1] : null;
+                  return (
+                    <div key={`worker-${w.id}-${i}`} className="contents">
+                      {ad && (
+                        <div key={`ad-${ad.campaignId}`} className="flex justify-center">
+                          <WorkerAdCard
+                            worker={ad as any}
+                            isAuthed={!!user}
+                            campaignId={ad.campaignId}
+                            placement="explore_feed"
+                            premium
+                          />
+                        </div>
+                      )}
+                      <ExploreCard worker={w as any} isAuthed={!!user} />
+                    </div>
+                  );
+                })}
+              </div>
+              <div ref={sentinelRef} className="h-10" />
+              {isFetchingNextPage && (
+                <div className="mt-4 text-center text-xs text-hero-muted">Loading more…</div>
+              )}
+            </>
           )}
 
           {!user && sorted.length > 0 && (
