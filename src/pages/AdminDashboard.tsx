@@ -8,13 +8,13 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  Plus,
+  
   Heart,
   Droplet,
   Megaphone,
   Star,
   LayoutDashboard,
-  MapPin,
+  
   LogOut,
   Crown,
   UserCog,
@@ -44,10 +44,6 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import NativeAdCard from "@/components/NativeAdCard";
-import type { NativeAd } from "@/hooks/useSponsored";
-import MapLocationPicker from "@/components/MapLocationPickerLazy";
-import { calculateDistance, type Coords } from "@/lib/geolocation";
 import { lazy, Suspense } from "react";
 const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));
 const AdminProfileTab = lazy(() => import("@/components/admin/AdminProfileTab"));
@@ -55,6 +51,7 @@ const CategoriesManagementTab = lazy(() => import("@/components/admin/Categories
 const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
+const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
@@ -67,7 +64,7 @@ const TabFallback = () => (
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "sparks" | "avatar_resets" | "location_requests" | "profile";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "running_ads" | "sparks" | "avatar_resets" | "location_requests" | "profile";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -76,8 +73,9 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "categories", label: "Categories", icon: Shield },
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
-  { key: "ads", label: "Ads & Geo", icon: Megaphone },
-  { key: "sparks", label: "Sparks & Campaigns", icon: Zap },
+  { key: "ads", label: "Ads", icon: Megaphone },
+  { key: "running_ads", label: "Running Ads", icon: Zap },
+  { key: "sparks", label: "Sparks & Payments", icon: Zap },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
   { key: "location_requests", label: "Location Requests", icon: UserCog },
   { key: "profile", label: "My Profile", icon: UserCog },
@@ -185,24 +183,8 @@ const AdminDashboard = () => {
   const [tab, setTab] = useState<TabKey>("overview");
   const [featureWorkerId, setFeatureWorkerId] = useState("");
   const [featurePriority, setFeaturePriority] = useState("100");
-  const [adTitle, setAdTitle] = useState("");
-  const [adDescription, setAdDescription] = useState("");
-  const [adImageUrl, setAdImageUrl] = useState("");
-  const [adLink, setAdLink] = useState("");
-  const [adCtaLabel, setAdCtaLabel] = useState("Learn More");
-  const [adPlacement, setAdPlacement] = useState<"home_banner" | "home_feed">("home_banner");
-  const [adPriority, setAdPriority] = useState("100");
-  const [adTargetCoords, setAdTargetCoordsState] = useState<Coords | null>(null);
-  const [adRadiusKm, setAdRadiusKm] = useState("3");
   const [donorFilter, setDonorFilter] = useState("");
-  const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
-  const [editingAdId, setEditingAdId] = useState<string | null>(null);
   const [editingWorker, setEditingWorker] = useState<any | null>(null);
-
-  const setAdTargetCoords = (c: Coords | null) => {
-    setAdTargetCoordsState(c);
-    if (c && !adRadiusKm.trim()) setAdRadiusKm("3");
-  };
 
   // Apply admin-shell scope to body so portaled popovers/dialogs inherit dark theme
   useEffect(() => {
@@ -409,116 +391,6 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
   };
 
-  const addAd = async () => {
-    if (!adTitle.trim() || !adLink.trim()) {
-      toast.error("Ad title and link are required");
-      return;
-    }
-    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
-    if (adTargetCoords && (!radius || radius <= 0)) {
-      toast.error("Set a radius (km) for geo-targeted ads");
-      return;
-    }
-    const { error } = await (supabase as any).from("native_ads").insert({
-      title: adTitle.trim(),
-      description: adDescription.trim() || null,
-      image_url: adImageUrl.trim() || null,
-      cta_url: adLink.trim(),
-      cta_label: adCtaLabel.trim() || "Learn More",
-      placement: adPlacement,
-      ad_type: adPlacement === "home_banner" ? "banner" : "in_feed",
-      is_active: true,
-      priority: Number(adPriority) || 100,
-      target_latitude: adTargetCoords?.latitude ?? null,
-      target_longitude: adTargetCoords?.longitude ?? null,
-      target_radius_km: adTargetCoords ? radius : null,
-      created_by: user?.id || null,
-    });
-    if (error) return toast.error("Failed to create ad");
-    toast.success(adTargetCoords ? "Geo-targeted ad created" : "Global ad created");
-    resetAdForm();
-    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
-  };
-
-  const updateAd = async () => {
-    if (!editingAdId) return;
-    if (!adTitle.trim() || !adLink.trim()) {
-      toast.error("Ad title and link are required");
-      return;
-    }
-    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
-    if (adTargetCoords && (!radius || radius <= 0)) {
-      toast.error("Set a radius (km) for geo-targeted ads");
-      return;
-    }
-    const { error } = await (supabase as any)
-      .from("native_ads")
-      .update({
-        title: adTitle.trim(),
-        description: adDescription.trim() || null,
-        image_url: adImageUrl.trim() || null,
-        cta_url: adLink.trim(),
-        cta_label: adCtaLabel.trim() || "Learn More",
-        placement: adPlacement,
-        ad_type: adPlacement === "home_banner" ? "banner" : "in_feed",
-        priority: Number(adPriority) || 100,
-        target_latitude: adTargetCoords?.latitude ?? null,
-        target_longitude: adTargetCoords?.longitude ?? null,
-        target_radius_km: adTargetCoords ? radius : null,
-      })
-      .eq("id", editingAdId);
-
-    if (error) return toast.error("Failed to update ad");
-    toast.success("Ad updated successfully");
-    resetAdForm();
-    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
-  };
-
-  const resetAdForm = () => {
-    setAdTitle("");
-    setAdDescription("");
-    setAdImageUrl("");
-    setAdLink("");
-    setAdCtaLabel("Learn More");
-    setAdPriority("100");
-    setAdTargetCoordsState(null);
-    setAdRadiusKm("3");
-    setEditingAdId(null);
-  };
-
-  const startEditingAd = (ad: any) => {
-    setEditingAdId(ad.id);
-    setAdTitle(ad.title || "");
-    setAdDescription(ad.description || "");
-    setAdImageUrl(ad.image_url || "");
-    setAdLink(ad.cta_url || "");
-    setAdCtaLabel(ad.cta_label || "Learn More");
-    setAdPlacement(ad.placement);
-    setAdPriority(String(ad.priority || "100"));
-    if (ad.target_latitude && ad.target_longitude) {
-      setAdTargetCoordsState({ latitude: ad.target_latitude, longitude: ad.target_longitude });
-      setAdRadiusKm(String(ad.target_radius_km || "3"));
-    } else {
-      setAdTargetCoordsState(null);
-      setAdRadiusKm("3");
-    }
-    // Scroll to form
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const toggleAdActive = async (id: string, active: boolean) => {
-    const { error } = await (supabase as any).from("native_ads").update({ is_active: !active }).eq("id", id);
-    if (error) return toast.error("Failed to update ad status");
-    toast.success(!active ? "Ad enabled" : "Ad disabled");
-    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
-  };
-
-  const deleteAd = async (id: string) => {
-    const { error } = await (supabase as any).from("native_ads").delete().eq("id", id);
-    if (error) return toast.error("Failed to delete ad");
-    toast.success("Ad deleted");
-    queryClient.invalidateQueries({ queryKey: ["admin_native_ads"] });
-  };
 
   const toggleDonorStatus = async (userId: string, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
@@ -538,40 +410,6 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  // ===== Computed: distance for active ads given the test viewer location =====
-  const adsWithDistance = useMemo(() => {
-    return (nativeAds as any[]).map((ad) => {
-      const hasTarget =
-        ad.target_latitude != null && ad.target_longitude != null && (ad.target_radius_km ?? 0) > 0;
-      let distanceKm: number | null = null;
-      let inRadius: boolean | null = null;
-      if (hasTarget && viewerCoords) {
-        distanceKm = calculateDistance(
-          viewerCoords.latitude,
-          viewerCoords.longitude,
-          ad.target_latitude,
-          ad.target_longitude
-        );
-        inRadius = distanceKm <= ad.target_radius_km;
-      } else if (!hasTarget) {
-        inRadius = true; // global
-      }
-      return { ad, hasTarget, distanceKm, inRadius };
-    });
-  }, [nativeAds, viewerCoords]);
-
-  // Distance for the draft ad being composed
-  const draftDistance = useMemo(() => {
-    if (!adTargetCoords || !viewerCoords) return null;
-    return calculateDistance(
-      viewerCoords.latitude,
-      viewerCoords.longitude,
-      adTargetCoords.latitude,
-      adTargetCoords.longitude
-    );
-  }, [adTargetCoords, viewerCoords]);
-  const draftRadiusNum = Number(adRadiusKm) || 0;
-  const draftInRadius = draftDistance != null && draftRadiusNum > 0 ? draftDistance <= draftRadiusNum : null;
 
   if (authLoading || roleLoading) {
     return (
@@ -859,6 +697,13 @@ const AdminDashboard = () => {
             {tab === "ads" && (
               <Suspense fallback={<TabFallback />}>
                 <AdsManagementTab />
+              </Suspense>
+            )}
+
+            {/* RUNNING ADS (campaigns: view + control) */}
+            {tab === "running_ads" && (
+              <Suspense fallback={<TabFallback />}>
+                <RunningAdsPanel />
               </Suspense>
             )}
 
