@@ -95,6 +95,19 @@ const Discover = () => {
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
 
+  const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    }, { rootMargin: "400px 0px" });
+    io.observe(sentinelRef.current);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   const { data: nearbyIds } = useQuery({
     queryKey: ["nearby_workers", radiusKm, userCoords?.latitude, userCoords?.longitude],
     queryFn: async () => {
