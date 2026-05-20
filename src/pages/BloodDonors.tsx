@@ -116,15 +116,10 @@ const BloodDonors = () => {
   }, [donors, search, selectedGroup, user?.id, userCoords]);
 
   return (
-    <AppLayout hideMobileHeader>
+    <AppLayout title="Blood Konnect" subtitle="Find and reach nearby blood donors.">
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
-        {/* TOP APP BAR */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#ffe2de] bg-white/90 px-6 backdrop-blur-md">
-          <img src={logoImg} alt="Near Konnect" className="h-8 object-contain brightness-0" />
-          <button onClick={() => navigate("/notifications")} aria-label="Notifications" className="rounded-full p-2 text-[#271716] hover:bg-[#fff0ee]">
-            <Bell className="h-5 w-5" />
-          </button>
-        </header>
+
+
 
         <main className="px-6 pt-6 pb-8">
           {/* HERO CARD */}
