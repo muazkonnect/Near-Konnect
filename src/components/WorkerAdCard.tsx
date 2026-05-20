@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Star, BadgeCheck, Award, MapPin, Briefcase, Phone, ArrowRight, Sparkles } from "lucide-react";
+import { Star, BadgeCheck, Award, MapPin, Briefcase, Phone, ArrowRight, Sparkles, Zap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -12,13 +12,13 @@ interface Props {
   isAuthed: boolean;
 }
 
-/** Mobile-first ad-style worker card. */
 const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const lastClosedRef = useRef(0);
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel =
-    worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km` : "Nearby";
+    worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance}` : "—";
+  const distUnit = worker.distance > 0 && isFinite(worker.distance) ? "km" : "";
 
   const handleOpen = () => {
     if (popupOpen) return;
@@ -32,141 +32,155 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
 
   return (
     <>
-      <article
-        onClick={handleOpen}
-        className={`group relative w-[330px] cursor-pointer overflow-hidden rounded-2xl border transition-all sm:w-[400px] ${
+      {/* Gradient border wrapper */}
+      <div
+        className={`group relative w-[330px] rounded-[20px] p-[1.5px] sm:w-[400px] ${
           premium
-            ? "border-primary/30 bg-gradient-to-br from-primary/[0.12] via-hero-foreground/[0.04] to-transparent shadow-[0_0_32px_-14px_hsl(var(--primary)/0.7)] hover:border-primary/50"
-            : "border-hero-foreground/10 bg-gradient-to-br from-hero-foreground/[0.06] to-hero-foreground/[0.02] hover:border-primary/30"
+            ? "bg-gradient-to-br from-primary via-primary/40 to-primary/10 shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.7)]"
+            : "bg-gradient-to-br from-primary/40 via-hero-foreground/15 to-transparent shadow-[0_8px_28px_-14px_hsl(var(--primary)/0.4)]"
         }`}
       >
-        {/* Accent bar */}
-        <div
-          className={`absolute inset-y-0 left-0 w-1 ${
-            premium ? "bg-gradient-to-b from-primary to-primary/40" : "bg-gradient-to-b from-primary/60 to-transparent"
-          }`}
-        />
-
-        {/* Ribbon */}
-        <div
-          className={`absolute right-0 top-0 inline-flex items-center gap-1 rounded-bl-xl px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.12em] shadow-md ${
-            premium
-              ? "bg-primary text-primary-foreground"
-              : "bg-hero-foreground/15 text-hero-foreground backdrop-blur"
-          }`}
+        <article
+          onClick={handleOpen}
+          className="relative cursor-pointer overflow-hidden rounded-[18px] bg-hero/95 backdrop-blur-xl transition-transform duration-300 active:scale-[0.985]"
         >
-          {premium ? <Award className="h-3 w-3" /> : <Sparkles className="h-3 w-3 text-primary" />}
-          {premium ? "Featured" : "Sponsored"}
-        </div>
+          {/* Decorative glow blobs */}
+          <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 left-10 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
 
-        <div className="flex items-stretch gap-3 p-3 pl-4 pr-3">
-          {/* Left: photo + availability */}
-          <div className="relative shrink-0 self-stretch">
-            <Avatar className="h-[100px] w-[88px] rounded-xl border border-hero-foreground/10 shadow-md">
-              <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-              <AvatarFallback className="rounded-xl bg-hero-foreground/10 text-base font-bold text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            {/* Rating chip overlay */}
-            <div className="absolute -bottom-1.5 left-1/2 inline-flex -translate-x-1/2 items-center gap-0.5 rounded-full border border-primary/30 bg-hero px-2 py-0.5 text-primary shadow-md">
-              <Star className="h-3 w-3 fill-current" />
-              <span className="text-[11px] font-bold">{worker.rating?.toFixed(1) || "—"}</span>
-            </div>
+          {/* Ribbon */}
+          <div
+            className={`absolute right-0 top-0 z-10 inline-flex items-center gap-1 rounded-bl-2xl px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em] shadow-lg ${
+              premium
+                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"
+                : "bg-hero-foreground/15 text-hero-foreground backdrop-blur-md"
+            }`}
+          >
+            {premium ? <Award className="h-3 w-3" /> : <Sparkles className="h-3 w-3 text-primary" />}
+            {premium ? "Featured" : "Sponsored"}
           </div>
 
-          {/* Right: details */}
-          <div className="flex min-w-0 flex-1 flex-col">
-            {/* Category row above the name */}
-            <div className="flex flex-wrap items-center gap-1 pr-16 text-[9px] font-bold uppercase tracking-[0.1em] text-hero-muted">
-              {worker.mainCategory && (
-                <span className="rounded-sm bg-primary/15 px-1.5 py-0.5 text-primary">
-                  {worker.mainCategory}
+          <div className="relative flex items-stretch gap-3 p-3.5">
+            {/* Left: photo column */}
+            <div className="relative shrink-0">
+              <div className="relative">
+                {/* glow ring */}
+                <div className="absolute inset-0 -m-0.5 rounded-2xl bg-gradient-to-br from-primary/60 to-primary/10 opacity-70 blur-[6px]" />
+                <Avatar className="relative h-[104px] w-[92px] rounded-2xl border-2 border-hero-foreground/10 shadow-xl">
+                  <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
+                  <AvatarFallback className="rounded-2xl bg-hero-foreground/10 text-lg font-bold text-primary">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              {/* Rating overlay chip */}
+              <div className="absolute -bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-primary/40 bg-gradient-to-r from-hero to-hero-foreground/[0.08] px-2.5 py-1 text-primary shadow-lg ring-1 ring-primary/20">
+                <Star className="h-3 w-3 fill-current" />
+                <span className="text-[11px] font-extrabold leading-none">{worker.rating?.toFixed(1) || "—"}</span>
+              </div>
+            </div>
+
+            {/* Right: details */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              {/* Category row */}
+              <div className="flex flex-wrap items-center gap-1 pr-20 text-[9px] font-bold uppercase tracking-[0.1em]">
+                {worker.mainCategory && (
+                  <span className="rounded-md bg-primary/20 px-1.5 py-0.5 text-primary ring-1 ring-primary/30">
+                    {worker.mainCategory}
+                  </span>
+                )}
+                {worker.subCategory && (
+                  <>
+                    <span className="text-hero-muted opacity-50">›</span>
+                    <span className="text-hero-foreground/90">{worker.subCategory}</span>
+                  </>
+                )}
+                {worker.profession && (
+                  <>
+                    <span className="text-hero-muted opacity-50">•</span>
+                    <span className="text-primary/90">{worker.profession}</span>
+                  </>
+                )}
+              </div>
+
+              {/* Name */}
+              <div className="mt-1.5 flex items-center gap-1">
+                <h3 className="truncate bg-gradient-to-r from-hero-foreground to-hero-foreground/80 bg-clip-text text-[18px] font-extrabold leading-tight tracking-tight text-transparent">
+                  {worker.name}
+                </h3>
+                {worker.verified && <BadgeCheck className="h-4 w-4 shrink-0 fill-primary text-hero" />}
+              </div>
+
+              {/* Meta */}
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                {/* Distance - prominent */}
+                <span className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-br from-primary to-primary/70 px-2 py-1 text-primary-foreground shadow-md shadow-primary/30">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="text-[13px] font-extrabold leading-none">{distLabel}</span>
+                  {distUnit && <span className="text-[10px] font-bold opacity-90">{distUnit}</span>}
                 </span>
-              )}
-              {worker.subCategory && (
-                <>
-                  <span className="opacity-40">›</span>
-                  <span className="text-hero-foreground">{worker.subCategory}</span>
-                </>
-              )}
-              {worker.profession && (
-                <>
-                  <span className="opacity-40">•</span>
-                  <span className="text-primary/80">{worker.profession}</span>
-                </>
-              )}
-            </div>
-
-            {/* Name */}
-            <div className="mt-1 flex items-center gap-1">
-              <h3 className="truncate text-[17px] font-extrabold leading-tight text-hero-foreground">
-                {worker.name}
-              </h3>
-              {worker.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
-            </div>
-
-            {/* Meta */}
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
-              <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-primary ring-1 ring-primary/30">
-                <MapPin className="h-3.5 w-3.5" />
-                <span className="text-[13px] font-extrabold leading-none">{distLabel}</span>
-                <span className="text-[10px] font-semibold opacity-80">away</span>
-              </span>
-
-              {worker.experience > 0 && (
-                <span className="inline-flex items-center gap-1 text-hero-foreground">
-                  <Briefcase className="h-3 w-3 text-primary" />
-                  <span className="font-bold">{worker.experience}+ yrs</span>
+                {worker.experience > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-hero-foreground/10 px-1.5 py-1 text-hero-foreground ring-1 ring-hero-foreground/10">
+                    <Briefcase className="h-3 w-3 text-primary" />
+                    <span className="text-[10px] font-bold leading-none">{worker.experience}+ yrs</span>
+                  </span>
+                )}
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider ring-1 ${
+                    worker.available
+                      ? "bg-primary/15 text-primary ring-primary/30"
+                      : "bg-hero-foreground/10 text-hero-muted ring-hero-foreground/15"
+                  }`}
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      worker.available ? "bg-primary animate-pulse shadow-[0_0_6px_hsl(var(--primary))]" : "bg-hero-foreground/40"
+                    }`}
+                  />
+                  {worker.available ? "Live" : "Busy"}
                 </span>
-              )}
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
-                  worker.available
-                    ? "bg-primary/15 text-primary"
-                    : "bg-hero-foreground/10 text-hero-muted"
-                }`}
-              >
-                <span className={`h-1.5 w-1.5 rounded-full ${worker.available ? "bg-primary animate-pulse" : "bg-hero-foreground/40"}`} />
-                {worker.available ? "Available" : "Busy"}
-              </span>
-            </div>
+              </div>
 
-            {/* CTAs */}
-            <div
-              className="mt-2.5 flex items-center gap-1.5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 flex-1 rounded-lg bg-hero-foreground/5 px-2 text-[11px] font-bold text-hero-foreground hover:bg-hero-foreground/10"
-                onClick={() => setPopupOpen(true)}
+              {/* CTAs */}
+              <div
+                className="mt-3 flex items-center gap-2"
+                onClick={(e) => e.stopPropagation()}
               >
-                View <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-              {isAuthed ? (
                 <Button
+                  variant="ghost"
                   size="sm"
-                  className="h-8 flex-[1.3] rounded-lg px-2 text-[11px] font-bold shadow-md"
+                  className="h-8 flex-1 rounded-lg border border-hero-foreground/10 bg-hero-foreground/5 px-2 text-[11px] font-bold text-hero-foreground backdrop-blur hover:bg-hero-foreground/10"
                   onClick={() => setPopupOpen(true)}
                 >
-                  <Phone className="mr-1 h-3 w-3" /> Contact Now
+                  View <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
-              ) : (
-                <AuthRequiredDialog
-                  title="Log in to contact"
-                  description="Sign in or create an account to contact this provider."
-                >
-                  <Button size="sm" className="h-8 flex-[1.3] rounded-lg px-2 text-[11px] font-bold shadow-md">
-                    <Phone className="mr-1 h-3 w-3" /> Contact Now
+                {isAuthed ? (
+                  <Button
+                    size="sm"
+                    className="h-8 flex-[1.4] rounded-lg bg-gradient-to-r from-primary to-primary/85 px-2 text-[11px] font-extrabold shadow-lg shadow-primary/30 hover:shadow-primary/50"
+                    onClick={() => setPopupOpen(true)}
+                  >
+                    <Zap className="mr-1 h-3 w-3 fill-current" /> Contact Now
                   </Button>
-                </AuthRequiredDialog>
-              )}
+                ) : (
+                  <AuthRequiredDialog
+                    title="Log in to contact"
+                    description="Sign in or create an account to contact this provider."
+                  >
+                    <Button
+                      size="sm"
+                      className="h-8 flex-[1.4] rounded-lg bg-gradient-to-r from-primary to-primary/85 px-2 text-[11px] font-extrabold shadow-lg shadow-primary/30 hover:shadow-primary/50"
+                    >
+                      <Zap className="mr-1 h-3 w-3 fill-current" /> Contact Now
+                    </Button>
+                  </AuthRequiredDialog>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </div>
       <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={handleChange} isAuthed={isAuthed} />
     </>
   );
