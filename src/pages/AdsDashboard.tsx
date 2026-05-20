@@ -384,7 +384,7 @@ const CampaignWizard = ({
 
         {/* Step indicator */}
         <div className="flex items-center gap-1.5">
-          {["Where", "Reach", "Duration", "Review"].map((label, i) => (
+          {["Placement", "Where", "Reach", "Duration", "Review"].map((label, i) => (
             <div key={label} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />
           ))}
         </div>
@@ -392,7 +392,33 @@ const CampaignWizard = ({
         {step === 0 && (
           <div className="space-y-4">
             <div>
-              <p className="text-base font-bold">Where do you want your ad to appear?</p>
+              <p className="text-base font-bold">Where should your ad appear?</p>
+              <p className="text-xs text-muted-foreground">Pick the placement — homepage or explore feed.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <TargetCard
+                active={placement === "homepage"}
+                icon={HomeIcon}
+                title="Homepage Ads"
+                desc="Promoted in Top Rated & Nearby sections on the homepage."
+                badge="Premium reach"
+                onClick={() => setPlacement("homepage")}
+              />
+              <TargetCard
+                active={placement === "explore"}
+                icon={Compass}
+                title="Explore Page Ads"
+                desc="Mixed into the explore feed as sponsored cards."
+                onClick={() => setPlacement("explore")}
+              />
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <p className="text-base font-bold">Who should see it?</p>
               <p className="text-xs text-muted-foreground">Pick a vibe — we'll handle the rest.</p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
