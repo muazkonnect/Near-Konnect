@@ -16,7 +16,7 @@ interface Props {
 export default function SteppedCarousel({
   items,
   dwellMs = 2500,
-  transitionMs = 700,
+  transitionMs = 450,
   gapClass = "gap-3",
   className = "",
   trackClassName = "",
@@ -83,7 +83,7 @@ export default function SteppedCarousel({
         className={`flex w-max ${gapClass} ${trackClassName}`}
         style={{
           transform: `translate3d(${-offset}px, 0, 0)`,
-          transition: animate ? `transform ${transitionMs}ms ease-in-out` : "none",
+          transition: animate ? `transform ${transitionMs}ms cubic-bezier(0.22, 1, 0.36, 1)` : "none",
         }}
       >
         {[...items, ...items].map((node, i) => (
