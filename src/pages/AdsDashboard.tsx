@@ -196,6 +196,7 @@ const AdsDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+      </div>
 
       <CampaignWizard
         open={wizardOpen}
