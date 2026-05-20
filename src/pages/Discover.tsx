@@ -371,11 +371,35 @@ const Discover = () => {
               <p className="mt-1 text-xs text-hero-muted">Try widening distance, rating, or category filters.</p>
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {allOthers.map((w, i) => (
-                <ExploreCard key={`worker-${w.id}-${i}`} worker={w as any} isAuthed={!!user} />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {allOthers.map((w, i) => {
+                  const adIndex = Math.floor(i / 6);
+                  const showAd = i > 0 && i % 6 === 0 && exploreAds[adIndex - 1];
+                  const ad = showAd ? exploreAds[adIndex - 1] : null;
+                  return (
+                    <div key={`worker-${w.id}-${i}`} className="contents">
+                      {ad && (
+                        <div key={`ad-${ad.campaignId}`} className="flex justify-center">
+                          <WorkerAdCard
+                            worker={ad as any}
+                            isAuthed={!!user}
+                            campaignId={ad.campaignId}
+                            placement="explore_feed"
+                            premium
+                          />
+                        </div>
+                      )}
+                      <ExploreCard worker={w as any} isAuthed={!!user} />
+                    </div>
+                  );
+                })}
+              </div>
+              <div ref={sentinelRef} className="h-10" />
+              {isFetchingNextPage && (
+                <div className="mt-4 text-center text-xs text-hero-muted">Loading more…</div>
+              )}
+            </>
           )}
 
           {!user && sorted.length > 0 && (
