@@ -220,6 +220,36 @@ const StatBox = ({ icon: Icon, label, value, accent }: { icon: any; label: strin
   </div>
 );
 
+const DailyChart = ({ daily }: { daily: { date: string; impressions: number; clicks: number }[] }) => {
+  const W = 600, H = 120, P = 8;
+  const maxImp = Math.max(1, ...daily.map((d) => d.impressions));
+  const maxClk = Math.max(1, ...daily.map((d) => d.clicks));
+  const max = Math.max(maxImp, maxClk);
+  const x = (i: number) => P + (i * (W - 2 * P)) / Math.max(daily.length - 1, 1);
+  const y = (v: number) => H - P - ((H - 2 * P) * v) / max;
+  const path = (key: "impressions" | "clicks") =>
+    daily.map((d, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(d[key]).toFixed(1)}`).join(" ");
+  return (
+    <div className="rounded-2xl border bg-card p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-sm font-semibold">Last 14 days</p>
+        <div className="flex gap-3 text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Impressions</span>
+          <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-foreground/60" /> Clicks</span>
+        </div>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-32 w-full">
+        <path d={path("impressions")} stroke="hsl(var(--primary))" strokeWidth="2" fill="none" />
+        <path d={path("clicks")} stroke="hsl(var(--foreground) / 0.6)" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
+      </svg>
+      <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+        <span>{daily[0]?.date.slice(5)}</span>
+        <span>{daily[daily.length - 1]?.date.slice(5)}</span>
+      </div>
+    </div>
+  );
+};
+
 const EmptyState = ({ onCreate }: { onCreate: () => void }) => (
   <div className="rounded-2xl border-2 border-dashed bg-muted/30 p-8 text-center">
     <Sparkles className="mx-auto h-8 w-8 text-primary" />
