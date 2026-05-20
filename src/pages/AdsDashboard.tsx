@@ -401,11 +401,41 @@ const CampaignWizard = ({
               </>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Country</Label><Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Pakistan" /></div>
-                  <div><Label>City</Label><Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lahore" /></div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <div>
+                    <Label>Country</Label>
+                    <Select value={countryCode} onValueChange={(v) => { setCountryCode(v); setStateCode(""); setCityName(""); }}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder="Select country" /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {allCountries.map((c) => (
+                          <SelectItem key={c.isoCode} value={c.isoCode}>{c.flag} {c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>City / Region</Label>
+                    <Select value={stateCode} onValueChange={(v) => { setStateCode(v); setCityName(""); }} disabled={!countryCode || states.length === 0}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!countryCode ? "Pick country first" : states.length === 0 ? "No regions" : "Select city/region"} /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {states.map((s) => (
+                          <SelectItem key={s.isoCode} value={s.isoCode}>{s.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Area</Label>
+                    <Select value={cityName} onValueChange={setCityName} disabled={!stateCode || cities.length === 0}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!stateCode ? "Pick city first" : cities.length === 0 ? "No areas" : "Select area"} /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {cities.map((c) => (
+                          <SelectItem key={`${c.name}-${c.latitude}-${c.longitude}`} value={c.name}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div><Label>Area / Region</Label><Input value={area} onChange={(e) => setArea(e.target.value)} placeholder="Gulberg" /></div>
                 <div>
                   <Label>Pin center on map</Label>
                   <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} /></div>
