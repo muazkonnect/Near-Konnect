@@ -16,7 +16,7 @@ interface Props {
 export default function SteppedCarousel({
   items,
   dwellMs = 2500,
-  transitionMs = 700,
+  transitionMs = 450,
   gapClass = "gap-3",
   className = "",
   trackClassName = "",
