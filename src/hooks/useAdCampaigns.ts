@@ -3,11 +3,14 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+export type AdPlacement = "homepage" | "explore";
+
 export type AdCampaign = {
   id: string;
   worker_id: string;
   owner_user_id: string;
   ad_type: "local" | "international";
+  placement_type: AdPlacement;
   status: "active" | "paused" | "expired" | "rejected";
   duration_days: number;
   starts_at: string;
