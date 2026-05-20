@@ -374,6 +374,36 @@ const Discover = () => {
           </section>
         )}
 
+        {/* PROMOTED 3KM ADS */}
+        <section className="mt-6 mb-2">
+          <div className="mb-3 px-5">
+            <h2 className="text-base font-bold">
+              Promoted Nearby <span className="ml-2 text-xs font-normal text-hero-muted">• Within 3 KM</span>
+            </h2>
+          </div>
+          {promoted3kmFiltered.length === 0 ? (
+            <div className="mx-5 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center text-xs text-hero-muted">
+              No promoted ads within 3 KM of your location
+            </div>
+          ) : (
+            <SteppedCarousel
+              className="pb-3"
+              trackClassName="pl-5 pr-5"
+              dwellMs={2800}
+              items={promoted3kmFiltered.map((w) => (
+                <div key={`explore-promo-${w.id}`}>
+                  <WorkerAdCard
+                    worker={w as any}
+                    isAuthed={!!user}
+                    campaignId={w.campaignId}
+                    placement="explore_top"
+                  />
+                </div>
+              ))}
+            />
+          )}
+        </section>
+
         {/* ALL PROFESSIONALS */}
         <section className="mt-6 px-5 pb-10">
           <div className="mb-3 flex items-center gap-2">
