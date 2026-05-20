@@ -113,6 +113,10 @@ const AppContent = () => {
             <Route path="/terms" element={<TermsAndConditions />} />
             <Route path="/offline" element={<Offline />} />
             <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
+            <Route path="/wallet/buy" element={<ProtectedRoute><BuySparksPage /></ProtectedRoute>} />
+            <Route path="/wallet/buy/:packageId/checkout" element={<ProtectedRoute><PaymentCheckoutPage /></ProtectedRoute>} />
+            <Route path="/wallet/payment/:id" element={<ProtectedRoute><PaymentStatusPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
