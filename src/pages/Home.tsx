@@ -6,7 +6,6 @@ import {
   BadgeCheck,
   Droplet,
   HeartPulse,
-  Info,
   MapPin,
   Search,
   Sparkles,
@@ -20,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExploreCard from "@/components/ExploreCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
-import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
