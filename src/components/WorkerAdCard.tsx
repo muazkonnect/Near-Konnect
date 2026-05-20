@@ -1,28 +1,57 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Star, BadgeCheck, Award, MapPin, Briefcase, Phone, ArrowRight, Sparkles, Zap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
+import { trackAdEvent } from "@/hooks/usePromoted";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
   worker: Worker & { distance: number };
   premium?: boolean;
   isAuthed: boolean;
+  campaignId?: string;
+  placement?: string;
 }
 
-const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
+const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement }: Props) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const lastClosedRef = useRef(0);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const impressedRef = useRef(false);
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel =
     worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance}` : "—";
   const distUnit = worker.distance > 0 && isFinite(worker.distance) ? "km" : "";
 
+  useEffect(() => {
+    if (!campaignId || !cardRef.current || impressedRef.current) return;
+    const el = cardRef.current;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting && !impressedRef.current) {
+            impressedRef.current = true;
+            trackAdEvent(campaignId, "impression", placement || "unknown");
+            io.disconnect();
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [campaignId, placement]);
+
+  const fireClick = () => {
+    if (campaignId) trackAdEvent(campaignId, "click", placement || "unknown");
+  };
+
   const handleOpen = () => {
     if (popupOpen) return;
     if (Date.now() - lastClosedRef.current < 300) return;
+    fireClick();
     setPopupOpen(true);
   };
   const handleChange = (o: boolean) => {
