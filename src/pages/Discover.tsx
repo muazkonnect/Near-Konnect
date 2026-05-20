@@ -43,7 +43,8 @@ import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
-import { usePromotedExploreInfinite } from "@/hooks/usePromoted";
+import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
+import SteppedCarousel from "@/components/SteppedCarousel";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
@@ -101,6 +102,25 @@ const Discover = () => {
     search,
     radiusKm,
   });
+  const promoted3km = usePromotedNearby(userCoords, 3);
+  const promoted3kmFiltered = useMemo(() => {
+    let list = promoted3km;
+    if (selectedMainCategory && selectedSubCategory) {
+      list = list.filter((w: any) => w.mainCategory === selectedMainCategory && w.subCategory === selectedSubCategory);
+    } else if (selectedMainCategory) {
+      list = list.filter((w: any) => w.mainCategory === selectedMainCategory || w.subCategory === selectedMainCategory);
+    } else if (selectedSubCategory) {
+      list = list.filter((w: any) => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
+    }
+    if (search.trim()) {
+      const words = search.toLowerCase().trim().split(/\s+/);
+      list = list.filter((w: any) => {
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`.toLowerCase();
+        return words.every((wd) => hay.includes(wd));
+      });
+    }
+    return list;
+  }, [promoted3km, selectedMainCategory, selectedSubCategory, search]);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -353,6 +373,36 @@ const Discover = () => {
             </div>
           </section>
         )}
+
+        {/* PROMOTED 3KM ADS */}
+        <section className="mt-6 mb-2">
+          <div className="mb-3 px-5">
+            <h2 className="text-base font-bold">
+              Promoted Nearby <span className="ml-2 text-xs font-normal text-hero-muted">• Within 3 KM</span>
+            </h2>
+          </div>
+          {promoted3kmFiltered.length === 0 ? (
+            <div className="mx-5 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center text-xs text-hero-muted">
+              No promoted ads within 3 KM of your location
+            </div>
+          ) : (
+            <SteppedCarousel
+              className="pb-3"
+              trackClassName="pl-5 pr-5"
+              dwellMs={2800}
+              items={promoted3kmFiltered.map((w) => (
+                <div key={`explore-promo-${w.id}`}>
+                  <WorkerAdCard
+                    worker={w as any}
+                    isAuthed={!!user}
+                    campaignId={w.campaignId}
+                    placement="explore_top"
+                  />
+                </div>
+              ))}
+            />
+          )}
+        </section>
 
         {/* ALL PROFESSIONALS */}
         <section className="mt-6 px-5 pb-10">
