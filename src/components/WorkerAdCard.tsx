@@ -63,6 +63,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       {/* Gradient border wrapper */}
       <div
+        ref={cardRef}
         className={`group relative w-[330px] rounded-[20px] p-[1.5px] sm:w-[400px] ${
           premium
             ? "bg-gradient-to-br from-primary via-primary/40 to-primary/10 shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.7)]"
