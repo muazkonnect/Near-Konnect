@@ -346,19 +346,16 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div className="overflow-hidden pb-3">
-              <div className="auto-carousel-track flex w-max gap-3 animate-[auto-carousel_60s_linear_infinite]">
-              {[0, 1].map((copy) => (
-                <div key={copy} className="flex shrink-0 gap-3 pl-5" aria-hidden={copy === 1}>
-                {nearby3km.map((w, i) => (
-                  <div key={`n-${w.id}-${copy}-${i}`} className="w-[280px] shrink-0">
-                    <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
-                  </div>
-                ))}
+            <SteppedCarousel
+              className="pb-3"
+              trackClassName="pl-5 pr-5"
+              dwellMs={2800}
+              items={nearby3km.map((w) => (
+                <div key={`n-${w.id}`} className="w-[280px]">
+                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
-              </div>
-            </div>
+            />
           )}
         </motion.section>
 
