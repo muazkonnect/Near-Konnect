@@ -42,6 +42,8 @@ import { useWorkers } from "@/hooks/useWorkers";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
+import WorkerAdCard from "@/components/WorkerAdCard";
+import { usePromotedExploreInfinite } from "@/hooks/usePromoted";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
