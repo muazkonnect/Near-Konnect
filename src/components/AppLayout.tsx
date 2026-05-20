@@ -111,9 +111,9 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
       <div className="mx-auto hidden max-w-[1200px] flex-col md:flex md:px-4 md:py-6 md:gap-5">
         <header className="sticky top-4 z-30 flex items-center gap-4 rounded-2xl border border-hero-foreground/10 bg-hero/80 text-hero-foreground px-4 py-2.5 backdrop-blur-xl shadow-[0_8px_32px_-12px_hsl(var(--hero)/0.6)] relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-          <div aria-hidden className="pointer-events-none absolute -top-20 -right-20 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
+          <div aria-hidden className={`pointer-events-none absolute -top-20 -right-20 h-44 w-44 rounded-full ${isBlood ? "bg-destructive/30" : "bg-primary/20"} blur-3xl`} />
           <Link to="/" className="relative flex shrink-0 items-center pl-2 pr-3">
-            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+            <img src={logoImg} alt="Near Konnect" className="h-12 object-contain" />
           </Link>
 
           <nav className="relative flex flex-1 items-center justify-center gap-1">
