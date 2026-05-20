@@ -17,9 +17,15 @@ interface AppLayoutProps {
   children: ReactNode;
   showSignOut?: boolean;
   hideMobileHeader?: boolean;
+  variant?: "default" | "blood";
 }
 
-const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hideMobileHeader = false }: AppLayoutProps) => {
+const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hideMobileHeader = false, variant = "default" }: AppLayoutProps) => {
+  const isBlood = variant === "blood";
+  const blobClass = isBlood ? "bg-destructive/40" : "bg-primary/25";
+  const heroBgClass = isBlood
+    ? "bg-gradient-to-br from-[hsl(var(--hero))] via-[hsl(var(--hero))] to-destructive/30"
+    : "bg-hero";
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -48,17 +54,23 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
       {/* MOBILE: bold compact hero header */}
       <div className="md:hidden">
         {hideMobileHeader ? null : title ? (
-          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-6">
+          <div className={`relative overflow-hidden ${heroBgClass} text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-6`}>
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+            <div aria-hidden className={`pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full ${blobClass} blur-3xl`} />
+            {isBlood && <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-destructive/30 blur-3xl" />}
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="Near Konnect" className="block h-6 w-auto max-w-[55vw] object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="block h-10 w-auto max-w-[55vw] object-contain" />
               </Link>
               {user && <NotificationBell />}
             </div>
             <div className="relative mt-5 flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
+                {isBlood && (
+                  <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-destructive/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-destructive-foreground ring-1 ring-destructive/40">
+                    <HeartPulse className="h-3 w-3" /> Save Lives
+                  </span>
+                )}
                 <h1 className="text-[22px] font-bold leading-tight tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-1 text-[13px] leading-snug text-hero-muted line-clamp-2">{subtitle}</p>}
               </div>
@@ -66,12 +78,12 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
             </div>
           </div>
         ) : (
-          <div className="relative overflow-hidden bg-hero text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-5">
+          <div className={`relative overflow-hidden ${heroBgClass} text-hero-foreground rounded-b-[1.75rem] px-4 pt-5 pb-5`}>
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+            <div aria-hidden className={`pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full ${blobClass} blur-3xl`} />
             <div className="relative flex items-center justify-between">
               <Link to="/" className="inline-flex items-center">
-                <img src={logoImg} alt="Near Konnect" className="block h-6 w-auto max-w-[55vw] object-contain" />
+                <img src={logoImg} alt="Near Konnect" className="block h-10 w-auto max-w-[55vw] object-contain" />
               </Link>
               {user && <NotificationBell />}
             </div>
@@ -99,9 +111,9 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
       <div className="mx-auto hidden max-w-[1200px] flex-col md:flex md:px-4 md:py-6 md:gap-5">
         <header className="sticky top-4 z-30 flex items-center gap-4 rounded-2xl border border-hero-foreground/10 bg-hero/80 text-hero-foreground px-4 py-2.5 backdrop-blur-xl shadow-[0_8px_32px_-12px_hsl(var(--hero)/0.6)] relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-          <div aria-hidden className="pointer-events-none absolute -top-20 -right-20 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
+          <div aria-hidden className={`pointer-events-none absolute -top-20 -right-20 h-44 w-44 rounded-full ${isBlood ? "bg-destructive/30" : "bg-primary/20"} blur-3xl`} />
           <Link to="/" className="relative flex shrink-0 items-center pl-2 pr-3">
-            <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
+            <img src={logoImg} alt="Near Konnect" className="h-12 object-contain" />
           </Link>
 
           <nav className="relative flex flex-1 items-center justify-center gap-1">
@@ -157,9 +169,15 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
         <div className="min-w-0 flex-1 space-y-5">
 
           {title && (
-            <div className="relative overflow-hidden border border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
+            <div className={`relative overflow-hidden border rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3 text-hero-foreground ${isBlood ? "border-destructive/30 bg-gradient-to-br from-hero-foreground/[0.04] via-destructive/10 to-destructive/20" : "border-hero-foreground/10 bg-hero-foreground/[0.04]"}`}>
               <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              {isBlood && <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-destructive/30 blur-3xl" />}
               <div className="relative min-w-0">
+                {isBlood && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-destructive/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-destructive-foreground ring-1 ring-destructive/40">
+                    <HeartPulse className="h-3.5 w-3.5" /> Save Lives
+                  </span>
+                )}
                 <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-2 text-sm text-hero-foreground/60">{subtitle}</p>}
               </div>
