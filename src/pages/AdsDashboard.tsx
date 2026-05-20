@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, useSparksTransactions, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign } from "@/hooks/useAdCampaigns";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
+import { Country, State, City } from "country-state-city";
 
 const RADII = [5, 10, 15] as const;
 const DURATIONS = [1, 7, 15, 30] as const;
@@ -80,7 +81,8 @@ const AdsDashboard = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl space-y-6 px-4 pb-24 pt-2">
+      <div className="admin-shell -mx-4 -mt-2 min-h-screen px-4 pt-2">
+      <div className="mx-auto max-w-5xl space-y-6 pb-24 pt-2">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -194,6 +196,7 @@ const AdsDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+      </div>
 
       <CampaignWizard
         open={wizardOpen}
@@ -274,11 +277,23 @@ const CampaignWizard = ({
   const [radius, setRadius] = useState<number>(5);
   const [duration, setDuration] = useState<number>(7);
   const [center, setCenter] = useState<Coords | null>(defaultCenter);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [area, setArea] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [cityName, setCityName] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
+
+  const countryName = useMemo(() => Country.getCountryByCode(countryCode)?.name || "", [countryCode]);
+  const stateName = useMemo(
+    () => (countryCode && stateCode ? State.getStateByCodeAndCountry(stateCode, countryCode)?.name || "" : ""),
+    [countryCode, stateCode]
+  );
+  const states = useMemo(() => (countryCode ? State.getStatesOfCountry(countryCode) : []), [countryCode]);
+  const cities = useMemo(
+    () => (countryCode && stateCode ? City.getCitiesOfState(countryCode, stateCode) : []),
+    [countryCode, stateCode]
+  );
+  const allCountries = useMemo(() => Country.getAllCountries(), []);
 
   const { data: workers = [] } = useWorkers();
   const previewWorker = useMemo(() => {
@@ -289,7 +304,7 @@ const CampaignWizard = ({
   useEffect(() => {
     if (!open) return;
     setStep(0); setAdType("local"); setRadius(5); setDuration(7);
-    setCenter(defaultCenter); setCountry(""); setCity(""); setArea("");
+    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName("");
   }, [open, defaultCenter]);
 
   useEffect(() => {
@@ -308,6 +323,22 @@ const CampaignWizard = ({
   };
 
   const launch = async () => {
+    if (adType === "international") {
+      if (!countryCode) return toast.error("Select a country.");
+      if (!center) {
+        // try to derive center from selected city/state/country
+        const cityObj = cityName && cities.find((c) => c.name === cityName);
+        const stateObj = stateCode ? states.find((s) => s.isoCode === stateCode) : null;
+        const countryObj = Country.getCountryByCode(countryCode);
+        const lat = Number(cityObj?.latitude ?? stateObj?.latitude ?? countryObj?.latitude);
+        const lng = Number(cityObj?.longitude ?? stateObj?.longitude ?? countryObj?.longitude);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          setCenter({ latitude: lat, longitude: lng });
+        } else {
+          return toast.error("Pin a center on the map.");
+        }
+      }
+    }
     if (!center) return toast.error("Set a location first.");
     if (cost > balance) return toast.error(`Need ${cost - balance} more Sparks. Ask an admin to top up.`);
     setSubmitting(true);
@@ -315,9 +346,9 @@ const CampaignWizard = ({
       await createCampaign({
         workerId, adType, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
-        country: adType === "international" ? country || null : null,
-        city: adType === "international" ? city || null : null,
-        area: adType === "international" ? area || null : null,
+        country: adType === "international" ? countryName || null : null,
+        city: adType === "international" ? stateName || null : null,
+        area: adType === "international" ? cityName || null : null,
       });
       toast.success("Campaign launched 🚀");
       onOpenChange(false);
@@ -334,7 +365,7 @@ const CampaignWizard = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="admin-shell max-h-[92vh] max-w-2xl overflow-y-auto bg-background text-foreground">
         <DialogHeader>
           <DialogTitle>Create Campaign</DialogTitle>
         </DialogHeader>
@@ -370,11 +401,41 @@ const CampaignWizard = ({
               </>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Country</Label><Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Pakistan" /></div>
-                  <div><Label>City</Label><Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lahore" /></div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <div>
+                    <Label>Country</Label>
+                    <Select value={countryCode} onValueChange={(v) => { setCountryCode(v); setStateCode(""); setCityName(""); }}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder="Select country" /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {allCountries.map((c) => (
+                          <SelectItem key={c.isoCode} value={c.isoCode}>{c.flag} {c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>City / Region</Label>
+                    <Select value={stateCode} onValueChange={(v) => { setStateCode(v); setCityName(""); }} disabled={!countryCode || states.length === 0}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!countryCode ? "Pick country first" : states.length === 0 ? "No regions" : "Select city/region"} /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {states.map((s) => (
+                          <SelectItem key={s.isoCode} value={s.isoCode}>{s.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Area</Label>
+                    <Select value={cityName} onValueChange={setCityName} disabled={!stateCode || cities.length === 0}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!stateCode ? "Pick city first" : cities.length === 0 ? "No areas" : "Select area"} /></SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {cities.map((c) => (
+                          <SelectItem key={`${c.name}-${c.latitude}-${c.longitude}`} value={c.name}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div><Label>Area / Region</Label><Input value={area} onChange={(e) => setArea(e.target.value)} placeholder="Gulberg" /></div>
                 <div>
                   <Label>Pin center on map</Label>
                   <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} /></div>
@@ -423,7 +484,7 @@ const CampaignWizard = ({
                 <li>Radius: <b>{radius} km</b></li>
                 <li>Duration: <b>{duration} days</b></li>
                 {adType === "international" && (
-                  <li>Target: <b>{[area, city, country].filter(Boolean).join(", ") || "—"}</b></li>
+                  <li>Target: <b>{[cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
               </ul>
             </div>
