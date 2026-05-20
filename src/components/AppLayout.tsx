@@ -17,9 +17,15 @@ interface AppLayoutProps {
   children: ReactNode;
   showSignOut?: boolean;
   hideMobileHeader?: boolean;
+  variant?: "default" | "blood";
 }
 
-const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hideMobileHeader = false }: AppLayoutProps) => {
+const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hideMobileHeader = false, variant = "default" }: AppLayoutProps) => {
+  const isBlood = variant === "blood";
+  const blobClass = isBlood ? "bg-destructive/40" : "bg-primary/25";
+  const heroBgClass = isBlood
+    ? "bg-gradient-to-br from-[hsl(var(--hero))] via-[hsl(var(--hero))] to-destructive/30"
+    : "bg-hero";
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
