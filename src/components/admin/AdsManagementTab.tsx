@@ -4,7 +4,6 @@ import {
   Plus,
   Trash2,
   CheckCircle,
-  MapPin,
   Upload,
   Image as ImageIcon,
   Calendar,
@@ -22,9 +21,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NativeAdCard from "@/components/NativeAdCard";
-import type { NativeAd } from "@/hooks/useSponsored";
-import MapLocationPicker from "@/components/MapLocationPickerLazy";
-import { calculateDistance, type Coords } from "@/lib/geolocation";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Placement = "home_banner" | "home_feed" | "home_inline" | "landing_mid" | "landing_final";
@@ -61,7 +57,6 @@ const AdsManagementTab = () => {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // form state
   const [editingAdId, setEditingAdId] = useState<string | null>(null);
   const [adTitle, setAdTitle] = useState("");
   const [adDescription, setAdDescription] = useState("");
@@ -72,19 +67,15 @@ const AdsManagementTab = () => {
   const [adPriority, setAdPriority] = useState("100");
   const [adStartsAt, setAdStartsAt] = useState("");
   const [adEndsAt, setAdEndsAt] = useState("");
-  const [adTargetCoords, setAdTargetCoords] = useState<Coords | null>(null);
-  const [adRadiusKm, setAdRadiusKm] = useState("3");
   const [uploading, setUploading] = useState(false);
-  const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
 
-  // queries
   const { data: nativeAds = [] } = useQuery({
     queryKey: ["admin_native_ads"],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("native_ads")
         .select(
-          "id, title, description, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at, starts_at, ends_at, target_latitude, target_longitude, target_radius_km"
+          "id, title, description, image_url, cta_url, cta_label, placement, ad_type, priority, is_active, created_at, starts_at, ends_at"
         )
         .order("priority", { ascending: false });
       if (error) throw error;
@@ -109,12 +100,8 @@ const AdsManagementTab = () => {
   }, [stats]);
 
   const totals = useMemo(() => {
-    let i = 0,
-      c = 0;
-    for (const v of statsByAd.values()) {
-      i += v.impressions;
-      c += v.clicks;
-    }
+    let i = 0, c = 0;
+    for (const v of statsByAd.values()) { i += v.impressions; c += v.clicks; }
     const ctr = i > 0 ? Math.round((c / i) * 1000) / 10 : 0;
     return { impressions: i, clicks: c, ctr };
   }, [statsByAd]);
@@ -130,8 +117,6 @@ const AdsManagementTab = () => {
     setAdPriority("100");
     setAdStartsAt("");
     setAdEndsAt("");
-    setAdTargetCoords(null);
-    setAdRadiusKm("3");
   };
 
   const startEditing = (ad: any) => {
@@ -145,30 +130,17 @@ const AdsManagementTab = () => {
     setAdPriority(String(ad.priority || "100"));
     setAdStartsAt(ad.starts_at ? new Date(ad.starts_at).toISOString().slice(0, 16) : "");
     setAdEndsAt(ad.ends_at ? new Date(ad.ends_at).toISOString().slice(0, 16) : "");
-    if (ad.target_latitude && ad.target_longitude) {
-      setAdTargetCoords({ latitude: ad.target_latitude, longitude: ad.target_longitude });
-      setAdRadiusKm(String(ad.target_radius_km || "3"));
-    } else {
-      setAdTargetCoords(null);
-      setAdRadiusKm("3");
-    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleImageUpload = async (file: File) => {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image too large (max 5 MB)");
-      return;
-    }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image too large (max 5 MB)"); return; }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const path = `ads/${user?.id || "anon"}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("ad-images").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+      const { error } = await supabase.storage.from("ad-images").upload(path, file, { cacheControl: "3600", upsert: false });
       if (error) throw error;
       const { data } = supabase.storage.from("ad-images").getPublicUrl(path);
       setAdImageUrl(data.publicUrl);
@@ -180,51 +152,31 @@ const AdsManagementTab = () => {
     }
   };
 
-  const buildPayload = () => {
-    const radius = adRadiusKm.trim() ? Number(adRadiusKm) : null;
-    return {
-      title: adTitle.trim(),
-      description: adDescription.trim() || null,
-      image_url: adImageUrl.trim() || null,
-      cta_url: adLink.trim(),
-      cta_label: adCtaLabel.trim() || "Learn More",
-      placement: adPlacement,
-      ad_type: adPlacement === "home_banner" ? "banner" : adPlacement === "home_inline" || adPlacement === "landing_mid" ? "inline" : "in_feed",
-      priority: Number(adPriority) || 100,
-      starts_at: adStartsAt ? new Date(adStartsAt).toISOString() : null,
-      ends_at: adEndsAt ? new Date(adEndsAt).toISOString() : null,
-      target_latitude: adTargetCoords?.latitude ?? null,
-      target_longitude: adTargetCoords?.longitude ?? null,
-      target_radius_km: adTargetCoords ? radius : null,
-    };
-  };
+  const buildPayload = () => ({
+    title: adTitle.trim(),
+    description: adDescription.trim() || null,
+    image_url: adImageUrl.trim() || null,
+    cta_url: adLink.trim(),
+    cta_label: adCtaLabel.trim() || "Learn More",
+    placement: adPlacement,
+    ad_type: adPlacement === "home_banner" ? "banner" : adPlacement === "home_inline" || adPlacement === "landing_mid" ? "inline" : "in_feed",
+    priority: Number(adPriority) || 100,
+    starts_at: adStartsAt ? new Date(adStartsAt).toISOString() : null,
+    ends_at: adEndsAt ? new Date(adEndsAt).toISOString() : null,
+    target_latitude: null,
+    target_longitude: null,
+    target_radius_km: null,
+  });
 
   const validate = () => {
-    if (!adTitle.trim() || !adLink.trim()) {
-      toast.error("Title and CTA link are required");
-      return false;
-    }
-    if (adTargetCoords) {
-      const r = Number(adRadiusKm);
-      if (!r || r <= 0) {
-        toast.error("Set a positive radius for geo-targeting");
-        return false;
-      }
-    }
-    if (adStartsAt && adEndsAt && new Date(adEndsAt) <= new Date(adStartsAt)) {
-      toast.error("End date must be after start date");
-      return false;
-    }
+    if (!adTitle.trim() || !adLink.trim()) { toast.error("Title and CTA link are required"); return false; }
+    if (adStartsAt && adEndsAt && new Date(adEndsAt) <= new Date(adStartsAt)) { toast.error("End date must be after start date"); return false; }
     return true;
   };
 
   const addAd = async () => {
     if (!validate()) return;
-    const { error } = await (supabase as any).from("native_ads").insert({
-      ...buildPayload(),
-      is_active: true,
-      created_by: user?.id || null,
-    });
+    const { error } = await (supabase as any).from("native_ads").insert({ ...buildPayload(), is_active: true, created_by: user?.id || null });
     if (error) return toast.error("Failed to create ad");
     toast.success("Ad created");
     resetForm();
@@ -256,33 +208,23 @@ const AdsManagementTab = () => {
 
   const adsWithMeta = useMemo(() => {
     return (nativeAds as any[]).map((ad) => {
-      const hasTarget =
-        ad.target_latitude != null && ad.target_longitude != null && (ad.target_radius_km ?? 0) > 0;
-      let distanceKm: number | null = null;
-      let inRadius: boolean | null = null;
-      if (hasTarget && viewerCoords) {
-        distanceKm = calculateDistance(viewerCoords.latitude, viewerCoords.longitude, ad.target_latitude, ad.target_longitude);
-        inRadius = distanceKm <= ad.target_radius_km;
-      } else if (!hasTarget) {
-        inRadius = true;
-      }
       const now = new Date();
       const scheduled = ad.starts_at && new Date(ad.starts_at) > now;
       const expired = ad.ends_at && new Date(ad.ends_at) < now;
-      return { ad, hasTarget, distanceKm, inRadius, scheduled, expired };
+      return { ad, scheduled, expired };
     });
-  }, [nativeAds, viewerCoords]);
+  }, [nativeAds]);
 
   const currentVariant = PLACEMENT_OPTIONS.find((p) => p.value === adPlacement)?.variant || "feed";
 
   return (
     <div className="space-y-6">
       <SectionHeader
-        title="Ads & Campaigns"
-        subtitle="Create native ads, schedule campaigns, target by location, and track performance."
+        title="Ads"
+        subtitle="Create native ads, schedule them, and track performance."
       />
 
-      {/* TOTALS */}
+      {/* TOTALS — bento */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Total ads</p>
@@ -325,7 +267,6 @@ const AdsManagementTab = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          {/* Left: form fields */}
           <div className="space-y-3">
             <div>
               <Label className="text-xs">Title *</Label>
@@ -333,12 +274,7 @@ const AdsManagementTab = () => {
             </div>
             <div>
               <Label className="text-xs">Description</Label>
-              <Textarea
-                value={adDescription}
-                onChange={(e) => setAdDescription(e.target.value)}
-                placeholder="Short supporting line"
-                rows={2}
-              />
+              <Textarea value={adDescription} onChange={(e) => setAdDescription(e.target.value)} placeholder="Short supporting line" rows={2} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -360,9 +296,7 @@ const AdsManagementTab = () => {
                   className="mt-1 h-10 w-full rounded-md border border-input bg-hero px-3 text-sm"
                 >
                   {PLACEMENT_OPTIONS.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {p.label}
-                    </option>
+                    <option key={p.value} value={p.value}>{p.label}</option>
                   ))}
                 </select>
                 <p className="mt-1 text-[11px] text-hero-foreground/60">
@@ -375,7 +309,6 @@ const AdsManagementTab = () => {
               </div>
             </div>
 
-            {/* Scheduling */}
             <div className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.05] p-3">
               <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
                 <Calendar className="h-3.5 w-3.5 text-primary" /> Scheduling (optional)
@@ -396,16 +329,11 @@ const AdsManagementTab = () => {
             </div>
           </div>
 
-          {/* Right: image upload + live preview */}
           <div className="space-y-3">
             <div>
               <Label className="text-xs">Ad image</Label>
               <div className="mt-1 flex items-center gap-2">
-                <Input
-                  value={adImageUrl}
-                  onChange={(e) => setAdImageUrl(e.target.value)}
-                  placeholder="Image URL or upload"
-                />
+                <Input value={adImageUrl} onChange={(e) => setAdImageUrl(e.target.value)} placeholder="Image URL or upload" />
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -417,14 +345,7 @@ const AdsManagementTab = () => {
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="shrink-0 gap-1"
-                >
+                <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="shrink-0 gap-1">
                   {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                   {uploading ? "Uploading" : "Upload"}
                 </Button>
@@ -467,39 +388,6 @@ const AdsManagementTab = () => {
           </div>
         </div>
 
-        {/* Geo-targeting */}
-        <div className="mt-5 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <div>
-                <p className="text-sm font-semibold text-hero-foreground">Geo-targeting (optional)</p>
-                <p className="text-xs text-hero-foreground/60">
-                  Tap the map to set a center. Default radius 3 km. Leave empty for global delivery.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder="Radius (km)"
-                type="number"
-                min="1"
-                value={adRadiusKm}
-                onChange={(e) => setAdRadiusKm(e.target.value)}
-                className="w-32"
-              />
-              {adTargetCoords && (
-                <Button variant="ghost" size="sm" onClick={() => setAdTargetCoords(null)}>
-                  Clear
-                </Button>
-              )}
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 260 }}>
-            <MapLocationPicker value={adTargetCoords} onChange={setAdTargetCoords} />
-          </div>
-        </div>
-
         <div className="mt-4 flex justify-end gap-2">
           {editingAdId ? (
             <Button onClick={updateAd} className="gap-1">
@@ -513,39 +401,19 @@ const AdsManagementTab = () => {
         </div>
       </div>
 
-      {/* TEST VIEWER LOCATION */}
-      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-5">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Test viewer location</h3>
-            <p className="text-xs text-hero-foreground/60">
-              Pretend to be a user at this point on the map. Distances and IN/OUT status update below.
-            </p>
-          </div>
-          {viewerCoords && (
-            <Button variant="ghost" size="sm" onClick={() => setViewerCoords(null)}>
-              Clear viewer
-            </Button>
-          )}
-        </div>
-        <div className="overflow-hidden rounded-lg border border-hero-foreground/10" style={{ height: 220 }}>
-          <MapLocationPicker value={viewerCoords} onChange={setViewerCoords} />
-        </div>
-      </div>
-
       {/* ALL ADS */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">All ads ({nativeAds.length})</h3>
         {adsWithMeta.length === 0 && (
           <p className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] py-8 text-center text-hero-foreground/60">No ads yet. Create your first one above.</p>
         )}
-        {adsWithMeta.map(({ ad, hasTarget, distanceKm, inRadius, scheduled, expired }) => {
+        {adsWithMeta.map(({ ad, scheduled, expired }) => {
           const s = statsByAd.get(ad.id) || { impressions: 0, clicks: 0, ctr: 0 };
           return (
             <div key={ad.id} className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start">
                 <div className="flex items-start gap-3 sm:flex-1 sm:min-w-[200px]">
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 border-hero-foreground/10 bg-hero-foreground/10">
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-hero-foreground/10 bg-hero-foreground/10">
                     {ad.image_url ? (
                       <img src={ad.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />
                     ) : (
@@ -565,10 +433,7 @@ const AdsManagementTab = () => {
                       {expired && <Badge className="bg-destructive text-destructive-foreground text-[10px]">Expired</Badge>}
                     </div>
                     <p className="mt-1 break-words text-xs text-hero-foreground/60">
-                      {hasTarget
-                        ? `📍 ${ad.target_latitude.toFixed(3)}, ${ad.target_longitude.toFixed(3)} · ${ad.target_radius_km} km`
-                        : "🌍 Global"}
-                      {ad.starts_at && ` · from ${new Date(ad.starts_at).toLocaleDateString()}`}
+                      {ad.starts_at && `from ${new Date(ad.starts_at).toLocaleDateString()}`}
                       {ad.ends_at && ` · to ${new Date(ad.ends_at).toLocaleDateString()}`}
                     </p>
                   </div>
@@ -578,11 +443,6 @@ const AdsManagementTab = () => {
                   <StatChip icon={Eye} label="Impr." value={s.impressions} />
                   <StatChip icon={MousePointerClick} label="Clicks" value={s.clicks} />
                   <StatChip icon={TrendingUp} label="CTR" value={`${s.ctr}%`} />
-                  {hasTarget && viewerCoords && distanceKm != null && (
-                    <Badge className={inRadius ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}>
-                      {distanceKm.toFixed(2)} km · {inRadius ? "IN" : "OUT"}
-                    </Badge>
-                  )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
