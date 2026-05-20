@@ -8,7 +8,7 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  Plus,
+  
   Heart,
   Droplet,
   Megaphone,
