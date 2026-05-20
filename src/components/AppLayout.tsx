@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationBell from "@/components/NotificationBell";
+import SparksBalanceChip from "@/components/wallet/SparksBalanceChip";
 import logoImg from "@/assets/logo.svg";
 import logoDarkImg from "@/assets/logo-dark.svg";
 
@@ -62,7 +63,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
               <Link to="/" className="inline-flex items-center">
                 <img src={logoImg} alt="Near Konnect" className="block h-10 w-auto max-w-[55vw] object-contain" />
               </Link>
-              {user && <NotificationBell />}
+              <div className="flex items-center gap-2">{user && <SparksBalanceChip />}{user && <NotificationBell />}</div>
             </div>
             <div className="relative mt-5 flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
@@ -85,7 +86,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
               <Link to="/" className="inline-flex items-center">
                 <img src={logoImg} alt="Near Konnect" className="block h-10 w-auto max-w-[55vw] object-contain" />
               </Link>
-              {user && <NotificationBell />}
+              <div className="flex items-center gap-2">{user && <SparksBalanceChip />}{user && <NotificationBell />}</div>
             </div>
           </div>
         )}
@@ -142,7 +143,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
           </nav>
 
           <div className="relative flex shrink-0 items-center gap-2">
-            {user && <NotificationBell />}
+            <div className="flex items-center gap-2">{user && <SparksBalanceChip />}{user && <NotificationBell />}</div>
             <button
               onClick={() => navigate(profilePath)}
               className="inline-flex items-center gap-2 rounded-full border border-hero-foreground/10 bg-hero-foreground/5 px-3 py-1.5 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero-foreground/10"

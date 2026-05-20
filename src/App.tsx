@@ -18,6 +18,7 @@ import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
 import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
+import { WalletProvider } from "@/contexts/WalletContext";
 
 // Eager: homepage (most-visited entry point)
 import Home from "./pages/Home";
@@ -44,6 +45,10 @@ const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const WalletPage = lazy(() => import("./pages/wallet/WalletPage"));
+const BuySparksPage = lazy(() => import("./pages/wallet/BuySparksPage"));
+const PaymentCheckoutPage = lazy(() => import("./pages/wallet/PaymentCheckoutPage"));
+const PaymentStatusPage = lazy(() => import("./pages/wallet/PaymentStatusPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -108,6 +113,10 @@ const AppContent = () => {
             <Route path="/terms" element={<TermsAndConditions />} />
             <Route path="/offline" element={<Offline />} />
             <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
+            <Route path="/wallet/buy" element={<ProtectedRoute><BuySparksPage /></ProtectedRoute>} />
+            <Route path="/wallet/buy/:packageId/checkout" element={<ProtectedRoute><PaymentCheckoutPage /></ProtectedRoute>} />
+            <Route path="/wallet/payment/:id" element={<ProtectedRoute><PaymentStatusPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
@@ -123,11 +132,13 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AppContent />
-          </TooltipProvider>
+          <WalletProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <AppContent />
+            </TooltipProvider>
+          </WalletProvider>
         </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
