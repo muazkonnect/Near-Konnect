@@ -71,6 +71,7 @@ const WorkerDashboard = () => {
     }
   }, [authLoading, roleLoading, roles, navigate]);
   const { data: workerData, isLoading } = useWorkerProfile();
+  const { data: sparksBalance = 0 } = useSparksWallet();
   const queryClient = useQueryClient();
 
   const [profession, setProfession] = useState("");
