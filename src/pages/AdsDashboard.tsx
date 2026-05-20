@@ -81,7 +81,8 @@ const AdsDashboard = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl space-y-6 px-4 pb-24 pt-2">
+      <div className="admin-shell -mx-4 -mt-2 min-h-screen px-4 pt-2">
+      <div className="mx-auto max-w-5xl space-y-6 pb-24 pt-2">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-end justify-between gap-3">
           <div>
