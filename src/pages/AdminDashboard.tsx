@@ -414,40 +414,6 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  // ===== Computed: distance for active ads given the test viewer location =====
-  const adsWithDistance = useMemo(() => {
-    return (nativeAds as any[]).map((ad) => {
-      const hasTarget =
-        ad.target_latitude != null && ad.target_longitude != null && (ad.target_radius_km ?? 0) > 0;
-      let distanceKm: number | null = null;
-      let inRadius: boolean | null = null;
-      if (hasTarget && viewerCoords) {
-        distanceKm = calculateDistance(
-          viewerCoords.latitude,
-          viewerCoords.longitude,
-          ad.target_latitude,
-          ad.target_longitude
-        );
-        inRadius = distanceKm <= ad.target_radius_km;
-      } else if (!hasTarget) {
-        inRadius = true; // global
-      }
-      return { ad, hasTarget, distanceKm, inRadius };
-    });
-  }, [nativeAds, viewerCoords]);
-
-  // Distance for the draft ad being composed
-  const draftDistance = useMemo(() => {
-    if (!adTargetCoords || !viewerCoords) return null;
-    return calculateDistance(
-      viewerCoords.latitude,
-      viewerCoords.longitude,
-      adTargetCoords.latitude,
-      adTargetCoords.longitude
-    );
-  }, [adTargetCoords, viewerCoords]);
-  const draftRadiusNum = Number(adRadiusKm) || 0;
-  const draftInRadius = draftDistance != null && draftRadiusNum > 0 ? draftDistance <= draftRadiusNum : null;
 
   if (authLoading || roleLoading) {
     return (
