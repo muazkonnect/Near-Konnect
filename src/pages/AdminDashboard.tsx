@@ -187,24 +187,8 @@ const AdminDashboard = () => {
   const [tab, setTab] = useState<TabKey>("overview");
   const [featureWorkerId, setFeatureWorkerId] = useState("");
   const [featurePriority, setFeaturePriority] = useState("100");
-  const [adTitle, setAdTitle] = useState("");
-  const [adDescription, setAdDescription] = useState("");
-  const [adImageUrl, setAdImageUrl] = useState("");
-  const [adLink, setAdLink] = useState("");
-  const [adCtaLabel, setAdCtaLabel] = useState("Learn More");
-  const [adPlacement, setAdPlacement] = useState<"home_banner" | "home_feed">("home_banner");
-  const [adPriority, setAdPriority] = useState("100");
-  const [adTargetCoords, setAdTargetCoordsState] = useState<Coords | null>(null);
-  const [adRadiusKm, setAdRadiusKm] = useState("3");
   const [donorFilter, setDonorFilter] = useState("");
-  const [viewerCoords, setViewerCoords] = useState<Coords | null>(null);
-  const [editingAdId, setEditingAdId] = useState<string | null>(null);
   const [editingWorker, setEditingWorker] = useState<any | null>(null);
-
-  const setAdTargetCoords = (c: Coords | null) => {
-    setAdTargetCoordsState(c);
-    if (c && !adRadiusKm.trim()) setAdRadiusKm("3");
-  };
 
   // Apply admin-shell scope to body so portaled popovers/dialogs inherit dark theme
   useEffect(() => {
