@@ -142,11 +142,11 @@ const Home = () => {
   const tickerItems = useMemo(() => {
     const items: { text: string; hot?: boolean }[] = [];
     if (donors.length) items.push({ text: `${donors.length}+ verified blood donors active nearby`, hot: true });
-    if (nearby3km.length) items.push({ text: `${nearby3km.length} verified providers within 3 KM` });
+    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within 5 KM` });
     if (workers.length) items.push({ text: `${workers.length} total providers connected on Near Konnect` });
     items.push({ text: "Safety protocols for verified providers updated", hot: true });
     return items.length ? items : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
-  }, [donors.length, nearby3km.length, workers.length]);
+  }, [donors.length, promoted5.length, workers.length]);
 
   const submitSearch = (q: string) => {
     if (!q.trim()) return navigate("/discover");
