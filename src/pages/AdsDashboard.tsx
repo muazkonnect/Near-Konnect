@@ -16,10 +16,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkers } from "@/hooks/useWorkers";
-import { useSparksWallet, useSparksTransactions, calcSparksCost } from "@/hooks/useSparks";
+import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign } from "@/hooks/useAdCampaigns";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
+import logoImg from "@/assets/logo.svg";
 
 const RADII = [3, 5, 10] as const;
 const INT_RADII = [3, 5, 10, 25, 50] as const;
