@@ -181,7 +181,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   variant="ghost"
                   size="sm"
                   className="h-8 flex-1 rounded-lg border border-hero-foreground/10 bg-hero-foreground/5 px-2 text-[11px] font-bold text-hero-foreground backdrop-blur hover:bg-hero-foreground/10"
-                  onClick={() => setPopupOpen(true)}
+                  onClick={() => { fireClick(); setPopupOpen(true); }}
                 >
                   View <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
