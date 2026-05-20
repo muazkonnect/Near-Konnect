@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Search, Navigation, Check } from "lucide-react";
@@ -240,6 +241,8 @@ const CampaignWizard = ({
   defaultCenter: Coords | null;
   balance: number;
 }) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [adType, setAdType] = useState<"local" | "international">("local");
   const [radius, setRadius] = useState<number>(5);
@@ -339,7 +342,12 @@ const CampaignWizard = ({
       }
     }
     if (!center) return toast.error("Set a location first.");
-    if (cost > balance) return toast.error(`Need ${cost - balance} more Sparks. Ask an admin to top up.`);
+    if (cost > balance) {
+      toast.error(`Need ${cost - balance} more Sparks.`, {
+        action: { label: "Buy Sparks", onClick: () => navigate("/wallet/buy") },
+      });
+      return;
+    }
     setSubmitting(true);
     try {
       await createCampaign({
@@ -351,6 +359,9 @@ const CampaignWizard = ({
       });
 
       toast.success("Campaign launched 🚀");
+      queryClient.invalidateQueries({ queryKey: ["sparks_wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["my_campaigns"] });
       onOpenChange(false);
     } catch (e: any) {
       const msg = String(e?.message || "");
