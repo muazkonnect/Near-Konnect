@@ -444,7 +444,7 @@ const CampaignWizard = ({
           </div>
         )}
 
-        {step === 1 && (
+        {step === 2 && (
           <div className="space-y-4">
             {adType === "international" && (
               <div>
