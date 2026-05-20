@@ -426,7 +426,7 @@ const CampaignWizard = ({
               <>
                 <div>
                   <Label>Center (your current GPS location)</Label>
-                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} /></div>
+                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} radiusKm={radius} /></div>
                   <Button type="button" variant="outline" size="sm" onClick={useMyLocation} className="mt-2 w-full">
                     Use my current location
                   </Button>
@@ -484,7 +484,7 @@ const CampaignWizard = ({
                 </div>
                 <div>
                   <Label>Pin center on map</Label>
-                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} /></div>
+                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} radiusKm={radius} /></div>
                 </div>
               </>
 
