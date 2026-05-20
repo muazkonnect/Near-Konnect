@@ -341,7 +341,12 @@ const CampaignWizard = ({
       }
     }
     if (!center) return toast.error("Set a location first.");
-    if (cost > balance) return toast.error(`Need ${cost - balance} more Sparks. Ask an admin to top up.`);
+    if (cost > balance) {
+      toast.error(`Need ${cost - balance} more Sparks.`, {
+        action: { label: "Buy Sparks", onClick: () => navigate("/wallet/buy") },
+      });
+      return;
+    }
     setSubmitting(true);
     try {
       await createCampaign({
