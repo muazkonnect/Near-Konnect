@@ -44,7 +44,7 @@ export function useMyCampaigns() {
       const { data, error } = await (supabase as any)
         .from("ad_campaigns")
         .select(
-          "id, worker_id, owner_user_id, ad_type, status, duration_days, starts_at, ends_at, sparks_cost, priority, created_at, ad_geo_targets(radius_km, country, city, area)"
+          "id, worker_id, owner_user_id, ad_type, placement_type, status, duration_days, starts_at, ends_at, sparks_cost, priority, created_at, ad_geo_targets(radius_km, country, city, area)"
         )
         .eq("owner_user_id", user!.id)
         .order("created_at", { ascending: false });
