@@ -379,9 +379,10 @@ const CampaignWizard = ({
         workerId, adType, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
         country: adType === "international" ? countryName || null : null,
-        city: adType === "international" ? stateName || null : null,
-        area: adType === "international" ? cityName || null : null,
+        city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
+        area: adType === "international" ? areaText || null : null,
       });
+
       toast.success("Campaign launched 🚀");
       onOpenChange(false);
     } catch (e: any) {
