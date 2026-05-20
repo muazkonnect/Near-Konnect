@@ -169,9 +169,15 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
         <div className="min-w-0 flex-1 space-y-5">
 
           {title && (
-            <div className="relative overflow-hidden border border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3">
+            <div className={`relative overflow-hidden border rounded-3xl px-8 py-7 flex flex-wrap items-start justify-between gap-3 text-hero-foreground ${isBlood ? "border-destructive/30 bg-gradient-to-br from-hero-foreground/[0.04] via-destructive/10 to-destructive/20" : "border-hero-foreground/10 bg-hero-foreground/[0.04]"}`}>
               <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(hsl(var(--hero-foreground)) 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              {isBlood && <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-destructive/30 blur-3xl" />}
               <div className="relative min-w-0">
+                {isBlood && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-destructive/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-destructive-foreground ring-1 ring-destructive/40">
+                    <HeartPulse className="h-3.5 w-3.5" /> Save Lives
+                  </span>
+                )}
                 <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
                 {subtitle && <p className="mt-2 text-sm text-hero-foreground/60">{subtitle}</p>}
               </div>
