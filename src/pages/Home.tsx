@@ -31,7 +31,6 @@ import NativeAdCard from "@/components/NativeAdCard";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
-import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -58,10 +57,6 @@ const Home = () => {
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
-  const donorsSliderRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 86 });
-  const nearby3kmRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 78 });
-  const top5kmRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 74 });
-
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
@@ -187,7 +182,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
+          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
         </div>
 
         {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
