@@ -68,7 +68,7 @@ const TabFallback = () => (
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "sparks" | "avatar_resets" | "location_requests" | "profile";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "ads" | "running_ads" | "sparks" | "avatar_resets" | "location_requests" | "profile";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -77,8 +77,9 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "categories", label: "Categories", icon: Shield },
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
-  { key: "ads", label: "Ads & Geo", icon: Megaphone },
-  { key: "sparks", label: "Sparks & Campaigns", icon: Zap },
+  { key: "ads", label: "Ads", icon: Megaphone },
+  { key: "running_ads", label: "Running Ads", icon: Zap },
+  { key: "sparks", label: "Sparks & Payments", icon: Zap },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
   { key: "location_requests", label: "Location Requests", icon: UserCog },
   { key: "profile", label: "My Profile", icon: UserCog },
