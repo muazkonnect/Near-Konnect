@@ -398,7 +398,7 @@ const CampaignWizard = ({
     }
   };
 
-  const radiusOptions = adType === "local" ? RADII : ([10, 25, 50, 100, 250] as const);
+  const radiusOptions = adType === "local" ? RADII : INT_RADII;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
