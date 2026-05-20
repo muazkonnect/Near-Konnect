@@ -47,6 +47,7 @@ import DashboardNav from "@/components/DashboardNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useSparksWallet } from "@/hooks/useSparks";
 import { getCurrentPosition } from "@/lib/geolocation";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
