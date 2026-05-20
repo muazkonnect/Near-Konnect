@@ -128,6 +128,10 @@ const AdsDashboard = () => {
                           {c.status}
                         </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                          {c.placement_type === "homepage" ? <HomeIcon className="h-3 w-3" /> : <Compass className="h-3 w-3" />}
+                          {c.placement_type === "homepage" ? "Homepage" : "Explore"}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground/70">
                           {c.ad_type === "local" ? <MapPin className="h-3 w-3" /> : <Globe className="h-3 w-3" />}
                           {c.ad_type}
                         </span>
