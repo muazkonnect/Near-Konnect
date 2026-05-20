@@ -21,8 +21,12 @@ import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
-const RADII = [5, 10, 15] as const;
+const RADII = [3, 5, 10] as const;
+const INT_RADII = [3, 5, 10, 25, 50] as const;
 const DURATIONS = [1, 7, 15, 30] as const;
+const AUDIENCE_PER_KM2 = 220; // rough est. of active local users per km²
+const estAudience = (r: number) => Math.round(Math.PI * r * r * AUDIENCE_PER_KM2);
+const fmtNum = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `${n}`);
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
