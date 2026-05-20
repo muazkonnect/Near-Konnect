@@ -89,14 +89,12 @@ const AdsDashboard = () => {
     <AppLayout>
       <div className="admin-shell -mx-4 -mt-2 min-h-screen px-4 pt-2">
       <div className="mx-auto max-w-5xl space-y-6 pb-24 pt-2">
-        {/* Branded header */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center gap-3 rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-card p-5 text-center shadow-sm sm:flex-row sm:justify-between sm:text-left"
-        >
-          <img src={logoImg} alt="Near Konnect" className="h-16 w-auto object-contain sm:h-20" />
-          <Button onClick={() => setWizardOpen(true)} className="gap-2 rounded-full shadow-md shadow-primary/20">
+        <motion.div initial={{ opacity:  0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">Ads Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Promote your profile in the Top Rated and Nearby sections.</p>
+          </div>
+          <Button onClick={() => setWizardOpen(true)} className="gap-2 rounded-full">
             <Plus className="h-4 w-4" /> New Campaign
           </Button>
         </motion.div>
