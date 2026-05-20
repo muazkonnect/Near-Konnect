@@ -2082,40 +2082,23 @@ export type Database = {
           worker_id: string
         }[]
       }
-      get_promoted_workers:
-        | {
-            Args: {
-              _limit?: number
-              _max_viewer_radius_km?: number
-              _viewer_lat: number
-              _viewer_lng: number
-            }
-            Returns: {
-              campaign_id: string
-              distance_km: number
-              ends_at: string
-              priority: number
-              user_id: string
-              worker_id: string
-            }[]
-          }
-        | {
-            Args: {
-              _limit?: number
-              _max_viewer_radius_km?: number
-              _placement?: Database["public"]["Enums"]["ad_placement"]
-              _viewer_lat: number
-              _viewer_lng: number
-            }
-            Returns: {
-              campaign_id: string
-              distance_km: number
-              ends_at: string
-              priority: number
-              user_id: string
-              worker_id: string
-            }[]
-          }
+      get_promoted_workers: {
+        Args: {
+          _limit?: number
+          _max_viewer_radius_km?: number
+          _placement?: Database["public"]["Enums"]["ad_placement"]
+          _viewer_lat: number
+          _viewer_lng: number
+        }
+        Returns: {
+          campaign_id: string
+          distance_km: number
+          ends_at: string
+          priority: number
+          user_id: string
+          worker_id: string
+        }[]
+      }
       get_service_analytics_summary: {
         Args: { _days?: number; _owner_user_id: string; _service_id: string }
         Returns: {
@@ -2126,36 +2109,23 @@ export type Database = {
           profile_views: number
         }[]
       }
-      get_top_rated_promoted:
-        | {
-            Args: { _limit?: number; _viewer_lat: number; _viewer_lng: number }
-            Returns: {
-              avg_rating: number
-              campaign_id: string
-              distance_km: number
-              ends_at: string
-              priority: number
-              user_id: string
-              worker_id: string
-            }[]
-          }
-        | {
-            Args: {
-              _limit?: number
-              _placement?: Database["public"]["Enums"]["ad_placement"]
-              _viewer_lat: number
-              _viewer_lng: number
-            }
-            Returns: {
-              avg_rating: number
-              campaign_id: string
-              distance_km: number
-              ends_at: string
-              priority: number
-              user_id: string
-              worker_id: string
-            }[]
-          }
+      get_top_rated_promoted: {
+        Args: {
+          _limit?: number
+          _placement?: Database["public"]["Enums"]["ad_placement"]
+          _viewer_lat: number
+          _viewer_lng: number
+        }
+        Returns: {
+          avg_rating: number
+          campaign_id: string
+          distance_km: number
+          ends_at: string
+          priority: number
+          user_id: string
+          worker_id: string
+        }[]
+      }
       gettransactionid: { Args: never; Returns: unknown }
       grant_sparks: {
         Args: { _amount: number; _notes?: string; _worker_id: string }
