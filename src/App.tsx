@@ -18,6 +18,7 @@ import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
 import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
+import { WalletProvider } from "@/contexts/WalletContext";
 
 // Eager: homepage (most-visited entry point)
 import Home from "./pages/Home";
