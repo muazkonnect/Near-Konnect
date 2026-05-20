@@ -55,6 +55,7 @@ const CategoriesManagementTab = lazy(() => import("@/components/admin/Categories
 const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
+const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
