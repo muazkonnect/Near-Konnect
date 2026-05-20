@@ -389,7 +389,7 @@ const WorkerDashboard = () => {
             {[
               { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
               { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
-              { label: "Boost Ad", icon: Zap, onClick: () => navigate("/discover") },
+              { label: "Boost Ad", icon: Zap, onClick: () => navigate("/worker/ads") },
               { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
             ].map((a) => (
               <button
