@@ -527,18 +527,18 @@ const CampaignWizard = ({
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="space-y-4">
             <div className="rounded-xl border bg-card p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Summary</p>
               <ul className="mt-2 space-y-1 text-sm">
-                <li>Type: <b className="capitalize">{adType}</b></li>
+                <li>Placement: <b className="capitalize">{placement === "homepage" ? "Homepage" : "Explore Page"}</b></li>
+                <li>Targeting: <b className="capitalize">{adType}</b></li>
                 <li>Radius: <b>{radius} km</b></li>
                 <li>Duration: <b>{duration} days</b></li>
                 {adType === "international" && (
                   <li>Target: <b>{[areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
-
               </ul>
             </div>
             <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-primary/15 to-primary/5 p-4">
