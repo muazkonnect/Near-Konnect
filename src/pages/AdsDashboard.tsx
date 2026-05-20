@@ -509,7 +509,7 @@ const CampaignWizard = ({
 
 
 
-        {step === 2 && (
+        {step === 3 && (
           <div className="space-y-3">
             <Label>Duration</Label>
             <div className="grid grid-cols-4 gap-2">
