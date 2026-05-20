@@ -182,7 +182,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translate3d(0,0,0) } to { transform: translate3d(-50%,0,0) } } .auto-carousel-track { will-change: transform; animation-play-state: running; }`}</style>
         </div>
 
         {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
@@ -273,46 +273,47 @@ const Home = () => {
             </div>
           ) : (
             <div className="overflow-hidden pb-3">
-              <div className="flex w-max gap-4 px-5 animate-[auto-carousel_18s_linear_infinite]">
-              {[...donors, ...donors].map((d, i) => {
-                const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
-                const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
-                return (
-                  <motion.div
-                    key={`${d.user_id}-${i}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="relative flex min-w-[260px] shrink-0 flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 shadow-xl"
-                  >
-                    <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5">
-                      <HeartPulse className="h-7 w-7 text-destructive/30" />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-12 w-12 border-2 border-destructive/20">
-                        <AvatarImage src={d.avatar_url ?? undefined} alt={d.full_name} />
-                        <AvatarFallback className="bg-destructive/10 text-sm font-bold text-destructive">{initials}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-foreground">{d.full_name || "Donor"}</p>
-                        <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                          <BadgeCheck className="h-3 w-3 text-destructive" /> Verified Donor
-                        </p>
+              <div className="auto-carousel-track flex w-max gap-4 animate-[auto-carousel_45s_linear_infinite]">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex shrink-0 gap-4 pl-5 pr-0" aria-hidden={copy === 1}>
+                {donors.map((d, i) => {
+                  const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
+                  const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
+                  return (
+                    <div
+                      key={`${d.user_id}-${copy}-${i}`}
+                      className="relative flex min-w-[260px] shrink-0 flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 shadow-xl"
+                    >
+                      <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5">
+                        <HeartPulse className="h-7 w-7 text-destructive/30" />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-12 w-12 border-2 border-destructive/20">
+                          <AvatarImage src={d.avatar_url ?? undefined} alt={d.full_name} />
+                          <AvatarFallback className="bg-destructive/10 text-sm font-bold text-destructive">{initials}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold text-foreground">{d.full_name || "Donor"}</p>
+                          <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                            <BadgeCheck className="h-3 w-3 text-destructive" /> Verified Donor
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-destructive/5 p-3">
+                        <div>
+                          <p className="text-xl font-bold text-foreground">{d.blood_group || "—"}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Blood Group</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-foreground">{dist}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between rounded-lg bg-destructive/5 p-3">
-                      <div>
-                        <p className="text-xl font-bold text-foreground">{d.blood_group || "—"}</p>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Blood Group</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-foreground">{dist}</p>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                  );
+                })}
+                </div>
+              ))}
               </div>
             </div>
           )}
@@ -347,10 +348,14 @@ const Home = () => {
             </div>
           ) : (
             <div className="overflow-hidden pb-3">
-              <div className="flex w-max gap-3 px-5 animate-[auto-carousel_22s_linear_infinite]">
-              {[...nearby3km, ...nearby3km].map((w, i) => (
-                <div key={`n-${w.id}-${i}`} className="w-[280px] shrink-0">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+              <div className="auto-carousel-track flex w-max gap-3 animate-[auto-carousel_60s_linear_infinite]">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex shrink-0 gap-3 pl-5" aria-hidden={copy === 1}>
+                {nearby3km.map((w, i) => (
+                  <div key={`n-${w.id}-${copy}-${i}`} className="w-[280px] shrink-0">
+                    <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                  </div>
+                ))}
                 </div>
               ))}
               </div>
@@ -383,10 +388,14 @@ const Home = () => {
             </div>
           ) : (
             <div className="overflow-hidden pb-3">
-              <div className="flex w-max gap-3 px-5 animate-[auto-carousel_24s_linear_infinite]">
-              {[...top5km, ...top5km].map((w, i) => (
-                <div key={`t-${w.id}-${i}`} className="w-[280px] shrink-0">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+              <div className="auto-carousel-track flex w-max gap-3 animate-[auto-carousel_70s_linear_infinite]">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex shrink-0 gap-3 pl-5" aria-hidden={copy === 1}>
+                {top5km.map((w, i) => (
+                  <div key={`t-${w.id}-${copy}-${i}`} className="w-[280px] shrink-0">
+                    <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                  </div>
+                ))}
                 </div>
               ))}
               </div>
