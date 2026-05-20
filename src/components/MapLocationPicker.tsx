@@ -24,13 +24,15 @@ interface MapLocationPickerProps {
 
 const DEFAULT_CENTER: Coords = { latitude: 24.8607, longitude: 67.0011 };
 
-const MapLocationPicker = ({ value, onChange }: MapLocationPickerProps) => {
+const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps) => {
   const [locating, setLocating] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  const circleRef = useRef<L.Circle | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+
 
   // Init map once
   useEffect(() => {
