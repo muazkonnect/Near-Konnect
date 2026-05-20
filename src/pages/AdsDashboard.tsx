@@ -484,7 +484,7 @@ const CampaignWizard = ({
                 <li>Radius: <b>{radius} km</b></li>
                 <li>Duration: <b>{duration} days</b></li>
                 {adType === "international" && (
-                  <li>Target: <b>{[area, city, country].filter(Boolean).join(", ") || "—"}</b></li>
+                  <li>Target: <b>{[cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
               </ul>
             </div>
