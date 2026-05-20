@@ -132,11 +132,13 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AppContent />
-          </TooltipProvider>
+          <WalletProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <AppContent />
+            </TooltipProvider>
+          </WalletProvider>
         </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
