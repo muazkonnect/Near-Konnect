@@ -14,7 +14,7 @@ import {
   Megaphone,
   Star,
   LayoutDashboard,
-  MapPin,
+  
   LogOut,
   Crown,
   UserCog,
