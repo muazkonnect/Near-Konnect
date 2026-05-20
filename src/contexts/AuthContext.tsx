@@ -117,13 +117,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (role === "worker") {
         const lat = toNumberOrNull(md.latitude);
         const lng = toNumberOrNull(md.longitude);
-        
-        // Use the actual selected sub-category or fallback to metadata profession, 
+
+        // Use the actual selected sub-category or fallback to metadata profession,
         // only using "General Service" as a last resort.
         const workerProfession = subCategory || String(md.profession || "").trim() || "General Service";
 
-        const { error: workerError } = await supabase.from("workers").upsert(
-          {
+        // Check if worker row already exists — the location is locked after creation,
+        // so re-running an upsert with lat/lng would trip the immutability trigger.
+        const { data: existingWorker } = await supabase
+          .from("workers")
+          .select("id")
+          .eq("user_id", nextUser.id)
+          .maybeSingle();
+
+        if (!existingWorker) {
+          const { error: workerError } = await supabase.from("workers").insert({
             user_id: nextUser.id,
             profession: workerProfession,
             main_category: mainCategory,
@@ -134,14 +142,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             longitude: lng,
             service_areas: [],
             city: null,
-          },
-          { onConflict: "user_id" }
-        );
-        if (workerError) throw workerError;
+          } as any);
+          if (workerError && !String(workerError.message).toLowerCase().includes("duplicate")) {
+            throw workerError;
+          }
 
-        if (lat !== null && lng !== null) {
-          const { error: locError } = await (supabase.rpc as any)("set_worker_location", { lat, lng });
-          if (locError) console.warn("Failed to set workplace_location", locError);
+          if (lat !== null && lng !== null) {
+            const { error: locError } = await (supabase.rpc as any)("set_worker_location", { lat, lng });
+            if (locError) console.warn("Failed to set workplace_location", locError);
+          }
         }
       }
     })().catch((error) => {
