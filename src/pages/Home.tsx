@@ -553,4 +553,63 @@ const DarkWorkerCard = ({
   );
 };
 
+type PromotedItem = {
+  id: string;
+  campaignId: string;
+  distance: number;
+} & Record<string, any>;
+
+const PromotedSection = ({
+  title, subtitle, items, placement, isAuthed, loading, custom, navigate,
+}: {
+  title: string;
+  subtitle: string;
+  items: PromotedItem[];
+  placement: string;
+  isAuthed: boolean;
+  loading: boolean;
+  custom: number;
+  navigate: (path: string) => void;
+}) => {
+  if (loading && items.length === 0) {
+    return (
+      <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
+        <div className="mb-5 px-5">
+          <h2 className="text-xl font-bold tracking-tight md:text-2xl">{title}</h2>
+        </div>
+        <div className="flex gap-4 px-5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-64 w-[280px] shrink-0 animate-pulse rounded-2xl border border-white/5 bg-white/5" />
+          ))}
+        </div>
+      </motion.section>
+    );
+  }
+  if (items.length === 0) return null;
+  return (
+    <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
+      <div className="mb-5 px-5">
+        <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+          {title} <span className="ml-2 text-sm font-normal text-hero-muted">• {subtitle}</span>
+        </h2>
+      </div>
+      <SteppedCarousel
+        className="pb-3"
+        trackClassName="pl-5 pr-5"
+        dwellMs={2800}
+        items={items.map((w) => (
+          <div key={`${placement}-${w.id}`}>
+            <WorkerAdCard
+              worker={w as any}
+              isAuthed={isAuthed}
+              campaignId={w.campaignId}
+              placement={placement}
+            />
+          </div>
+        ))}
+      />
+    </motion.section>
+  );
+};
+
 export default Home;
