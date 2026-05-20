@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet } from "lucide-react";
+import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet, Search } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -280,6 +281,7 @@ const CampaignWizard = ({
   const [countryCode, setCountryCode] = useState("");
   const [stateCode, setStateCode] = useState("");
   const [cityName, setCityName] = useState("");
+  const [areaText, setAreaText] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -304,8 +306,38 @@ const CampaignWizard = ({
   useEffect(() => {
     if (!open) return;
     setStep(0); setAdType("local"); setRadius(5); setDuration(7);
-    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName("");
+    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName(""); setAreaText("");
   }, [open, defaultCenter]);
+
+  // Apply a Nominatim search result to the cascade + map
+  const applySearchResult = (r: NominatimResult) => {
+    const addr = r.address || {};
+    const iso = (addr.country_code || "").toUpperCase();
+    if (iso) {
+      const country = Country.getCountryByCode(iso);
+      if (country) {
+        setCountryCode(iso);
+        const stateNm = addr.state || addr.region || addr.province || "";
+        const st = State.getStatesOfCountry(iso).find(
+          (s) => s.name.toLowerCase() === stateNm.toLowerCase() || s.isoCode === stateNm,
+        );
+        if (st) {
+          setStateCode(st.isoCode);
+          const cityNm = addr.city || addr.town || addr.village || addr.county || "";
+          const c = City.getCitiesOfState(iso, st.isoCode).find(
+            (c) => c.name.toLowerCase() === cityNm.toLowerCase(),
+          );
+          setCityName(c?.name || cityNm || "");
+        } else {
+          setStateCode(""); setCityName("");
+        }
+      }
+    }
+    setAreaText(addr.suburb || addr.neighbourhood || addr.road || r.display_name.split(",")[0] || "");
+    const lat = Number(r.lat); const lng = Number(r.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) setCenter({ latitude: lat, longitude: lng });
+  };
+
 
   useEffect(() => {
     let cancelled = false;
@@ -347,9 +379,10 @@ const CampaignWizard = ({
         workerId, adType, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
         country: adType === "international" ? countryName || null : null,
-        city: adType === "international" ? stateName || null : null,
-        area: adType === "international" ? cityName || null : null,
+        city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
+        area: adType === "international" ? areaText || null : null,
       });
+
       toast.success("Campaign launched 🚀");
       onOpenChange(false);
     } catch (e: any) {
@@ -401,7 +434,16 @@ const CampaignWizard = ({
               </>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div>
+                  <Label>Search anywhere in the world</Label>
+                  <div className="mt-2">
+                    <AddressSearch onSelect={applySearchResult} />
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Type any address, city, or landmark — we'll auto-fill the fields below and pin the map.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div>
                     <Label>Country</Label>
                     <Select value={countryCode} onValueChange={(v) => { setCountryCode(v); setStateCode(""); setCityName(""); }}>
@@ -414,9 +456,9 @@ const CampaignWizard = ({
                     </Select>
                   </div>
                   <div>
-                    <Label>City / Region</Label>
+                    <Label>State / Province</Label>
                     <Select value={stateCode} onValueChange={(v) => { setStateCode(v); setCityName(""); }} disabled={!countryCode || states.length === 0}>
-                      <SelectTrigger className="mt-2"><SelectValue placeholder={!countryCode ? "Pick country first" : states.length === 0 ? "No regions" : "Select city/region"} /></SelectTrigger>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!countryCode ? "Pick country first" : states.length === 0 ? "No regions" : "Select state/province"} /></SelectTrigger>
                       <SelectContent className="max-h-72">
                         {states.map((s) => (
                           <SelectItem key={s.isoCode} value={s.isoCode}>{s.name}</SelectItem>
@@ -425,9 +467,9 @@ const CampaignWizard = ({
                     </Select>
                   </div>
                   <div>
-                    <Label>Area</Label>
+                    <Label>City</Label>
                     <Select value={cityName} onValueChange={setCityName} disabled={!stateCode || cities.length === 0}>
-                      <SelectTrigger className="mt-2"><SelectValue placeholder={!stateCode ? "Pick city first" : cities.length === 0 ? "No areas" : "Select area"} /></SelectTrigger>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder={!stateCode ? "Pick state first" : cities.length === 0 ? "No cities" : "Select city"} /></SelectTrigger>
                       <SelectContent className="max-h-72">
                         {cities.map((c) => (
                           <SelectItem key={`${c.name}-${c.latitude}-${c.longitude}`} value={c.name}>{c.name}</SelectItem>
@@ -435,12 +477,17 @@ const CampaignWizard = ({
                       </SelectContent>
                     </Select>
                   </div>
+                  <div>
+                    <Label>Area / Neighbourhood</Label>
+                    <Input className="mt-2" value={areaText} onChange={(e) => setAreaText(e.target.value)} placeholder="Optional area name" />
+                  </div>
                 </div>
                 <div>
                   <Label>Pin center on map</Label>
                   <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} /></div>
                 </div>
               </>
+
             )}
 
             <div>
@@ -484,8 +531,9 @@ const CampaignWizard = ({
                 <li>Radius: <b>{radius} km</b></li>
                 <li>Duration: <b>{duration} days</b></li>
                 {adType === "international" && (
-                  <li>Target: <b>{[cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
+                  <li>Target: <b>{[areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
+
               </ul>
             </div>
             <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-primary/15 to-primary/5 p-4">
@@ -532,5 +580,83 @@ const TypeCard = ({ active, icon: Icon, title, desc, onClick }: any) => (
     <p className="text-xs text-muted-foreground">{desc}</p>
   </button>
 );
+
+interface NominatimResult {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: {
+    country_code?: string;
+    country?: string;
+    state?: string;
+    region?: string;
+    province?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    county?: string;
+    suburb?: string;
+    neighbourhood?: string;
+    road?: string;
+  };
+}
+
+const AddressSearch = ({ onSelect }: { onSelect: (r: NominatimResult) => void }) => {
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState<NominatimResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (q.trim().length < 3) { setResults([]); return; }
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=${encodeURIComponent(q)}`;
+        const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } });
+        if (!res.ok) return;
+        const json = (await res.json()) as NominatimResult[];
+        setResults(json);
+        setOpen(true);
+      } catch { /* aborted */ }
+      finally { setLoading(false); }
+    }, 350);
+    return () => { ctrl.abort(); clearTimeout(t); };
+  }, [q]);
+
+  return (
+    <div className="relative">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onFocus={() => results.length && setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          placeholder="Search any city, street, or landmark worldwide…"
+          className="pl-9"
+        />
+        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
+      </div>
+      {open && results.length > 0 && (
+        <div className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-lg">
+          {results.map((r) => (
+            <button
+              key={r.place_id}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); onSelect(r); setQ(r.display_name); setOpen(false); }}
+              className="flex w-full items-start gap-2 border-b border-border/40 px-3 py-2 text-left text-sm last:border-0 hover:bg-accent hover:text-accent-foreground"
+            >
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span className="line-clamp-2">{r.display_name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default AdsDashboard;
