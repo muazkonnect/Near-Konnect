@@ -87,7 +87,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             }`}
           >
             {premium ? <Award className="h-3 w-3" /> : <Sparkles className="h-3 w-3 text-primary" />}
-            {premium ? "Featured" : "Sponsored"}
+            {premium ? "Featured" : campaignId ? "Promoted" : "Sponsored"}
           </div>
 
           <div className="relative flex items-stretch gap-3 p-3.5">
