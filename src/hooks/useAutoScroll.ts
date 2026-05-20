@@ -16,7 +16,7 @@ export function useAutoScroll<T extends HTMLElement>(
 ) {
   const opts: AutoScrollOptions =
     typeof options === "number" ? { intervalMs: options } : options;
-  const { resumeDelayMs = 1500, speedPxPerSecond = 42 } = opts;
+  const { speedPxPerSecond = 42 } = opts;
 
   const [el, setEl] = useState<T | null>(null);
   const ref = useCallback((node: T | null) => setEl(node), []);
@@ -70,7 +70,7 @@ export function useAutoScroll<T extends HTMLElement>(
         n.remove(),
       );
     };
-  }, [el, resumeDelayMs, speedPxPerSecond]);
+  }, [el, speedPxPerSecond]);
 
   return ref;
 }
