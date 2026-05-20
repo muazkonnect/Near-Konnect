@@ -45,6 +45,10 @@ const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const WalletPage = lazy(() => import("./pages/wallet/WalletPage"));
+const BuySparksPage = lazy(() => import("./pages/wallet/BuySparksPage"));
+const PaymentCheckoutPage = lazy(() => import("./pages/wallet/PaymentCheckoutPage"));
+const PaymentStatusPage = lazy(() => import("./pages/wallet/PaymentStatusPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
