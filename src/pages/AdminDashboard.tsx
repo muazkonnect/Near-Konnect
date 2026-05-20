@@ -48,7 +48,7 @@ import { lazy, Suspense } from "react";
 const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));
 const AdminProfileTab = lazy(() => import("@/components/admin/AdminProfileTab"));
 const CategoriesManagementTab = lazy(() => import("@/components/admin/CategoriesManagementTab"));
-const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
+
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
