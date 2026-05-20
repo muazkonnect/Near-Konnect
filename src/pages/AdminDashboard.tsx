@@ -52,6 +52,7 @@ const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagement
 const AdminProfileTab = lazy(() => import("@/components/admin/AdminProfileTab"));
 const CategoriesManagementTab = lazy(() => import("@/components/admin/CategoriesManagementTab"));
 const AdsManagementTab = lazy(() => import("@/components/admin/AdsManagementTab"));
+const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
