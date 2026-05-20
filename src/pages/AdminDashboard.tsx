@@ -862,6 +862,13 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
+            {/* SPARKS & CAMPAIGNS */}
+            {tab === "sparks" && (
+              <Suspense fallback={<TabFallback />}>
+                <SparksAdminTab />
+              </Suspense>
+            )}
+
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
 
