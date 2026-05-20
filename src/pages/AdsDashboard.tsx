@@ -240,6 +240,7 @@ const CampaignWizard = ({
   defaultCenter: Coords | null;
   balance: number;
 }) => {
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
   const [adType, setAdType] = useState<"local" | "international">("local");
   const [radius, setRadius] = useState<number>(5);
