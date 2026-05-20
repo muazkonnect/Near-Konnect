@@ -281,6 +281,7 @@ const CampaignWizard = ({
   const [countryCode, setCountryCode] = useState("");
   const [stateCode, setStateCode] = useState("");
   const [cityName, setCityName] = useState("");
+  const [areaText, setAreaText] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -305,8 +306,38 @@ const CampaignWizard = ({
   useEffect(() => {
     if (!open) return;
     setStep(0); setAdType("local"); setRadius(5); setDuration(7);
-    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName("");
+    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName(""); setAreaText("");
   }, [open, defaultCenter]);
+
+  // Apply a Nominatim search result to the cascade + map
+  const applySearchResult = (r: NominatimResult) => {
+    const addr = r.address || {};
+    const iso = (addr.country_code || "").toUpperCase();
+    if (iso) {
+      const country = Country.getCountryByCode(iso);
+      if (country) {
+        setCountryCode(iso);
+        const stateNm = addr.state || addr.region || addr.province || "";
+        const st = State.getStatesOfCountry(iso).find(
+          (s) => s.name.toLowerCase() === stateNm.toLowerCase() || s.isoCode === stateNm,
+        );
+        if (st) {
+          setStateCode(st.isoCode);
+          const cityNm = addr.city || addr.town || addr.village || addr.county || "";
+          const c = City.getCitiesOfState(iso, st.isoCode).find(
+            (c) => c.name.toLowerCase() === cityNm.toLowerCase(),
+          );
+          setCityName(c?.name || cityNm || "");
+        } else {
+          setStateCode(""); setCityName("");
+        }
+      }
+    }
+    setAreaText(addr.suburb || addr.neighbourhood || addr.road || r.display_name.split(",")[0] || "");
+    const lat = Number(r.lat); const lng = Number(r.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) setCenter({ latitude: lat, longitude: lng });
+  };
+
 
   useEffect(() => {
     let cancelled = false;
