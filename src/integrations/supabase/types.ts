@@ -934,6 +934,119 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          admin_note: string
+          bonus_sparks: number
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          package_id: string | null
+          payment_method: string
+          price_amount: number
+          proof_url: string | null
+          reference: string
+          sparks_amount: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string
+          bonus_sparks?: number
+          created_at?: string
+          currency: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          package_id?: string | null
+          payment_method: string
+          price_amount: number
+          proof_url?: string | null
+          reference?: string
+          sparks_amount: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string
+          bonus_sparks?: number
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          package_id?: string | null
+          payment_method?: string
+          price_amount?: number
+          proof_url?: string | null
+          reference?: string
+          sparks_amount?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_requests_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "sparks_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_settings: {
+        Row: {
+          easypaisa_account_name: string | null
+          easypaisa_number: string | null
+          easypaisa_qr_url: string | null
+          id: number
+          instructions: string | null
+          jazzcash_account_name: string | null
+          jazzcash_number: string | null
+          jazzcash_qr_url: string | null
+          updated_at: string
+          updated_by: string | null
+          usdt_address: string | null
+          usdt_network: string | null
+          usdt_qr_url: string | null
+        }
+        Insert: {
+          easypaisa_account_name?: string | null
+          easypaisa_number?: string | null
+          easypaisa_qr_url?: string | null
+          id?: number
+          instructions?: string | null
+          jazzcash_account_name?: string | null
+          jazzcash_number?: string | null
+          jazzcash_qr_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          usdt_address?: string | null
+          usdt_network?: string | null
+          usdt_qr_url?: string | null
+        }
+        Update: {
+          easypaisa_account_name?: string | null
+          easypaisa_number?: string | null
+          easypaisa_qr_url?: string | null
+          id?: number
+          instructions?: string | null
+          jazzcash_account_name?: string | null
+          jazzcash_number?: string | null
+          jazzcash_qr_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          usdt_address?: string | null
+          usdt_network?: string | null
+          usdt_qr_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1185,6 +1298,45 @@ export type Database = {
           },
         ]
       }
+      sparks_packages: {
+        Row: {
+          bonus_sparks: number
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          price_pkr: number
+          price_usdt: number
+          sort_order: number
+          sparks: number
+          updated_at: string
+        }
+        Insert: {
+          bonus_sparks?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          price_pkr?: number
+          price_usdt?: number
+          sort_order?: number
+          sparks: number
+          updated_at?: string
+        }
+        Update: {
+          bonus_sparks?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_pkr?: number
+          price_usdt?: number
+          sort_order?: number
+          sparks?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sparks_transactions: {
         Row: {
           campaign_id: string | null
@@ -1193,8 +1345,11 @@ export type Database = {
           id: string
           notes: string | null
           owner_user_id: string
+          payment_method: string | null
+          payment_request_id: string | null
           reason: Database["public"]["Enums"]["sparks_reason"]
-          worker_id: string
+          status: string
+          worker_id: string | null
         }
         Insert: {
           campaign_id?: string | null
@@ -1203,8 +1358,11 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_user_id: string
+          payment_method?: string | null
+          payment_request_id?: string | null
           reason: Database["public"]["Enums"]["sparks_reason"]
-          worker_id: string
+          status?: string
+          worker_id?: string | null
         }
         Update: {
           campaign_id?: string | null
@@ -1213,8 +1371,11 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_user_id?: string
+          payment_method?: string | null
+          payment_request_id?: string | null
           reason?: Database["public"]["Enums"]["sparks_reason"]
-          worker_id?: string
+          status?: string
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -1229,21 +1390,30 @@ export type Database = {
       sparks_wallets: {
         Row: {
           balance: number
+          created_at: string
           owner_user_id: string
+          total_purchased: number
+          total_spent: number
           updated_at: string
-          worker_id: string
+          worker_id: string | null
         }
         Insert: {
           balance?: number
+          created_at?: string
           owner_user_id: string
+          total_purchased?: number
+          total_spent?: number
           updated_at?: string
-          worker_id: string
+          worker_id?: string | null
         }
         Update: {
           balance?: number
+          created_at?: string
           owner_user_id?: string
+          total_purchased?: number
+          total_spent?: number
           updated_at?: string
-          worker_id?: string
+          worker_id?: string | null
         }
         Relationships: []
       }
@@ -1618,9 +1788,31 @@ export type Database = {
             }
             Returns: string
           }
+      admin_credit_sparks: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_reason?: string
+          p_user: string
+        }
+        Returns: number
+      }
+      admin_debit_sparks: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_reason?: string
+          p_user: string
+        }
+        Returns: number
+      }
       admin_grant_sparks: {
         Args: { _amount: number; _notes?: string; _worker_id: string }
         Returns: number
+      }
+      approve_payment_request: {
+        Args: { p_id: string; p_note?: string }
+        Returns: string
       }
       calc_sparks_cost: {
         Args: {
@@ -1984,6 +2176,10 @@ export type Database = {
           read_ct: number
         }[]
       }
+      reject_payment_request: {
+        Args: { p_id: string; p_note?: string }
+        Returns: string
+      }
       set_campaign_status: {
         Args: {
           _campaign_id: string
@@ -1994,6 +2190,15 @@ export type Database = {
       set_worker_location: {
         Args: { lat: number; lng: number }
         Returns: undefined
+      }
+      spend_sparks: {
+        Args: {
+          p_amount: number
+          p_campaign_id?: string
+          p_notes?: string
+          p_reason?: string
+        }
+        Returns: number
       }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
@@ -2611,6 +2816,11 @@ export type Database = {
         | "campaign_spend"
         | "refund"
         | "admin_adjust"
+        | "purchase"
+        | "admin_added"
+        | "ad_spent"
+        | "bonus"
+        | "deduction"
     }
     CompositeTypes: {
       geometry_dump: {
@@ -2770,6 +2980,11 @@ export const Constants = {
         "campaign_spend",
         "refund",
         "admin_adjust",
+        "purchase",
+        "admin_added",
+        "ad_spent",
+        "bonus",
+        "deduction",
       ],
     },
   },
