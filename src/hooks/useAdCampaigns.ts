@@ -57,16 +57,35 @@ export function useCampaignAnalytics(campaignIds: string[]) {
   return useQuery({
     queryKey: ["campaign_analytics", campaignIds.sort().join(",")],
     queryFn: async () => {
-      if (!campaignIds.length) return { byId: {} as Record<string, { impressions: number; clicks: number }> };
+      const empty = {
+        byId: {} as Record<string, { impressions: number; clicks: number }>,
+        daily: [] as { date: string; impressions: number; clicks: number }[],
+      };
+      if (!campaignIds.length) return empty;
+      const since = new Date(Date.now() - 14 * 86400_000).toISOString();
       const [imp, clk] = await Promise.all([
-        (supabase as any).from("ad_impressions").select("campaign_id").in("campaign_id", campaignIds),
-        (supabase as any).from("ad_clicks").select("campaign_id").in("campaign_id", campaignIds),
+        (supabase as any).from("ad_impressions").select("campaign_id, created_at").in("campaign_id", campaignIds).gte("created_at", since),
+        (supabase as any).from("ad_clicks").select("campaign_id, created_at").in("campaign_id", campaignIds).gte("created_at", since),
       ]);
       const byId: Record<string, { impressions: number; clicks: number }> = {};
       campaignIds.forEach((id) => (byId[id] = { impressions: 0, clicks: 0 }));
-      (imp.data || []).forEach((r: any) => byId[r.campaign_id] && byId[r.campaign_id].impressions++);
-      (clk.data || []).forEach((r: any) => byId[r.campaign_id] && byId[r.campaign_id].clicks++);
-      return { byId };
+      const dayMap: Record<string, { impressions: number; clicks: number }> = {};
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400_000).toISOString().slice(0, 10);
+        dayMap[d] = { impressions: 0, clicks: 0 };
+      }
+      (imp.data || []).forEach((r: any) => {
+        if (byId[r.campaign_id]) byId[r.campaign_id].impressions++;
+        const d = r.created_at.slice(0, 10);
+        if (dayMap[d]) dayMap[d].impressions++;
+      });
+      (clk.data || []).forEach((r: any) => {
+        if (byId[r.campaign_id]) byId[r.campaign_id].clicks++;
+        const d = r.created_at.slice(0, 10);
+        if (dayMap[d]) dayMap[d].clicks++;
+      });
+      const daily = Object.entries(dayMap).map(([date, v]) => ({ date, ...v }));
+      return { byId, daily };
     },
     enabled: campaignIds.length > 0,
     staleTime: 60_000,
