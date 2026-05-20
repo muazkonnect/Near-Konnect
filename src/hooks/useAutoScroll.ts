@@ -68,11 +68,12 @@ export function useAutoScroll<T extends HTMLElement>(
       const delta = Math.min(now - last, 64);
       last = now;
 
-      if (Date.now() < pausedUntilRef.current) return;
-      const half = getHalfWidth();
-      if (half > 0 && el.scrollWidth > el.clientWidth) {
-        el.scrollLeft += (speedPxPerSecond * delta) / 1000;
-        if (el.scrollLeft >= half) el.scrollLeft -= half;
+      if (Date.now() >= pausedUntilRef.current) {
+        const half = getHalfWidth();
+        if (half > 0 && el.scrollWidth > el.clientWidth) {
+          el.scrollLeft += (speedPxPerSecond * delta) / 1000;
+          if (el.scrollLeft >= half) el.scrollLeft -= half;
+        }
       }
       frame = requestAnimationFrame(tick);
     };
