@@ -94,18 +94,11 @@ const Home = () => {
       .sort((a, b) => a.distance - b.distance);
   }, [workers, browsingCoords]);
 
-  const nearby3km = useMemo(
-    () => withDistance.filter((w) => w.distance <= 3).slice(0, 8),
-    [withDistance]
-  );
-  const top5km = useMemo(
-    () =>
-      withDistance
-        .filter((w) => w.distance <= 5 && w.distance > 3)
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 8),
-    [withDistance]
-  );
+  // Promoted (Sparks) campaigns: 5/10/15 KM + Top Rated
+  const promoted5 = usePromotedNearby(browsingCoords, 5);
+  const promoted10 = usePromotedNearby(browsingCoords, 10);
+  const promoted15 = usePromotedNearby(browsingCoords, 15);
+  const promotedTop = usePromotedTopRated(browsingCoords);
 
   // Blood donors — top 3 nearest verified donors
   const { data: donors = [] } = useQuery({
