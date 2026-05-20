@@ -277,11 +277,23 @@ const CampaignWizard = ({
   const [radius, setRadius] = useState<number>(5);
   const [duration, setDuration] = useState<number>(7);
   const [center, setCenter] = useState<Coords | null>(defaultCenter);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [area, setArea] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [cityName, setCityName] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
+
+  const countryName = useMemo(() => Country.getCountryByCode(countryCode)?.name || "", [countryCode]);
+  const stateName = useMemo(
+    () => (countryCode && stateCode ? State.getStateByCodeAndCountry(stateCode, countryCode)?.name || "" : ""),
+    [countryCode, stateCode]
+  );
+  const states = useMemo(() => (countryCode ? State.getStatesOfCountry(countryCode) : []), [countryCode]);
+  const cities = useMemo(
+    () => (countryCode && stateCode ? City.getCitiesOfState(countryCode, stateCode) : []),
+    [countryCode, stateCode]
+  );
+  const allCountries = useMemo(() => Country.getAllCountries(), []);
 
   const { data: workers = [] } = useWorkers();
   const previewWorker = useMemo(() => {
@@ -292,7 +304,7 @@ const CampaignWizard = ({
   useEffect(() => {
     if (!open) return;
     setStep(0); setAdType("local"); setRadius(5); setDuration(7);
-    setCenter(defaultCenter); setCountry(""); setCity(""); setArea("");
+    setCenter(defaultCenter); setCountryCode(""); setStateCode(""); setCityName("");
   }, [open, defaultCenter]);
 
   useEffect(() => {
