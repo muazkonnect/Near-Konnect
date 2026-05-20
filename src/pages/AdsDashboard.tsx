@@ -564,8 +564,8 @@ const CampaignWizard = ({
 
         <div className="flex items-center justify-between gap-2 pt-2">
           <Button variant="ghost" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>Back</Button>
-          {step < 3 ? (
-            <Button onClick={() => setStep((s) => s + 1)} disabled={step === 1 && !center}>Next</Button>
+          {step < 4 ? (
+            <Button onClick={() => setStep((s) => s + 1)} disabled={step === 2 && !center}>Next</Button>
           ) : (
             <Button onClick={launch} disabled={submitting || cost > balance} className="gap-2">
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Launch ({cost} Sparks)
