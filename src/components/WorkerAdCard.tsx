@@ -108,11 +108,12 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
 
             {/* Meta */}
             <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
-              <span className="inline-flex items-center gap-1 text-hero-foreground">
-                <MapPin className="h-3 w-3 text-primary" />
-                <span className="font-bold">{distLabel}</span>
-                <span className="text-hero-muted">away</span>
+              <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-primary ring-1 ring-primary/30">
+                <MapPin className="h-3.5 w-3.5" />
+                <span className="text-[13px] font-extrabold leading-none">{distLabel}</span>
+                <span className="text-[10px] font-semibold opacity-80">away</span>
               </span>
+
               {worker.experience > 0 && (
                 <span className="inline-flex items-center gap-1 text-hero-foreground">
                   <Briefcase className="h-3 w-3 text-primary" />
