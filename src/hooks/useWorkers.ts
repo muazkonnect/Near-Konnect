@@ -8,7 +8,7 @@ export function useWorkers() {
 
   // 1. Set up Realtime listener
   useEffect(() => {
-    const channelName = `workers-rt-global`;
+    const channelName = `workers-rt-${Math.random().toString(36).slice(2)}`;
     const channel = supabase.channel(channelName);
     
     channel.on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
