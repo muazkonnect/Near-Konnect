@@ -150,22 +150,11 @@ const Messages = () => {
   };
 
   return (
-    <AppLayout hideMobileHeader>
+    <AppLayout title="Messages" subtitle="Your conversations in one place.">
       <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-[#131313] text-[#e5e2e1]">
-        {/* TOP APP BAR */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#444748]/20 bg-[#131313]/80 px-6 backdrop-blur-md">
-          <img src={logoImg} alt="Near Konnect" className="h-8 object-contain invert" />
-          <button
-            onClick={() => navigate("/notifications")}
-            aria-label="Notifications"
-            className="rounded-full p-2 text-[#d9ff7a] hover:bg-[#2a2a2a]"
-          >
-            <Bell className="h-5 w-5" />
-          </button>
-        </header>
 
         <main className="mx-auto max-w-5xl px-6 pt-6 pb-32">
-          <h1 className="mb-6 text-2xl font-semibold tracking-tight">Inbox</h1>
+
 
           {/* SEARCH */}
           <section className="mb-8">
