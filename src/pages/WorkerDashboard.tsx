@@ -410,20 +410,32 @@ const WorkerDashboard = () => {
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Sparks Wallet</h2>
-                <div className="group flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition-all duration-300 hover:bg-primary-foreground/25 hover:ring-2 hover:ring-primary-foreground/40 hover:shadow-[0_0_20px_hsl(var(--primary-foreground)/0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50" tabIndex={0}>
+                <button
+                  onClick={() => navigate("/wallet")}
+                  className="group flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/15 ring-1 ring-primary-foreground/20 transition-all duration-300 hover:bg-primary-foreground/25 hover:ring-2 hover:ring-primary-foreground/40 hover:shadow-[0_0_20px_hsl(var(--primary-foreground)/0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50"
+                  aria-label="Open wallet"
+                >
                   <Zap className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 group-focus:scale-110" fill="currentColor" strokeWidth={1.5} />
-                </div>
+                </button>
               </div>
               <div className="mt-4">
-                <p className="text-3xl font-bold leading-none">2,450</p>
-                <p className="mt-1 text-sm opacity-80">Available Credits</p>
+                <p className="text-3xl font-bold leading-none tabular-nums">{(sparksBalance ?? 0).toLocaleString()}</p>
+                <p className="mt-1 text-sm opacity-80">Available Sparks</p>
               </div>
             </div>
-            <div className="relative mt-6 space-y-2">
-              <button className="w-full rounded-xl bg-primary-foreground py-3 text-sm font-bold text-primary transition hover:opacity-90">
-                Top Up Balance
+            <div className="relative mt-6 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => navigate("/wallet/buy")}
+                className="rounded-xl bg-primary-foreground py-3 text-sm font-bold text-primary transition hover:opacity-90"
+              >
+                Buy Sparks
               </button>
-              <p className="text-center text-[11px] font-semibold opacity-70">Next auto-recharge in 4 days</p>
+              <button
+                onClick={() => navigate("/wallet")}
+                className="rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary-foreground/20"
+              >
+                View Wallet
+              </button>
             </div>
           </div>
 
