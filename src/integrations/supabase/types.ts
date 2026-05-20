@@ -2065,23 +2065,46 @@ export type Database = {
           name: string
         }[]
       }
-      get_promoted_explore: {
-        Args: {
-          _exclude_campaign_ids?: string[]
-          _limit?: number
-          _offset?: number
-          _viewer_lat: number
-          _viewer_lng: number
-        }
-        Returns: {
-          campaign_id: string
-          distance_km: number
-          ends_at: string
-          priority: number
-          user_id: string
-          worker_id: string
-        }[]
-      }
+      get_promoted_explore:
+        | {
+            Args: {
+              _exclude_campaign_ids?: string[]
+              _limit?: number
+              _offset?: number
+              _viewer_lat: number
+              _viewer_lng: number
+            }
+            Returns: {
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
+        | {
+            Args: {
+              _exclude_campaign_ids?: string[]
+              _limit?: number
+              _main_category?: string
+              _offset?: number
+              _radius_km?: number
+              _search?: string
+              _sub_category?: string
+              _viewer_lat: number
+              _viewer_lng: number
+            }
+            Returns: {
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              match_score: number
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
       get_promoted_workers: {
         Args: {
           _limit?: number

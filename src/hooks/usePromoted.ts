@@ -85,10 +85,17 @@ export function usePromotedTopRated(coords: Coords | null) {
 
 const EXPLORE_PAGE_SIZE = 8;
 
-export function usePromotedExploreInfinite(coords: Coords | null) {
+export function usePromotedExploreInfinite(
+  coords: Coords | null,
+  opts?: { mainCategory?: string; subCategory?: string; search?: string; radiusKm?: number | null }
+) {
   const { data: workers = [] } = useWorkers();
+  const mainCategory = opts?.mainCategory || null;
+  const subCategory = opts?.subCategory || null;
+  const search = opts?.search?.trim() || null;
+  const radiusKm = opts?.radiusKm ?? null;
   const q = useInfiniteQuery({
-    queryKey: ["promoted_explore", coords?.latitude, coords?.longitude],
+    queryKey: ["promoted_explore", coords?.latitude, coords?.longitude, mainCategory, subCategory, search, radiusKm],
     enabled: !!coords,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
@@ -98,6 +105,10 @@ export function usePromotedExploreInfinite(coords: Coords | null) {
         _limit: EXPLORE_PAGE_SIZE,
         _offset: pageParam,
         _exclude_campaign_ids: [],
+        _main_category: mainCategory,
+        _sub_category: subCategory,
+        _search: search,
+        _radius_km: radiusKm,
       });
       if (error) throw error;
       return { rows: (data || []) as PromotedRow[], nextOffset: pageParam + EXPLORE_PAGE_SIZE };

@@ -95,7 +95,12 @@ const Discover = () => {
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
 
-  const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords);
+  const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords, {
+    mainCategory: selectedMainCategory,
+    subCategory: selectedSubCategory,
+    search,
+    radiusKm,
+  });
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!sentinelRef.current) return;
