@@ -390,11 +390,12 @@ const Home = () => {
               trackClassName="pl-5 pr-5"
               dwellMs={3000}
               items={top5km.map((w) => (
-                <div key={`t-${w.id}`} className="w-[280px]">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`t-${w.id}`}>
+                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
             />
+
           )}
         </motion.section>
 
