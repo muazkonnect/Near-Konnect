@@ -352,7 +352,7 @@ const CampaignWizard = ({
     setSubmitting(true);
     try {
       await createCampaign({
-        workerId, adType, durationDays: duration, radiusKm: radius,
+        workerId, adType, placementType: placement, durationDays: duration, radiusKm: radius,
         centerLat: center.latitude, centerLng: center.longitude,
         country: adType === "international" ? countryName || null : null,
         city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
