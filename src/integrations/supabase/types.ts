@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_campaigns: {
+        Row: {
+          ad_type: Database["public"]["Enums"]["ad_type"]
+          created_at: string
+          duration_days: number
+          ends_at: string
+          id: string
+          owner_user_id: string
+          priority: number
+          sparks_cost: number
+          starts_at: string
+          status: Database["public"]["Enums"]["ad_status"]
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          ad_type: Database["public"]["Enums"]["ad_type"]
+          created_at?: string
+          duration_days: number
+          ends_at: string
+          id?: string
+          owner_user_id: string
+          priority?: number
+          sparks_cost?: number
+          starts_at?: string
+          status?: Database["public"]["Enums"]["ad_status"]
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          ad_type?: Database["public"]["Enums"]["ad_type"]
+          created_at?: string
+          duration_days?: number
+          ends_at?: string
+          id?: string
+          owner_user_id?: string
+          priority?: number
+          sparks_cost?: number
+          starts_at?: string
+          status?: Database["public"]["Enums"]["ad_status"]
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
+      ad_clicks: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          placement: string | null
+          viewer_point: unknown
+          viewer_user_id: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          placement?: string | null
+          viewer_point?: unknown
+          viewer_user_id?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          placement?: string | null
+          viewer_point?: unknown
+          viewer_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_clicks_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ad_events: {
         Row: {
           ad_id: string
@@ -58,6 +138,82 @@ export type Database = {
           },
         ]
       }
+      ad_geo_targets: {
+        Row: {
+          area: string | null
+          campaign_id: string
+          center: unknown
+          city: string | null
+          country: string | null
+          created_at: string
+          radius_km: number
+        }
+        Insert: {
+          area?: string | null
+          campaign_id: string
+          center: unknown
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          radius_km: number
+        }
+        Update: {
+          area?: string | null
+          campaign_id?: string
+          center?: unknown
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          radius_km?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_geo_targets_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: true
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_impressions: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          hour_bucket: string
+          id: string
+          placement: string | null
+          viewer_point: unknown
+          viewer_user_id: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          hour_bucket?: string
+          id?: string
+          placement?: string | null
+          viewer_point?: unknown
+          viewer_user_id?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          hour_bucket?: string
+          id?: string
+          placement?: string | null
+          viewer_point?: unknown
+          viewer_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_impressions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ad_placement_settings: {
         Row: {
           config: Json
@@ -91,6 +247,27 @@ export type Database = {
           placement_key?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      ad_pricing_rules: {
+        Row: {
+          active: boolean
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          active?: boolean
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          active?: boolean
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
@@ -1008,6 +1185,68 @@ export type Database = {
           },
         ]
       }
+      sparks_transactions: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          delta: number
+          id: string
+          notes: string | null
+          owner_user_id: string
+          reason: Database["public"]["Enums"]["sparks_reason"]
+          worker_id: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          delta: number
+          id?: string
+          notes?: string | null
+          owner_user_id: string
+          reason: Database["public"]["Enums"]["sparks_reason"]
+          worker_id: string
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          delta?: number
+          id?: string
+          notes?: string | null
+          owner_user_id?: string
+          reason?: Database["public"]["Enums"]["sparks_reason"]
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sparks_transactions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sparks_wallets: {
+        Row: {
+          balance: number
+          owner_user_id: string
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          balance?: number
+          owner_user_id: string
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          balance?: number
+          owner_user_id?: string
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
       spatial_ref_sys: {
         Row: {
           auth_name: string | null
@@ -1260,6 +1499,16 @@ export type Database = {
         Args: { ""?: string; att_name: string; tbl: unknown }
         Returns: string
       }
+      _spend_sparks: {
+        Args: {
+          _amount: number
+          _campaign_id: string
+          _owner_user_id: string
+          _reason: Database["public"]["Enums"]["sparks_reason"]
+          _worker_id: string
+        }
+        Returns: undefined
+      }
       _st_3dintersects: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
@@ -1369,9 +1618,35 @@ export type Database = {
             }
             Returns: string
           }
+      admin_grant_sparks: {
+        Args: { _amount: number; _notes?: string; _worker_id: string }
+        Returns: number
+      }
+      calc_sparks_cost: {
+        Args: {
+          _ad_type: Database["public"]["Enums"]["ad_type"]
+          _duration_days: number
+          _radius_km: number
+        }
+        Returns: number
+      }
       can_view_contact: {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
+      }
+      create_ad_campaign: {
+        Args: {
+          _ad_type: Database["public"]["Enums"]["ad_type"]
+          _area?: string
+          _center_lat: number
+          _center_lng: number
+          _city?: string
+          _country?: string
+          _duration_days: number
+          _radius_km: number
+          _worker_id: string
+        }
+        Returns: string
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -1414,6 +1689,7 @@ export type Database = {
         Returns: number
       }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      expire_campaigns: { Args: never; Returns: number }
       generate_worker_uid: { Args: never; Returns: string }
       geometry: { Args: { "": string }; Returns: unknown }
       geometry_above: {
@@ -1578,6 +1854,22 @@ export type Database = {
           name: string
         }[]
       }
+      get_promoted_workers: {
+        Args: {
+          _limit?: number
+          _max_viewer_radius_km?: number
+          _viewer_lat: number
+          _viewer_lng: number
+        }
+        Returns: {
+          campaign_id: string
+          distance_km: number
+          ends_at: string
+          priority: number
+          user_id: string
+          worker_id: string
+        }[]
+      }
       get_service_analytics_summary: {
         Args: { _days?: number; _owner_user_id: string; _service_id: string }
         Returns: {
@@ -1586,6 +1878,18 @@ export type Database = {
           conversions: number
           messages_received: number
           profile_views: number
+        }[]
+      }
+      get_top_rated_promoted: {
+        Args: { _limit?: number; _viewer_lat: number; _viewer_lng: number }
+        Returns: {
+          avg_rating: number
+          campaign_id: string
+          distance_km: number
+          ends_at: string
+          priority: number
+          user_id: string
+          worker_id: string
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
@@ -1675,6 +1979,13 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      set_campaign_status: {
+        Args: {
+          _campaign_id: string
+          _status: Database["public"]["Enums"]["ad_status"]
+        }
+        Returns: undefined
       }
       set_worker_location: {
         Args: { lat: number; lng: number }
@@ -2274,6 +2585,8 @@ export type Database = {
       }
     }
     Enums: {
+      ad_status: "active" | "paused" | "expired" | "rejected"
+      ad_type: "local" | "international"
       analytics_event_type:
         | "profile_view"
         | "contact_click"
@@ -2289,6 +2602,11 @@ export type Database = {
       boost_status: "pending" | "active" | "expired" | "rejected"
       boost_type: "featured_listing" | "priority_ranking" | "urgent_boost"
       message_status: "sent" | "delivered" | "seen" | "failed"
+      sparks_reason:
+        | "admin_grant"
+        | "campaign_spend"
+        | "refund"
+        | "admin_adjust"
     }
     CompositeTypes: {
       geometry_dump: {
@@ -2424,6 +2742,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_status: ["active", "paused", "expired", "rejected"],
+      ad_type: ["local", "international"],
       analytics_event_type: [
         "profile_view",
         "contact_click",
@@ -2441,6 +2761,12 @@ export const Constants = {
       boost_status: ["pending", "active", "expired", "rejected"],
       boost_type: ["featured_listing", "priority_ranking", "urgent_boost"],
       message_status: ["sent", "delivered", "seen", "failed"],
+      sparks_reason: [
+        "admin_grant",
+        "campaign_spend",
+        "refund",
+        "admin_adjust",
+      ],
     },
   },
 } as const
