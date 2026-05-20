@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type AutoScrollOptions = {
   intervalMs?: number;
@@ -20,7 +20,6 @@ export function useAutoScroll<T extends HTMLElement>(
 
   const [el, setEl] = useState<T | null>(null);
   const ref = useCallback((node: T | null) => setEl(node), []);
-  const pausedUntilRef = useRef(0);
 
   useEffect(() => {
     if (!el) return;
@@ -40,19 +39,6 @@ export function useAutoScroll<T extends HTMLElement>(
     });
     clones.forEach((c) => el.appendChild(c));
 
-    const pauseFor = (ms: number) => {
-      pausedUntilRef.current = Date.now() + ms;
-    };
-    const onEnter = () => pauseFor(60_000);
-    const onLeave = () => pauseFor(resumeDelayMs);
-    const onTouchStart = () => pauseFor(60_000);
-    const onTouchEnd = () => pauseFor(resumeDelayMs);
-
-    el.addEventListener("mouseenter", onEnter);
-    el.addEventListener("mouseleave", onLeave);
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchend", onTouchEnd);
-
     const getHalfWidth = () => {
       // Width of one full set of originals = offsetLeft of first clone.
       const firstClone = el.querySelector<HTMLElement>(
@@ -68,12 +54,10 @@ export function useAutoScroll<T extends HTMLElement>(
       const delta = Math.min(now - last, 64);
       last = now;
 
-      if (Date.now() >= pausedUntilRef.current) {
-        const half = getHalfWidth();
-        if (half > 0 && el.scrollWidth > el.clientWidth) {
-          el.scrollLeft += (speedPxPerSecond * delta) / 1000;
-          if (el.scrollLeft >= half) el.scrollLeft -= half;
-        }
+      const half = getHalfWidth();
+      if (half > 0 && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft += (speedPxPerSecond * delta) / 1000;
+        if (el.scrollLeft >= half) el.scrollLeft -= half;
       }
       frame = requestAnimationFrame(tick);
     };
@@ -82,10 +66,6 @@ export function useAutoScroll<T extends HTMLElement>(
 
     return () => {
       cancelAnimationFrame(frame);
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchend", onTouchEnd);
       el.querySelectorAll('[data-autoscroll-clone="true"]').forEach((n) =>
         n.remove(),
       );
