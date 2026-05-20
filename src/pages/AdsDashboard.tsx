@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet, Search } from "lucide-react";
+import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Wallet, Search, Navigation, Check } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,8 +21,12 @@ import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
-const RADII = [5, 10, 15] as const;
+const RADII = [3, 5, 10] as const;
+const INT_RADII = [3, 5, 10, 25, 50] as const;
 const DURATIONS = [1, 7, 15, 30] as const;
+const AUDIENCE_PER_KM2 = 220; // rough est. of active local users per km²
+const estAudience = (r: number) => Math.round(Math.PI * r * r * AUDIENCE_PER_KM2);
+const fmtNum = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `${n}`);
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
@@ -394,7 +398,7 @@ const CampaignWizard = ({
     }
   };
 
-  const radiusOptions = adType === "local" ? RADII : ([10, 25, 50, 100, 250] as const);
+  const radiusOptions = adType === "local" ? RADII : INT_RADII;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -405,104 +409,104 @@ const CampaignWizard = ({
 
         {/* Step indicator */}
         <div className="flex items-center gap-1.5">
-          {["Type", "Target", "Duration", "Review"].map((label, i) => (
+          {["Where", "Reach", "Duration", "Review"].map((label, i) => (
             <div key={label} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} />
           ))}
         </div>
 
         {step === 0 && (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">What type of campaign?</p>
-            <div className="grid grid-cols-2 gap-3">
-              <TypeCard active={adType === "local"} icon={MapPin} title="Local" desc="Target your immediate vicinity (5/10/15 km)" onClick={() => setAdType("local")} />
-              <TypeCard active={adType === "international"} icon={Globe} title="International" desc="Country/city + custom radius" onClick={() => setAdType("international")} />
+          <div className="space-y-4">
+            <div>
+              <p className="text-base font-bold">Where do you want your ad to appear?</p>
+              <p className="text-xs text-muted-foreground">Pick a vibe — we'll handle the rest.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <TargetCard
+                active={adType === "local"}
+                icon={MapPin}
+                title="Nearby Customers"
+                desc="Show your ad around your current location"
+                badge="Recommended"
+                onClick={async () => {
+                  setAdType("local");
+                  if (!center) { try { setCenter(await getCurrentPosition()); } catch { /* user can pin manually */ } }
+                }}
+              />
+              <TargetCard
+                active={adType === "international"}
+                icon={Globe}
+                title="Target Another Area"
+                desc="Choose another city, country or region"
+                onClick={() => setAdType("international")}
+              />
             </div>
           </div>
         )}
 
         {step === 1 && (
           <div className="space-y-4">
-            {adType === "local" ? (
-              <>
-                <div>
-                  <Label>Center (your current GPS location)</Label>
-                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} radiusKm={radius} /></div>
-                  <Button type="button" variant="outline" size="sm" onClick={useMyLocation} className="mt-2 w-full">
-                    Use my current location
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <Label>Search anywhere in the world</Label>
-                  <div className="mt-2">
-                    <AddressSearch onSelect={applySearchResult} />
-                  </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Type any address, city, or landmark — we'll auto-fill the fields below and pin the map.
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <div>
-                    <Label>Country</Label>
-                    <Select value={countryCode} onValueChange={(v) => { setCountryCode(v); setStateCode(""); setCityName(""); }}>
-                      <SelectTrigger className="mt-2"><SelectValue placeholder="Select country" /></SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        {allCountries.map((c) => (
-                          <SelectItem key={c.isoCode} value={c.isoCode}>{c.flag} {c.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>State / Province</Label>
-                    <Select value={stateCode} onValueChange={(v) => { setStateCode(v); setCityName(""); }} disabled={!countryCode || states.length === 0}>
-                      <SelectTrigger className="mt-2"><SelectValue placeholder={!countryCode ? "Pick country first" : states.length === 0 ? "No regions" : "Select state/province"} /></SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        {states.map((s) => (
-                          <SelectItem key={s.isoCode} value={s.isoCode}>{s.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>City</Label>
-                    <Select value={cityName} onValueChange={setCityName} disabled={!stateCode || cities.length === 0}>
-                      <SelectTrigger className="mt-2"><SelectValue placeholder={!stateCode ? "Pick state first" : cities.length === 0 ? "No cities" : "Select city"} /></SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        {cities.map((c) => (
-                          <SelectItem key={`${c.name}-${c.latitude}-${c.longitude}`} value={c.name}>{c.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Area / Neighbourhood</Label>
-                    <Input className="mt-2" value={areaText} onChange={(e) => setAreaText(e.target.value)} placeholder="Optional area name" />
-                  </div>
-                </div>
-                <div>
-                  <Label>Pin center on map</Label>
-                  <div className="mt-2"><MapLocationPickerLazy value={center} onChange={setCenter} radiusKm={radius} /></div>
-                </div>
-              </>
+            {adType === "international" && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Search a place</p>
+                <AddressSearch onSelect={applySearchResult} />
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Try “Dubai Marina”, “Lahore DHA”, “Manhattan”…
+                </p>
+              </div>
+            )}
 
+            {adType === "local" && !center && (
+              <Button type="button" variant="outline" size="sm" onClick={useMyLocation} className="w-full gap-2">
+                <Navigation className="h-4 w-4" /> Use my current location
+              </Button>
             )}
 
             <div>
-              <Label>Radius</Label>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <p className="mb-2 text-sm font-semibold">How far should your ad reach?</p>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                 {radiusOptions.map((r) => (
-                  <button key={r} type="button" onClick={() => setRadius(r)}
-                    className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition ${radius === r ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>
-                    {r} km
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRadius(r)}
+                    className={`rounded-2xl border-2 px-3 py-3 text-center font-bold transition active:scale-95 ${
+                      radius === r
+                        ? "border-primary bg-primary/15 text-primary shadow-md shadow-primary/20"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="text-lg leading-none">{r}</div>
+                    <div className="mt-0.5 text-[10px] uppercase tracking-wider opacity-70">km</div>
                   </button>
                 ))}
               </div>
             </div>
+
+            <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+              <MapLocationPickerLazy value={center} onChange={setCenter} radiusKm={radius} />
+            </div>
+
+            <div className="rounded-2xl border bg-gradient-to-br from-primary/10 via-card to-card p-4">
+              <div className="flex items-center justify-between">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Selected</p>
+                  <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm font-bold">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    {adType === "local"
+                      ? center ? "Your current area" : "Detecting location…"
+                      : [areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "Search a place above"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Est. reach</p>
+                  <p className="text-lg font-extrabold text-primary">~{fmtNum(estAudience(radius))}</p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
+
+
 
         {step === 2 && (
           <div className="space-y-3">
@@ -572,14 +576,34 @@ const CampaignWizard = ({
   );
 };
 
-const TypeCard = ({ active, icon: Icon, title, desc, onClick }: any) => (
-  <button type="button" onClick={onClick}
-    className={`rounded-2xl border p-4 text-left transition ${active ? "border-primary bg-primary/10 shadow-md" : "hover:bg-muted"}`}>
-    <Icon className={`h-6 w-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
-    <p className="mt-2 text-sm font-bold">{title}</p>
-    <p className="text-xs text-muted-foreground">{desc}</p>
+const TargetCard = ({ active, icon: Icon, title, desc, badge, onClick }: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group relative overflow-hidden rounded-2xl border-2 p-5 text-left transition-all active:scale-[0.98] ${
+      active
+        ? "border-primary bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg shadow-primary/20"
+        : "border-border bg-card hover:border-primary/40 hover:shadow-md"
+    }`}
+  >
+    {badge && (
+      <span className="absolute right-3 top-3 rounded-full bg-primary/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+        {badge}
+      </span>
+    )}
+    <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${active ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
+      <Icon className="h-5 w-5" />
+    </div>
+    <p className="mt-3 text-base font-extrabold">{title}</p>
+    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{desc}</p>
+    {active && (
+      <span className="absolute bottom-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+        <Check className="h-3 w-3" />
+      </span>
+    )}
   </button>
 );
+
 
 interface NominatimResult {
   place_id: number;
