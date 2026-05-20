@@ -19,6 +19,7 @@ import CurrentLocationChip from "@/components/CurrentLocationChip";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExploreCard from "@/components/ExploreCard";
+import WorkerAdCard from "@/components/WorkerAdCard";
 import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -351,11 +352,12 @@ const Home = () => {
               trackClassName="pl-5 pr-5"
               dwellMs={2800}
               items={nearby3km.map((w) => (
-                <div key={`n-${w.id}`} className="w-[280px]">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`n-${w.id}`}>
+                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
             />
+
           )}
         </motion.section>
 
@@ -388,11 +390,12 @@ const Home = () => {
               trackClassName="pl-5 pr-5"
               dwellMs={3000}
               items={top5km.map((w) => (
-                <div key={`t-${w.id}`} className="w-[280px]">
-                  <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
+                <div key={`t-${w.id}`}>
+                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
             />
+
           )}
         </motion.section>
 
