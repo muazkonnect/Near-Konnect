@@ -86,6 +86,34 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
     }
   }, [value]);
 
+  // Sync radius circle
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (value && radiusKm && radiusKm > 0) {
+      const latlng: L.LatLngTuple = [value.latitude, value.longitude];
+      const radiusM = radiusKm * 1000;
+      if (circleRef.current) {
+        circleRef.current.setLatLng(latlng);
+        circleRef.current.setRadius(radiusM);
+      } else {
+        circleRef.current = L.circle(latlng, {
+          radius: radiusM,
+          color: "hsl(var(--primary))",
+          weight: 2,
+          fillColor: "hsl(var(--primary))",
+          fillOpacity: 0.15,
+        }).addTo(map);
+      }
+      map.fitBounds(circleRef.current.getBounds(), { padding: [20, 20], maxZoom: 15 });
+    } else if (circleRef.current) {
+      circleRef.current.remove();
+      circleRef.current = null;
+    }
+  }, [value, radiusKm]);
+
+
+
   const useCurrent = async () => {
     setLocating(true);
     try {
