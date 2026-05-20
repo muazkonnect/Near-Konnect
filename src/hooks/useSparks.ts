@@ -1,58 +1,58 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function useSparksWallet() {
-  const { data: worker } = useWorkerProfile();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-  const workerId = worker?.id;
+  const uid = user?.id;
 
   useEffect(() => {
-    if (!workerId) return;
+    if (!uid) return;
     const ch = supabase
-      .channel(`sparks-${workerId}`)
+      .channel(`sparks-${uid}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "sparks_wallets", filter: `worker_id=eq.${workerId}` },
-        () => queryClient.invalidateQueries({ queryKey: ["sparks_wallet", workerId] })
+        { event: "*", schema: "public", table: "sparks_wallets", filter: `owner_user_id=eq.${uid}` },
+        () => queryClient.invalidateQueries({ queryKey: ["sparks_wallet", uid] })
       )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [workerId, queryClient]);
+  }, [uid, queryClient]);
 
   return useQuery({
-    queryKey: ["sparks_wallet", workerId],
+    queryKey: ["sparks_wallet", uid],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("sparks_wallets")
         .select("balance, updated_at")
-        .eq("worker_id", workerId!)
+        .eq("owner_user_id", uid!)
         .maybeSingle();
       if (error) throw error;
       return (data?.balance ?? 0) as number;
     },
-    enabled: !!workerId,
+    enabled: !!uid,
     staleTime: 30_000,
   });
 }
 
 export function useSparksTransactions() {
-  const { data: worker } = useWorkerProfile();
-  const workerId = worker?.id;
+  const { user } = useAuth();
+  const uid = user?.id;
   return useQuery({
-    queryKey: ["sparks_tx", workerId],
+    queryKey: ["sparks_tx", uid],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("sparks_transactions")
         .select("id, delta, reason, notes, created_at, campaign_id")
-        .eq("worker_id", workerId!)
+        .eq("owner_user_id", uid!)
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
       return (data || []) as any[];
     },
-    enabled: !!workerId,
+    enabled: !!uid,
     staleTime: 60_000,
   });
 }
