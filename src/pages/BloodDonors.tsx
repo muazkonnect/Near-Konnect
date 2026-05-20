@@ -116,7 +116,7 @@ const BloodDonors = () => {
   }, [donors, search, selectedGroup, user?.id, userCoords]);
 
   return (
-    <AppLayout title="Blood Konnect" subtitle="Find and reach nearby blood donors.">
+    <AppLayout variant="blood" title="Blood Konnect" subtitle="Find and reach nearby blood donors.">
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
 
 
