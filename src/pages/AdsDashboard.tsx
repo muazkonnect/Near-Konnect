@@ -244,6 +244,7 @@ const CampaignWizard = ({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [placement, setPlacement] = useState<AdPlacement>("homepage");
   const [adType, setAdType] = useState<"local" | "international">("local");
   const [radius, setRadius] = useState<number>(5);
   const [duration, setDuration] = useState<number>(7);
