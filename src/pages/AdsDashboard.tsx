@@ -88,20 +88,21 @@ const AdsDashboard = () => {
     <AppLayout>
       <div className="admin-shell -mx-4 -mt-2 min-h-screen px-4 pt-2">
       <div className="mx-auto max-w-5xl space-y-6 pb-24 pt-2">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">Ads Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Promote your profile in the Top Rated, 5/10/15 KM sections.</p>
-          </div>
-          <Button onClick={() => setWizardOpen(true)} className="gap-2 rounded-full">
+        {/* Branded header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center gap-3 rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-card p-5 text-center shadow-sm sm:flex-row sm:justify-between sm:text-left"
+        >
+          <img src={logoImg} alt="Near Konnect" className="h-16 w-auto object-contain sm:h-20" />
+          <Button onClick={() => setWizardOpen(true)} className="gap-2 rounded-full shadow-md shadow-primary/20">
             <Plus className="h-4 w-4" /> New Campaign
           </Button>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatBox icon={Wallet} label="Sparks" value={balance.toString()} accent />
+          <StatBox icon={Sparkles} label="Available Sparks" value={balance.toString()} accent />
           <StatBox icon={Target} label="Active" value={totals.active.toString()} />
           <StatBox icon={BarChart3} label="Impressions" value={totals.imp.toString()} />
           <StatBox icon={Zap} label="CTR" value={`${totals.ctr}%`} />
@@ -111,97 +112,62 @@ const AdsDashboard = () => {
           <DailyChart daily={analytics.daily} />
         )}
 
-        <Tabs defaultValue="campaigns">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-            <TabsTrigger value="wallet">Sparks Wallet</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="campaigns" className="space-y-3">
-            {campaigns.length === 0 ? (
-              <EmptyState onCreate={() => setWizardOpen(true)} />
-            ) : (
-              campaigns.map((c) => {
-                const a = analytics?.byId[c.id] ?? { impressions: 0, clicks: 0 };
-                const ctr = a.impressions ? ((a.clicks / a.impressions) * 100).toFixed(1) : "0.0";
-                const target = c.ad_geo_targets?.[0];
-                return (
-                  <div key={c.id} className="rounded-2xl border bg-card p-4 shadow-sm">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${statusStyles[c.status]}`}>
-                            {c.status}
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                            {c.ad_type === "local" ? <MapPin className="h-3 w-3" /> : <Globe className="h-3 w-3" />}
-                            {c.ad_type}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{target?.radius_km ?? "—"} km radius</span>
-                        </div>
-                        <p className="mt-2 text-sm font-semibold">
-                          {c.duration_days} day{c.duration_days > 1 ? "s" : ""} · {formatDate(c.starts_at)} → {formatDate(c.ends_at)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">Spent {c.sparks_cost} Sparks</p>
+        <div className="space-y-3">
+          <h2 className="px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">Your Campaigns</h2>
+          {campaigns.length === 0 ? (
+            <EmptyState onCreate={() => setWizardOpen(true)} />
+          ) : (
+            campaigns.map((c) => {
+              const a = analytics?.byId[c.id] ?? { impressions: 0, clicks: 0 };
+              const ctr = a.impressions ? ((a.clicks / a.impressions) * 100).toFixed(1) : "0.0";
+              const target = c.ad_geo_targets?.[0];
+              return (
+                <div key={c.id} className="rounded-2xl border bg-card p-4 shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${statusStyles[c.status]}`}>
+                          {c.status}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                          {c.ad_type === "local" ? <MapPin className="h-3 w-3" /> : <Globe className="h-3 w-3" />}
+                          {c.ad_type}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{target?.radius_km ?? "—"} km radius</span>
                       </div>
-                      <div className="flex items-center gap-4 text-right">
-                        <div>
-                          <p className="text-lg font-bold leading-none">{a.impressions}</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Impr.</p>
-                        </div>
-                        <div>
-                          <p className="text-lg font-bold leading-none">{a.clicks}</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Clicks</p>
-                        </div>
-                        <div>
-                          <p className="text-lg font-bold leading-none">{ctr}%</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">CTR</p>
-                        </div>
-                        {c.status !== "expired" && (
-                          <Button size="sm" variant="outline" className="gap-1" onClick={() => togglePauseResume(c)}>
-                            {c.status === "active" ? <><Pause className="h-3.5 w-3.5" /> Pause</> : <><Play className="h-3.5 w-3.5" /> Resume</>}
-                          </Button>
-                        )}
+                      <p className="mt-2 text-sm font-semibold">
+                        {c.duration_days} day{c.duration_days > 1 ? "s" : ""} · {formatDate(c.starts_at)} → {formatDate(c.ends_at)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Spent {c.sparks_cost} Sparks</p>
+                    </div>
+                    <div className="flex items-center gap-4 text-right">
+                      <div>
+                        <p className="text-lg font-bold leading-none">{a.impressions}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Impr.</p>
                       </div>
+                      <div>
+                        <p className="text-lg font-bold leading-none">{a.clicks}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Clicks</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold leading-none">{ctr}%</p>
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">CTR</p>
+                      </div>
+                      {c.status !== "expired" && (
+                        <Button size="sm" variant="outline" className="gap-1" onClick={() => togglePauseResume(c)}>
+                          {c.status === "active" ? <><Pause className="h-3.5 w-3.5" /> Pause</> : <><Play className="h-3.5 w-3.5" /> Resume</>}
+                        </Button>
+                      )}
                     </div>
                   </div>
-                );
-              })
-            )}
-          </TabsContent>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+      </div>
 
-          <TabsContent value="wallet" className="space-y-3">
-            <div className="rounded-2xl border bg-gradient-to-br from-primary/15 to-primary/5 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Current balance</p>
-              <p className="mt-1 flex items-center gap-2 text-3xl font-extrabold text-primary">
-                <Sparkles className="h-6 w-6" /> {balance}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">Contact an admin to top up your Sparks.</p>
-            </div>
-            <div className="rounded-2xl border bg-card">
-              <p className="border-b px-4 py-3 text-sm font-semibold">Recent transactions</p>
-              {txs.length === 0 ? (
-                <p className="p-4 text-sm text-muted-foreground">No transactions yet.</p>
-              ) : (
-                <ul className="divide-y">
-                  {txs.map((t) => (
-                    <li key={t.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                      <div>
-                        <p className="font-semibold capitalize">{t.reason.replace("_", " ")}</p>
-                        <p className="text-[11px] text-muted-foreground">{new Date(t.created_at).toLocaleString()}</p>
-                      </div>
-                      <span className={`font-extrabold ${t.delta > 0 ? "text-primary" : "text-destructive"}`}>
-                        {t.delta > 0 ? "+" : ""}{t.delta}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-      </div>
 
       <CampaignWizard
         open={wizardOpen}
