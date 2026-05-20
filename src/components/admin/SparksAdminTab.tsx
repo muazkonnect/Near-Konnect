@@ -579,3 +579,4 @@ const SparksAdminTab = () => (
 );
 
 export default SparksAdminTab;
+export { CampaignsPanel };
