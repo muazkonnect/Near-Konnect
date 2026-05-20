@@ -4,19 +4,19 @@ export type AutoScrollOptions = {
   intervalMs?: number;
   resumeDelayMs?: number;
   stepPx?: number;
+  speedPxPerSecond?: number;
 };
 
 /**
  * Infinite auto-scrolling horizontal carousel.
- * Clones children once so scrolling loops seamlessly.
- * Pauses briefly on hover/touch, then resumes.
+ * Clones children once so scrolling loops seamlessly and keeps moving like an ad strip.
  */
 export function useAutoScroll<T extends HTMLElement>(
   options: AutoScrollOptions | number = {},
 ) {
   const opts: AutoScrollOptions =
     typeof options === "number" ? { intervalMs: options } : options;
-  const { intervalMs = 2800, resumeDelayMs = 1500, stepPx } = opts;
+  const { resumeDelayMs = 1500, speedPxPerSecond = 42 } = opts;
 
   const [el, setEl] = useState<T | null>(null);
   const ref = useCallback((node: T | null) => setEl(node), []);
@@ -26,8 +26,12 @@ export function useAutoScroll<T extends HTMLElement>(
     if (!el) return;
 
     // Clone children once for infinite loop. Re-clone if real children change.
-    const originals = Array.from(el.children) as HTMLElement[];
+    const originals = Array.from(el.children).filter(
+      (child) => !(child as HTMLElement).dataset.autoscrollClone,
+    ) as HTMLElement[];
     if (originals.length === 0) return;
+    el.querySelectorAll('[data-autoscroll-clone="true"]').forEach((n) => n.remove());
+
     const clones = originals.map((c) => {
       const clone = c.cloneNode(true) as HTMLElement;
       clone.setAttribute("data-autoscroll-clone", "true");
@@ -49,14 +53,6 @@ export function useAutoScroll<T extends HTMLElement>(
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchend", onTouchEnd);
 
-    const getStep = () => {
-      if (stepPx) return stepPx;
-      const first = el.firstElementChild as HTMLElement | null;
-      const second = first?.nextElementSibling as HTMLElement | null;
-      if (first && second) return second.offsetLeft - first.offsetLeft;
-      return first?.offsetWidth ?? el.clientWidth;
-    };
-
     const getHalfWidth = () => {
       // Width of one full set of originals = offsetLeft of first clone.
       const firstClone = el.querySelector<HTMLElement>(
@@ -65,22 +61,26 @@ export function useAutoScroll<T extends HTMLElement>(
       return firstClone ? firstClone.offsetLeft : el.scrollWidth / 2;
     };
 
-    const id = window.setInterval(() => {
+    let frame = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const delta = Math.min(now - last, 64);
+      last = now;
+
       if (Date.now() < pausedUntilRef.current) return;
-      const step = getStep();
-      if (step <= 0) return;
       const half = getHalfWidth();
-      let next = el.scrollLeft + step;
-      if (next >= half) {
-        // Instant rewind by one set, then smooth-scroll the remainder.
-        el.scrollLeft = el.scrollLeft - half;
-        next = el.scrollLeft + step;
+      if (half > 0 && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft += (speedPxPerSecond * delta) / 1000;
+        if (el.scrollLeft >= half) el.scrollLeft -= half;
       }
-      el.scrollTo({ left: next, behavior: "smooth" });
-    }, intervalMs);
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
 
     return () => {
-      window.clearInterval(id);
+      cancelAnimationFrame(frame);
       el.removeEventListener("mouseenter", onEnter);
       el.removeEventListener("mouseleave", onLeave);
       el.removeEventListener("touchstart", onTouchStart);
@@ -89,7 +89,7 @@ export function useAutoScroll<T extends HTMLElement>(
         n.remove(),
       );
     };
-  }, [el, intervalMs, resumeDelayMs, stepPx]);
+  }, [el, resumeDelayMs, speedPxPerSecond]);
 
   return ref;
 }
