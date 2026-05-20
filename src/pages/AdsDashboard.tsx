@@ -18,7 +18,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
-import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign } from "@/hooks/useAdCampaigns";
+import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign, type AdPlacement } from "@/hooks/useAdCampaigns";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
