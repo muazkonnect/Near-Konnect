@@ -106,6 +106,7 @@ export async function setCampaignStatus(campaignId: string, status: "active" | "
 export async function createCampaign(params: {
   workerId: string;
   adType: "local" | "international";
+  placementType: AdPlacement;
   durationDays: number;
   radiusKm: number;
   centerLat: number;
@@ -124,6 +125,7 @@ export async function createCampaign(params: {
     _country: params.country ?? null,
     _city: params.city ?? null,
     _area: params.area ?? null,
+    _placement_type: params.placementType,
   });
   if (error) throw error;
   return data as string;
