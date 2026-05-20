@@ -31,7 +31,6 @@ import NativeAdCard from "@/components/NativeAdCard";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
-import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -58,10 +57,6 @@ const Home = () => {
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
-  const donorsSliderRef = useAutoScroll<HTMLDivElement>({ intervalMs: 2600, resumeDelayMs: 1200 });
-  const nearby3kmRef = useAutoScroll<HTMLDivElement>({ intervalMs: 3000, resumeDelayMs: 1500 });
-  const top5kmRef = useAutoScroll<HTMLDivElement>({ intervalMs: 3400, resumeDelayMs: 1500 });
-
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
@@ -187,7 +182,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
+          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
         </div>
 
         {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
@@ -277,13 +272,14 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/blood-donors")}>Become a Donor</Button>
             </div>
           ) : (
-            <div ref={donorsSliderRef} className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {donors.map((d, i) => {
+            <div className="overflow-hidden pb-3">
+              <div className="flex w-max gap-4 px-5 animate-[auto-carousel_18s_linear_infinite]">
+              {[...donors, ...donors].map((d, i) => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
                 return (
                   <motion.div
-                    key={d.user_id}
+                    key={`${d.user_id}-${i}`}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
@@ -317,6 +313,7 @@ const Home = () => {
                   </motion.div>
                 );
               })}
+              </div>
             </div>
           )}
         </motion.section>
@@ -349,12 +346,14 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
             </div>
           ) : (
-            <div ref={nearby3kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {nearby3km.map((w, i) => (
-                <div key={`n-${w.id}`} className="w-[280px] shrink-0">
+            <div className="overflow-hidden pb-3">
+              <div className="flex w-max gap-3 px-5 animate-[auto-carousel_22s_linear_infinite]">
+              {[...nearby3km, ...nearby3km].map((w, i) => (
+                <div key={`n-${w.id}-${i}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
+              </div>
             </div>
           )}
         </motion.section>
@@ -383,12 +382,14 @@ const Home = () => {
               No top-rated providers in your 5 KM radius yet.
             </div>
           ) : (
-            <div ref={top5kmRef} className="flex gap-3 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {top5km.map((w, i) => (
-                <div key={`t-${w.id}`} className="w-[280px] shrink-0">
+            <div className="overflow-hidden pb-3">
+              <div className="flex w-max gap-3 px-5 animate-[auto-carousel_24s_linear_infinite]">
+              {[...top5km, ...top5km].map((w, i) => (
+                <div key={`t-${w.id}-${i}`} className="w-[280px] shrink-0">
                   <ExploreCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
                 </div>
               ))}
+              </div>
             </div>
           )}
         </motion.section>
