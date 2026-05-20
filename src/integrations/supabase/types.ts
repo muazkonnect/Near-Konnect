@@ -22,6 +22,7 @@ export type Database = {
           ends_at: string
           id: string
           owner_user_id: string
+          placement_type: Database["public"]["Enums"]["ad_placement"]
           priority: number
           sparks_cost: number
           starts_at: string
@@ -36,6 +37,7 @@ export type Database = {
           ends_at: string
           id?: string
           owner_user_id: string
+          placement_type?: Database["public"]["Enums"]["ad_placement"]
           priority?: number
           sparks_cost?: number
           starts_at?: string
@@ -50,6 +52,7 @@ export type Database = {
           ends_at?: string
           id?: string
           owner_user_id?: string
+          placement_type?: Database["public"]["Enums"]["ad_placement"]
           priority?: number
           sparks_cost?: number
           starts_at?: string
@@ -1826,20 +1829,36 @@ export type Database = {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
       }
-      create_ad_campaign: {
-        Args: {
-          _ad_type: Database["public"]["Enums"]["ad_type"]
-          _area?: string
-          _center_lat: number
-          _center_lng: number
-          _city?: string
-          _country?: string
-          _duration_days: number
-          _radius_km: number
-          _worker_id: string
-        }
-        Returns: string
-      }
+      create_ad_campaign:
+        | {
+            Args: {
+              _ad_type: Database["public"]["Enums"]["ad_type"]
+              _area?: string
+              _center_lat: number
+              _center_lng: number
+              _city?: string
+              _country?: string
+              _duration_days: number
+              _radius_km: number
+              _worker_id: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _ad_type: Database["public"]["Enums"]["ad_type"]
+              _area?: string
+              _center_lat: number
+              _center_lng: number
+              _city?: string
+              _country?: string
+              _duration_days: number
+              _placement_type?: Database["public"]["Enums"]["ad_placement"]
+              _radius_km: number
+              _worker_id: string
+            }
+            Returns: string
+          }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -2046,10 +2065,11 @@ export type Database = {
           name: string
         }[]
       }
-      get_promoted_workers: {
+      get_promoted_explore: {
         Args: {
+          _exclude_campaign_ids?: string[]
           _limit?: number
-          _max_viewer_radius_km?: number
+          _offset?: number
           _viewer_lat: number
           _viewer_lng: number
         }
@@ -2062,6 +2082,40 @@ export type Database = {
           worker_id: string
         }[]
       }
+      get_promoted_workers:
+        | {
+            Args: {
+              _limit?: number
+              _max_viewer_radius_km?: number
+              _viewer_lat: number
+              _viewer_lng: number
+            }
+            Returns: {
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
+        | {
+            Args: {
+              _limit?: number
+              _max_viewer_radius_km?: number
+              _placement?: Database["public"]["Enums"]["ad_placement"]
+              _viewer_lat: number
+              _viewer_lng: number
+            }
+            Returns: {
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
       get_service_analytics_summary: {
         Args: { _days?: number; _owner_user_id: string; _service_id: string }
         Returns: {
@@ -2072,18 +2126,36 @@ export type Database = {
           profile_views: number
         }[]
       }
-      get_top_rated_promoted: {
-        Args: { _limit?: number; _viewer_lat: number; _viewer_lng: number }
-        Returns: {
-          avg_rating: number
-          campaign_id: string
-          distance_km: number
-          ends_at: string
-          priority: number
-          user_id: string
-          worker_id: string
-        }[]
-      }
+      get_top_rated_promoted:
+        | {
+            Args: { _limit?: number; _viewer_lat: number; _viewer_lng: number }
+            Returns: {
+              avg_rating: number
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
+        | {
+            Args: {
+              _limit?: number
+              _placement?: Database["public"]["Enums"]["ad_placement"]
+              _viewer_lat: number
+              _viewer_lng: number
+            }
+            Returns: {
+              avg_rating: number
+              campaign_id: string
+              distance_km: number
+              ends_at: string
+              priority: number
+              user_id: string
+              worker_id: string
+            }[]
+          }
       gettransactionid: { Args: never; Returns: unknown }
       grant_sparks: {
         Args: { _amount: number; _notes?: string; _worker_id: string }
@@ -2794,6 +2866,7 @@ export type Database = {
       }
     }
     Enums: {
+      ad_placement: "homepage" | "explore"
       ad_status: "active" | "paused" | "expired" | "rejected"
       ad_type: "local" | "international"
       analytics_event_type:
@@ -2956,6 +3029,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_placement: ["homepage", "explore"],
       ad_status: ["active", "paused", "expired", "rejected"],
       ad_type: ["local", "international"],
       analytics_event_type: [
