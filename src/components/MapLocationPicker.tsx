@@ -18,7 +18,9 @@ const markerIcon = L.icon({
 interface MapLocationPickerProps {
   value: Coords | null;
   onChange: (coords: Coords) => void;
+  radiusKm?: number;
 }
+
 
 const DEFAULT_CENTER: Coords = { latitude: 24.8607, longitude: 67.0011 };
 
