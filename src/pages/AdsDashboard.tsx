@@ -576,14 +576,34 @@ const CampaignWizard = ({
   );
 };
 
-const TypeCard = ({ active, icon: Icon, title, desc, onClick }: any) => (
-  <button type="button" onClick={onClick}
-    className={`rounded-2xl border p-4 text-left transition ${active ? "border-primary bg-primary/10 shadow-md" : "hover:bg-muted"}`}>
-    <Icon className={`h-6 w-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
-    <p className="mt-2 text-sm font-bold">{title}</p>
-    <p className="text-xs text-muted-foreground">{desc}</p>
+const TargetCard = ({ active, icon: Icon, title, desc, badge, onClick }: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group relative overflow-hidden rounded-2xl border-2 p-5 text-left transition-all active:scale-[0.98] ${
+      active
+        ? "border-primary bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg shadow-primary/20"
+        : "border-border bg-card hover:border-primary/40 hover:shadow-md"
+    }`}
+  >
+    {badge && (
+      <span className="absolute right-3 top-3 rounded-full bg-primary/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+        {badge}
+      </span>
+    )}
+    <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${active ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
+      <Icon className="h-5 w-5" />
+    </div>
+    <p className="mt-3 text-base font-extrabold">{title}</p>
+    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{desc}</p>
+    {active && (
+      <span className="absolute bottom-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+        <Check className="h-3 w-3" />
+      </span>
+    )}
   </button>
 );
+
 
 interface NominatimResult {
   place_id: number;
