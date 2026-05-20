@@ -1,105 +1,118 @@
+## Sparks Wallet System — Implementation Plan
 
-# Geo-Targeted Ads System (Sparks)
+A full wallet, transactions, buy flow, payment-method routing (Pakistan vs international), admin approval, and admin manual controls. Built on the existing `sparks_wallets` / `sparks_transactions` tables, extending with the missing pieces.
 
-Built into the existing Vite/React + Supabase app. PostGIS-backed geo-fencing. Admin-granted Sparks. Auto-launch on campaign create.
+---
 
-## 1. Where ads appear
+### 1. Database (migration)
 
-Three homepage sections become **ad-only**:
-- **Top Rated Providers** — promoted workers, sorted by rating then priority
-- **5 KM** — promoted workers whose campaign geo-fence contains the viewer
-- **10 KM** — same, with 10 km radius targeting
-- **15 KM** — same, with 15 km radius targeting
+Extend / add tables. All with RLS.
 
-Normal worker cards are removed from these ad carousels. They keep showing in the rest of Home/Discover. Promoted cards reuse the existing `WorkerAdCard` look with a "Promoted" ribbon.
+- `sparks_wallets` (exists) — add columns: `total_purchased int default 0`, `total_spent int default 0`. Add unique index on `owner_user_id`. Auto-create on signup via trigger on `auth.users`.
+- `sparks_transactions` (exists) — extend enum `reason` to include: `purchase`, `admin_added`, `ad_spent`, `refund`, `bonus`, `deduction`. Add `status text default 'completed'`, `payment_method text`, `payment_request_id uuid`. Insert via SECURITY DEFINER functions only.
+- **NEW** `payment_requests` — `id`, `user_id`, `package_id`, `sparks_amount int`, `price_amount numeric`, `currency text`, `payment_method text` (easypaisa/jazzcash/usdt), `reference text` (txn id / hash), `proof_url text`, `status text` (pending/approved/rejected), `admin_note text`, `decided_by`, `decided_at`, `created_at`.
+- **NEW** `sparks_packages` — `id`, `name`, `sparks int`, `price_pkr numeric`, `price_usdt numeric`, `is_active bool`, `sort_order`, `bonus_sparks int default 0`.
+- **NEW** `payment_settings` — single-row config: `easypaisa_number`, `easypaisa_account_name`, `jazzcash_number`, `jazzcash_account_name`, `usdt_address`, `usdt_network`, `usdt_qr_url`, `easypaisa_qr_url`, `jazzcash_qr_url`, `updated_by`, `updated_at`.
+- **NEW** storage bucket `payment-proofs` (private). RLS: user uploads own, admin reads all.
 
-## 2. Database (PostGIS)
+**SECURITY DEFINER RPCs** (the only way to mutate wallet balance):
+- `spend_sparks(p_amount int, p_reason text, p_notes text, p_campaign_id uuid)` — deducts from caller, inserts transaction, returns new balance. Errors if insufficient.
+- `admin_credit_sparks(p_user uuid, p_amount int, p_reason text, p_notes text)` — admin only.
+- `admin_debit_sparks(p_user uuid, p_amount int, p_reason text, p_notes text)` — admin only.
+- `approve_payment_request(p_id uuid, p_note text)` — admin only; credits sparks, updates request, logs transaction with `payment_request_id`.
+- `reject_payment_request(p_id uuid, p_note text)` — admin only.
+- Trigger `on_auth_user_created_wallet` ensures a wallet row exists.
 
-Enable `postgis`. New tables:
+RLS summary:
+- `sparks_wallets`: select own + admin. No direct insert/update from clients.
+- `sparks_transactions`: select own + admin. No client insert.
+- `payment_requests`: user select/insert own (status='pending'); admin all.
+- `sparks_packages`, `payment_settings`: public select (active/single); admin manage.
 
-- `ad_campaigns` — `id, worker_id, ad_type ('local'|'international'), status ('active'|'paused'|'expired'|'rejected'), duration_days, starts_at, ends_at, sparks_cost, priority, created_at`
-- `ad_geo_targets` — `id, campaign_id, center geography(Point,4326), radius_km, country, city, area` (1:1 with campaign; `geography` enables `ST_DWithin` in meters)
-- `ad_impressions` — `id, campaign_id, viewer_user_id, viewer_point geography, placement, created_at`
-- `ad_clicks` — same shape as impressions
-- `sparks_wallets` — `worker_id PK, balance int, updated_at`
-- `sparks_transactions` — `id, worker_id, delta, reason ('admin_grant'|'campaign_spend'|'refund'), campaign_id, created_at`
-- `ad_pricing_rules` — `id, key, value jsonb, active`
+---
 
-Radius options for Local ads: **5 / 10 / 15 km**.
+### 2. Frontend architecture
 
-Indexes: GIST on `ad_geo_targets.center`, btree on `(status, ends_at)`, `(campaign_id, created_at)`.
+```
+src/
+  contexts/WalletContext.tsx        # global balance + realtime subscription
+  hooks/
+    useWallet.ts                    # balance, totals, history, refresh
+    usePaymentSettings.ts
+    useSparksPackages.ts
+  services/walletService.ts         # all supabase calls (spend, buy, fetch)
+  components/wallet/
+    SparksBalanceChip.tsx           # navbar/header pill
+    SparksBalanceCard.tsx           # dashboard hero card
+    PackageCard.tsx
+    PaymentMethodSelector.tsx       # routes by country
+    EasypaisaJazzcashForm.tsx
+    UsdtPaymentForm.tsx
+    ProofUploader.tsx
+    TransactionRow.tsx
+    TransactionsTable.tsx
+  pages/wallet/
+    WalletPage.tsx                  # /wallet — balance + history
+    BuySparksPage.tsx               # /wallet/buy
+    PaymentCheckoutPage.tsx         # /wallet/buy/:packageId/checkout
+    PaymentStatusPage.tsx           # /wallet/payment/:id
+  components/admin/
+    SparksAdminTab.tsx              # extend existing
+      - PendingPaymentsPanel
+      - ManualSparksPanel
+      - PaymentSettingsPanel
+      - PackagesPanel
+      - AllTransactionsPanel
+```
 
-RPC functions:
-- `get_promoted_workers(viewer_lat, viewer_lng, radius_km, limit)` — joins active campaigns + geo targets, filters with `ST_DWithin(center, viewer, radius_m)` AND `radius_km >= distance`, orders by rating/priority/distance.
-- `get_top_rated_promoted(viewer_lat, viewer_lng, limit)` — same but no radius filter on viewer side; still must include viewer in each campaign's own fence.
-- `calc_sparks_cost(ad_type, radius_km, duration_days, scope jsonb)` — reads `ad_pricing_rules`, returns int. Initial formula stub: `base * radius_factor * duration_factor * type_factor`; admin-tunable.
-- `spend_sparks(worker_id, amount, campaign_id)` — atomic balance check + debit + transaction row.
-- `expire_campaigns()` — cron-run; flips `status` to `expired` where `ends_at < now()`.
+- Country detection: reuse existing geolocation/profile city, plus a `country` field on profile if available; otherwise fall back to a simple selector at checkout (default Pakistan if city matches PK list, else international). Keep a single util `getUserPaymentRegion()`.
+- Routes added to `App.tsx`. Lazy-loaded with `React.lazy`. Wallet routes protected via existing `ProtectedRoute`. Admin panels gated by `useUserRole`.
+- `WalletContext` exposes `{ balance, totalPurchased, totalSpent, refresh, spend }` and subscribes to `sparks_wallets` realtime changes.
+- `SparksBalanceChip` rendered in `AppLayout` header (next to NotificationBell) and in Ads Dashboard / Worker Dashboard.
 
-## 3. RLS
+---
 
-- `ad_campaigns`: worker owns own; admin all; public reads only active+in-window via security-definer RPCs.
-- `ad_geo_targets`: gated via campaign ownership.
-- `ad_impressions`/`ad_clicks`: anyone INSERT (validated); owner/admin SELECT.
-- `sparks_wallets`/`sparks_transactions`: owner + admin SELECT; mutations only via security-definer RPCs.
-- `ad_pricing_rules`: public SELECT (for preview), admin write.
+### 3. Buy Sparks flow
 
-Anti-spoofing: distance recomputed server-side in RPC from passed viewer coords; impressions store the point for audit. Rate-limit impressions per `(campaign_id, viewer_user_id, hour)` via partial unique index.
+1. `/wallet/buy` — grid of `PackageCard`s + "Custom amount" card.
+2. Selecting a package → `/wallet/buy/:id/checkout`.
+3. `PaymentMethodSelector` shows:
+   - PK users: Easypaisa, JazzCash tabs — show account number/name + QR (from `payment_settings`), reference input, proof upload.
+   - International: USDT tab — show address + QR + network, txn hash input, proof upload.
+4. Submit → insert `payment_requests` (status `pending`) + upload proof to `payment-proofs/{user}/{uuid}`.
+5. Redirect to `/wallet/payment/:id` showing pending state. Polls/realtime updates.
 
-## 4. Worker Ads Dashboard
+---
 
-New route `/worker/ads` (worker role only):
+### 4. Admin
 
-1. **Campaigns** — list with status pills, pause/resume, end date, spent Sparks, impressions/clicks/CTR.
-2. **Create Campaign** wizard:
-   - Step 1: Ad Type (Local / International)
-   - Step 2 (Local): live GPS center + radius chips **5 / 10 / 15 km** on a Leaflet map with circle overlay
-   - Step 2 (Intl): Country → City → Area + radius, map preview
-   - Step 3: Duration chips (1 / 7 / 15 / 30 days)
-   - Step 4: Live Sparks cost (`calc_sparks_cost` on each change) + wallet balance check
-   - Step 5: Live `WorkerAdCard` preview with "Promoted" ribbon
-   - Launch → `spend_sparks` + insert campaign + geo target in one RPC, status `active`
-3. **Analytics** — impressions, clicks, CTR, reach, per-campaign + per-day chart (Recharts), remaining Sparks.
+Extend `SparksAdminTab.tsx`:
+- **Pending Payments**: list with proof preview, approve (calls `approve_payment_request`) / reject with note.
+- **Manual Sparks**: search user → credit / debit with reason. Calls admin RPCs.
+- **Packages**: CRUD on `sparks_packages`.
+- **Payment Settings**: edit Easypaisa, JazzCash, USDT details + upload QR images.
+- **All Transactions**: filterable table.
 
-Pause/Resume toggles `status`. Expired campaigns read-only.
+---
 
-## 5. Homepage integration
+### 5. Spending integration
 
-`useWorkers` stays for non-ad sections. New hooks:
-- `usePromotedNearby(radiusKm)` → `get_promoted_workers` with `useRealtimeLocation` coords.
-- `usePromotedTopRated()` → `get_top_rated_promoted`.
+Replace any existing direct balance writes in the Ads flow with `walletService.spend(amount, 'ad_spent', notes, campaignId)` calling `spend_sparks` RPC. Insufficient balance triggers a "Top up Sparks" CTA → `/wallet/buy`.
 
-`Home.tsx` carousels for Top Rated / 5km / 10km / 15km swap to these hooks. Empty state: "No promoted providers in your area yet." Impressions via `IntersectionObserver` (reuse `useAdTracking` pattern); clicks fire on contact/view.
+---
 
-## 6. Admin panel
+### 6. UI
 
-Extend `AdminDashboard` with an **Ads** tab:
-- Campaigns table (filter by status, search worker) with force-pause / disable / refund Sparks.
-- Sparks: grant balance to any worker, view transaction log.
-- Pricing rules editor (key/value JSON) with live cost calculator.
-- Global analytics: top campaigns, total impressions.
+Premium fintech feel: gradient hero balance card with animated count, soft shadows, semantic tokens from `index.css`, framer-motion micro-animations, mobile-first layouts mirroring existing AppLayout style.
 
-## 7. Cron
+---
 
-`pg_cron` every 15 min → `expire_campaigns()`.
+### Order of execution
 
-## 8. Performance
-
-- GIST index drives `ST_DWithin` in single-digit ms at 100k campaigns.
-- React Query cache for promoted lists (60s stale).
-- Impression dedupe via session `Set` + DB partial unique on hour bucket.
-
-## Out of scope (later)
-
-- Stripe Sparks top-up
-- Admin approval queue
-- Heatmaps, A/B variants
-
-## Technical notes
-
-- Stack: existing Vite/React + Tailwind + shadcn + Supabase. No Next.js.
-- Migrations: enable `postgis`, create tables/indexes/RPCs/RLS in one migration. Seed `ad_pricing_rules` with placeholder values.
-- New files: `src/pages/worker/AdsDashboard.tsx`, `src/components/ads/CampaignWizard.tsx`, `src/components/ads/CampaignCard.tsx`, `src/components/ads/GeoTargetMap.tsx`, `src/components/ads/SparksCostBar.tsx`, `src/hooks/usePromoted.ts`, `src/hooks/useSparks.ts`, `src/hooks/useAdCampaigns.ts`, `src/components/admin/AdsCampaignsTab.tsx`, `src/components/admin/SparksTab.tsx`, `src/components/admin/PricingRulesTab.tsx`.
-- Changed: `src/pages/Home.tsx` (5/10/15 km ad carousels), `src/components/WorkerAdCard.tsx` (Promoted variant + click tracking), `src/App.tsx` routes, nav components for worker Ads link.
-
-Ship in 2 batches: (A) DB + worker dashboard + homepage swap, (B) admin panel + analytics charts.
+1. Migration (tables, enums, RPCs, trigger, storage bucket, RLS, seed packages + settings row).
+2. Wallet service + context + hooks.
+3. Wallet pages (Wallet, BuySparks, Checkout, Status) + components.
+4. Header `SparksBalanceChip` in `AppLayout`.
+5. Admin panels.
+6. Wire Ads spending to RPC.
+7. Register routes in `App.tsx`.
