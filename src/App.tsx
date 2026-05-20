@@ -34,6 +34,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const WorkerDashboard = lazy(() => import("./pages/WorkerDashboard"));
 const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdsDashboard = lazy(() => import("./pages/AdsDashboard"));
 const BloodDonors = lazy(() => import("./pages/BloodDonors"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Messages = lazy(() => import("./pages/Messages"));
@@ -98,6 +99,7 @@ const AppContent = () => {
             <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
             <Route path="/worker-dashboard" element={<ProtectedRoute><WorkerDashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/worker/ads" element={<ProtectedRoute><AdsDashboard /></ProtectedRoute>} />
             <Route path="/blood-donors" element={<BloodDonors />} />
             <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/messages" element={<Messages />} />
