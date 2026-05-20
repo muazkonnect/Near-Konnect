@@ -85,18 +85,17 @@ const AdsDashboard = () => {
   };
 
   return (
-    <AppLayout>
+    <AppLayout
+      title="Ads Dashboard"
+      subtitle="Promote your profile in the Top Rated and Nearby sections."
+      action={
+        <Button onClick={() => setWizardOpen(true)} size="sm" className="gap-2 rounded-full">
+          <Plus className="h-4 w-4" /> New
+        </Button>
+      }
+    >
       <div className="admin-shell -mx-4 -mt-2 min-h-screen px-4 pt-2">
       <div className="mx-auto max-w-5xl space-y-6 pb-24 pt-2">
-        <motion.div initial={{ opacity:  0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">Ads Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Promote your profile in the Top Rated and Nearby sections.</p>
-          </div>
-          <Button onClick={() => setWizardOpen(true)} className="gap-2 rounded-full">
-            <Plus className="h-4 w-4" /> New Campaign
-          </Button>
-        </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
