@@ -100,6 +100,10 @@ const AdsDashboard = () => {
           <StatBox icon={Zap} label="CTR" value={`${totals.ctr}%`} />
         </div>
 
+        {analytics?.daily && analytics.daily.length > 0 && (
+          <DailyChart daily={analytics.daily} />
+        )}
+
         <Tabs defaultValue="campaigns">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
