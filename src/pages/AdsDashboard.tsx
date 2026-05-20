@@ -47,7 +47,7 @@ const AdsDashboard = () => {
   const { data: campaigns = [] } = useMyCampaigns();
   const campaignIds = useMemo(() => campaigns.map((c) => c.id), [campaigns]);
   const { data: analytics } = useCampaignAnalytics(campaignIds);
-  const { data: txs = [] } = useSparksTransactions();
+  
 
   const [wizardOpen, setWizardOpen] = useState(false);
 
