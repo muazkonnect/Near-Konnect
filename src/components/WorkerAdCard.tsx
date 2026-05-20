@@ -189,7 +189,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <Button
                     size="sm"
                     className="h-8 flex-[1.4] rounded-lg bg-gradient-to-r from-primary to-primary/85 px-2 text-[11px] font-extrabold shadow-lg shadow-primary/30 hover:shadow-primary/50"
-                    onClick={() => setPopupOpen(true)}
+                    onClick={() => { fireClick(); setPopupOpen(true); }}
                   >
                     <Zap className="mr-1 h-3 w-3 fill-current" /> Contact Now
                   </Button>
