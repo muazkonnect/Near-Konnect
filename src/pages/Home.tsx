@@ -376,62 +376,6 @@ const Home = () => {
         />
 
 
-        {/* URGENT FEED (real-time blood requests) */}
-        <section className="mb-10 px-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight">Urgent Help Feed</h2>
-              <p className="text-xs text-hero-muted">Live emergencies in your community</p>
-            </div>
-            <button
-              onClick={() => navigate("/blood-donors")}
-              className="text-xs font-semibold text-primary hover:underline"
-            >
-              View all
-            </button>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-foreground [&_*]:!text-inherit">
-            <div className="text-hero-foreground [&_p]:text-hero-foreground [&_h3]:text-hero-foreground">
-              <ActiveBloodRequests compact hideTitle />
-            </div>
-          </div>
-        </section>
-
-        {/* BECOME A DONOR */}
-        <section className="mb-10 px-5">
-          <div className="relative overflow-hidden rounded-2xl border border-destructive/30 bg-white p-6 shadow-2xl md:p-8">
-            <div className="absolute left-0 top-0 h-full w-1.5 bg-destructive" />
-            <div className="absolute -right-12 -bottom-12 h-48 w-48 rounded-full bg-destructive/5 blur-3xl" />
-            <div className="relative flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
-              <div className="flex items-center gap-4">
-                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-destructive/10">
-                  <HeartPulse className="h-7 w-7 text-destructive" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold tracking-tight text-foreground md:text-xl">Become a Life Saver</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Join our network of verified blood donors and help your neighbors in emergencies.
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <Button
-                  onClick={() => navigate("/blood-donors")}
-                  className="rounded-full bg-destructive text-destructive-foreground hover:opacity-90"
-                >
-                  Register as Donor
-                </Button>
-                <button
-                  onClick={() => navigate("/disclaimer")}
-                  aria-label="Learn more"
-                  className="grid h-10 w-10 place-items-center rounded-full border border-destructive/30 text-destructive transition-colors hover:bg-destructive/5"
-                >
-                  <Info className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* COMMUNITY STATS */}
         <section className="mb-10 grid grid-cols-2 gap-3 px-5 md:grid-cols-4">
