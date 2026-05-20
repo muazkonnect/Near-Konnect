@@ -6,7 +6,9 @@ const MapLocationPicker = lazy(() => import("./MapLocationPicker"));
 interface Props {
   value: Coords | null;
   onChange: (coords: Coords) => void;
+  radiusKm?: number;
 }
+
 
 const Fallback = () => (
   <div className="space-y-2">
