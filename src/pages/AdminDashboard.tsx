@@ -864,6 +864,13 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
+            {/* RUNNING ADS (campaigns: view + control) */}
+            {tab === "running_ads" && (
+              <Suspense fallback={<TabFallback />}>
+                <RunningAdsPanel />
+              </Suspense>
+            )}
+
             {/* SPARKS & CAMPAIGNS */}
             {tab === "sparks" && (
               <Suspense fallback={<TabFallback />}>
