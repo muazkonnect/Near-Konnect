@@ -182,7 +182,7 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+          <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translate3d(0,0,0) } to { transform: translate3d(-50%,0,0) } } .auto-carousel-track { will-change: transform; animation-play-state: running; }`}</style>
         </div>
 
         {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
