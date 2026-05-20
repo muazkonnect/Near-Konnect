@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationBell from "@/components/NotificationBell";
+import SparksBalanceChip from "@/components/wallet/SparksBalanceChip";
 import logoImg from "@/assets/logo.svg";
 import logoDarkImg from "@/assets/logo-dark.svg";
 
