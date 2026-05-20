@@ -1893,6 +1893,10 @@ export type Database = {
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
+      grant_sparks: {
+        Args: { _amount: number; _notes?: string; _worker_id: string }
+        Returns: number
+      }
       has_any_admin_role: { Args: { _user_id: string }; Returns: boolean }
       has_role:
         | {

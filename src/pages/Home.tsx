@@ -33,6 +33,7 @@ import SteppedCarousel from "@/components/SteppedCarousel";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
+import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -93,18 +94,11 @@ const Home = () => {
       .sort((a, b) => a.distance - b.distance);
   }, [workers, browsingCoords]);
 
-  const nearby3km = useMemo(
-    () => withDistance.filter((w) => w.distance <= 3).slice(0, 8),
-    [withDistance]
-  );
-  const top5km = useMemo(
-    () =>
-      withDistance
-        .filter((w) => w.distance <= 5 && w.distance > 3)
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 8),
-    [withDistance]
-  );
+  // Promoted (Sparks) campaigns: 5/10/15 KM + Top Rated
+  const promoted5 = usePromotedNearby(browsingCoords, 5);
+  const promoted10 = usePromotedNearby(browsingCoords, 10);
+  const promoted15 = usePromotedNearby(browsingCoords, 15);
+  const promotedTop = usePromotedTopRated(browsingCoords);
 
   // Blood donors — top 3 nearest verified donors
   const { data: donors = [] } = useQuery({
@@ -148,11 +142,11 @@ const Home = () => {
   const tickerItems = useMemo(() => {
     const items: { text: string; hot?: boolean }[] = [];
     if (donors.length) items.push({ text: `${donors.length}+ verified blood donors active nearby`, hot: true });
-    if (nearby3km.length) items.push({ text: `${nearby3km.length} verified providers within 3 KM` });
+    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within 5 KM` });
     if (workers.length) items.push({ text: `${workers.length} total providers connected on Near Konnect` });
     items.push({ text: "Safety protocols for verified providers updated", hot: true });
     return items.length ? items : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
-  }, [donors.length, nearby3km.length, workers.length]);
+  }, [donors.length, promoted5.length, workers.length]);
 
   const submitSearch = (q: string) => {
     if (!q.trim()) return navigate("/discover");
@@ -326,40 +320,17 @@ const Home = () => {
           </motion.section>
         )}
 
-        {/* NEARBY WORKERS — 3KM */}
-        <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2} className="mb-10">
-          <div className="mb-5 px-5">
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">
-              Nearby Providers <span className="ml-2 text-sm font-normal text-hero-muted">• Within 3 KM</span>
-            </h2>
-          </div>
-          {workersLoading ? (
-            <div className="flex gap-4 px-5">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-64 w-[280px] shrink-0 animate-pulse rounded-2xl border border-white/5 bg-white/5" />
-              ))}
-            </div>
-          ) : nearby3km.length === 0 ? (
-            <div className="mx-5 rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-              <Sparkles className="mx-auto mb-2 h-6 w-6 text-hero-muted" />
-              <p className="text-sm font-semibold">No providers within 3 KM yet</p>
-              <p className="mt-1 text-xs text-hero-muted">Try exploring a wider radius.</p>
-              <Button size="sm" className="mt-3" onClick={() => navigate("/discover")}>Explore All</Button>
-            </div>
-          ) : (
-            <SteppedCarousel
-              className="pb-3"
-              trackClassName="pl-5 pr-5"
-              dwellMs={2800}
-              items={nearby3km.map((w) => (
-                <div key={`n-${w.id}`}>
-                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
-                </div>
-              ))}
-            />
-
-          )}
-        </motion.section>
+        {/* PROMOTED SECTIONS — Top Rated + 5/10/15 KM (Sparks campaigns only) */}
+        <PromotedSection
+          title="Top Rated Providers"
+          subtitle="Featured promoted listings"
+          items={promotedTop}
+          placement="top_rated"
+          isAuthed={!!user}
+          loading={workersLoading}
+          custom={2}
+          navigate={navigate}
+        />
 
         {/* AD: INLINE */}
         {inlineAds[0] && (
@@ -373,31 +344,37 @@ const Home = () => {
           <FeaturedWorkersCarousel className="text-foreground" />
         </section>
 
-        {/* TOP RATED — 5KM */}
-        <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={3} className="mb-10">
-          <div className="mb-5 px-5">
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">
-              Top Rated Providers <span className="ml-2 text-sm font-normal text-hero-muted">• Within 5 KM</span>
-            </h2>
-          </div>
-          {top5km.length === 0 ? (
-            <div className="mx-5 rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-sm text-hero-muted">
-              No top-rated providers in your 5 KM radius yet.
-            </div>
-          ) : (
-            <SteppedCarousel
-              className="pb-3"
-              trackClassName="pl-5 pr-5"
-              dwellMs={3000}
-              items={top5km.map((w) => (
-                <div key={`t-${w.id}`}>
-                  <WorkerAdCard worker={w as any} isAuthed={!!user} premium={featuredIds.has(w.id)} />
-                </div>
-              ))}
-            />
+        <PromotedSection
+          title="Within 5 KM"
+          subtitle="Promoted providers in your immediate vicinity"
+          items={promoted5}
+          placement="nearby_5km"
+          isAuthed={!!user}
+          loading={workersLoading}
+          custom={3}
+          navigate={navigate}
+        />
+        <PromotedSection
+          title="Within 10 KM"
+          subtitle="Nearby promoted providers"
+          items={promoted10}
+          placement="nearby_10km"
+          isAuthed={!!user}
+          loading={workersLoading}
+          custom={3.3}
+          navigate={navigate}
+        />
+        <PromotedSection
+          title="Within 15 KM"
+          subtitle="Promoted providers in your area"
+          items={promoted15}
+          placement="nearby_15km"
+          isAuthed={!!user}
+          loading={workersLoading}
+          custom={3.6}
+          navigate={navigate}
+        />
 
-          )}
-        </motion.section>
 
         {/* URGENT FEED (real-time blood requests) */}
         <section className="mb-10 px-5">
@@ -573,6 +550,65 @@ const DarkWorkerCard = ({
         </div>
       </div>
     </motion.button>
+  );
+};
+
+type PromotedItem = {
+  id: string;
+  campaignId: string;
+  distance: number;
+} & Record<string, any>;
+
+const PromotedSection = ({
+  title, subtitle, items, placement, isAuthed, loading, custom, navigate,
+}: {
+  title: string;
+  subtitle: string;
+  items: PromotedItem[];
+  placement: string;
+  isAuthed: boolean;
+  loading: boolean;
+  custom: number;
+  navigate: (path: string) => void;
+}) => {
+  if (loading && items.length === 0) {
+    return (
+      <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
+        <div className="mb-5 px-5">
+          <h2 className="text-xl font-bold tracking-tight md:text-2xl">{title}</h2>
+        </div>
+        <div className="flex gap-4 px-5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-64 w-[280px] shrink-0 animate-pulse rounded-2xl border border-white/5 bg-white/5" />
+          ))}
+        </div>
+      </motion.section>
+    );
+  }
+  if (items.length === 0) return null;
+  return (
+    <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
+      <div className="mb-5 px-5">
+        <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+          {title} <span className="ml-2 text-sm font-normal text-hero-muted">• {subtitle}</span>
+        </h2>
+      </div>
+      <SteppedCarousel
+        className="pb-3"
+        trackClassName="pl-5 pr-5"
+        dwellMs={2800}
+        items={items.map((w) => (
+          <div key={`${placement}-${w.id}`}>
+            <WorkerAdCard
+              worker={w as any}
+              isAuthed={isAuthed}
+              campaignId={w.campaignId}
+              placement={placement}
+            />
+          </div>
+        ))}
+      />
+    </motion.section>
   );
 };
 

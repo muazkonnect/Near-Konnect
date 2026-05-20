@@ -1,28 +1,57 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Star, BadgeCheck, Award, MapPin, Briefcase, Phone, ArrowRight, Sparkles, Zap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
+import { trackAdEvent } from "@/hooks/usePromoted";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
   worker: Worker & { distance: number };
   premium?: boolean;
   isAuthed: boolean;
+  campaignId?: string;
+  placement?: string;
 }
 
-const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
+const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement }: Props) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const lastClosedRef = useRef(0);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const impressedRef = useRef(false);
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel =
     worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance}` : "—";
   const distUnit = worker.distance > 0 && isFinite(worker.distance) ? "km" : "";
 
+  useEffect(() => {
+    if (!campaignId || !cardRef.current || impressedRef.current) return;
+    const el = cardRef.current;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting && !impressedRef.current) {
+            impressedRef.current = true;
+            trackAdEvent(campaignId, "impression", placement || "unknown");
+            io.disconnect();
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [campaignId, placement]);
+
+  const fireClick = () => {
+    if (campaignId) trackAdEvent(campaignId, "click", placement || "unknown");
+  };
+
   const handleOpen = () => {
     if (popupOpen) return;
     if (Date.now() - lastClosedRef.current < 300) return;
+    fireClick();
     setPopupOpen(true);
   };
   const handleChange = (o: boolean) => {
@@ -34,6 +63,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
     <>
       {/* Gradient border wrapper */}
       <div
+        ref={cardRef}
         className={`group relative w-[330px] rounded-[20px] p-[1.5px] sm:w-[400px] ${
           premium
             ? "bg-gradient-to-br from-primary via-primary/40 to-primary/10 shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.7)]"
@@ -57,7 +87,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
             }`}
           >
             {premium ? <Award className="h-3 w-3" /> : <Sparkles className="h-3 w-3 text-primary" />}
-            {premium ? "Featured" : "Sponsored"}
+            {premium ? "Featured" : campaignId ? "Promoted" : "Sponsored"}
           </div>
 
           <div className="relative flex items-stretch gap-3 p-3.5">
@@ -151,7 +181,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
                   variant="ghost"
                   size="sm"
                   className="h-8 flex-1 rounded-lg border border-hero-foreground/10 bg-hero-foreground/5 px-2 text-[11px] font-bold text-hero-foreground backdrop-blur hover:bg-hero-foreground/10"
-                  onClick={() => setPopupOpen(true)}
+                  onClick={() => { fireClick(); setPopupOpen(true); }}
                 >
                   View <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
@@ -159,7 +189,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed }: Props) => {
                   <Button
                     size="sm"
                     className="h-8 flex-[1.4] rounded-lg bg-gradient-to-r from-primary to-primary/85 px-2 text-[11px] font-extrabold shadow-lg shadow-primary/30 hover:shadow-primary/50"
-                    onClick={() => setPopupOpen(true)}
+                    onClick={() => { fireClick(); setPopupOpen(true); }}
                   >
                     <Zap className="mr-1 h-3 w-3 fill-current" /> Contact Now
                   </Button>
