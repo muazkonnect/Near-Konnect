@@ -581,4 +581,82 @@ const TypeCard = ({ active, icon: Icon, title, desc, onClick }: any) => (
   </button>
 );
 
+interface NominatimResult {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: {
+    country_code?: string;
+    country?: string;
+    state?: string;
+    region?: string;
+    province?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    county?: string;
+    suburb?: string;
+    neighbourhood?: string;
+    road?: string;
+  };
+}
+
+const AddressSearch = ({ onSelect }: { onSelect: (r: NominatimResult) => void }) => {
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState<NominatimResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (q.trim().length < 3) { setResults([]); return; }
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=${encodeURIComponent(q)}`;
+        const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } });
+        if (!res.ok) return;
+        const json = (await res.json()) as NominatimResult[];
+        setResults(json);
+        setOpen(true);
+      } catch { /* aborted */ }
+      finally { setLoading(false); }
+    }, 350);
+    return () => { ctrl.abort(); clearTimeout(t); };
+  }, [q]);
+
+  return (
+    <div className="relative">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onFocus={() => results.length && setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          placeholder="Search any city, street, or landmark worldwide…"
+          className="pl-9"
+        />
+        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
+      </div>
+      {open && results.length > 0 && (
+        <div className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-lg">
+          {results.map((r) => (
+            <button
+              key={r.place_id}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); onSelect(r); setQ(r.display_name); setOpen(false); }}
+              className="flex w-full items-start gap-2 border-b border-border/40 px-3 py-2 text-left text-sm last:border-0 hover:bg-accent hover:text-accent-foreground"
+            >
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span className="line-clamp-2">{r.display_name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default AdsDashboard;
