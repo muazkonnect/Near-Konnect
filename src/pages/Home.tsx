@@ -58,9 +58,9 @@ const Home = () => {
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
   const adminUserIds = useAdminUserIds();
-  const donorsSliderRef = useAutoScroll<HTMLDivElement>({ intervalMs: 2600, resumeDelayMs: 1200 });
-  const nearby3kmRef = useAutoScroll<HTMLDivElement>({ intervalMs: 3000, resumeDelayMs: 1500 });
-  const top5kmRef = useAutoScroll<HTMLDivElement>({ intervalMs: 3400, resumeDelayMs: 1500 });
+  const donorsSliderRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 86 });
+  const nearby3kmRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 78 });
+  const top5kmRef = useAutoScroll<HTMLDivElement>({ speedPxPerSecond: 74 });
 
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
