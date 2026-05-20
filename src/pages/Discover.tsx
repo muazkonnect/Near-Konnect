@@ -102,6 +102,25 @@ const Discover = () => {
     search,
     radiusKm,
   });
+  const promoted3km = usePromotedNearby(userCoords, 3);
+  const promoted3kmFiltered = useMemo(() => {
+    let list = promoted3km;
+    if (selectedMainCategory && selectedSubCategory) {
+      list = list.filter((w: any) => w.mainCategory === selectedMainCategory && w.subCategory === selectedSubCategory);
+    } else if (selectedMainCategory) {
+      list = list.filter((w: any) => w.mainCategory === selectedMainCategory || w.subCategory === selectedMainCategory);
+    } else if (selectedSubCategory) {
+      list = list.filter((w: any) => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
+    }
+    if (search.trim()) {
+      const words = search.toLowerCase().trim().split(/\s+/);
+      list = list.filter((w: any) => {
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`.toLowerCase();
+        return words.every((wd) => hay.includes(wd));
+      });
+    }
+    return list;
+  }, [promoted3km, selectedMainCategory, selectedSubCategory, search]);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!sentinelRef.current) return;
