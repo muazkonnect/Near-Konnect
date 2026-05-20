@@ -37,21 +37,28 @@ export default function SteppedCarousel({
     return () => window.clearInterval(id);
   }, [items.length, dwellMs, transitionMs]);
 
-  // Measure offset of the (index)-th child in the doubled track
+  // Measure offset to center the (index)-th child in the viewport
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || !items.length) return;
+    const viewport = track?.parentElement;
+    if (!track || !viewport || !items.length) return;
     const children = Array.from(track.children) as HTMLElement[];
     const target = children[index];
     if (!target) return;
+    const centerOffset =
+      target.offsetLeft - (viewport.clientWidth - target.offsetWidth) / 2;
     setAnimate(true);
-    setOffset(target.offsetLeft);
+    setOffset(centerOffset);
 
     // Seamless loop: when we reach the start of the second copy, snap back
     if (index >= items.length) {
       const t = window.setTimeout(() => {
+        const first = children[0];
+        const startOffset = first
+          ? first.offsetLeft - (viewport.clientWidth - first.offsetWidth) / 2
+          : 0;
         setAnimate(false);
-        setOffset(0);
+        setOffset(startOffset);
         setIndex(0);
         // re-enable animation on next frame
         requestAnimationFrame(() => requestAnimationFrame(() => setAnimate(true)));
