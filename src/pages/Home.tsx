@@ -177,7 +177,7 @@ const Home = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url, city, blood_group, latitude, longitude, phone, contact_methods, show_contact" as any)
+        .select("user_id, full_name, avatar_url, city, blood_group, latitude, longitude, phone, contact_methods, blood_show_contact" as any)
         .eq("is_blood_donor", true)
         .eq("donor_status", "active")
         .limit(20);
