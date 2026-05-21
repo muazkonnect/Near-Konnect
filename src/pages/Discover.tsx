@@ -98,9 +98,8 @@ const Discover = () => {
 
   const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords, {
     mainCategory: selectedMainCategory,
-    subCategory: selectedSubCategory,
     search,
-    radiusKm,
+    radiusKm: selectedMainCategory ? radiusKm : undefined,
   });
   const promoted3km = usePromotedNearby(userCoords, 3);
   const promoted3kmFiltered = useMemo(() => {
