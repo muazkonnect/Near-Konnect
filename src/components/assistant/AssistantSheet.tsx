@@ -75,7 +75,7 @@ export default function AssistantSheet() {
     const value = text.trim();
     if (!value || loading) return;
     if (!user || !session) {
-      toast({ title: "Login required", description: "Pehle login karein assistant use karne ke liye." });
+      toast({ title: "Login required", description: "Please log in to use the assistant." });
       navigate("/login");
       return;
     }
