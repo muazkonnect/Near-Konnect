@@ -632,6 +632,43 @@ const WorkerDashboard = () => {
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
 
+                {/* Fixed service location */}
+                <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/15 text-primary">
+                        <MapPin className="h-3.5 w-3.5" />
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-hero-foreground">Fixed service location</p>
+                        <p className="text-[10px] text-hero-foreground/50">Used to match nearby customers</p>
+                      </div>
+                    </div>
+                    {workerData.latitude && workerData.longitude && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-hero-foreground/10 px-2 py-0.5 text-[10px] font-medium text-hero-foreground/70">
+                        <Lock className="h-2.5 w-2.5" /> Locked
+                      </span>
+                    )}
+                  </div>
+                  {workerData.latitude && workerData.longitude ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="min-w-0 flex-1 truncate text-xs text-hero-foreground/80">
+                        <LocationLabel latitude={workerData.latitude} longitude={workerData.longitude} />
+                      </p>
+                      <RequestLocationChangeDialog
+                        workerUserId={workerData.user_id}
+                        currentLatitude={workerData.latitude}
+                        currentLongitude={workerData.longitude}
+                      />
+                    </div>
+                  ) : (
+                    <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-9 w-full gap-1.5 rounded-lg border-hero-foreground/15 bg-transparent text-xs text-hero-foreground hover:bg-hero-foreground/10">
+                      <Navigation className="h-3.5 w-3.5" />
+                      {settingLocation ? "Detecting..." : "Use my current location"}
+                    </Button>
+                  )}
+                </div>
+
                 {/* Quick actions row */}
                 <div className="flex flex-wrap items-center gap-1.5 border-t border-hero-foreground/10 pt-3">
                   <Button onClick={handleSave} disabled={saving} className="h-9 gap-1.5 rounded-lg px-4 text-xs">
@@ -642,26 +679,8 @@ const WorkerDashboard = () => {
                       <KeyRound className="h-3 w-3" /> Password
                     </Button>
                   </ChangePasswordDialog>
-                  {workerData.latitude && workerData.longitude ? (
-                    <div className="flex items-center gap-1.5">
-                      <span className="inline-flex h-9 items-center gap-1 rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2.5 text-[10px] text-hero-foreground/70">
-                        <Lock className="h-3 w-3" />
-                        <MapPin className="h-3 w-3" />
-                        <LocationLabel latitude={workerData.latitude} longitude={workerData.longitude} />
-                      </span>
-                      <RequestLocationChangeDialog
-                        workerUserId={workerData.user_id}
-                        currentLatitude={workerData.latitude}
-                        currentLongitude={workerData.longitude}
-                      />
-                    </div>
-                  ) : (
-                    <Button type="button" variant="outline" onClick={handleSetFixedLocation} disabled={settingLocation} className="h-9 gap-1 rounded-lg border-hero-foreground/15 bg-transparent px-3 text-xs text-hero-foreground hover:bg-hero-foreground/10">
-                      <Navigation className="h-3 w-3" />
-                      {settingLocation ? "Detecting..." : "Set location"}
-                    </Button>
-                  )}
                 </div>
+
               </div>
             </TabsContent>
 
