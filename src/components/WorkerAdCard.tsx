@@ -265,10 +265,9 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {isAuthed ? (
               <Button
                 size="sm"
-                className="group/cta relative h-11 flex-[1.6] overflow-hidden rounded-xl bg-gradient-to-r from-primary via-primary to-primary/80 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
                 onClick={() => { fireClick(); setPopupOpen(true); }}
               >
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/cta:translate-x-full" />
                 <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
               </Button>
             ) : (
@@ -278,9 +277,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               >
                 <Button
                   size="sm"
-                  className="group/cta relative h-11 flex-[1.6] overflow-hidden rounded-xl bg-gradient-to-r from-primary via-primary to-primary/80 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                  className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
                 >
-                  <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/cta:translate-x-full" />
                   <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
                 </Button>
               </AuthRequiredDialog>
