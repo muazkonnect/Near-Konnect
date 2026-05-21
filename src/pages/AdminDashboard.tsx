@@ -666,7 +666,7 @@ const AdminDashboard = () => {
             {/* CATEGORIES */}
             {tab === "categories" && (
               <Suspense fallback={<TabFallback />}>
-                <CategoriesManagementTab categories={categories as any} />
+                <TaxonomyManagementTab categories={categories as any} />
               </Suspense>
             )}
 
