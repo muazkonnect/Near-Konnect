@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { BadgeCheck, X, RefreshCw, ShieldCheck, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BadgeCheck, X, RefreshCw, ShieldCheck, Loader2, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,42 @@ import {
   useVerificationSettings,
   useUpdateVerificationSettings,
 } from "@/hooks/useVerification";
+import { supabase } from "@/integrations/supabase/client";
+import { getVerificationDocSignedUrl } from "@/services/verificationService";
+
+function DocsViewer({ verificationId }: { verificationId: string }) {
+  const [docs, setDocs] = useState<{ kind: string; url: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      setLoading(true);
+      const { data } = await (supabase as any)
+        .from("verification_documents")
+        .select("kind, storage_path")
+        .eq("verification_id", verificationId);
+      const signed = await Promise.all(
+        (data || []).map(async (d: any) => ({ kind: d.kind, url: (await getVerificationDocSignedUrl(d.storage_path, 900)) || "" }))
+      );
+      if (!cancel) { setDocs(signed.filter((d) => d.url)); setLoading(false); }
+    })();
+    return () => { cancel = true; };
+  }, [verificationId]);
+  if (loading) return <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2"><Loader2 className="h-3 w-3 animate-spin" /> Loading docs…</div>;
+  if (docs.length === 0) return <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground"><ImageIcon className="h-3 w-3" /> No documents uploaded</p>;
+  return (
+    <div className="mt-2 grid grid-cols-3 gap-2">
+      {docs.map((d) => (
+        <a key={d.kind} href={d.url} target="_blank" rel="noopener noreferrer" className="block">
+          <div className="aspect-[4/3] rounded-lg overflow-hidden border bg-muted">
+            <img src={d.url} alt={d.kind} className="h-full w-full object-cover" />
+          </div>
+          <p className="mt-0.5 text-center text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{d.kind.replace("_", " ")}</p>
+        </a>
+      ))}
+    </div>
+  );
+}
 
 export default function VerificationsAdminPanel() {
   const { data: list = [], isLoading } = useAdminVerifications();
@@ -104,6 +140,7 @@ export default function VerificationsAdminPanel() {
                   <p className="text-muted-foreground">Persona: {v.persona_inquiry_id || "—"}</p>
                   <p className="text-muted-foreground">Submitted: {v.submitted_at ? new Date(v.submitted_at).toLocaleString() : "—"}</p>
                 </div>
+                <DocsViewer verificationId={v.id} />
                 <Textarea
                   placeholder="Optional note to user"
                   className="mt-2"
