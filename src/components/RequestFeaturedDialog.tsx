@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Loader2, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Star, Loader2, Clock, CheckCircle2, XCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";

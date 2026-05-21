@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Sparkles, Loader2, CheckCircle2, MapPin } from "lucide-react";
+import { Star, Sparkles, Loader2, CheckCircle2, MapPin, X } from "lucide-react";
 import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
