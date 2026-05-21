@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { lazy, Suspense } from "react";
 import {
-  Settings, Sliders, UserCircle, Package, CreditCard, Shield,
+  Settings, Sliders, UserCircle, Package, CreditCard, Shield, BadgeCheck, Star,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,19 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
 import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
+import VerificationsAdminPanel from "./VerificationsAdminPanel";
+import FeaturedAdminPanel from "./FeaturedAdminPanel";
 
 const CategoriesManagementTab = lazy(() => import("./CategoriesManagementTab"));
 
-type Sub = "defaults" | "packages" | "payments" | "categories" | "account";
+type Sub = "defaults" | "packages" | "payments" | "verifications" | "featured" | "categories" | "account";
 
 const SUBS: { key: Sub; label: string; icon: typeof Sliders }[] = [
   { key: "defaults", label: "App Defaults", icon: Sliders },
   { key: "packages", label: "Packages & Discounts", icon: Package },
   { key: "payments", label: "Payment Methods", icon: CreditCard },
+  { key: "verifications", label: "Verifications", icon: BadgeCheck },
+  { key: "featured", label: "Featured Workers", icon: Star },
   { key: "categories", label: "Categories", icon: Shield },
   { key: "account", label: "Account", icon: UserCircle },
 ];
