@@ -62,7 +62,7 @@ export function usePromotedNearby(coords: Coords | null, radiusKm: number) {
       _limit: 12,
       _placement: "homepage",
     },
-    !!coords
+    true
   );
   return useMemo(() => join(rows, workers), [rows, workers]);
 }
@@ -78,7 +78,7 @@ export function usePromotedTopRated(coords: Coords | null) {
       _limit: 12,
       _placement: "homepage",
     },
-    !!coords
+    true
   );
   return useMemo(() => join(rows, workers), [rows, workers]);
 }
@@ -97,12 +97,12 @@ export function usePromotedExploreInfinite(
   const radiusKm = mainCategory ? (opts?.radiusKm ?? null) : (opts?.radiusKm ?? defaultRadius);
   const q = useInfiniteQuery({
     queryKey: ["promoted_explore", coords?.latitude, coords?.longitude, mainCategory, search, radiusKm],
-    enabled: !!coords,
+    enabled: true,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await (supabase as any).rpc("get_promoted_explore", {
-        _viewer_lat: coords!.latitude,
-        _viewer_lng: coords!.longitude,
+        _viewer_lat: coords?.latitude ?? null,
+        _viewer_lng: coords?.longitude ?? null,
         _limit: EXPLORE_PAGE_SIZE,
         _offset: pageParam,
         _exclude_campaign_ids: [],
