@@ -56,6 +56,7 @@ const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").t
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
+import AppDefaultsTab from "@/components/admin/AppDefaultsTab";
 
 const TabFallback = () => (
   <div className="flex h-40 items-center justify-center">
