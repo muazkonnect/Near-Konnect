@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Worker } from "@/data/mockData";
+import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { useEffect } from "react";
 
 export function useWorkers() {
