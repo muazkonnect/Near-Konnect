@@ -15,6 +15,7 @@ import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 import Footer from "@/components/Footer";
 import DisclosureModals from "@/components/DisclosureModals";
 import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
+import AssistantSheet from "@/components/assistant/AssistantSheet";
 import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
@@ -122,6 +123,7 @@ const AppContent = () => {
         </Suspense>
         <Footer />
         <MobileBottomNav />
+        <AssistantSheet />
       </BrowserRouter>
     </>
   );

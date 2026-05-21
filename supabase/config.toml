@@ -21,3 +21,6 @@ project_id = "lxghuqiheaoinytrwhac"
     verify_jwt = false
   [functions.persona-create-inquiry]
     verify_jwt = true
+  [functions.ai-assistant]
+    verify_jwt = true
+
