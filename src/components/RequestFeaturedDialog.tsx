@@ -81,7 +81,18 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           {isFeatured ? "Featured" : pending ? "Request Pending" : "Request Featured"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        onPointerDownOutside={() => setOpen(false)}
+        onInteractOutside={() => setOpen(false)}
+        className="relative sm:max-w-md [&>button.absolute]:hidden"
+      >
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Star className="h-4 w-4 fill-star text-star" />
