@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine, ExternalLink } from "lucide-react";
+import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine } from "lucide-react";
 import { useMyVerification, useVerificationSettings } from "@/hooks/useVerification";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
@@ -10,6 +10,7 @@ import { startVerification, submitVerification, createDiditSession, getDiditDeci
 import { toast } from "sonner";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
+const PENDING_KEY = "didit_pending_session";
 
 export default function VerificationDialog({ open, onOpenChange }: Props) {
   const { user } = useAuth();
@@ -17,7 +18,6 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   const { data: verification, refetch } = useMyVerification(user?.id);
   const { data: settings } = useVerificationSettings();
   const [loading, setLoading] = useState(false);
-  const [session, setSession] = useState<{ session_id: string; url: string; session_token: string | null } | null>(null);
   const pollRef = useRef<number | null>(null);
 
   const cost = settings?.sparks_cost ?? 500;
@@ -37,50 +37,57 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
           window.clearInterval(pollRef.current!);
           pollRef.current = null;
           await submitVerification(sessionId, sessionToken);
+          sessionStorage.removeItem(PENDING_KEY);
           toast.success("Verification submitted for admin approval");
-          setSession(null);
           refetch();
         }
       } catch { /* keep polling */ }
     }, 5000);
   };
 
-  const createSession = async () => {
+  // Resume polling and finalize on return from Didit callback
+  useEffect(() => {
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    if (!raw) return;
+    try {
+      const s = JSON.parse(raw) as { session_id: string; session_token: string | null };
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("verification") === "complete") {
+        (async () => {
+          try {
+            await submitVerification(s.session_id, s.session_token);
+            sessionStorage.removeItem(PENDING_KEY);
+            toast.success("Verification submitted for admin approval");
+            refetch();
+          } catch {
+            startPolling(s.session_id, s.session_token);
+          }
+        })();
+        // clean query
+        const url = new URL(window.location.href);
+        url.searchParams.delete("verification");
+        window.history.replaceState({}, "", url.toString());
+      } else {
+        startPolling(s.session_id, s.session_token);
+      }
+    } catch { sessionStorage.removeItem(PENDING_KEY); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startAndRedirect = async () => {
     if (!user) return;
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
     setLoading(true);
     try {
       await startVerification();
       const s = await createDiditSession();
-      setSession(s);
-      startPolling(s.session_id, s.session_token);
-      toast.success("Session ready — click 'Open verification window'.");
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ session_id: s.session_id, session_token: s.session_token }));
+      // Full-page redirect — Didit's COOP blocks popups/iframes
+      window.location.href = s.url;
     } catch (e: any) {
       toast.error(e?.message || "Failed to start verification");
-    } finally {
       setLoading(false);
     }
-  };
-
-  const openWindow = (url: string) => {
-    // Synchronous + noopener so Didit's COOP allows it (avoids ERR_BLOCKED_BY_RESPONSE).
-    const w = window.open(url, "_blank", "noopener,noreferrer");
-    if (!w) toast.error("Popup blocked. Allow popups for this site and try again.");
-  };
-
-
-  const completeManually = async () => {
-    if (!session || !user) return;
-    setLoading(true);
-    try {
-      await submitVerification(session.session_id, session.session_token);
-      toast.success("Submitted for admin approval");
-      if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
-      setSession(null);
-      refetch();
-    } catch (e: any) {
-      toast.error(e?.message || "Submission failed");
-    } finally { setLoading(false); }
   };
 
   return (
@@ -92,7 +99,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
           </div>
           <DialogTitle className="text-center">Verified Worker Badge</DialogTitle>
           <DialogDescription className="text-center">
-            Real-time ID scan + face match powered by Didit. No uploads.
+            Real-time ID scan + face match powered by Didit.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,23 +119,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               Didit completed. An admin will approve shortly.
             </p>
           </div>
-        ) : session ? (
-          <div className="space-y-3 py-2">
-            <div className="rounded-xl border bg-muted/30 p-3 text-sm text-center">
-              Session ready. Open the verification window to scan your ID.
-            </div>
-            <Button className="w-full" size="lg" onClick={() => openWindow(session.url)}>
-              <ExternalLink className="h-4 w-4 mr-2" /> Open verification window
-            </Button>
-            <Button variant="outline" onClick={completeManually} disabled={loading} className="w-full">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "I've completed verification"}
-            </Button>
-            <p className="text-[11px] text-center text-muted-foreground">
-              We'll auto-detect completion within a few seconds.
-            </p>
-          </div>
         ) : (
-
           <div className="space-y-4 py-2">
             {(status === "rejected" || status === "resubmit") && (
               <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-3 text-sm">
@@ -152,12 +143,12 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
             </div>
 
             <ul className="space-y-1 text-[11px] text-muted-foreground">
-              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Live ID scan + face match in your browser.</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />You'll be redirected to Didit to scan your ID and face.</li>
               <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Sparks are deducted on submission.</li>
               <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Final approval by our admins after Didit passes.</li>
             </ul>
 
-            <Button onClick={createSession} disabled={loading || insufficient} className="w-full" size="lg">
+            <Button onClick={startAndRedirect} disabled={loading || insufficient} className="w-full" size="lg">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> :
                 insufficient ? "Insufficient Sparks" :
                 <><ScanLine className="h-4 w-4 mr-2" /> Start ID scan</>}
