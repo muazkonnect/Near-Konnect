@@ -1,0 +1,55 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+export type AppSettingsMap = {
+  homepage_promoted_radii_km: number[];
+  explore_default_radius_km: number;
+  discover_default_radius_km: number;
+  blood_donors_radius_km: number;
+  workers_default_radius_km: number;
+};
+
+export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
+  homepage_promoted_radii_km: [5, 10, 15],
+  explore_default_radius_km: 10,
+  discover_default_radius_km: 3,
+  blood_donors_radius_km: 25,
+  workers_default_radius_km: 10,
+};
+
+export function useAppSettings() {
+  return useQuery({
+    queryKey: ["app_settings"],
+    queryFn: async (): Promise<AppSettingsMap> => {
+      const { data, error } = await (supabase as any)
+        .from("app_settings")
+        .select("key,value");
+      if (error) throw error;
+      const map: any = { ...APP_SETTINGS_DEFAULTS };
+      for (const row of data || []) {
+        map[row.key] = row.value;
+      }
+      return map as AppSettingsMap;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useAppSetting<K extends keyof AppSettingsMap>(key: K): AppSettingsMap[K] {
+  const { data } = useAppSettings();
+  return (data?.[key] ?? APP_SETTINGS_DEFAULTS[key]) as AppSettingsMap[K];
+}
+
+export function useUpdateAppSetting() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ key, value }: { key: keyof AppSettingsMap; value: any }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await (supabase as any)
+        .from("app_settings")
+        .upsert({ key, value, updated_by: user?.id ?? null, updated_at: new Date().toISOString() }, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_settings"] }),
+  });
+}
