@@ -58,7 +58,12 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const { coords: browsingCoords } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
-  const featuredIds = useFeaturedWorkerIds();
+  const adminFeaturedIds = useFeaturedWorkerIds();
+  const paidFeaturedIds = useNearbyFeaturedWorkerIds(browsingCoords ?? null);
+  const featuredIds = useMemo(
+    () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
+    [adminFeaturedIds, paidFeaturedIds]
+  );
   const adminUserIds = useAdminUserIds();
   // Ad placements
   const bannerAds = useNativeAds("home_banner", browsingCoords);
