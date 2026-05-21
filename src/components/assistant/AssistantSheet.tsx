@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, Sparkles, Loader2, MapPin, Star, BadgeCheck, Phone } from "lucide-react";
+import { Send, Sparkle, Loader2, MapPin, Star, BadgeCheck, Phone } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -187,16 +187,23 @@ export default function AssistantSheet() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open assistant"
-        className="fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-amber-500 text-primary-foreground shadow-[0_10px_30px_-8px_hsl(var(--primary)/0.6)] ring-2 ring-amber-300/40 transition active:scale-95 md:bottom-6"
+        className="group fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-hero text-primary shadow-[0_10px_30px_-8px_hsl(var(--hero)/0.6)] ring-2 ring-primary/40 transition active:scale-95 md:bottom-6"
       >
-        <Sparkles className="h-6 w-6" />
+        <span className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-60 group-hover:opacity-90 transition" />
+        <Sparkle className="relative h-6 w-6 fill-primary" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="h-[88vh] rounded-t-3xl p-0">
-          <SheetHeader className="border-b px-5 py-3">
-            <SheetTitle className="flex items-center gap-2 text-base">
-              <Bot className="h-5 w-5 text-primary" /> NearKonnect Assistant
+        <SheetContent
+          side="bottom"
+          className="h-[88vh] rounded-t-3xl p-0 border-0 bg-hero text-hero-foreground"
+        >
+          <SheetHeader className="border-b border-white/10 px-5 py-3">
+            <SheetTitle className="flex items-center gap-2 text-base text-hero-foreground">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary/40">
+                <Sparkle className="h-4 w-4 fill-primary text-primary" />
+              </span>
+              NearKonnect Assistant
             </SheetTitle>
           </SheetHeader>
 
@@ -205,7 +212,7 @@ export default function AssistantSheet() {
               <MessageBubble key={i} msg={m} onOpenWorker={(id) => { setOpen(false); navigate(`/worker/${id}`); }} />
             ))}
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs text-hero-muted">
                 <Loader2 className="h-3 w-3 animate-spin" /> Sochne mein…
               </div>
             )}
@@ -215,7 +222,7 @@ export default function AssistantSheet() {
                   <button
                     key={q}
                     onClick={() => send(q)}
-                    className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-accent"
+                    className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-hero-foreground hover:bg-primary/20 transition"
                   >
                     {q}
                   </button>
@@ -229,16 +236,21 @@ export default function AssistantSheet() {
               e.preventDefault();
               send(input);
             }}
-            className="border-t bg-background px-4 py-3 flex items-center gap-2"
+            className="border-t border-white/10 bg-hero px-4 py-3 flex items-center gap-2"
           >
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={placeholder}
               disabled={loading}
-              className="flex-1"
+              className="flex-1 bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-primary"
             />
-            <Button type="submit" size="icon" disabled={loading || !input.trim()}>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={loading || !input.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </form>
@@ -256,13 +268,13 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
         className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground rounded-br-sm"
-            : "bg-card border border-border rounded-bl-sm"
+            : "bg-white/5 border border-white/10 text-hero-foreground rounded-bl-sm"
         }`}
       >
         {isUser ? (
           <p className="whitespace-pre-wrap">{msg.content}</p>
         ) : (
-          <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1">
+          <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-a:text-primary">
             <ReactMarkdown>{msg.content || "…"}</ReactMarkdown>
           </div>
         )}
@@ -272,24 +284,24 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
               <button
                 key={w.id}
                 onClick={() => onOpenWorker(w.id)}
-                className="flex items-center gap-3 rounded-xl border border-border bg-background p-2.5 text-left hover:bg-accent transition"
+                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5 text-left hover:bg-white/10 transition"
               >
                 <Avatar className="h-12 w-12 rounded-xl">
                   <AvatarImage src={w.avatar_url ?? undefined} alt={w.full_name} />
-                  <AvatarFallback className="rounded-xl text-xs">
+                  <AvatarFallback className="rounded-xl text-xs bg-primary/20 text-primary">
                     {w.full_name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1">
-                    <span className="truncate text-sm font-semibold">{w.full_name || "Worker"}</span>
+                    <span className="truncate text-sm font-semibold text-hero-foreground">{w.full_name || "Worker"}</span>
                     {w.verified && <BadgeCheck className="h-3.5 w-3.5 text-primary" />}
-                    {w.is_featured && <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />}
+                    {w.is_featured && <Star className="h-3.5 w-3.5 fill-primary text-primary" />}
                   </div>
-                  <div className="truncate text-[11px] text-muted-foreground">
+                  <div className="truncate text-[11px] text-hero-muted">
                     {w.profession} • {w.experience}y exp
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-hero-muted">
                     {typeof w.distance_km === "number" && (
                       <span className="inline-flex items-center gap-0.5">
                         <MapPin className="h-3 w-3" />
@@ -298,13 +310,13 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
                     )}
                     {!!w.review_count && (
                       <span className="inline-flex items-center gap-0.5">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        <Star className="h-3 w-3 fill-primary text-primary" />
                         {Number(w.avg_rating ?? 0).toFixed(1)} ({w.review_count})
                       </span>
                     )}
                   </div>
                 </div>
-                <Phone className="h-4 w-4 text-muted-foreground" />
+                <Phone className="h-4 w-4 text-primary" />
               </button>
             ))}
           </div>
