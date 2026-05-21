@@ -563,7 +563,6 @@ const CampaignsPanel = () => {
           <span className="text-xs font-bold text-hero-foreground">{selected.size} selected</span>
           <div className="ml-auto flex flex-wrap gap-1.5">
             <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("paused")}><Pause className="mr-1 h-3 w-3" /> Pause</Button>
-            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("active")}><Play className="mr-1 h-3 w-3" /> Resume</Button>
             <Button size="sm" variant="destructive" disabled={bulkBusy} onClick={bulkExpire}>Expire</Button>
             <Button size="sm" variant="ghost" disabled={bulkBusy} onClick={clearSelection}>Clear</Button>
           </div>
