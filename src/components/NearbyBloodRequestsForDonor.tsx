@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
+import { useAppSetting } from "@/hooks/useAppSettings";
 import { formatDistanceToNow } from "date-fns";
 
 const urgencyStyles: Record<string, string> = {
