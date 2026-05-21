@@ -368,23 +368,6 @@ const Discover = () => {
           </section>
         )}
 
-        {/* FEATURED PROFESSIONALS */}
-        {featuredWorkers.length > 0 && (
-          <section className="mt-6 px-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-base font-bold">
-                <Star className="h-4 w-4 fill-primary text-primary" /> Featured Professionals
-              </h2>
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-primary">Premium</span>
-            </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {featuredWorkers.map((w, i) => (
-                <ExploreCard key={`feat-${w.id}-${i}`} worker={w as any} premium isAuthed={!!user} />
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* PROMOTED 3KM ADS */}
         <section className="mt-6 mb-2">
           <div className="mb-3 px-5">
@@ -414,6 +397,25 @@ const Discover = () => {
             />
           )}
         </section>
+
+        {/* FEATURED PROFESSIONALS — shown right below the ads section */}
+        {featuredWorkers.length > 0 && (
+          <section className="mt-2 px-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-base font-bold">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> Featured Professionals
+              </h2>
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400/20 to-amber-600/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 ring-1 ring-amber-400/30">
+                <Award className="h-3 w-3" /> Premium
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {featuredWorkers.map((w, i) => (
+                <ExploreCard key={`feat-${w.id}-${i}`} worker={w as any} premium isAuthed={!!user} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ALL PROFESSIONALS */}
         <section className="mt-6 px-5 pb-10">
