@@ -668,6 +668,39 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_pricing_rules: {
+        Row: {
+          active: boolean
+          base_sparks: number
+          category_id: string | null
+          created_at: string
+          duration_days: number
+          id: string
+          multiplier: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          base_sparks: number
+          category_id?: string | null
+          created_at?: string
+          duration_days: number
+          id?: string
+          multiplier?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          base_sparks?: number
+          category_id?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          multiplier?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       featured_requests: {
         Row: {
           created_at: string
@@ -743,6 +776,54 @@ export type Database = {
           service_id?: string
           starts_at?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      featured_workers: {
+        Row: {
+          category_id: string | null
+          center: unknown
+          created_at: string
+          duration_days: number
+          ends_at: string
+          id: string
+          radius_km: number
+          sparks_cost: number
+          starts_at: string
+          status: string
+          updated_at: string
+          user_id: string
+          worker_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          center: unknown
+          created_at?: string
+          duration_days: number
+          ends_at: string
+          id?: string
+          radius_km?: number
+          sparks_cost: number
+          starts_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          worker_id: string
+        }
+        Update: {
+          category_id?: string | null
+          center?: unknown
+          created_at?: string
+          duration_days?: number
+          ends_at?: string
+          id?: string
+          radius_km?: number
+          sparks_cost?: number
+          starts_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          worker_id?: string
         }
         Relationships: []
       }
@@ -1510,6 +1591,77 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_documents: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          persona_file_id: string | null
+          storage_path: string
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          persona_file_id?: string | null
+          storage_path: string
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          persona_file_id?: string | null
+          storage_path?: string
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_documents_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "worker_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_settings: {
+        Row: {
+          auto_approve_on_persona_pass: boolean
+          enabled: boolean
+          id: number
+          persona_environment_id: string | null
+          persona_template_id: string | null
+          sparks_cost: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_approve_on_persona_pass?: boolean
+          enabled?: boolean
+          id?: number
+          persona_environment_id?: string | null
+          persona_template_id?: string | null
+          sparks_cost?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_approve_on_persona_pass?: boolean
+          enabled?: boolean
+          id?: number
+          persona_environment_id?: string | null
+          persona_template_id?: string | null
+          sparks_cost?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       worker_location_change_requests: {
         Row: {
           admin_comment: string
@@ -1555,6 +1707,63 @@ export type Database = {
           status?: string
           updated_at?: string
           worker_user_id?: string
+        }
+        Relationships: []
+      }
+      worker_verifications: {
+        Row: {
+          admin_note: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          persona_inquiry_id: string | null
+          persona_payload: Json
+          persona_session_token: string | null
+          persona_status: string | null
+          sparks_cost: number
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          worker_id: string
+        }
+        Insert: {
+          admin_note?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          persona_inquiry_id?: string | null
+          persona_payload?: Json
+          persona_session_token?: string | null
+          persona_status?: string | null
+          sparks_cost?: number
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          worker_id: string
+        }
+        Update: {
+          admin_note?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          persona_inquiry_id?: string | null
+          persona_payload?: Json
+          persona_session_token?: string | null
+          persona_status?: string | null
+          sparks_cost?: number
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          worker_id?: string
         }
         Relationships: []
       }
@@ -1833,9 +2042,40 @@ export type Database = {
         }
         Returns: number
       }
+      admin_decide_verification: {
+        Args: { p_id: string; p_note?: string; p_status: string }
+        Returns: {
+          admin_note: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          persona_inquiry_id: string | null
+          persona_payload: Json
+          persona_session_token: string | null
+          persona_status: string | null
+          sparks_cost: number
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          worker_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "worker_verifications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_grant_sparks: {
         Args: { _amount: number; _notes?: string; _worker_id: string }
         Returns: number
+      }
+      admin_revoke_verification: {
+        Args: { p_note?: string; p_worker_id: string }
+        Returns: undefined
       }
       approve_payment_request: {
         Args: { p_id: string; p_note?: string }
@@ -1925,6 +2165,7 @@ export type Database = {
       }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       expire_campaigns: { Args: never; Returns: number }
+      expire_featured_workers: { Args: never; Returns: number }
       generate_worker_uid: { Args: never; Returns: string }
       geometry: { Args: { "": string }; Returns: unknown }
       geometry_above: {
@@ -2216,6 +2457,23 @@ export type Database = {
         }
         Returns: number
       }
+      nearby_featured_workers: {
+        Args: {
+          p_category_id?: string
+          p_lat: number
+          p_limit?: number
+          p_lng: number
+        }
+        Returns: {
+          category_id: string
+          category_match: boolean
+          distance_km: number
+          ends_at: string
+          id: string
+          user_id: string
+          worker_id: string
+        }[]
+      }
       phone_exists: { Args: { _phone: string }; Returns: boolean }
       populate_geometry_columns:
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
@@ -2257,6 +2515,30 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      purchase_featured: {
+        Args: { p_category_id?: string; p_duration_days: number }
+        Returns: {
+          category_id: string | null
+          center: unknown
+          created_at: string
+          duration_days: number
+          ends_at: string
+          id: string
+          radius_km: number
+          sparks_cost: number
+          starts_at: string
+          status: string
+          updated_at: string
+          user_id: string
+          worker_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "featured_workers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -2870,6 +3152,60 @@ export type Database = {
         Args: { geom: unknown; move: number; wrap: number }
         Returns: unknown
       }
+      start_verification: {
+        Args: never
+        Returns: {
+          admin_note: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          persona_inquiry_id: string | null
+          persona_payload: Json
+          persona_session_token: string | null
+          persona_status: string | null
+          sparks_cost: number
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          worker_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "worker_verifications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      submit_verification: {
+        Args: { p_inquiry_id: string; p_session_token?: string }
+        Returns: {
+          admin_note: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          persona_inquiry_id: string | null
+          persona_payload: Json
+          persona_session_token: string | null
+          persona_status: string | null
+          sparks_cost: number
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          worker_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "worker_verifications"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       unlockrows: { Args: { "": string }; Returns: number }
       updategeometrysrid: {
         Args: {
@@ -2911,6 +3247,8 @@ export type Database = {
         | "ad_spent"
         | "bonus"
         | "deduction"
+        | "verification"
+        | "featured"
     }
     CompositeTypes: {
       geometry_dump: {
@@ -3076,6 +3414,8 @@ export const Constants = {
         "ad_spent",
         "bonus",
         "deduction",
+        "verification",
+        "featured",
       ],
     },
   },
