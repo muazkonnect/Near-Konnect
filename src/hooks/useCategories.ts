@@ -42,15 +42,23 @@ export function useCategories() {
   const { data: dbExpertise = [] } = useQuery({
     queryKey: ["category_expertise"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("category_expertise" as never)
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (error) {
-        console.warn("expertise fetch failed", error);
-        return [] as Expertise[];
+      const all: Expertise[] = [];
+      const pageSize = 1000;
+      for (let from = 0; ; from += pageSize) {
+        const { data, error } = await supabase
+          .from("category_expertise" as never)
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .range(from, from + pageSize - 1);
+        if (error) {
+          console.warn("expertise fetch failed", error);
+          break;
+        }
+        const rows = (data as unknown) as Expertise[];
+        all.push(...rows);
+        if (rows.length < pageSize) break;
       }
-      return (data as unknown) as Expertise[];
+      return all;
     },
   });
 
