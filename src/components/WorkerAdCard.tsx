@@ -140,8 +140,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           {/* ====== AVATAR + IDENTITY ====== */}
           <div className="relative -mt-[52px] flex items-end gap-3 px-3.5">
             <div className="relative shrink-0">
-              <div className="absolute -inset-1 rounded-[20px] bg-gradient-to-br from-primary via-primary/40 to-transparent opacity-90 blur-[6px]" />
-              <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-2xl">
+              <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-xl">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
                 <AvatarFallback className="rounded-[16px] bg-gradient-to-br from-primary/20 to-hero-foreground/10 text-xl font-extrabold text-primary">
                   {initials}
