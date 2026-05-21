@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
