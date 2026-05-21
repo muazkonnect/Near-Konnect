@@ -38,6 +38,9 @@ import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import RequestLocationChangeDialog from "@/components/RequestLocationChangeDialog";
 import LocationLabel from "@/components/LocationLabel";
 import RequestFeaturedDialog from "@/components/RequestFeaturedDialog";
+import VerificationDialog from "@/components/verification/VerificationDialog";
+import FeaturedPurchaseDialog from "@/components/featured/FeaturedPurchaseDialog";
+import { ShieldCheck } from "lucide-react";
 
 import StarRating from "@/components/StarRating";
 import AppLayout from "@/components/AppLayout";
@@ -59,6 +62,8 @@ import { type ContactMethod, parseContactMethods, validateContactMethods, saniti
 import { useCategories } from "@/hooks/useCategories";
 
 const WorkerDashboard = () => {
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [featuredOpen, setFeaturedOpen] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
@@ -441,7 +446,29 @@ const WorkerDashboard = () => {
             </div>
           </div>
 
-          {/* Active Requests */}
+          {/* Premium upgrades */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setVerifyOpen(true)}
+              className="group rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-4 text-left transition hover:border-primary/60"
+            >
+              <ShieldCheck className="h-6 w-6 text-primary mb-2" />
+              <p className="text-sm font-bold">Get Verified</p>
+              <p className="text-[11px] text-hero-foreground/60">Lifetime trust badge</p>
+            </button>
+            <button
+              onClick={() => setFeaturedOpen(true)}
+              className="group rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
+            >
+              <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
+              <p className="text-sm font-bold">Become Featured</p>
+              <p className="text-[11px] text-hero-foreground/60">3 km premium reach</p>
+            </button>
+          </div>
+          <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
+          <FeaturedPurchaseDialog open={featuredOpen} onOpenChange={setFeaturedOpen} workerCategoryId={(workerData as any)?.category_id ?? null} />
+
+
           <section className="space-y-3">
             <div className="flex items-end justify-between">
               <div>

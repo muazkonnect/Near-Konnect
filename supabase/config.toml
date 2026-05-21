@@ -17,3 +17,7 @@ project_id = "lxghuqiheaoinytrwhac"
     verify_jwt = false
   [functions.worker-share]
     verify_jwt = false
+  [functions.persona-webhook]
+    verify_jwt = false
+  [functions.persona-create-inquiry]
+    verify_jwt = true
