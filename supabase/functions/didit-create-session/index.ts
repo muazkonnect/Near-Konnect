@@ -34,6 +34,7 @@ Deno.serve(async (req) => {
       workflow_id: workflowId,
       vendor_data: user.id,
       callback: origin ? `${origin}/worker-dashboard?verification=complete` : undefined,
+      callback_method: "both",
     };
 
     const resp = await fetch("https://verification.didit.me/v3/session/", {
