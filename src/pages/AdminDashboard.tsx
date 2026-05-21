@@ -48,7 +48,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));
 const SettingsTab = lazy(() => import("@/components/admin/SettingsTab"));
-const CategoriesManagementTab = lazy(() => import("@/components/admin/CategoriesManagementTab"));
+const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyManagementTab"));
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
@@ -666,7 +666,7 @@ const AdminDashboard = () => {
             {/* CATEGORIES */}
             {tab === "categories" && (
               <Suspense fallback={<TabFallback />}>
-                <CategoriesManagementTab categories={categories as any} />
+                <TaxonomyManagementTab categories={categories as any} />
               </Suspense>
             )}
 
