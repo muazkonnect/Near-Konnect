@@ -12,7 +12,7 @@ import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
 import VerificationsAdminPanel from "./VerificationsAdminPanel";
 import FeaturedAdminPanel from "./FeaturedAdminPanel";
 
-const CategoriesManagementTab = lazy(() => import("./CategoriesManagementTab"));
+const CategoriesManagementTab = lazy(() => import("./TaxonomyManagementTab"));
 
 type Sub = "defaults" | "packages" | "payments" | "verifications" | "featured" | "categories" | "account";
 

@@ -67,7 +67,8 @@ const WorkerDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
+  const MAX_EXPERTISE = 5;
 
   // Admins are not workers — bounce them to the admin dashboard.
   useEffect(() => {
@@ -87,6 +88,8 @@ const WorkerDashboard = () => {
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customExpertise, setCustomExpertise] = useState("");
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -94,6 +97,31 @@ const WorkerDashboard = () => {
   const { unreadByType } = useNotifications();
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+
+  const toggleExpertise = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+
+  const addCustomExpertise = () => {
+    const v = customExpertise.trim();
+    if (!v) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((t) => t.toLowerCase() === v.toLowerCase())) {
+      setExpertiseTags((p) => [...p, v]);
+    }
+    setCustomExpertise("");
+  };
 
   useEffect(() => {
     if (activeTab === "messages") markRead((n) => n.type === "message");
@@ -108,6 +136,7 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
+      setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
@@ -201,7 +230,8 @@ const WorkerDashboard = () => {
         experience: parseInt(experience) || 0,
         description,
         available,
-      })
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as any)
       .eq("id", workerData.id);
 
     const { error: profileError } = await supabase
@@ -626,7 +656,130 @@ const WorkerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Contact options */}
+                {/* Service category & expertise */}
+                <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Service category</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label className="text-[11px] text-hero-foreground/70">Main category</Label>
+                      <select
+                        value={mainCategory}
+                        onChange={(e) => {
+                          setMainCategory(e.target.value);
+                          setSubCategory("");
+                          setExpertiseTags([]);
+                        }}
+                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground"
+                      >
+                        <option value="" className="text-foreground">Select main category</option>
+                        {mainCategories.map((cat) => (
+                          <option key={cat.id} value={cat.name} className="text-foreground">{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-[11px] text-hero-foreground/70">Subcategory</Label>
+                      <select
+                        value={subCategory}
+                        onChange={(e) => {
+                          setSubCategory(e.target.value);
+                          setExpertiseTags([]);
+                        }}
+                        disabled={!mainCategory}
+                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground disabled:opacity-50"
+                      >
+                        <option value="" className="text-foreground">Select subcategory</option>
+                        {subCategories.map((sub) => (
+                          <option key={sub.id} value={sub.name} className="text-foreground">{sub.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {subCategory && (
+                    <div>
+                      <Label className="text-[11px] text-hero-foreground/70">Expertise (up to {MAX_EXPERTISE})</Label>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {expertiseOptions.map((tag) => {
+                          const active = expertiseTags.includes(tag);
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => toggleExpertise(tag)}
+                              className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition ${
+                                active
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground hover:bg-hero-foreground/10"
+                              }`}
+                            >
+                              {tag}
+                            </button>
+                          );
+                        })}
+                        {expertiseTags
+                          .filter((t) => !expertiseOptions.includes(t))
+                          .map((tag) => (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => toggleExpertise(tag)}
+                              className="rounded-full border border-primary bg-primary px-2.5 py-1 text-[11px] font-medium text-primary-foreground"
+                            >
+                              {tag} ✕
+                            </button>
+                          ))}
+                      </div>
+                      <div className="mt-2 flex gap-2">
+                        <Input
+                          value={customExpertise}
+                          onChange={(e) => setCustomExpertise(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addCustomExpertise();
+                            }
+                          }}
+                          placeholder="Add custom expertise…"
+                          className="h-9 bg-hero-foreground/5 text-xs"
+                        />
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={addCustomExpertise}
+                          disabled={!customExpertise.trim() || expertiseTags.length >= MAX_EXPERTISE}
+                          className="h-9 text-xs"
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label className="text-[11px] text-hero-foreground/70">Years of experience</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={experience}
+                        onChange={(e) => setExperience(e.target.value)}
+                        className="mt-1 h-9 bg-hero-foreground/5 text-xs"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-[11px] text-hero-foreground/70">About / description</Label>
+                    <Textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={3}
+                      placeholder="Describe your services briefly…"
+                      className="mt-1 bg-hero-foreground/5 text-xs"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
