@@ -143,7 +143,7 @@ const Home = () => {
   const tickerItems = useMemo(() => {
     const items: { text: string; hot?: boolean }[] = [];
     if (donors.length) items.push({ text: `${donors.length}+ verified blood donors active nearby`, hot: true });
-    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within 5 KM` });
+    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within ${r0} KM` });
     if (workers.length) items.push({ text: `${workers.length} total providers connected on Near Konnect` });
     items.push({ text: "Safety protocols for verified providers updated", hot: true });
     return items.length ? items : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
