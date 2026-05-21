@@ -67,7 +67,8 @@ const WorkerDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
+  const MAX_EXPERTISE = 5;
 
   // Admins are not workers — bounce them to the admin dashboard.
   useEffect(() => {
