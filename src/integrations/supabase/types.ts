@@ -465,6 +465,44 @@ export type Database = {
           },
         ]
       }
+      category_expertise: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          sub_category_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          sub_category_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          sub_category_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_expertise_sub_category_id_fkey"
+            columns: ["sub_category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chatbot_conversations: {
         Row: {
           created_at: string
@@ -1376,24 +1414,30 @@ export type Database = {
           created_at: string
           icon: string
           id: string
+          is_active: boolean
           name: string
           parent_id: string | null
+          slug: string | null
           sort_order: number
         }
         Insert: {
           created_at?: string
           icon?: string
           id?: string
+          is_active?: boolean
           name: string
           parent_id?: string | null
+          slug?: string | null
           sort_order?: number
         }
         Update: {
           created_at?: string
           icon?: string
           id?: string
+          is_active?: boolean
           name?: string
           parent_id?: string | null
+          slug?: string | null
           sort_order?: number
         }
         Relationships: [
@@ -2549,6 +2593,14 @@ export type Database = {
       reject_payment_request: {
         Args: { p_id: string; p_note?: string }
         Returns: string
+      }
+      seed_nearkonnect_taxonomy: {
+        Args: { payload: Json }
+        Returns: {
+          expertise_count: number
+          mains_count: number
+          subs_count: number
+        }[]
       }
       set_campaign_status: {
         Args: {
