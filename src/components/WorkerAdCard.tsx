@@ -199,8 +199,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
 
           {/* ====== STATS ====== */}
           <div className="relative mx-3.5 mt-3 grid grid-cols-2 gap-2">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/75 px-3 py-2.5 text-primary-foreground shadow-lg shadow-primary/30">
-              <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-hero-foreground/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/85 px-3 py-2.5 text-primary-foreground shadow-md shadow-primary/20">
               <div className="relative flex items-center gap-2.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-hero-foreground/15 backdrop-blur">
                   <MapPin className="h-4 w-4" />
