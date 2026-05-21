@@ -26,6 +26,7 @@ const BloodDonors = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedDonor, setSelectedDonor] = useState<BloodDonorPopupData | null>(null);
   const { coords: userCoords } = useRealtimeLocation();
 
   useEffect(() => {
