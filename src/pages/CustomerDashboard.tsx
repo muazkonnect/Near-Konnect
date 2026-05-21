@@ -126,14 +126,18 @@ const CustomerDashboard = () => {
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Phone Number</Label>
-                <Input
+                <Label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">
+                  <WhatsappIcon className="h-3 w-3 text-[#25D366]" /> WhatsApp Number
+                </Label>
+                <PhoneField
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  type="tel"
-                  placeholder="+1 234 567 8900"
-                  className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:border-primary/60 focus-visible:ring-0"
+                  onChange={setPhone}
+                  defaultCountry="PK"
+                  variant="hero"
+                  ariaLabel="WhatsApp number"
+                  className="mt-1.5"
                 />
+                <p className="mt-1 text-[11px] text-hero-foreground/50">Clients and workers will reach you on WhatsApp using this number.</p>
               </div>
             </div>
 
