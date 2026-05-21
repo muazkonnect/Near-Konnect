@@ -190,7 +190,7 @@ export default function AssistantSheet() {
         className="group fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-hero text-primary shadow-[0_10px_30px_-8px_hsl(var(--hero)/0.6)] ring-2 ring-primary/40 transition active:scale-95 md:bottom-6"
       >
         <span className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-60 group-hover:opacity-90 transition" />
-        <Sparkle className="relative h-6 w-6 fill-primary" />
+        <Sparkles className="relative h-6 w-6 fill-primary" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -201,7 +201,7 @@ export default function AssistantSheet() {
           <SheetHeader className="border-b border-white/10 px-5 py-3">
             <SheetTitle className="flex items-center gap-2 text-base text-hero-foreground">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary/40">
-                <Sparkle className="h-4 w-4 fill-primary text-primary" />
+                <Sparkles className="h-4 w-4 fill-primary text-primary" />
               </span>
               NearKonnect Assistant
             </SheetTitle>
