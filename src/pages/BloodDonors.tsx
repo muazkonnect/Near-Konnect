@@ -15,6 +15,7 @@ import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import AppLayout from "@/components/AppLayout";
 import { parseContactMethods } from "@/lib/contactMethods";
+import BloodDonorPopup, { type BloodDonorPopupData } from "@/components/BloodDonorPopup";
 import { markRead } from "@/hooks/useNotifications";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -25,6 +26,7 @@ const BloodDonors = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedDonor, setSelectedDonor] = useState<BloodDonorPopupData | null>(null);
   const { coords: userCoords } = useRealtimeLocation();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods" as any)
+        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods, show_contact" as any)
         .eq("is_blood_donor", true)
         .order("full_name") as any;
       if (error) throw error;
@@ -198,10 +200,25 @@ const BloodDonors = () => {
                   ? calculateDistance(userCoords.latitude, userCoords.longitude, donor.latitude, donor.longitude).toFixed(1)
                   : null;
                 const isActive = donor.donor_status === "active";
+                const distNum = userCoords && donor.latitude && donor.longitude
+                  ? calculateDistance(userCoords.latitude, userCoords.longitude, donor.latitude, donor.longitude)
+                  : undefined;
+
+                const openPopup = () => setSelectedDonor({
+                  user_id: donor.user_id,
+                  full_name: donor.full_name,
+                  avatar_url: donor.avatar_url,
+                  blood_group: donor.blood_group,
+                  city: donor.city,
+                  distance: distNum,
+                  phone: donor.phone ?? null,
+                  contact_methods: donor.contact_methods,
+                  show_contact: donor.show_contact ?? true,
+                });
 
                 const ContactBtn = (
                   <button
-                    onClick={() => user && navigate(`/chat/${donor.user_id}`)}
+                    onClick={(e) => { e.stopPropagation(); openPopup(); }}
                     className="rounded-lg bg-[#271716] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#b7131a]"
                   >
                     Contact
@@ -214,7 +231,11 @@ const BloodDonors = () => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.03, 0.2) }}
-                    className="group flex flex-col rounded-xl border border-[#e4beb9] bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-lg"
+                    onClick={openPopup}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPopup(); } }}
+                    className="group flex cursor-pointer flex-col rounded-xl border border-[#e4beb9] bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b7131a]/40"
                   >
                     <div className="mb-4 flex items-start justify-between">
                       <div className="flex items-center gap-2">
@@ -317,6 +338,12 @@ const BloodDonors = () => {
           </div>
         </main>
       </div>
+      <BloodDonorPopup
+        donor={selectedDonor}
+        open={!!selectedDonor}
+        onOpenChange={(o) => !o && setSelectedDonor(null)}
+        isAuthed={!!user}
+      />
     </AppLayout>
   );
 };
