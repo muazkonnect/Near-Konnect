@@ -51,6 +51,8 @@ type DonorRow = {
   blood_group: string | null;
   latitude: number | null;
   longitude: number | null;
+  phone: string | null;
+  contact_methods: unknown;
 };
 
 const Home = () => {
