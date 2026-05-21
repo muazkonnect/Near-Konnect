@@ -1,16 +1,15 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Star, ChevronRight, BadgeCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useFeaturedServices, trackFeaturedEvent } from "@/hooks/useSponsored";
+import { useFeaturedServices } from "@/hooks/useSponsored";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/contexts/AuthContext";
+import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
+import { calculateDistance } from "@/lib/geolocation";
 
 type FeaturedWorker = {
   id: string;
+  uid: string | null;
   profession: string;
   experience: number;
   verified: boolean;
@@ -18,6 +17,7 @@ type FeaturedWorker = {
   avatar_url: string | null;
   city: string | null;
   priority: number;
+  distance?: number;
 };
 
 interface Props {
@@ -33,7 +33,6 @@ const FeaturedWorkersCarousel = ({
   limit = 8,
   className = "",
 }: Props) => {
-  const { user } = useAuth();
   const { coords } = useRealtimeLocation();
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
@@ -54,27 +53,41 @@ const FeaturedWorkersCarousel = ({
     (async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("id, profession, experience, verified, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
+        .select("id, uid, profession, experience, verified, latitude, longitude, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
         .in("id", mergedIds);
       if (error || cancelled) return;
       const priorityById = new Map(featured.map((f) => [f.service_id, f.priority]));
-      const enriched = (data || []).map((w: any) => ({
-        id: w.id,
-        profession: w.profession,
-        experience: w.experience,
-        verified: w.verified,
-        full_name: w.profiles?.full_name || "Service Provider",
-        avatar_url: w.profiles?.avatar_url ?? null,
-        city: w.profiles?.city ?? null,
-        priority: priorityById.get(w.id) ?? (paidFeaturedIds.has(w.id) ? 1000 : 0),
-      }));
+      const enriched = (data || []).map((w: any) => {
+        let distance: number | undefined;
+        if (
+          coords &&
+          typeof w.latitude === "number" &&
+          typeof w.longitude === "number"
+        ) {
+          distance = parseFloat(
+            calculateDistance(coords.latitude, coords.longitude, w.latitude, w.longitude).toFixed(1)
+          );
+        }
+        return {
+          id: w.id,
+          uid: w.uid ?? null,
+          profession: w.profession,
+          experience: w.experience,
+          verified: w.verified,
+          full_name: w.profiles?.full_name || "Service Provider",
+          avatar_url: w.profiles?.avatar_url ?? null,
+          city: w.profiles?.city ?? null,
+          priority: priorityById.get(w.id) ?? (paidFeaturedIds.has(w.id) ? 1000 : 0),
+          distance,
+        };
+      });
       enriched.sort((a, b) => b.priority - a.priority);
       const currentIds = items.map(i => i.id).join(',');
       const newIds = enriched.map(i => i.id).join(',');
-      if (currentIds !== newIds) setItems(enriched);
+      if (currentIds !== newIds) setItems(enriched.slice(0, limit));
     })();
     return () => { cancelled = true; };
-  }, [mergedIds.join(","), limit]);
+  }, [mergedIds.join(","), limit, coords?.latitude, coords?.longitude]);
 
   if (items.length === 0) return null;
 
@@ -92,43 +105,9 @@ const FeaturedWorkersCarousel = ({
 
       <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-3 pb-1">
-          {items.map((w, i) => {
-            const initials = w.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-            return (
-              <motion.div
-                key={w.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="shrink-0"
-              >
-                <Link
-                  to={`/w/${(w as any).uid || w.id}`}
-                  onClick={() => trackFeaturedEvent(w.id, "contact_click", user?.id)}
-                  className="group relative flex w-[200px] flex-col items-center gap-2 rounded-2xl border border-star/30 bg-gradient-to-b from-star/5 to-transparent p-3 transition-all hover:-translate-y-0.5 hover:border-star/50 hover:shadow-md"
-                >
-                  <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-star/30 bg-card px-1.5 py-0.5 text-[9px] font-bold text-star shadow-sm">
-                    <Star className="h-2.5 w-2.5 fill-star" /> Featured
-                  </span>
-                  <Avatar className="mt-1 h-14 w-14 rounded-2xl">
-                    <AvatarImage src={w.avatar_url ?? undefined} alt={w.full_name} className="object-cover" />
-                    <AvatarFallback className="rounded-2xl bg-hero text-sm font-bold text-primary">{initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <p className="truncate text-sm font-bold text-card-foreground">{w.full_name}</p>
-                      {w.verified && <BadgeCheck className="h-3 w-3 shrink-0 text-primary" />}
-                    </div>
-                    <p className="truncate text-[11px] text-muted-foreground/70">{w.profession}</p>
-                    {w.city && <p className="truncate text-[10px] text-muted-foreground/80">{w.city}</p>}
-                  </div>
-                  <span className="inline-flex items-center gap-0.5 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground">
-                    {w.experience} yrs <ChevronRight className="h-3 w-3" />
-                  </span>
-                </Link>
-              </motion.div>
-            );
-          })}
+          {items.map((w, i) => (
+            <FeaturedWorkerCard key={w.id} worker={w} index={i} />
+          ))}
         </div>
       </div>
     </section>
