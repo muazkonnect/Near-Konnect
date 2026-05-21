@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Droplet, BadgeCheck, MapPin, X, HeartPulse, Eye, EyeOff, MessageSquare, Phone } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -29,6 +29,10 @@ interface Props {
 const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(true);
+
+  useEffect(() => {
+    if (open) setShowContact(true);
+  }, [open, donor?.user_id]);
 
   if (!donor) return null;
 
