@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Star, ChevronRight, BadgeCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices, trackFeaturedEvent } from "@/hooks/useSponsored";
+import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 
