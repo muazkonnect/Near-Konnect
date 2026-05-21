@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices } from "@/hooks/useSponsored";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import SteppedCarousel from "@/components/SteppedCarousel";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
