@@ -1760,6 +1760,44 @@ export type Database = {
         }
         Relationships: []
       }
+      worker_portfolio: {
+        Row: {
+          caption: string
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          user_id: string
+          worker_id: string
+        }
+        Insert: {
+          caption?: string
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          user_id: string
+          worker_id: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          user_id?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_portfolio_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worker_verifications: {
         Row: {
           admin_note: string
@@ -1820,6 +1858,7 @@ export type Database = {
       workers: {
         Row: {
           available: boolean
+          banner_url: string | null
           city: string | null
           cnic: string | null
           created_at: string
@@ -1841,6 +1880,7 @@ export type Database = {
         }
         Insert: {
           available?: boolean
+          banner_url?: string | null
           city?: string | null
           cnic?: string | null
           created_at?: string
@@ -1862,6 +1902,7 @@ export type Database = {
         }
         Update: {
           available?: boolean
+          banner_url?: string | null
           city?: string | null
           cnic?: string | null
           created_at?: string
