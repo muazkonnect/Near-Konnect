@@ -337,21 +337,15 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/blood-donors")}>Become a Donor</Button>
             </div>
           ) : (
-            <SteppedCarousel
-              className="pb-3"
-              gapClass="gap-4"
-              trackClassName="pl-5 pr-5"
-              dwellMs={2500}
-              paused={!!selectedDonor}
-              items={donors.map((d) => (
+            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {donors.map((d) => (
                 <BloodDonorCarouselCard
                   key={d.user_id}
                   donor={d}
                   onOpen={(donor) => setSelectedDonor(toBloodDonorPopupData(donor))}
                 />
               ))}
-            />
-
+            </div>
           )}
         </motion.section>
 
