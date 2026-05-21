@@ -31,13 +31,19 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   const startScan = async () => {
     if (!user) return;
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
+    // Open popup SYNCHRONOUSLY inside the click handler so browsers don't block it.
+    const popup = window.open("about:blank", "didit_verify", "width=480,height=720");
+    popupRef.current = popup;
     setLoading(true);
     try {
       await startVerification();
       const s = await createDiditSession();
       setSession(s);
-      popupRef.current = window.open(s.url, "didit_verify", "width=480,height=720");
-      if (!popupRef.current) toast.error("Popup blocked. Use the open link below.");
+      if (popup && !popup.closed) {
+        try { popup.location.href = s.url; } catch { window.open(s.url, "didit_verify"); }
+      } else {
+        toast.error("Popup blocked — use the open link below.");
+      }
 
       if (pollRef.current) window.clearInterval(pollRef.current);
       pollRef.current = window.setInterval(async () => {
@@ -50,12 +56,13 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
             await submitVerification(s.session_id, s.session_token);
             toast.success("Verification submitted for admin approval");
             setSession(null);
-            try { popupRef.current?.close(); } catch {}
+            try { popupRef.current?.close(); } catch { /* ignore */ }
             refetch();
           }
         } catch { /* keep polling */ }
       }, 5000);
     } catch (e: any) {
+      try { popup?.close(); } catch { /* ignore */ }
       toast.error(e?.message || "Failed to start verification");
     } finally {
       setLoading(false);
