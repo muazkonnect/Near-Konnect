@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
+import { Star, BadgeCheck, Phone, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
