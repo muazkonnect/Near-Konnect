@@ -234,7 +234,17 @@ const WorkerProfile = () => {
           </button>
         </header>
 
-        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6">
+        {/* Banner */}
+        <div className="relative -mt-px h-44 w-full overflow-hidden bg-gradient-to-br from-primary/30 via-primary/10 to-hero sm:h-56">
+          {worker.bannerUrl ? (
+            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+          ) : worker.profilePhoto ? (
+            <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
+        </div>
+
+        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
           {/* 1. Compact Header */}
           <section className="mb-6 flex flex-col items-center gap-3 text-center">
             <div className="relative group shrink-0">
