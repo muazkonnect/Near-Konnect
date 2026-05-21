@@ -157,6 +157,7 @@ const WorkerOnboardingDialog = () => {
         profession: subCategory,
         main_category: mainCategory,
         sub_category: subCategory,
+        expertise_tags: expertiseTags,
         experience: exp,
         latitude: coords.latitude,
         longitude: coords.longitude,
