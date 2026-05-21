@@ -214,7 +214,7 @@ const BloodDonors = () => {
                     distance: distNum,
                     phone: donor.phone ?? null,
                     contact_methods: donor.contact_methods,
-                    show_contact: donor.show_contact ?? true,
+                    blood_show_contact: (donor as any).blood_show_contact ?? true,
                   };
                   setSelectedDonor(data);
                 };
