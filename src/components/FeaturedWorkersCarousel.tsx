@@ -61,7 +61,7 @@ const FeaturedWorkersCarousel = ({
       if (error || cancelled) return;
       const filteredData = (data || []).filter((w: any) => !user?.id || w.user_id !== user.id);
       const priorityById = new Map(featured.map((f) => [f.service_id, f.priority]));
-      const enriched = (data || []).map((w: any) => {
+      const enriched = filteredData.map((w: any) => {
         let distance: number | undefined;
         if (
           coords &&
