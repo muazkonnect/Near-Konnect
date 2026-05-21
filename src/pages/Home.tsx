@@ -339,14 +339,18 @@ const Home = () => {
               <Button size="sm" className="mt-3" onClick={() => navigate("/blood-donors")}>Become a Donor</Button>
             </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {donors.map((d) => (
-                <BloodDonorCarouselCard
-                  key={d.user_id}
-                  donor={d}
-                  onOpen={(donor) => setSelectedDonor(toBloodDonorPopupData(donor))}
-                />
-              ))}
+            <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]">
+              <div className="flex w-max gap-4 px-5 pb-3 animate-[blood-slide_40s_cubic-bezier(0.45,0,0.55,1)_infinite] will-change-transform hover:[animation-play-state:paused] group-hover:[animation-play-state:paused] group-active:[animation-play-state:paused] [-webkit-backface-visibility:hidden] [transform:translate3d(0,0,0)]">
+                {[...donors, ...donors].map((d, i) => (
+                  <div key={`blood-${d.user_id}-${i}`} className="shrink-0">
+                    <BloodDonorCarouselCard
+                      donor={d}
+                      onOpen={(donor) => setSelectedDonor(toBloodDonorPopupData(donor))}
+                    />
+                  </div>
+                ))}
+              </div>
+              <style>{`@keyframes blood-slide { 0% { transform: translate3d(0,0,0) } 100% { transform: translate3d(-50%,0,0) } }`}</style>
             </div>
           )}
         </motion.section>
