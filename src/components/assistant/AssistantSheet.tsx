@@ -213,7 +213,7 @@ export default function AssistantSheet() {
             ))}
             {loading && (
               <div className="flex items-center gap-2 text-xs text-hero-muted">
-                <Loader2 className="h-3 w-3 animate-spin" /> Sochne mein…
+                <Loader2 className="h-3 w-3 animate-spin" /> Thinking…
               </div>
             )}
             {messages.length <= 1 && (
