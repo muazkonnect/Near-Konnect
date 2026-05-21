@@ -1,23 +1,25 @@
 import { useState } from "react";
 import { lazy, Suspense } from "react";
 import {
-  Settings, Sliders, UserCircle, Package, CreditCard, Shield, BadgeCheck, Star,
+  Settings, Sliders, UserCircle, Package, CreditCard, Shield, BadgeCheck, Star, Megaphone,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
+import AnnouncementBarTab from "./AnnouncementBarTab";
 import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
 import VerificationsAdminPanel from "./VerificationsAdminPanel";
 import FeaturedAdminPanel from "./FeaturedAdminPanel";
 
 const CategoriesManagementTab = lazy(() => import("./TaxonomyManagementTab"));
 
-type Sub = "defaults" | "packages" | "payments" | "verifications" | "featured" | "categories" | "account";
+type Sub = "defaults" | "announcement" | "packages" | "payments" | "verifications" | "featured" | "categories" | "account";
 
 const SUBS: { key: Sub; label: string; icon: typeof Sliders }[] = [
   { key: "defaults", label: "App Defaults", icon: Sliders },
+  { key: "announcement", label: "Announcement Bar", icon: Megaphone },
   { key: "packages", label: "Packages & Discounts", icon: Package },
   { key: "payments", label: "Payment Methods", icon: CreditCard },
   { key: "verifications", label: "Verifications", icon: BadgeCheck },
@@ -80,6 +82,7 @@ export default function SettingsTab() {
       </div>
       <div>
         {sub === "defaults" && <AppDefaultsTab />}
+        {sub === "announcement" && <AnnouncementBarTab />}
         {sub === "packages" && <PackagesPanel />}
         {sub === "payments" && <PaymentSettingsPanel />}
         {sub === "verifications" && <VerificationsAdminPanel />}
