@@ -32,7 +32,7 @@ const AuthRequiredDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="relative rounded-2xl [&>button.absolute]:hidden">
+      <DialogContent className="relative rounded-2xl [&>button:last-child]:hidden">
         <DialogClose asChild>
           <button
             className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
