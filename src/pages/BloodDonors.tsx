@@ -338,6 +338,12 @@ const BloodDonors = () => {
           </div>
         </main>
       </div>
+      <BloodDonorPopup
+        donor={selectedDonor}
+        open={!!selectedDonor}
+        onOpenChange={(o) => !o && setSelectedDonor(null)}
+        isAuthed={!!user}
+      />
     </AppLayout>
   );
 };
