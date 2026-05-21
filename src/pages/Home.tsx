@@ -301,24 +301,14 @@ const Home = () => {
               items={donors.map((d) => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
-                const open = () =>
-                  setSelectedDonor({
-                    user_id: d.user_id,
-                    full_name: d.full_name,
-                    avatar_url: d.avatar_url,
-                    blood_group: d.blood_group,
-                    city: d.city,
-                    distance: isFinite(d.distance as number) ? (d.distance as number) : undefined,
-                    phone: (d as any).phone ?? null,
-                    contact_methods: (d as any).contact_methods,
-                  });
+                const open = () => setSelectedDonor(toBloodDonorPopupData(d));
                 let downX = 0;
                 let downY = 0;
                 return (
-                  <div
-                    role="button"
-                    tabIndex={0}
+                  <button
+                    type="button"
                     key={d.user_id}
+                    onClick={open}
                     onPointerDown={(e) => {
                       downX = e.clientX;
                       downY = e.clientY;
@@ -364,7 +354,7 @@ const Home = () => {
                     <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-destructive/70">
                       Tap to view details
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             />
