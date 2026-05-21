@@ -55,6 +55,16 @@ export function useWorkers() {
 
         const finalProfession = w.profession || "General Service";
 
+        const phoneVal = profile?.phone || "";
+        const stored = parseContactMethods(profile?.contact_methods);
+        const fallback: ContactMethod[] = phoneVal
+          ? [
+              { type: "phone", value: phoneVal },
+              ...(profile?.use_whatsapp ? [{ type: "whatsapp", value: phoneVal } as ContactMethod] : []),
+            ]
+          : [];
+        const contactMethods = stored.length > 0 ? stored : fallback;
+
         return {
           id: w.id,
           uid: w.uid || undefined,
@@ -66,7 +76,7 @@ export function useWorkers() {
           distance: 0, // Will be calculated by consumer
           available: w.available,
           verified: w.verified,
-          phone: profile?.phone || "",
+          phone: phoneVal,
           description: w.description || "",
           serviceAreas: w.service_areas || [],
           profilePhoto: profile?.avatar_url || "",
@@ -76,6 +86,7 @@ export function useWorkers() {
           mainCategory: w.main_category || "",
           subCategory: w.sub_category || "",
           userId: w.user_id,
+          contactMethods,
         };
       });
 
