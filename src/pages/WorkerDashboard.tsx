@@ -79,6 +79,16 @@ const WorkerDashboard = () => {
   }, [authLoading, roleLoading, roles, navigate]);
   const { data: workerData, isLoading } = useWorkerProfile();
   const { data: sparksBalance = 0 } = useSparksWallet();
+  const { data: myFeatured = [] } = useMyFeatured(user?.id ?? null);
+  const activePremium = useMemo(() => {
+    const now = Date.now();
+    return (myFeatured as any[]).find(
+      (f) => f.status === "active" && new Date(f.ends_at).getTime() > now && new Date(f.starts_at).getTime() <= now
+    ) || null;
+  }, [myFeatured]);
+  const premiumDaysLeft = activePremium
+    ? Math.max(0, Math.ceil((new Date(activePremium.ends_at).getTime() - Date.now()) / 86400000))
+    : 0;
   const queryClient = useQueryClient();
 
   const [profession, setProfession] = useState("");
