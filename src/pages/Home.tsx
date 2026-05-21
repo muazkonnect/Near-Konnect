@@ -222,6 +222,7 @@ const Home = () => {
   };
 
   return (
+    <>
     <AppLayout hideMobileHeader>
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground md:mx-0 md:mt-0 md:mb-0 md:rounded-3xl md:overflow-hidden md:border md:border-hero-foreground/10">
@@ -466,13 +467,14 @@ const Home = () => {
           </div>
         </section>
       </div>
-      <BloodDonorPopup
-        donor={selectedDonor}
-        open={!!selectedDonor}
-        onOpenChange={(o) => { if (!o) setSelectedDonor(null); }}
-        isAuthed={!!user}
-      />
     </AppLayout>
+    <BloodDonorPopup
+      donor={selectedDonor}
+      open={!!selectedDonor}
+      onOpenChange={(o) => { if (!o) setSelectedDonor(null); }}
+      isAuthed={!!user}
+    />
+    </>
   );
 };
 
