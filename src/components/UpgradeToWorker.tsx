@@ -195,7 +195,7 @@ const UpgradeToWorker = () => {
             <select
               className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
+              onChange={(e) => { setSubCategory(e.target.value); setExpertiseTags([]); }}
               disabled={!mainCategory}
             >
               <option value="">Select your profession</option>
@@ -206,6 +206,40 @@ const UpgradeToWorker = () => {
               ))}
             </select>
           </div>
+
+          {subCategory && (
+            <div className="space-y-2">
+              <Label>Expertise (max {MAX_EXPERTISE})</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {expertiseOptions.map((tag) => {
+                  const active = expertiseTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`rounded-full border px-3 py-1 text-xs ${active ? "border-primary bg-primary text-primary-foreground" : "border-input bg-background"}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+              {expertiseTags.filter((t) => !expertiseOptions.includes(t)).length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {expertiseTags.filter((t) => !expertiseOptions.includes(t)).map((tag) => (
+                    <button key={tag} type="button" onClick={() => toggleTag(tag)} className="rounded-full border border-primary bg-primary px-3 py-1 text-xs text-primary-foreground">
+                      {tag} ✕
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input value={customTag} onChange={(e) => setCustomTag(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }} placeholder="Add custom…" />
+                <Button type="button" variant="outline" onClick={addCustomTag} disabled={!customTag.trim() || expertiseTags.length >= MAX_EXPERTISE}>Add</Button>
+              </div>
+            </div>
+          )}
           <div>
             <Label>Years of Experience *</Label>
             <Input type="number" placeholder="e.g. 5" className="mt-1.5" value={experience} onChange={e => setExperience(e.target.value)} />
