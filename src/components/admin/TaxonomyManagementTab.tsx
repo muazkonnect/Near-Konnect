@@ -92,7 +92,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
         .order("sort_order")
         .order("name");
       if (error) throw error;
-      return data as Expertise[];
+      return (data ?? []) as unknown as Expertise[];
     },
   });
 
@@ -149,7 +149,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
       parent_id: string | null;
     }) => {
       setBusyId("new-" + (payload.parent_id ?? "root"));
-      const { error } = await supabase.from("service_categories").insert(payload);
+      const { error } = await (supabase as any).from("service_categories").insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -184,7 +184,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
   const addExp = useMutation({
     mutationFn: async (payload: { sub_category_id: string; name: string }) => {
       setBusyId("new-exp-" + payload.sub_category_id);
-      const { error } = await supabase.from("category_expertise").insert(payload);
+      const { error } = await (supabase as any).from("category_expertise").insert(payload);
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
