@@ -107,7 +107,8 @@ const UpgradeToWorker = () => {
         latitude: location.latitude,
         longitude: location.longitude,
         available: true,
-      });
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as never);
 
       if (workerError) {
         if (workerError.message.includes("duplicate") || workerError.message.includes("unique")) {
