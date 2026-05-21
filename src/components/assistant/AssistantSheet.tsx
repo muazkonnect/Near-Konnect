@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Sparkle, Loader2, MapPin, Star, BadgeCheck, Phone } from "lucide-react";
+import { Send, Sparkles, Loader2, MapPin, Star, BadgeCheck, Phone } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +32,11 @@ type WorkerCard = {
 };
 
 const QUICK = [
-  "Mujhe plumber chahiye",
-  "AC se pani tap raha hai",
-  "Electrician near me",
-  "Ad kaise post karun?",
-  "Profile verify kaise hogi?",
+  "I need a plumber",
+  "My AC is leaking water",
+  "Find an electrician near me",
+  "How do I post an ad?",
+  "How can I verify my profile?",
 ];
 
 export default function AssistantSheet() {
@@ -49,7 +49,7 @@ export default function AssistantSheet() {
     {
       role: "assistant",
       content:
-        "Hi! Main NearKonnect ka assistant hun. Apni problem batao ya app k baray mein kuch puchho — main nearest best worker dhoondh k dunga.",
+        "Hi! I'm the NearKonnect assistant. Tell me your problem or ask anything about the app — I'll find the nearest, best worker for you.",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ export default function AssistantSheet() {
     const value = text.trim();
     if (!value || loading) return;
     if (!user || !session) {
-      toast({ title: "Login required", description: "Pehle login karein assistant use karne ke liye." });
+      toast({ title: "Login required", description: "Please log in to use the assistant." });
       navigate("/login");
       return;
     }
@@ -177,7 +177,7 @@ export default function AssistantSheet() {
   };
 
   const placeholder = useMemo(
-    () => "Apni problem batayein ya sawal puchein…",
+    () => "Describe your problem or ask a question…",
     []
   );
 
@@ -190,7 +190,7 @@ export default function AssistantSheet() {
         className="group fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-hero text-primary shadow-[0_10px_30px_-8px_hsl(var(--hero)/0.6)] ring-2 ring-primary/40 transition active:scale-95 md:bottom-6"
       >
         <span className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-60 group-hover:opacity-90 transition" />
-        <Sparkle className="relative h-6 w-6 fill-primary" />
+        <Sparkles className="relative h-6 w-6 fill-primary" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -201,7 +201,7 @@ export default function AssistantSheet() {
           <SheetHeader className="border-b border-white/10 px-5 py-3">
             <SheetTitle className="flex items-center gap-2 text-base text-hero-foreground">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary/40">
-                <Sparkle className="h-4 w-4 fill-primary text-primary" />
+                <Sparkles className="h-4 w-4 fill-primary text-primary" />
               </span>
               NearKonnect Assistant
             </SheetTitle>
@@ -213,7 +213,7 @@ export default function AssistantSheet() {
             ))}
             {loading && (
               <div className="flex items-center gap-2 text-xs text-hero-muted">
-                <Loader2 className="h-3 w-3 animate-spin" /> Sochne mein…
+                <Loader2 className="h-3 w-3 animate-spin" /> Thinking…
               </div>
             )}
             {messages.length <= 1 && (
