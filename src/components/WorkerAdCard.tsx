@@ -76,8 +76,15 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         >
           {/* ====== COVER BAND ====== */}
           <div className="relative h-[88px] w-full overflow-hidden">
-            {/* Backdrop derived from profile photo */}
-            {worker.profilePhoto ? (
+            {/* Custom banner if set, else derived from profile photo */}
+            {worker.bannerUrl ? (
+              <img
+                src={worker.bannerUrl}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : worker.profilePhoto ? (
               <img
                 src={worker.profilePhoto}
                 alt=""
@@ -88,12 +95,13 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/20 to-hero" />
             )}
             {/* Heavy gradient overlay for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/55 to-hero" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/25 via-transparent to-primary/15 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-gradient-to-b from-hero/20 via-hero/45 to-hero" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/10 mix-blend-overlay" />
             {/* Diagonal sheen */}
             <div className="pointer-events-none absolute -inset-x-10 -top-10 h-24 rotate-[-8deg] bg-gradient-to-r from-transparent via-hero-foreground/8 to-transparent blur-2xl" />
             {/* Glow */}
             <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/35 blur-3xl" />
+
 
             {/* Top meta row */}
             <div className="relative flex items-center justify-between px-3.5 pt-3">
