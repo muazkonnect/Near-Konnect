@@ -29,7 +29,7 @@ import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import NativeAdCard from "@/components/NativeAdCard";
 import SteppedCarousel from "@/components/SteppedCarousel";
-import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
+
 import BloodDonorPopup, { type BloodDonorPopupData } from "@/components/BloodDonorPopup";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
@@ -377,10 +377,6 @@ const Home = () => {
           </motion.section>
         )}
 
-        {/* FEATURED CAROUSEL */}
-        <section className="mb-10 px-5">
-          <FeaturedWorkersCarousel className="text-foreground" />
-        </section>
 
         <PromotedSection
           title={`Within ${r0} KM`}

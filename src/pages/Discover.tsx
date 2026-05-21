@@ -412,10 +412,10 @@ const Discover = () => {
           )}
         </section>
 
-        {/* FEATURED PROFESSIONALS — shown right below the ads section */}
+        {/* FEATURED PROFESSIONALS — marquee, like ads section */}
         {featuredWorkers.length > 0 && (
-          <section className="mt-2 px-5">
-            <div className="mb-3 flex items-center justify-between">
+          <section className="mt-2">
+            <div className="mb-3 flex items-center justify-between px-5">
               <h2 className="flex items-center gap-2 text-base font-bold">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> Featured Professionals
               </h2>
@@ -423,27 +423,32 @@ const Discover = () => {
                 <Award className="h-3 w-3" /> Premium
               </span>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
-              {featuredWorkers.map((w, i) => (
-                <FeaturedWorkerCard
-                  key={`feat-${w.id}-${i}`}
-                  index={i}
-                  worker={{
-                    id: w.id,
-                    uid: (w as any).uid,
-                    full_name: w.name,
-                    profession: w.profession,
-                    experience: w.experience,
-                    verified: w.verified,
-                    avatar_url: w.profilePhoto || null,
-                    city: w.city || null,
-                    distance: w.distance,
-                  }}
-                />
-              ))}
+            <div className="group overflow-hidden">
+              <div className="flex w-max animate-[featured-slide_36s_linear_infinite] gap-4 px-5 pb-3 group-hover:[animation-play-state:paused]">
+                {[...featuredWorkers, ...featuredWorkers].map((w, i) => (
+                  <div key={`feat-${w.id}-${i}`} className="shrink-0">
+                    <FeaturedWorkerCard
+                      index={i}
+                      worker={{
+                        id: w.id,
+                        uid: (w as any).uid,
+                        full_name: w.name,
+                        profession: w.profession,
+                        experience: w.experience,
+                        verified: w.verified,
+                        avatar_url: w.profilePhoto || null,
+                        city: w.city || null,
+                        distance: w.distance,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <style>{`@keyframes featured-slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
             </div>
           </section>
         )}
+
 
         {/* ALL PROFESSIONALS */}
         <section className="mt-6 px-5 pb-10">
