@@ -65,7 +65,7 @@ const TabFallback = () => (
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "running_ads" | "sparks" | "app_defaults" | "avatar_resets" | "location_requests" | "profile";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -76,10 +76,9 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "featured", label: "Featured", icon: Star },
   { key: "running_ads", label: "Running Ads", icon: Megaphone },
   { key: "sparks", label: "Sparks & Payments", icon: Zap },
-  { key: "app_defaults", label: "App Defaults", icon: Sliders },
+  { key: "settings", label: "Settings", icon: Sliders },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
   { key: "location_requests", label: "Location Requests", icon: UserCog },
-  { key: "profile", label: "My Profile", icon: UserCog },
 ];
 
 const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void }) => {
