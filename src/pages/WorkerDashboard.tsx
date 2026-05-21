@@ -98,6 +98,7 @@ const WorkerDashboard = () => {
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
+  const [bloodShowContact, setBloodShowContact] = useState(true);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customExpertise, setCustomExpertise] = useState("");
