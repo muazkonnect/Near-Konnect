@@ -701,6 +701,16 @@ const WorkerDashboard = () => {
                   </div>
                 </div>
 
+                {/* Banner upload */}
+                <BannerUpload
+                  workerId={workerData.id}
+                  currentUrl={(workerData as any).banner_url}
+                  onChange={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })}
+                />
+
+                {/* Portfolio */}
+                <PortfolioManager workerId={workerData.id} verified={!!workerData.verified} />
+
                 {/* Service category & expertise */}
                 <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Service category</p>
