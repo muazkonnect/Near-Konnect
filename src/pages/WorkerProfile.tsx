@@ -346,6 +346,29 @@ const WorkerProfile = () => {
             </div>
           </section>
 
+          {/* Portfolio gallery */}
+          {portfolio.length > 0 && (
+            <section className="mb-5">
+              <div className="mb-2 flex items-center justify-between px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider">Portfolio</h3>
+                <span className="text-xs text-hero-muted">{portfolio.length} {portfolio.length === 1 ? "image" : "images"}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {portfolio.map((p) => (
+                  <a
+                    key={p.id}
+                    href={p.image_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-white/5"
+                  >
+                    <img src={p.image_url} alt={p.caption || "Work sample"} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* 3. Horizontal Metrics */}
           <section className="mb-5 grid grid-cols-3 gap-2">
             <Metric
