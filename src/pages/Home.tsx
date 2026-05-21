@@ -102,6 +102,7 @@ const Home = () => {
   // Promoted (Sparks) campaigns: admin-configurable radius buckets + Top Rated
   const homepageRadii = useAppSetting("homepage_promoted_radii_km");
   const [r0 = 5, r1 = 10, r2 = 15] = Array.isArray(homepageRadii) ? homepageRadii : [5, 10, 15];
+  const promoted3 = usePromotedNearby(browsingCoords, 3);
   const promoted5 = usePromotedNearby(browsingCoords, r0);
   const promoted10 = usePromotedNearby(browsingCoords, r1);
   const promoted15 = usePromotedNearby(browsingCoords, r2);
@@ -352,6 +353,17 @@ const Home = () => {
         </section>
 
         <PromotedSection
+          title="Within 3 KM"
+          subtitle="Promoted providers right next to you"
+          items={promoted3}
+          placement="nearby_3km"
+          isAuthed={!!user}
+          loading={workersLoading}
+          custom={2.7}
+          navigate={navigate}
+          radiusKm={3}
+        />
+        <PromotedSection
           title={`Within ${r0} KM`}
           subtitle="Promoted providers in your immediate vicinity"
           items={promoted5}
@@ -360,6 +372,7 @@ const Home = () => {
           loading={workersLoading}
           custom={3}
           navigate={navigate}
+          radiusKm={r0}
         />
         <PromotedSection
           title={`Within ${r1} KM`}
@@ -370,6 +383,7 @@ const Home = () => {
           loading={workersLoading}
           custom={3.3}
           navigate={navigate}
+          radiusKm={r1}
         />
         <PromotedSection
           title={`Within ${r2} KM`}
@@ -380,6 +394,7 @@ const Home = () => {
           loading={workersLoading}
           custom={3.6}
           navigate={navigate}
+          radiusKm={r2}
         />
 
 
@@ -512,7 +527,7 @@ type PromotedItem = {
 } & Record<string, any>;
 
 const PromotedSection = ({
-  title, subtitle, items, placement, isAuthed, loading, custom, navigate,
+  title, subtitle, items, placement, isAuthed, loading, custom, navigate, radiusKm,
 }: {
   title: string;
   subtitle: string;
@@ -522,6 +537,7 @@ const PromotedSection = ({
   loading: boolean;
   custom: number;
   navigate: (path: string) => void;
+  radiusKm?: number;
 }) => {
   if (loading && items.length === 0) {
     return (
@@ -537,7 +553,6 @@ const PromotedSection = ({
       </motion.section>
     );
   }
-  if (items.length === 0) return null;
   return (
     <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
       <div className="mb-5 px-5">
@@ -545,21 +560,28 @@ const PromotedSection = ({
           {title} <span className="ml-2 text-sm font-normal text-hero-muted">• {subtitle}</span>
         </h2>
       </div>
-      <SteppedCarousel
-        className="pb-3"
-        trackClassName="pl-5 pr-5"
-        dwellMs={2800}
-        items={items.map((w) => (
-          <div key={`${placement}-${w.id}`}>
-            <WorkerAdCard
-              worker={w as any}
-              isAuthed={isAuthed}
-              campaignId={w.campaignId}
-              placement={placement}
-            />
-          </div>
-        ))}
-      />
+      {items.length === 0 ? (
+        <div className="mx-5 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center">
+          <p className="text-sm font-semibold text-hero-foreground">No ads currently running{radiusKm ? ` within ${radiusKm} KM` : ""}</p>
+          <p className="mt-1 text-xs text-hero-muted">Check back soon for promoted providers in this area.</p>
+        </div>
+      ) : (
+        <SteppedCarousel
+          className="pb-3"
+          trackClassName="pl-5 pr-5"
+          dwellMs={2800}
+          items={items.map((w) => (
+            <div key={`${placement}-${w.id}`}>
+              <WorkerAdCard
+                worker={w as any}
+                isAuthed={isAuthed}
+                campaignId={w.campaignId}
+                placement={placement}
+              />
+            </div>
+          ))}
+        />
+      )}
     </motion.section>
   );
 };
