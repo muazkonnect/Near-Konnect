@@ -82,6 +82,8 @@ export default function SettingsTab() {
         {sub === "defaults" && <AppDefaultsTab />}
         {sub === "packages" && <PackagesPanel />}
         {sub === "payments" && <PaymentSettingsPanel />}
+        {sub === "verifications" && <VerificationsAdminPanel />}
+        {sub === "featured" && <FeaturedAdminPanel />}
         {sub === "categories" && <CategoriesSection />}
         {sub === "account" && <AdminProfileTab />}
       </div>
