@@ -56,7 +56,7 @@ type DonorRow = {
   longitude: number | null;
   phone: string | null;
   contact_methods: unknown;
-  show_contact: boolean;
+  blood_show_contact: boolean;
 };
 
 const toBloodDonorPopupData = (d: DonorWithDistance): BloodDonorPopupData => ({
@@ -68,7 +68,7 @@ const toBloodDonorPopupData = (d: DonorWithDistance): BloodDonorPopupData => ({
   distance: isFinite(d.distance) ? d.distance : undefined,
   phone: d.phone ?? null,
   contact_methods: d.contact_methods,
-  show_contact: d.show_contact,
+  blood_show_contact: d.blood_show_contact,
 });
 
 const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; onOpen: (donor: DonorWithDistance) => void }) => {
