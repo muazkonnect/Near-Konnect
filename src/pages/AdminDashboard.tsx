@@ -148,27 +148,54 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
   );
 };
 
-const StatCard = ({ label, value, icon: Icon, accent }: { label: string; value: number; icon: typeof Users; accent?: boolean }) => (
-  <motion.div
+const StatCard = ({
+  label,
+  value,
+  icon: Icon,
+  accent,
+  className = "",
+  onClick,
+}: {
+  label: string;
+  value: number;
+  icon: typeof Users;
+  accent?: boolean;
+  className?: string;
+  onClick?: () => void;
+}) => (
+  <motion.button
+    type="button"
+    onClick={onClick}
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    className={`relative overflow-hidden rounded-2xl border p-4 ${accent ? "border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 text-hero-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.5)]" : "border-hero-foreground/10 bg-hero-foreground/[0.04] text-hero-foreground"}`}
+    whileTap={{ scale: 0.985 }}
+    className={`group relative overflow-hidden rounded-3xl border p-4 sm:p-5 text-left transition-all ${
+      accent
+        ? "border-primary/40 bg-gradient-to-br from-primary/25 via-primary/10 to-transparent shadow-[0_12px_32px_-12px_hsl(var(--primary)/0.5)]"
+        : "border-hero-foreground/10 bg-hero-foreground/[0.04] hover:border-hero-foreground/20"
+    } ${className}`}
   >
-    <div className="flex items-center justify-between">
-      <p className={`text-xs font-medium uppercase tracking-wider ${accent ? "text-hero-foreground/80" : "text-hero-foreground/60"}`}>
+    <div className="flex items-start justify-between gap-2">
+      <p className={`text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider ${accent ? "text-hero-foreground/80" : "text-hero-foreground/60"}`}>
         {label}
       </p>
-      <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-hero-foreground/50"}`} />
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
+          accent ? "bg-primary/25 text-primary" : "bg-hero-foreground/10 text-hero-foreground/70"
+        }`}
+      >
+        <Icon className="h-4 w-4" />
+      </span>
     </div>
-    <p className="mt-2 text-2xl font-bold text-hero-foreground">{value}</p>
-  </motion.div>
+    <p className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-hero-foreground">{value}</p>
+  </motion.button>
 );
 
 const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) => (
-  <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
+  <div className="mb-4 sm:mb-6 flex items-end justify-between gap-3 flex-wrap">
     <div>
-      <h2 className="text-xl font-bold tracking-tight text-hero-foreground">{title}</h2>
-      {subtitle && <p className="text-sm text-hero-foreground/60">{subtitle}</p>}
+      <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-hero-foreground">{title}</h2>
+      {subtitle && <p className="text-xs sm:text-sm text-hero-foreground/60 mt-0.5">{subtitle}</p>}
     </div>
     {action}
   </div>
