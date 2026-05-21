@@ -97,6 +97,31 @@ const WorkerDashboard = () => {
   const { unreadByType } = useNotifications();
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+
+  const toggleExpertise = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+
+  const addCustomExpertise = () => {
+    const v = customExpertise.trim();
+    if (!v) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((t) => t.toLowerCase() === v.toLowerCase())) {
+      setExpertiseTags((p) => [...p, v]);
+    }
+    setCustomExpertise("");
+  };
 
   useEffect(() => {
     if (activeTab === "messages") markRead((n) => n.type === "message");
