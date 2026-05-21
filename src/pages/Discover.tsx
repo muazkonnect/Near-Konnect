@@ -99,8 +99,16 @@ const Discover = () => {
   useEffect(() => { setRadiusKm(discoverDefault); }, [discoverDefault]);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
+  const ownWorkerUserId = user?.id || null;
+  const ownWorkerCoords = useMemo(() => {
+    const ownWorker = allWorkers.find(
+      (w) => w.userId === ownWorkerUserId && w.latitude != null && w.longitude != null
+    );
+    return ownWorker ? { latitude: ownWorker.latitude!, longitude: ownWorker.longitude! } : null;
+  }, [allWorkers, ownWorkerUserId]);
+  const featuredLookupCoords = userCoords ?? ownWorkerCoords;
   const adminFeaturedIds = useFeaturedWorkerIds();
-  const paidFeaturedIds = useNearbyFeaturedWorkerIds(userCoords ?? null);
+  const paidFeaturedIds = useNearbyFeaturedWorkerIds(featuredLookupCoords);
   const featuredIds = useMemo(
     () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
     [adminFeaturedIds, paidFeaturedIds]
@@ -180,8 +188,6 @@ const Discover = () => {
       return { ...w, distance };
     });
   }, [allWorkers, userCoords]);
-
-  const ownWorkerUserId = user?.id || null;
 
   useEffect(() => {
     if (selectedMainCategory) setExpandedMainCategory(selectedMainCategory);
@@ -263,11 +269,10 @@ const Discover = () => {
         .filter(
           (w) =>
             featuredIds.has(w.id) &&
-            w.userId !== ownWorkerUserId &&
             !adminUserIds.has(w.userId)
         )
         .slice(0, 6),
-    [workersList, featuredIds, ownWorkerUserId, adminUserIds]
+    [workersList, featuredIds, adminUserIds]
   );
   const allOthers = useMemo(
     () => sorted.filter((w) => !featuredIds.has(w.id)),
