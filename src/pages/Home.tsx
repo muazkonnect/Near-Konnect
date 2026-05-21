@@ -35,6 +35,7 @@ import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
+import { useRecentActivity } from "@/hooks/useRecentActivity";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
