@@ -36,6 +36,8 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
 
+type DonorWithDistance = DonorRow & { distance: number };
+
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35 } }),
@@ -54,6 +56,17 @@ type DonorRow = {
   phone: string | null;
   contact_methods: unknown;
 };
+
+const toBloodDonorPopupData = (d: DonorWithDistance): BloodDonorPopupData => ({
+  user_id: d.user_id,
+  full_name: d.full_name,
+  avatar_url: d.avatar_url,
+  blood_group: d.blood_group,
+  city: d.city,
+  distance: isFinite(d.distance) ? d.distance : undefined,
+  phone: d.phone ?? null,
+  contact_methods: d.contact_methods,
+});
 
 const Home = () => {
   const navigate = useNavigate();
