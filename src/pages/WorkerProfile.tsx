@@ -99,6 +99,9 @@ const WorkerProfile = () => {
     enabled: !!id,
   });
 
+  const { data: portfolio = [] } = useWorkerPortfolio(dbWorker?.id);
+
+
   useEffect(() => {
     if (!dbWorker || !id) return;
     void trackEvent("profile_view");
