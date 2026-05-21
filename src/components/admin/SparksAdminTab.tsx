@@ -26,6 +26,7 @@ const sb = supabase as any;
 type AdminCampaign = {
   id: string; worker_id: string; owner_user_id: string;
   ad_type: "local" | "international"; status: "active" | "paused" | "expired" | "rejected";
+  placement_type: "homepage" | "explore";
   starts_at: string; ends_at: string; duration_days: number; sparks_cost: number; created_at: string;
 };
 
