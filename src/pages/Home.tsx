@@ -102,7 +102,6 @@ const Home = () => {
   // Promoted (Sparks) campaigns: admin-configurable radius buckets + Top Rated
   const homepageRadii = useAppSetting("homepage_promoted_radii_km");
   const [r0 = 5, r1 = 10, r2 = 15] = Array.isArray(homepageRadii) ? homepageRadii : [5, 10, 15];
-  const promoted3 = usePromotedNearby(browsingCoords, 3);
   const promoted5 = usePromotedNearby(browsingCoords, r0);
   const promoted10 = usePromotedNearby(browsingCoords, r1);
   const promoted15 = usePromotedNearby(browsingCoords, r2);
