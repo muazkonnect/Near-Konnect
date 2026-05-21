@@ -32,6 +32,7 @@ import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import BookingDialog from "@/components/BookingDialog";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { useWorkerPortfolio } from "@/components/PortfolioManager";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { getExpertise } from "@/lib/categoryExpertise";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
