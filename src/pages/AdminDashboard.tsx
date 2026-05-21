@@ -656,10 +656,10 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
-            {/* PROFILE */}
-            {tab === "profile" && (
+            {/* SETTINGS (App Defaults + Account) */}
+            {tab === "settings" && (
               <Suspense fallback={<TabFallback />}>
-                <AdminProfileTab />
+                <SettingsTab />
               </Suspense>
             )}
 
