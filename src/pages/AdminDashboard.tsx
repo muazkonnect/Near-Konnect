@@ -750,6 +750,16 @@ const AdminDashboard = () => {
               </div>
             )}
 
+            {/* VERIFICATIONS */}
+            {tab === "verifications" && (
+              <div>
+                <SectionHeader title="Verified Badge System" subtitle="Review submissions, configure sparks cost and Persona auto-approval." />
+                <Suspense fallback={<TabFallback />}>
+                  <VerificationsAdminPanel />
+                </Suspense>
+              </div>
+            )}
+
 
             {/* RUNNING ADS (campaigns: view + control) */}
             {tab === "running_ads" && (
