@@ -66,6 +66,7 @@ const CustomerDashboard = () => {
       phone: cleaned,
       use_whatsapp: true,
       contact_methods: [{ type: "whatsapp", value: cleaned }],
+      blood_show_contact: bloodShowContact,
     } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error(error.message || "Failed to save");
