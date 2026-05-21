@@ -45,6 +45,7 @@ import ExploreCard from "@/components/ExploreCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
