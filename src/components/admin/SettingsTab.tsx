@@ -18,7 +18,7 @@ export default function SettingsTab() {
       <div className="flex items-center gap-2">
         <Settings className="h-5 w-5 text-muted-foreground" />
         <h2 className="text-lg font-bold tracking-tight">Settings</h2>
-      </d iv>
+      </div>
       <div className="flex flex-wrap gap-2">
         {SUBS.map((s) => {
           const Icon = s.icon;
