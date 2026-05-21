@@ -18,7 +18,6 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   const { data: settings } = useVerificationSettings();
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<{ session_id: string; url: string; session_token: string | null } | null>(null);
-  const popupRef = useRef<Window | null>(null);
   const pollRef = useRef<number | null>(null);
 
   const cost = settings?.sparks_cost ?? 500;
@@ -28,46 +27,47 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   useEffect(() => { if (open) refetch(); }, [open, refetch]);
   useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
 
-  const startScan = async () => {
+  const startPolling = (sessionId: string, sessionToken: string | null) => {
+    if (pollRef.current) window.clearInterval(pollRef.current);
+    pollRef.current = window.setInterval(async () => {
+      try {
+        const d = await getDiditDecision(sessionId);
+        const st = String(d?.status || "").toLowerCase();
+        if (["approved", "in review", "in_review", "declined", "completed"].some(x => st.includes(x))) {
+          window.clearInterval(pollRef.current!);
+          pollRef.current = null;
+          await submitVerification(sessionId, sessionToken);
+          toast.success("Verification submitted for admin approval");
+          setSession(null);
+          refetch();
+        }
+      } catch { /* keep polling */ }
+    }, 5000);
+  };
+
+  const createSession = async () => {
     if (!user) return;
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
-    // Open popup SYNCHRONOUSLY inside the click handler so browsers don't block it.
-    const popup = window.open("about:blank", "didit_verify", "width=480,height=720");
-    popupRef.current = popup;
     setLoading(true);
     try {
       await startVerification();
       const s = await createDiditSession();
       setSession(s);
-      if (popup && !popup.closed) {
-        try { popup.location.href = s.url; } catch { window.open(s.url, "didit_verify"); }
-      } else {
-        toast.error("Popup blocked — use the open link below.");
-      }
-
-      if (pollRef.current) window.clearInterval(pollRef.current);
-      pollRef.current = window.setInterval(async () => {
-        try {
-          const d = await getDiditDecision(s.session_id);
-          const st = String(d?.status || "").toLowerCase();
-          if (["approved", "in review", "in_review", "declined", "completed"].some(x => st.includes(x))) {
-            window.clearInterval(pollRef.current!);
-            pollRef.current = null;
-            await submitVerification(s.session_id, s.session_token);
-            toast.success("Verification submitted for admin approval");
-            setSession(null);
-            try { popupRef.current?.close(); } catch { /* ignore */ }
-            refetch();
-          }
-        } catch { /* keep polling */ }
-      }, 5000);
+      startPolling(s.session_id, s.session_token);
+      toast.success("Session ready — click 'Open verification window'.");
     } catch (e: any) {
-      try { popup?.close(); } catch { /* ignore */ }
       toast.error(e?.message || "Failed to start verification");
     } finally {
       setLoading(false);
     }
   };
+
+  const openWindow = (url: string) => {
+    // Synchronous + noopener so Didit's COOP allows it (avoids ERR_BLOCKED_BY_RESPONSE).
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+    if (!w) toast.error("Popup blocked. Allow popups for this site and try again.");
+  };
+
 
   const completeManually = async () => {
     if (!session || !user) return;
