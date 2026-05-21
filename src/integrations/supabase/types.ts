@@ -2364,7 +2364,6 @@ export type Database = {
               campaign_id: string
               distance_km: number
               ends_at: string
-              match_score: number
               priority: number
               user_id: string
               worker_id: string
