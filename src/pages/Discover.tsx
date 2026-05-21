@@ -423,8 +423,10 @@ const Discover = () => {
                 <Award className="h-3 w-3" /> Premium
               </span>
             </div>
-            <div className="group overflow-hidden">
-              <div className="flex w-max animate-[featured-slide_36s_linear_infinite] gap-4 px-5 pb-3 group-hover:[animation-play-state:paused]">
+            <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]">
+              <div
+                className="flex w-max gap-4 px-5 pb-3 animate-[featured-slide_45s_cubic-bezier(0.45,0,0.55,1)_infinite] will-change-transform hover:[animation-play-state:paused] group-hover:[animation-play-state:paused] group-active:[animation-play-state:paused] [-webkit-backface-visibility:hidden] [transform:translate3d(0,0,0)]"
+              >
                 {[...featuredWorkers, ...featuredWorkers].map((w, i) => (
                   <div key={`feat-${w.id}-${i}`} className="shrink-0">
                     <FeaturedWorkerCard
@@ -444,8 +446,9 @@ const Discover = () => {
                   </div>
                 ))}
               </div>
-              <style>{`@keyframes featured-slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+              <style>{`@keyframes featured-slide { 0% { transform: translate3d(0,0,0) } 100% { transform: translate3d(-50%,0,0) } }`}</style>
             </div>
+
           </section>
         )}
 
