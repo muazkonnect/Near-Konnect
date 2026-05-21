@@ -127,7 +127,8 @@ const Register = () => {
         role,
         is_blood_donor: isBloodDonor ? "true" : "false",
         blood_group: isBloodDonor ? bloodGroup : "",
-        contact_methods: JSON.stringify([{ type: "phone", value: normalizedPhone }]),
+        contact_methods: JSON.stringify([{ type: "whatsapp", value: normalizedPhone }]),
+        use_whatsapp: "true",
       };
       if (role === "worker") {
         metadata.main_category = mainCategory;
