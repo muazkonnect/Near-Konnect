@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Star, BadgeCheck, Award } from "lucide-react";
+import { Star, BadgeCheck, Crown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -34,14 +34,17 @@ const ExploreCard = ({ worker, premium = false, isAuthed }: ExploreCardProps) =>
         onClick={handleOpen}
         className={`relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-4 transition-all ${
           premium
-            ? "border-primary/20 bg-gradient-to-br from-primary/[0.08] to-primary/[0.02] shadow-[0_0_24px_-12px_hsl(var(--primary)/0.5)] hover:border-primary/40"
+            ? "border-amber-400/50 bg-gradient-to-br from-amber-500/[0.14] via-amber-400/[0.06] to-transparent shadow-[0_12px_40px_-12px_hsl(45_93%_47%/0.55)] ring-1 ring-amber-400/30 hover:border-amber-400/80"
             : "border-hero-foreground/10 bg-hero-foreground/[0.04] hover:border-hero-foreground/20"
         }`}
       >
         {premium && (
-          <div className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-bl-lg bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
-            <Award className="h-3 w-3" /> Premium
-          </div>
+          <>
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-amber-400/20 blur-3xl" />
+            <div className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-bl-xl bg-gradient-to-r from-amber-400 to-amber-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+              <Crown className="h-3 w-3" fill="currentColor" /> Premium
+            </div>
+          </>
         )}
 
         <div className="mb-3 flex items-start justify-between gap-3">

@@ -590,33 +590,7 @@ const AdminDashboard = () => {
                           {w.available ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
                           {w.available ? "Hide" : "Unhide"}
                         </Button>
-                        <Button
-                          variant={featuredMap.has(w.id) ? "secondary" : "outline"}
-                          size="sm"
-                          className="h-9 sm:h-8 px-2.5 text-[11px]"
-                          onClick={async () => {
-                            const featured = featuredMap.get(w.id);
-                            if (featured) {
-                              await removeFeatured(featured.id);
-                            } else {
-                              await addFeatured(w.id);
-                            }
-                          }}
-                        >
-                          <Star className={`mr-1 h-3 w-3 ${featuredMap.has(w.id) ? "fill-current" : ""}`} />
-                          {featuredMap.has(w.id) ? "Unfeature" : "Feature"}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9 sm:h-8 px-2.5 text-[11px]"
-                          onClick={async () => {
-                            await toggleVerified(w.id, w.verified);
-                          }}
-                        >
-                          {w.verified ? <XCircle className="mr-1 h-3 w-3" /> : <CheckCircle className="mr-1 h-3 w-3" />}
-                          {w.verified ? "Unverify" : "Verify"}
-                        </Button>
+                        {/* Feature & Verify actions live in the dedicated Featured and Verifications tabs to avoid conflicting workflows. */}
                         <Button
                           variant="outline"
                           size="sm"
