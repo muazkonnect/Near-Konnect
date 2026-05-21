@@ -230,7 +230,8 @@ const WorkerDashboard = () => {
         experience: parseInt(experience) || 0,
         description,
         available,
-      })
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as any)
       .eq("id", workerData.id);
 
     const { error: profileError } = await supabase
