@@ -1200,6 +1200,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           blood_group: string | null
+          blood_show_contact: boolean
           city: string | null
           contact_methods: Json
           created_at: string
@@ -1218,6 +1219,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           blood_group?: string | null
+          blood_show_contact?: boolean
           city?: string | null
           contact_methods?: Json
           created_at?: string
@@ -1236,6 +1238,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           blood_group?: string | null
+          blood_show_contact?: boolean
           city?: string | null
           contact_methods?: Json
           created_at?: string

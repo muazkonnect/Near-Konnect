@@ -98,6 +98,7 @@ const WorkerDashboard = () => {
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
+  const [bloodShowContact, setBloodShowContact] = useState(true);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customExpertise, setCustomExpertise] = useState("");
@@ -149,6 +150,7 @@ const WorkerDashboard = () => {
       setAvailable(workerData.available);
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
+      setBloodShowContact((workerData as any).profiles?.blood_show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
@@ -247,7 +249,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed } as any)
+      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, blood_show_contact: bloodShowContact } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -825,6 +827,15 @@ const WorkerDashboard = () => {
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-3.5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-hero-foreground">Show contact on Blood Konnect</p>
+                    <p className="text-[10px] text-hero-foreground/60">Controls visibility on donor cards, popups and profile.</p>
+                  </div>
+                  <Switch checked={bloodShowContact} onCheckedChange={setBloodShowContact} aria-label="Show contact on Blood Konnect" />
+                </div>
+
 
                 {/* Fixed service location */}
                 <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">

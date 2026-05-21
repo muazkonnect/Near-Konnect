@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Save, KeyRound, LogOut, MessageSquare } from "lucide-react";
+import { Save, KeyRound, LogOut, MessageSquare, Droplet } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,12 +40,14 @@ const CustomerDashboard = () => {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [bloodShowContact, setBloodShowContact] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setName(profile.full_name || "");
       setPhone(profile.phone || "");
+      setBloodShowContact((profile as any).blood_show_contact ?? true);
     }
   }, [profile]);
 
@@ -63,6 +66,7 @@ const CustomerDashboard = () => {
       phone: cleaned,
       use_whatsapp: true,
       contact_methods: [{ type: "whatsapp", value: cleaned }],
+      blood_show_contact: bloodShowContact,
     } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error(error.message || "Failed to save");
@@ -139,7 +143,18 @@ const CustomerDashboard = () => {
                 />
                 <p className="mt-1 text-[11px] text-hero-foreground/50">Clients and workers will reach you on WhatsApp using this number.</p>
               </div>
+
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3.5">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
+                    <Droplet className="h-3.5 w-3.5 text-destructive" /> Show contact on Blood Konnect
+                  </p>
+                  <p className="text-[10px] text-hero-foreground/60">Controls visibility on donor cards, popups and profile.</p>
+                </div>
+                <Switch checked={bloodShowContact} onCheckedChange={setBloodShowContact} aria-label="Show contact on Blood Konnect" />
+              </div>
             </div>
+
 
             <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 w-full gap-2 rounded-xl">
               <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
