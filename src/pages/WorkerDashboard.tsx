@@ -32,6 +32,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
+import BannerUpload from "@/components/BannerUpload";
+import PortfolioManager from "@/components/PortfolioManager";
 import WorkerShareCard from "@/components/WorkerShareCard";
 import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
