@@ -550,15 +550,15 @@ const AdminDashboard = () => {
                   {workers.map((w: any) => (
                     <div
                       key={w.id}
-                      className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:flex-row sm:flex-wrap sm:items-center"
+                      className="flex flex-col gap-3 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3.5 sm:p-4 sm:flex-row sm:flex-wrap sm:items-center transition-colors hover:border-hero-foreground/20"
                     >
-                      <div className="flex items-start gap-3 sm:flex-1">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-sm font-bold text-primary">
+                      <div className="flex items-start gap-3 sm:flex-1 min-w-0">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-sm font-bold text-primary">
                           {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-hero-foreground">{w.profiles?.full_name}</p>
-                          <p className="truncate text-xs text-hero-foreground/50">{w.profession} · {w.experience} yrs</p>
+                          <p className="truncate text-xs text-hero-foreground/60">{w.profession} · {w.experience} yrs</p>
                           <p className="mt-0.5 truncate text-[11px] text-hero-foreground/50">
                             {w.main_category} / {w.sub_category}
                           </p>
@@ -576,11 +576,11 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-1.5 sm:justify-end">
+                      <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
                         <Button
                           variant={w.available ? "outline" : "default"}
                           size="sm"
-                          className="h-8 px-2 text-[11px]"
+                          className="h-9 sm:h-8 px-2.5 text-[11px]"
                           onClick={() => toggleAvailable(w.id, w.available)}
                           title={w.available ? "Hide from listings" : "Show in listings"}
                         >
@@ -590,7 +590,7 @@ const AdminDashboard = () => {
                         <Button
                           variant={featuredMap.has(w.id) ? "secondary" : "outline"}
                           size="sm"
-                          className="h-8 px-2 text-[11px]"
+                          className="h-9 sm:h-8 px-2.5 text-[11px]"
                           onClick={async () => {
                             const featured = featuredMap.get(w.id);
                             if (featured) {
@@ -606,7 +606,7 @@ const AdminDashboard = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 px-2 text-[11px]"
+                          className="h-9 sm:h-8 px-2.5 text-[11px]"
                           onClick={async () => {
                             await toggleVerified(w.id, w.verified);
                           }}
@@ -617,7 +617,7 @@ const AdminDashboard = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 px-2 text-[11px]"
+                          className="h-9 sm:h-8 px-2.5 text-[11px]"
                           onClick={() => setEditingWorker(w)}
                           title="Edit profession & category"
                         >
@@ -628,7 +628,7 @@ const AdminDashboard = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => deleteWorker(w.id)}
-                          className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          className="h-9 w-9 sm:h-8 sm:w-8 col-span-2 sm:col-auto text-destructive hover:bg-destructive/10 hover:text-destructive justify-self-end"
                           title="Delete worker profile"
                         >
                           <Trash2 className="h-4 w-4" />
