@@ -223,7 +223,7 @@ const BloodDonors = () => {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); openPopup(); }}
-                    className="rounded-lg bg-[#271716] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#b7131a]"
+                    className="rounded-md bg-[#271716] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[#b7131a]"
                   >
                     Contact
                   </button>
@@ -239,39 +239,38 @@ const BloodDonors = () => {
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPopup(); } }}
-                    className="group flex cursor-pointer flex-col rounded-xl border border-[#e4beb9] bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b7131a]/40"
+                    className="group relative flex cursor-pointer flex-col gap-3 overflow-hidden rounded-xl border border-[#e4beb9] bg-gradient-to-br from-[#fff5f3] via-white to-[#ffe4e0] p-3 shadow-sm transition-all duration-300 hover:border-[#b7131a]/40 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b7131a]/40"
                   >
-                    <div className="mb-4 flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[#b7131a]/10">
-                          {donor.avatar_url ? (
-                            <img src={donor.avatar_url} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-[#fff0ee] text-base font-bold text-[#b7131a]">
-                              {(donor.full_name || "?").slice(0, 2).toUpperCase()}
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="truncate text-lg font-semibold leading-tight text-[#271716]">
-                            {donor.full_name || "Anonymous"}
-                          </h4>
-                          <p className="mt-0.5 flex items-center gap-1 text-xs text-[#906f6c]">
-                            <MapPin className="h-3 w-3" />
-                            {distance ? `${distance} km away` : donor.city || "Distance unknown"}
-                          </p>
-                        </div>
+                    <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#b7131a]/10 blur-2xl" />
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-[#b7131a]/20">
+                        {donor.avatar_url ? (
+                          <img src={donor.avatar_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-[#fff0ee] text-sm font-bold text-[#b7131a]">
+                            {(donor.full_name || "?").slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-[#ffdad6] text-[#b7131a]">
-                        <span className="text-sm font-bold leading-none">{donor.blood_group || "?"}</span>
-                        <span className="text-[8px] uppercase opacity-80">Blood</span>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="truncate text-[15px] font-bold leading-tight text-[#271716]">
+                          {donor.full_name || "Anonymous"}
+                        </h4>
+                        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[#906f6c]">
+                          <MapPin className="h-3 w-3" />
+                          <span className="truncate">{distance ? `${distance} km away` : donor.city || "Distance unknown"}</span>
+                        </p>
+                      </div>
+                      <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-gradient-to-br from-[#b7131a] to-[#db322f] text-white shadow-sm shadow-[#b7131a]/30">
+                        <span className="text-sm font-black leading-none">{donor.blood_group || "?"}</span>
+                        <span className="text-[7px] font-semibold uppercase tracking-wider opacity-90">Group</span>
                       </div>
                     </div>
 
-                    <div className="mt-auto flex items-center justify-between border-t border-[#e4beb9]/40 pt-4">
+                    <div className="flex items-center justify-between rounded-lg bg-white/70 px-2.5 py-1.5 backdrop-blur-sm ring-1 ring-[#e4beb9]/60">
                       <div className="flex items-center gap-1.5">
-                        <div className={`h-2 w-2 rounded-full ${isActive ? "bg-[#b7131a] shadow-[0_0_4px_rgba(183,19,26,0.4)]" : "bg-[#906f6c]"}`} />
-                        <span className="text-xs text-[#5b403d]">{isActive ? "Available Now" : "Offline"}</span>
+                        <div className={`h-2 w-2 rounded-full ${isActive ? "bg-[#b7131a] shadow-[0_0_4px_rgba(183,19,26,0.5)]" : "bg-[#906f6c]"}`} />
+                        <span className="text-[11px] font-medium text-[#5b403d]">{isActive ? "Available" : "Offline"}</span>
                       </div>
                       {user ? ContactBtn : (
                         <AuthRequiredDialog title="Log in to contact" description="Sign in or create an account to contact this donor.">
