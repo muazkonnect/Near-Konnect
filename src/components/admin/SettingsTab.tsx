@@ -1,15 +1,52 @@
 import { useState } from "react";
-import { Settings, Sliders, UserCircle } from "lucide-react";
+import { lazy, Suspense } from "react";
+import {
+  Settings, Sliders, UserCircle, Package, CreditCard, Shield,
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
+import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
 
-type Sub = "defaults" | "account";
+const CategoriesManagementTab = lazy(() => import("./CategoriesManagementTab"));
+
+type Sub = "defaults" | "packages" | "payments" | "categories" | "account";
 
 const SUBS: { key: Sub; label: string; icon: typeof Sliders }[] = [
   { key: "defaults", label: "App Defaults", icon: Sliders },
+  { key: "packages", label: "Packages & Discounts", icon: Package },
+  { key: "payments", label: "Payment Methods", icon: CreditCard },
+  { key: "categories", label: "Categories", icon: Shield },
   { key: "account", label: "Account", icon: UserCircle },
 ];
+
+const Fallback = () => (
+  <div className="flex h-32 items-center justify-center">
+    <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
+
+const CategoriesSection = () => {
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ["admin_categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("service_categories")
+        .select("*")
+        .order("name");
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+  if (isLoading) return <Fallback />;
+  return (
+    <Suspense fallback={<Fallback />}>
+      <CategoriesManagementTab categories={categories as any} />
+    </Suspense>
+  );
+};
 
 export default function SettingsTab() {
   const [sub, setSub] = useState<Sub>("defaults");
@@ -39,6 +76,9 @@ export default function SettingsTab() {
       </div>
       <div>
         {sub === "defaults" && <AppDefaultsTab />}
+        {sub === "packages" && <PackagesPanel />}
+        {sub === "payments" && <PaymentSettingsPanel />}
+        {sub === "categories" && <CategoriesSection />}
         {sub === "account" && <AdminProfileTab />}
       </div>
     </div>

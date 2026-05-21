@@ -688,4 +688,4 @@ const SparksAdminTab = () => (
 );
 
 export default SparksAdminTab;
-export { CampaignsPanel };
+export { CampaignsPanel, PackagesPanel, PaymentSettingsPanel, ManualSparksPanel, PendingPaymentsPanel, TransactionsPanel };
