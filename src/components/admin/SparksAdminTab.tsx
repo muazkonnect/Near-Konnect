@@ -26,6 +26,7 @@ const sb = supabase as any;
 type AdminCampaign = {
   id: string; worker_id: string; owner_user_id: string;
   ad_type: "local" | "international"; status: "active" | "paused" | "expired" | "rejected";
+  placement_type: "homepage" | "explore";
   starts_at: string; ends_at: string; duration_days: number; sparks_cost: number; created_at: string;
 };
 
@@ -414,13 +415,18 @@ const PaymentSettingsPanel = () => {
 const CampaignsPanel = () => {
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<"all" | AdminCampaign["status"]>("all");
+  const [placementFilter, setPlacementFilter] = useState<"all" | "homepage" | "explore">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "local" | "international">("all");
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const { data: campaigns = [], isLoading } = useQuery({
     queryKey: ["admin_campaigns", statusFilter],
     queryFn: async () => {
       let q = sb.from("ad_campaigns")
-        .select("id, worker_id, owner_user_id, ad_type, status, starts_at, ends_at, duration_days, sparks_cost, created_at")
-        .order("created_at", { ascending: false }).limit(200);
+        .select("id, worker_id, owner_user_id, ad_type, status, placement_type, starts_at, ends_at, duration_days, sparks_cost, created_at")
+        .order("created_at", { ascending: false }).limit(300);
       if (statusFilter !== "all") q = q.eq("status", statusFilter);
       const { data, error } = await q;
       if (error) throw error;
@@ -442,6 +448,36 @@ const CampaignsPanel = () => {
     enabled: ownerIds.length > 0,
   });
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return campaigns.filter((c) => {
+      if (placementFilter !== "all" && c.placement_type !== placementFilter) return false;
+      if (typeFilter !== "all" && c.ad_type !== typeFilter) return false;
+      if (!q) return true;
+      const p = (profilesMap as any)[c.owner_user_id];
+      return (
+        (p?.name || "").toLowerCase().includes(q) ||
+        (p?.phone || "").toLowerCase().includes(q) ||
+        c.owner_user_id.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q)
+      );
+    });
+  }, [campaigns, profilesMap, query, placementFilter, typeFilter]);
+
+  const allSelected = filtered.length > 0 && filtered.every((c) => selected.has(c.id));
+  const toggleAll = () => {
+    const next = new Set(selected);
+    if (allSelected) filtered.forEach((c) => next.delete(c.id));
+    else filtered.forEach((c) => next.add(c.id));
+    setSelected(next);
+  };
+  const toggleOne = (id: string) => {
+    const next = new Set(selected);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setSelected(next);
+  };
+  const clearSelection = () => setSelected(new Set());
+
   const setStatus = async (id: string, status: "active" | "paused") => {
     const { error } = await sb.rpc("set_campaign_status", { _campaign_id: id, _status: status });
     if (error) return toast.error(error.message);
@@ -455,38 +491,111 @@ const CampaignsPanel = () => {
     qc.invalidateQueries({ queryKey: ["admin_campaigns"] });
   };
 
+  const bulkSetStatus = async (status: "active" | "paused") => {
+    const ids = Array.from(selected);
+    if (!ids.length) return;
+    setBulkBusy(true);
+    const results = await Promise.allSettled(
+      ids.map((id) => sb.rpc("set_campaign_status", { _campaign_id: id, _status: status }))
+    );
+    const failed = results.filter((r) => r.status === "rejected" || (r as any).value?.error).length;
+    setBulkBusy(false);
+    if (failed) toast.error(`${ids.length - failed}/${ids.length} updated, ${failed} failed`);
+    else toast.success(`${ids.length} campaign(s) ${status}`);
+    clearSelection();
+    qc.invalidateQueries({ queryKey: ["admin_campaigns"] });
+  };
+  const bulkExpire = async () => {
+    const ids = Array.from(selected);
+    if (!ids.length) return;
+    setBulkBusy(true);
+    const { error } = await sb.from("ad_campaigns").update({ status: "expired", ends_at: new Date().toISOString() }).in("id", ids);
+    setBulkBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success(`${ids.length} campaign(s) expired`);
+    clearSelection();
+    qc.invalidateQueries({ queryKey: ["admin_campaigns"] });
+  };
+
   return (
     <section>
       <div className="mb-3 flex items-end justify-between gap-3 flex-wrap">
-        <SectionHeader title="Ad Campaigns" subtitle="Approve, pause or expire promoted listings." />
-        <div className="flex items-center gap-2">
-          <div className="flex flex-wrap gap-1.5">
-            {(["all", "active", "paused", "expired", "rejected"] as const).map((s) => (
-              <button key={s} onClick={() => setStatusFilter(s as any)}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${
-                  statusFilter === s ? "bg-primary text-primary-foreground ring-primary"
-                                     : "ring-hero-foreground/15 text-hero-foreground/70 hover:bg-hero-foreground/10"
-                }`}>{s}</button>
-            ))}
-          </div>
-          <Button variant="outline" size="sm" onClick={expireNow}>Expire due</Button>
+        <SectionHeader title="Ad Campaigns" subtitle="Search, filter, and bulk-manage running ads." />
+        <Button variant="outline" size="sm" onClick={expireNow}>Expire due</Button>
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-foreground/40" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search owner, phone or id…" className="pl-9 h-9" />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {(["all", "active", "paused", "expired", "rejected"] as const).map((s) => (
+            <button key={s} onClick={() => setStatusFilter(s as any)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${
+                statusFilter === s ? "bg-primary text-primary-foreground ring-primary"
+                                   : "ring-hero-foreground/15 text-hero-foreground/70 hover:bg-hero-foreground/10"
+              }`}>{s}</button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {(["all", "homepage", "explore"] as const).map((s) => (
+            <button key={s} onClick={() => setPlacementFilter(s)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${
+                placementFilter === s ? "bg-hero-foreground text-hero ring-hero-foreground"
+                                      : "ring-hero-foreground/15 text-hero-foreground/70 hover:bg-hero-foreground/10"
+              }`}>{s}</button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {(["all", "local", "international"] as const).map((s) => (
+            <button key={s} onClick={() => setTypeFilter(s)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${
+                typeFilter === s ? "bg-hero-foreground text-hero ring-hero-foreground"
+                                 : "ring-hero-foreground/15 text-hero-foreground/70 hover:bg-hero-foreground/10"
+              }`}>{s}</button>
+          ))}
         </div>
       </div>
 
+      {selected.size > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2">
+          <span className="text-xs font-bold text-hero-foreground">{selected.size} selected</span>
+          <div className="ml-auto flex flex-wrap gap-1.5">
+            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("paused")}><Pause className="mr-1 h-3 w-3" /> Pause</Button>
+            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("active")}><Play className="mr-1 h-3 w-3" /> Resume</Button>
+            <Button size="sm" variant="destructive" disabled={bulkBusy} onClick={bulkExpire}>Expire</Button>
+            <Button size="sm" variant="ghost" disabled={bulkBusy} onClick={clearSelection}>Clear</Button>
+          </div>
+        </div>
+      )}
+
       {isLoading ? <div className="flex h-32 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
-        : campaigns.length === 0 ? <p className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-6 text-center text-sm text-hero-foreground/60">No campaigns.</p>
+        : filtered.length === 0 ? <p className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-6 text-center text-sm text-hero-foreground/60">No campaigns match.</p>
         : (
           <div className="overflow-hidden rounded-2xl border border-hero-foreground/10">
             <table className="w-full text-sm">
               <thead className="bg-hero-foreground/[0.04] text-[11px] uppercase tracking-wider text-hero-foreground/60">
-                <tr><th className="px-3 py-2 text-left">Owner</th><th className="px-3 py-2 text-left">Type</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Window</th><th className="px-3 py-2 text-right">Sparks</th><th className="px-3 py-2 text-right">Actions</th></tr>
+                <tr>
+                  <th className="px-3 py-2 w-8"><input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all" /></th>
+                  <th className="px-3 py-2 text-left">Owner</th>
+                  <th className="px-3 py-2 text-left">Placement</th>
+                  <th className="px-3 py-2 text-left">Type</th>
+                  <th className="px-3 py-2 text-left">Status</th>
+                  <th className="px-3 py-2 text-left">Window</th>
+                  <th className="px-3 py-2 text-right">Sparks</th>
+                  <th className="px-3 py-2 text-right">Actions</th>
+                </tr>
               </thead>
               <tbody>
-                {campaigns.map((c) => {
-                  const p = profilesMap[c.owner_user_id];
+                {filtered.map((c) => {
+                  const p = (profilesMap as any)[c.owner_user_id];
+                  const checked = selected.has(c.id);
                   return (
-                    <tr key={c.id} className="border-t border-hero-foreground/5 hover:bg-hero-foreground/[0.03]">
+                    <tr key={c.id} className={`border-t border-hero-foreground/5 hover:bg-hero-foreground/[0.03] ${checked ? "bg-primary/5" : ""}`}>
+                      <td className="px-3 py-2"><input type="checkbox" checked={checked} onChange={() => toggleOne(c.id)} aria-label="Select row" /></td>
                       <td className="px-3 py-2"><p className="font-semibold text-hero-foreground">{p?.name || "—"}</p>{p?.phone && <p className="text-[11px] text-hero-foreground/50">{p.phone}</p>}</td>
+                      <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase tracking-wider text-hero-foreground/80">{c.placement_type}</span></td>
                       <td className="px-3 py-2"><span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-hero-foreground/80">{c.ad_type === "local" ? <MapPin className="h-3 w-3" /> : <Globe className="h-3 w-3" />}{c.ad_type}</span></td>
                       <td className="px-3 py-2"><span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${statusStyles[c.status]}`}>{c.status}</span></td>
                       <td className="px-3 py-2 text-[11px] text-hero-foreground/70">{new Date(c.starts_at).toLocaleDateString()} → {new Date(c.ends_at).toLocaleDateString()}</td>
