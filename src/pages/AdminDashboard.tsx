@@ -763,9 +763,6 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
-            {/* APP DEFAULTS (radius settings) */}
-            {tab === "app_defaults" && <AppDefaultsTab />}
-
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
 
