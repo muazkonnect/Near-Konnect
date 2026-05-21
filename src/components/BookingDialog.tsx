@@ -86,8 +86,15 @@ const BookingDialog = ({ workerId, workerName, children }: Props) => {
       <DialogContent
         onPointerDownOutside={() => setOpen(false)}
         onInteractOutside={() => setOpen(false)}
-        className="sm:max-w-md"
+        className="relative sm:max-w-md [&>button.absolute]:hidden"
       >
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
         <DialogHeader>
           <DialogTitle>Book {workerName}</DialogTitle>
         </DialogHeader>
