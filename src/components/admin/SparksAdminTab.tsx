@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  Sparkles, Pause, Play, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
+  Sparkles, Pause, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
   CheckCircle2, XCircle, Image as ImageIcon, Package, Settings2, Receipt, Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
