@@ -10,11 +10,15 @@ import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
 import AppLayout from "@/components/AppLayout";
+import PhoneField from "@/components/PhoneField";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import { sanitizePhone } from "@/lib/contactMethods";
 
 
 const CustomerDashboard = () => {
