@@ -533,6 +533,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           id: string
+          metadata: Json
           role: string
         }
         Insert: {
@@ -540,6 +541,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           id?: string
+          metadata?: Json
           role: string
         }
         Update: {
@@ -547,6 +549,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
+          metadata?: Json
           role?: string
         }
         Relationships: [
@@ -2491,6 +2494,38 @@ export type Database = {
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
+      match_workers_for_query: {
+        Args: {
+          p_lat: number
+          p_limit?: number
+          p_lon: number
+          p_main_category?: string
+          p_radius_km?: number
+          p_sub_category?: string
+          p_tags?: string[]
+        }
+        Returns: {
+          avatar_url: string
+          avg_rating: number
+          city: string
+          distance_km: number
+          experience: number
+          expertise_tags: string[]
+          full_name: string
+          id: string
+          is_featured: boolean
+          latitude: number
+          longitude: number
+          main_category: string
+          profession: string
+          review_count: number
+          score: number
+          sub_category: string
+          uid: string
+          user_id: string
+          verified: boolean
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
