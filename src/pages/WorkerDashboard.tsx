@@ -150,6 +150,7 @@ const WorkerDashboard = () => {
       setAvailable(workerData.available);
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
+      setBloodShowContact((workerData as any).profiles?.blood_show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
