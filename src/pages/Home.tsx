@@ -209,15 +209,21 @@ const Home = () => {
     staleTime: 5 * 60_000,
   });
 
-  // Live ticker items from real data
+  // Live ticker: admin static messages + real-time activity
+  const announcementMessages = useAppSetting("announcement_messages");
+  const { data: activity = [] } = useRecentActivity(20);
   const tickerItems = useMemo(() => {
-    const items: { text: string; hot?: boolean }[] = [];
-    if (donors.length) items.push({ text: `${donors.length}+ verified blood donors active nearby`, hot: true });
-    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within ${r0} KM` });
-    if (workers.length) items.push({ text: `${workers.length} total providers connected on Near Konnect` });
-    items.push({ text: "Safety protocols for verified providers updated", hot: true });
-    return items.length ? items : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
-  }, [donors.length, promoted5.length, workers.length]);
+    const staticItems = (announcementMessages || []).map((text) => ({ text, hot: true }));
+    const activityItems = activity.map((a) => ({ text: a.text, hot: !!a.hot }));
+    // Interleave: static, activity, static, activity…
+    const out: { text: string; hot?: boolean }[] = [];
+    const max = Math.max(staticItems.length, activityItems.length);
+    for (let i = 0; i < max; i++) {
+      if (staticItems[i]) out.push(staticItems[i]);
+      if (activityItems[i]) out.push(activityItems[i]);
+    }
+    return out.length ? out : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
+  }, [announcementMessages, activity]);
 
   const submitSearch = (q: string) => {
     if (!q.trim()) return navigate("/discover");
