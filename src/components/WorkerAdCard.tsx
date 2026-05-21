@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Star, BadgeCheck, Award, MapPin, Briefcase, ArrowRight, Sparkles, Zap, Building2, Shield } from "lucide-react";
+import { Star, BadgeCheck, Award, MapPin, Briefcase, ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -57,92 +57,62 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     setPopupOpen(o);
   };
 
-  const badgeLabel = premium ? "Featured" : campaignId ? "Promoted" : "Sponsored";
+  const badgeLabel = premium ? "Featured Pro" : campaignId ? "Promoted" : "Sponsored";
   const BadgeIcon = premium ? Award : Sparkles;
 
   return (
     <>
       <div
         ref={cardRef}
-        className={`group relative w-[330px] rounded-[22px] p-[1.5px] sm:w-[400px] ${
+        className={`group relative w-[330px] rounded-[20px] p-[1px] sm:w-[400px] ${
           premium
-            ? "bg-[conic-gradient(from_140deg_at_50%_50%,hsl(var(--primary)),hsl(var(--primary)/0.2),hsl(var(--primary)/0.6),hsl(var(--primary)))] shadow-[0_10px_50px_-12px_hsl(var(--primary)/0.75)]"
-            : "bg-gradient-to-br from-primary/50 via-hero-foreground/10 to-primary/20 shadow-[0_10px_36px_-16px_hsl(var(--primary)/0.5)]"
+            ? "bg-gradient-to-br from-primary via-primary/30 to-primary/60 shadow-[0_12px_44px_-14px_hsl(var(--primary)/0.7)]"
+            : "bg-gradient-to-br from-hero-foreground/20 via-primary/25 to-hero-foreground/10 shadow-[0_10px_32px_-16px_hsl(var(--primary)/0.45)]"
         }`}
       >
         <article
           onClick={handleOpen}
-          className="relative cursor-pointer overflow-hidden rounded-[20px] bg-hero/95 backdrop-blur-xl transition-transform duration-300 active:scale-[0.985]"
+          className="relative cursor-pointer overflow-hidden rounded-[19px] bg-hero/98 backdrop-blur-xl transition-transform duration-300 active:scale-[0.985]"
         >
-          {/* ====== HERO BANNER ====== */}
-          <div className="relative h-[112px] w-full overflow-hidden">
-            {/* Backdrop: photo blurred for ambience */}
-            {worker.profilePhoto ? (
-              <img
-                src={worker.profilePhoto}
-                alt=""
-                aria-hidden
-                className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-hero to-primary/20" />
-            )}
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-hero/20 via-hero/40 to-hero" />
-            {/* Glow blobs */}
-            <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-primary/40 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-6 left-10 h-20 w-20 rounded-full bg-primary/20 blur-2xl" />
+          {/* Subtle ambient glow */}
+          <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-primary/8 blur-3xl" />
 
-            {/* Top ribbon */}
-            <div
-              className={`absolute right-0 top-0 z-10 inline-flex items-center gap-1 rounded-bl-2xl px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.16em] shadow-lg ${
+          {/* ====== HEADER STRIP ====== */}
+          <div className="relative flex items-center justify-between border-b border-hero-foreground/8 px-3 py-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-[0.16em] ${
                 premium
-                  ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"
-                  : "bg-hero-foreground/20 text-hero-foreground backdrop-blur-md"
+                  ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-sm shadow-primary/40"
+                  : "bg-hero-foreground/8 text-hero-foreground/80 ring-1 ring-hero-foreground/10"
               }`}
             >
               <BadgeIcon className="h-3 w-3" />
               {badgeLabel}
-            </div>
-
-            {/* Availability pill */}
-            <div className="absolute left-2.5 top-2.5 z-10">
-              <span
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider shadow-md ring-1 backdrop-blur-md ${
-                  worker.available
-                    ? "bg-primary/90 text-primary-foreground ring-primary/50"
-                    : "bg-hero-foreground/30 text-hero-foreground ring-hero-foreground/20"
-                }`}
-              >
-                <span className={`h-1.5 w-1.5 rounded-full ${worker.available ? "bg-hero-foreground animate-pulse" : "bg-hero/70"}`} />
-                {worker.available ? "Available now" : "Busy"}
-              </span>
-            </div>
-
-            {/* Category breadcrumb bottom-left of hero */}
-            <div className="absolute bottom-2 left-[120px] right-2.5 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[9px] font-bold uppercase tracking-[0.08em]">
-              {worker.mainCategory && (
-                <span className="rounded-md bg-primary/25 px-1.5 py-0.5 text-primary ring-1 ring-primary/40 backdrop-blur-sm">
-                  {worker.mainCategory}
-                </span>
-              )}
-              {worker.subCategory && (
-                <span className="truncate text-hero-foreground/80">› {worker.subCategory}</span>
-              )}
-            </div>
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                worker.available
+                  ? "bg-emerald-500/12 text-emerald-400 ring-1 ring-emerald-500/30"
+                  : "bg-hero-foreground/10 text-hero-muted ring-1 ring-hero-foreground/15"
+              }`}
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${worker.available ? "bg-emerald-400 animate-pulse shadow-[0_0_6px_currentColor]" : "bg-hero-foreground/40"}`} />
+              {worker.available ? "Available now" : "Busy"}
+            </span>
           </div>
 
-          {/* ====== AVATAR (overlapping hero) ====== */}
-          <div className="relative -mt-[60px] flex items-end gap-3 px-3">
+          {/* ====== MAIN ROW ====== */}
+          <div className="relative flex gap-3 px-3 pt-3">
+            {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="absolute inset-0 -m-1 rounded-2xl bg-gradient-to-br from-primary to-primary/30 opacity-90 blur-md" />
-              <Avatar className="relative h-[108px] w-[100px] rounded-2xl border-[3px] border-hero shadow-2xl">
+              <div className="absolute inset-0 -m-0.5 rounded-2xl bg-gradient-to-br from-primary/70 to-primary/10 opacity-80 blur-[5px]" />
+              <Avatar className="relative h-[104px] w-[92px] rounded-2xl border-2 border-hero-foreground/10 shadow-xl">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
                 <AvatarFallback className="rounded-2xl bg-hero-foreground/10 text-xl font-bold text-primary">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              {/* Verified shield */}
               {worker.verified && (
                 <div className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 shadow-lg ring-2 ring-hero">
                   <Shield className="h-3 w-3 fill-primary-foreground text-primary-foreground" />
@@ -150,106 +120,121 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               )}
             </div>
 
-            {/* Rating column */}
-            <div className="mb-1 flex flex-1 items-end justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
-                  <h3 className="truncate text-[17px] font-extrabold leading-tight tracking-tight text-hero-foreground">
-                    {worker.name}
-                  </h3>
-                  {worker.verified && <BadgeCheck className="h-4 w-4 shrink-0 fill-primary text-hero" />}
+            {/* Identity */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              {/* Category chip */}
+              {(worker.mainCategory || worker.subCategory) && (
+                <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[9.5px] font-bold uppercase tracking-[0.1em]">
+                  {worker.mainCategory && (
+                    <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-primary ring-1 ring-primary/25">
+                      {worker.mainCategory}
+                    </span>
+                  )}
+                  {worker.subCategory && (
+                    <span className="truncate text-hero-foreground/70">› {worker.subCategory}</span>
+                  )}
                 </div>
-                {worker.profession && (
-                  <p className="truncate text-[12px] font-semibold text-primary/90">
-                    {worker.profession}
-                  </p>
-                )}
+              )}
+
+              {/* Name — LARGE */}
+              <div className="mt-1 flex items-start gap-1">
+                <h3 className="line-clamp-2 text-[22px] font-extrabold leading-[1.1] tracking-tight text-hero-foreground">
+                  {worker.name}
+                </h3>
+                {worker.verified && <BadgeCheck className="mt-1 h-5 w-5 shrink-0 fill-primary text-hero" />}
               </div>
 
-              {/* Big rating block */}
-              <div className="flex shrink-0 flex-col items-center rounded-xl border border-primary/40 bg-gradient-to-br from-primary/15 to-transparent px-2 py-1 shadow-md ring-1 ring-primary/20">
-                <div className="flex items-center gap-0.5 text-primary">
-                  <Star className="h-3 w-3 fill-current" />
-                  <span className="text-[13px] font-extrabold leading-none">
+              {/* Profession */}
+              {worker.profession && (
+                <p className="mt-0.5 truncate text-[12.5px] font-semibold text-primary/90">
+                  {worker.profession}
+                </p>
+              )}
+
+              {/* Rating row */}
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-amber-500/15 to-transparent px-1.5 py-0.5 ring-1 ring-amber-500/30">
+                  <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                  <span className="text-[12px] font-extrabold leading-none text-hero-foreground">
                     {worker.rating?.toFixed(1) || "—"}
                   </span>
-                </div>
-                {worker.reviewCount > 0 && (
-                  <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-hero-muted">
-                    {worker.reviewCount} {worker.reviewCount === 1 ? "review" : "reviews"}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ====== INFO BODY ====== */}
-          <div className="relative px-3 pt-2.5">
-            {/* Description */}
-            {worker.description && (
-              <p className="line-clamp-2 text-[11px] leading-snug text-hero-foreground/75">
-                {worker.description}
-              </p>
-            )}
-
-            {/* Stats row */}
-            <div className="mt-2.5 grid grid-cols-3 gap-1.5">
-              <div className="flex flex-col items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/75 px-1.5 py-1.5 text-primary-foreground shadow-md shadow-primary/30">
-                <MapPin className="h-3.5 w-3.5" />
-                <span className="mt-0.5 text-[12px] font-extrabold leading-none">
-                  {hasDistance ? worker.distance : "—"}
-                  {hasDistance && <span className="ml-0.5 text-[9px] opacity-90">km</span>}
-                </span>
-                <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider opacity-80">Away</span>
-              </div>
-              <div className="flex flex-col items-center justify-center rounded-lg bg-hero-foreground/8 px-1.5 py-1.5 text-hero-foreground ring-1 ring-hero-foreground/10">
-                <Briefcase className="h-3.5 w-3.5 text-primary" />
-                <span className="mt-0.5 text-[12px] font-extrabold leading-none">
-                  {worker.experience > 0 ? `${worker.experience}+` : "—"}
-                </span>
-                <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-hero-muted">Years</span>
-              </div>
-              <div className="flex flex-col items-center justify-center rounded-lg bg-hero-foreground/8 px-1.5 py-1.5 text-hero-foreground ring-1 ring-hero-foreground/10">
-                <Building2 className="h-3.5 w-3.5 text-primary" />
-                <span className="mt-0.5 max-w-full truncate text-[11px] font-extrabold leading-none">
-                  {worker.city || "—"}
-                </span>
-                <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-hero-muted">City</span>
-              </div>
-            </div>
-
-            {/* Service areas */}
-            {worker.serviceAreas && worker.serviceAreas.length > 0 && (
-              <div className="mt-2 flex items-center gap-1 overflow-hidden">
-                <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-hero-muted">Serves</span>
-                <div className="flex min-w-0 flex-1 gap-1 overflow-hidden">
-                  {worker.serviceAreas.slice(0, 3).map((area, i) => (
-                    <span
-                      key={i}
-                      className="truncate rounded-full bg-hero-foreground/6 px-1.5 py-0.5 text-[9.5px] font-semibold text-hero-foreground/85 ring-1 ring-hero-foreground/10"
-                    >
-                      {area}
-                    </span>
-                  ))}
-                  {worker.serviceAreas.length > 3 && (
-                    <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9.5px] font-bold text-primary ring-1 ring-primary/30">
-                      +{worker.serviceAreas.length - 3}
+                  {worker.reviewCount > 0 && (
+                    <span className="text-[9.5px] font-semibold leading-none text-hero-muted">
+                      ({worker.reviewCount})
                     </span>
                   )}
                 </div>
+                {worker.city && (
+                  <span className="inline-flex min-w-0 items-center gap-0.5 text-[10.5px] font-semibold text-hero-muted">
+                    <MapPin className="h-3 w-3 shrink-0 text-primary/70" />
+                    <span className="truncate">{worker.city}</span>
+                  </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
+
+          {/* Description */}
+          {worker.description && (
+            <p className="relative mt-2.5 line-clamp-2 px-3 text-[11.5px] leading-snug text-hero-foreground/70">
+              {worker.description}
+            </p>
+          )}
+
+          {/* ====== STATS (2-col) ====== */}
+          <div className="relative mx-3 mt-3 grid grid-cols-2 gap-2">
+            <div className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary/80 px-2.5 py-2 text-primary-foreground shadow-md shadow-primary/30">
+              <MapPin className="h-4 w-4 shrink-0" />
+              <div className="min-w-0">
+                <div className="text-[14px] font-extrabold leading-none">
+                  {hasDistance ? worker.distance : "—"}
+                  {hasDistance && <span className="ml-0.5 text-[10px] opacity-90">km</span>}
+                </div>
+                <div className="mt-0.5 text-[8.5px] font-bold uppercase tracking-wider opacity-85">Distance</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-xl bg-hero-foreground/6 px-2.5 py-2 ring-1 ring-hero-foreground/10">
+              <Briefcase className="h-4 w-4 shrink-0 text-primary" />
+              <div className="min-w-0">
+                <div className="text-[14px] font-extrabold leading-none text-hero-foreground">
+                  {worker.experience > 0 ? `${worker.experience}+` : "—"}
+                </div>
+                <div className="mt-0.5 text-[8.5px] font-bold uppercase tracking-wider text-hero-muted">Years Exp</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Service areas */}
+          {worker.serviceAreas && worker.serviceAreas.length > 0 && (
+            <div className="relative mx-3 mt-2 flex items-center gap-1.5 overflow-hidden">
+              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-hero-muted">Serves</span>
+              <div className="flex min-w-0 flex-1 gap-1 overflow-hidden">
+                {worker.serviceAreas.slice(0, 3).map((area, i) => (
+                  <span
+                    key={i}
+                    className="truncate rounded-full bg-hero-foreground/5 px-1.5 py-0.5 text-[9.5px] font-semibold text-hero-foreground/85 ring-1 ring-hero-foreground/10"
+                  >
+                    {area}
+                  </span>
+                ))}
+                {worker.serviceAreas.length > 3 && (
+                  <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9.5px] font-bold text-primary ring-1 ring-primary/30">
+                    +{worker.serviceAreas.length - 3}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ====== CTA ROW ====== */}
           <div
-            className="relative mt-3 flex items-center gap-2 px-3 pb-3"
+            className="relative mt-3 flex items-center gap-2 border-t border-hero-foreground/8 bg-hero-foreground/[0.02] px-3 py-2.5"
             onClick={(e) => e.stopPropagation()}
           >
             <Button
               variant="ghost"
               size="sm"
-              className="h-9 flex-1 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 px-2 text-[11px] font-bold text-hero-foreground backdrop-blur hover:bg-hero-foreground/10"
+              className="h-9 flex-1 rounded-lg border border-hero-foreground/10 bg-hero-foreground/5 px-2 text-[11.5px] font-bold text-hero-foreground hover:bg-hero-foreground/10"
               onClick={() => { fireClick(); setPopupOpen(true); }}
             >
               View Profile
@@ -257,7 +242,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {isAuthed ? (
               <Button
                 size="sm"
-                className="h-9 flex-[1.5] rounded-xl bg-gradient-to-r from-primary via-primary to-primary/85 px-2 text-[11.5px] font-extrabold shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                className="h-9 flex-[1.5] rounded-lg bg-gradient-to-r from-primary via-primary to-primary/85 px-2 text-[12px] font-extrabold shadow-lg shadow-primary/40 hover:shadow-primary/60"
                 onClick={() => { fireClick(); setPopupOpen(true); }}
               >
                 <Zap className="mr-1 h-3.5 w-3.5 fill-current" /> Contact Now
@@ -270,7 +255,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               >
                 <Button
                   size="sm"
-                  className="h-9 flex-[1.5] rounded-xl bg-gradient-to-r from-primary via-primary to-primary/85 px-2 text-[11.5px] font-extrabold shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                  className="h-9 flex-[1.5] rounded-lg bg-gradient-to-r from-primary via-primary to-primary/85 px-2 text-[12px] font-extrabold shadow-lg shadow-primary/40 hover:shadow-primary/60"
                 >
                   <Zap className="mr-1 h-3.5 w-3.5 fill-current" /> Contact Now
                   <ArrowRight className="ml-1 h-3.5 w-3.5" />
