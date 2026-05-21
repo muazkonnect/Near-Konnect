@@ -601,7 +601,6 @@ const CampaignsPanel = () => {
                       <td className="px-3 py-2 text-right font-bold tabular-nums text-hero-foreground">{c.sparks_cost}</td>
                       <td className="px-3 py-2 text-right">
                         {c.status === "active" && <Button size="sm" variant="outline" onClick={() => setStatus(c.id, "paused")}><Pause className="mr-1 h-3 w-3" /> Pause</Button>}
-                        {c.status === "paused" && <Button size="sm" variant="outline" onClick={() => setStatus(c.id, "active")}><Play className="mr-1 h-3 w-3" /> Resume</Button>}
                       </td>
                     </tr>
                   );
