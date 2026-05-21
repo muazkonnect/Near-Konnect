@@ -53,15 +53,29 @@ const Register = () => {
   const [faceBlob, setFaceBlob] = useState<Blob | null>(null);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
-  const expertiseChips = EXPERTISE_SUGGESTIONS[subCategory] || EXPERTISE_SUGGESTIONS.default;
+  const expertiseChips = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
 
   const toggleTag = (tag: string) => {
-    setExpertiseTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
   };
 
   const addCustomTag = () => {
     const t = customTag.trim();
-    if (t && !expertiseTags.includes(t)) setExpertiseTags([...expertiseTags, t]);
+    if (!t) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((x) => x.toLowerCase() === t.toLowerCase())) {
+      setExpertiseTags([...expertiseTags, t]);
+    }
     setCustomTag("");
   };
 
