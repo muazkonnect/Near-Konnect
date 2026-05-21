@@ -1,118 +1,124 @@
-## Sparks Wallet System — Implementation Plan
+# Verified Badge + Featured Worker Systems
 
-A full wallet, transactions, buy flow, payment-method routing (Pakistan vs international), admin approval, and admin manual controls. Built on the existing `sparks_wallets` / `sparks_transactions` tables, extending with the missing pieces.
-
----
-
-### 1. Database (migration)
-
-Extend / add tables. All with RLS.
-
-- `sparks_wallets` (exists) — add columns: `total_purchased int default 0`, `total_spent int default 0`. Add unique index on `owner_user_id`. Auto-create on signup via trigger on `auth.users`.
-- `sparks_transactions` (exists) — extend enum `reason` to include: `purchase`, `admin_added`, `ad_spent`, `refund`, `bonus`, `deduction`. Add `status text default 'completed'`, `payment_method text`, `payment_request_id uuid`. Insert via SECURITY DEFINER functions only.
-- **NEW** `payment_requests` — `id`, `user_id`, `package_id`, `sparks_amount int`, `price_amount numeric`, `currency text`, `payment_method text` (easypaisa/jazzcash/usdt), `reference text` (txn id / hash), `proof_url text`, `status text` (pending/approved/rejected), `admin_note text`, `decided_by`, `decided_at`, `created_at`.
-- **NEW** `sparks_packages` — `id`, `name`, `sparks int`, `price_pkr numeric`, `price_usdt numeric`, `is_active bool`, `sort_order`, `bonus_sparks int default 0`.
-- **NEW** `payment_settings` — single-row config: `easypaisa_number`, `easypaisa_account_name`, `jazzcash_number`, `jazzcash_account_name`, `usdt_address`, `usdt_network`, `usdt_qr_url`, `easypaisa_qr_url`, `jazzcash_qr_url`, `updated_by`, `updated_at`.
-- **NEW** storage bucket `payment-proofs` (private). RLS: user uploads own, admin reads all.
-
-**SECURITY DEFINER RPCs** (the only way to mutate wallet balance):
-- `spend_sparks(p_amount int, p_reason text, p_notes text, p_campaign_id uuid)` — deducts from caller, inserts transaction, returns new balance. Errors if insufficient.
-- `admin_credit_sparks(p_user uuid, p_amount int, p_reason text, p_notes text)` — admin only.
-- `admin_debit_sparks(p_user uuid, p_amount int, p_reason text, p_notes text)` — admin only.
-- `approve_payment_request(p_id uuid, p_note text)` — admin only; credits sparks, updates request, logs transaction with `payment_request_id`.
-- `reject_payment_request(p_id uuid, p_note text)` — admin only.
-- Trigger `on_auth_user_created_wallet` ensures a wallet row exists.
-
-RLS summary:
-- `sparks_wallets`: select own + admin. No direct insert/update from clients.
-- `sparks_transactions`: select own + admin. No client insert.
-- `payment_requests`: user select/insert own (status='pending'); admin all.
-- `sparks_packages`, `payment_settings`: public select (active/single); admin manage.
+Two Sparks-powered premium systems integrated with wallet, geo targeting, discovery, explore, and admin panel.
 
 ---
 
-### 2. Frontend architecture
+## 1. Database (one migration)
 
-```
-src/
-  contexts/WalletContext.tsx        # global balance + realtime subscription
-  hooks/
-    useWallet.ts                    # balance, totals, history, refresh
-    usePaymentSettings.ts
-    useSparksPackages.ts
-  services/walletService.ts         # all supabase calls (spend, buy, fetch)
-  components/wallet/
-    SparksBalanceChip.tsx           # navbar/header pill
-    SparksBalanceCard.tsx           # dashboard hero card
-    PackageCard.tsx
-    PaymentMethodSelector.tsx       # routes by country
-    EasypaisaJazzcashForm.tsx
-    UsdtPaymentForm.tsx
-    ProofUploader.tsx
-    TransactionRow.tsx
-    TransactionsTable.tsx
-  pages/wallet/
-    WalletPage.tsx                  # /wallet — balance + history
-    BuySparksPage.tsx               # /wallet/buy
-    PaymentCheckoutPage.tsx         # /wallet/buy/:packageId/checkout
-    PaymentStatusPage.tsx           # /wallet/payment/:id
-  components/admin/
-    SparksAdminTab.tsx              # extend existing
-      - PendingPaymentsPanel
-      - ManualSparksPanel
-      - PaymentSettingsPanel
-      - PackagesPanel
-      - AllTransactionsPanel
-```
+### New tables
 
-- Country detection: reuse existing geolocation/profile city, plus a `country` field on profile if available; otherwise fall back to a simple selector at checkout (default Pakistan if city matches PK list, else international). Keep a single util `getUserPaymentRegion()`.
-- Routes added to `App.tsx`. Lazy-loaded with `React.lazy`. Wallet routes protected via existing `ProtectedRoute`. Admin panels gated by `useUserRole`.
-- `WalletContext` exposes `{ balance, totalPurchased, totalSpent, refresh, spend }` and subscribes to `sparks_wallets` realtime changes.
-- `SparksBalanceChip` rendered in `AppLayout` header (next to NotificationBell) and in Ads Dashboard / Worker Dashboard.
+- **`worker_verifications`** — one row per worker
+  - `worker_id` (unique), `user_id`, `status` (`none`/`submitted`/`approved`/`rejected`/`resubmit`)
+  - `persona_inquiry_id`, `persona_session_token`, `persona_status`, `persona_payload` (jsonb, admin-only)
+  - `sparks_cost`, `sparks_transaction_id`
+  - `submitted_at`, `decided_at`, `decided_by`, `admin_note`
+  - `verified_at` (set on approve — drives the lifetime badge)
 
----
+- **`verification_documents`** — private references only
+  - `verification_id`, `kind` (`id_front`/`id_back`/`selfie`/`other`), `storage_path`, `persona_file_id`, `created_at`
+  - Storage bucket **`verification-docs`** (private). RLS: owner upload to own folder, admin read all.
 
-### 3. Buy Sparks flow
+- **`featured_workers`** — active/past featured listings
+  - `worker_id`, `user_id`, `category_id` (nullable = all), `duration_days`, `sparks_cost`
+  - `starts_at`, `ends_at`, `status` (`active`/`expired`/`cancelled`/`refunded`)
+  - `center` geography point (worker location at purchase), fixed `radius_km = 3`
+  - `sparks_transaction_id`
 
-1. `/wallet/buy` — grid of `PackageCard`s + "Custom amount" card.
-2. Selecting a package → `/wallet/buy/:id/checkout`.
-3. `PaymentMethodSelector` shows:
-   - PK users: Easypaisa, JazzCash tabs — show account number/name + QR (from `payment_settings`), reference input, proof upload.
-   - International: USDT tab — show address + QR + network, txn hash input, proof upload.
-4. Submit → insert `payment_requests` (status `pending`) + upload proof to `payment-proofs/{user}/{uuid}`.
-5. Redirect to `/wallet/payment/:id` showing pending state. Polls/realtime updates.
+- **`featured_pricing_rules`** — admin-editable
+  - `duration_days` (1/7/15/30), `base_sparks`, `category_id` (nullable for global), `multiplier`, `active`
+
+- **`verification_settings`** — single row
+  - `sparks_cost`, `persona_template_id`, `persona_environment_id`, `enabled`, `auto_approve_on_persona_pass` (bool, default false)
+
+### RPCs (SECURITY DEFINER)
+
+- `start_verification()` — creates pending `worker_verifications` row, returns it; no Sparks yet.
+- `submit_verification(p_inquiry_id, p_session_token)` — debits Sparks via `spend_sparks` with reason `verification`, sets status `submitted`.
+- `admin_decide_verification(p_id, p_status, p_note)` — approve/reject/resubmit; on approve sets `verified_at = now()` and updates `workers.verified = true`.
+- `admin_revoke_verification(p_worker_id, p_note)` — sets `workers.verified = false`, status `rejected`.
+- `purchase_featured(p_duration_days, p_category_id)` — looks up price from `featured_pricing_rules`, debits via `spend_sparks` (reason `featured`), inserts `featured_workers` with worker geo + 3 km, `ends_at = now()+duration`.
+- `expire_featured_workers()` — sets expired rows to `status = 'expired'`; called by cron.
+- `nearby_featured_workers(p_lat, p_lng, p_category_id)` — returns active featured within 3 km of viewer, ordered by category match first then distance.
+
+### Triggers / cron
+- pg_cron: `expire_featured_workers()` every 5 min.
+
+### RLS summary
+- `worker_verifications`: user select/insert own (via RPC), admin all. `persona_payload` hidden from non-admin via a view `worker_verifications_public` exposing only `status`, `verified_at`.
+- `verification_documents`: owner select own, admin all.
+- `featured_workers`: public select where `status='active' AND now() between starts_at and ends_at`; owner select own; admin all.
+- `featured_pricing_rules`, `verification_settings`: public select where active; admin write.
 
 ---
 
-### 4. Admin
+## 2. Edge Functions
 
-Extend `SparksAdminTab.tsx`:
-- **Pending Payments**: list with proof preview, approve (calls `approve_payment_request`) / reject with note.
-- **Manual Sparks**: search user → credit / debit with reason. Calls admin RPCs.
-- **Packages**: CRUD on `sparks_packages`.
-- **Payment Settings**: edit Easypaisa, JazzCash, USDT details + upload QR images.
-- **All Transactions**: filterable table.
+- **`persona-create-inquiry`** — calls Persona API with `PERSONA_API_KEY` (placeholder secret to be added later), template/env from `verification_settings`. Returns `inquiry_id` + session token to client. If `PERSONA_API_KEY` missing → returns a clearly-marked mock inquiry so the flow is testable end-to-end.
+- **`persona-webhook`** — verifies signature (`PERSONA_WEBHOOK_SECRET`), updates `worker_verifications.persona_status` + `persona_payload`. If `auto_approve_on_persona_pass` is true and status = `completed`/`approved`, calls `admin_decide_verification` with service role.
+- Both registered in `supabase/config.toml` with `verify_jwt = false` for the webhook only.
 
 ---
 
-### 5. Spending integration
+## 3. Frontend
 
-Replace any existing direct balance writes in the Ads flow with `walletService.spend(amount, 'ad_spent', notes, campaignId)` calling `spend_sparks` RPC. Insufficient balance triggers a "Top up Sparks" CTA → `/wallet/buy`.
+### Services / hooks
+- `src/services/verificationService.ts` — start/submit/fetch verification, upload doc to private bucket.
+- `src/services/featuredService.ts` — pricing fetch, purchase, my-featured list, nearby fetch wrapper.
+- `src/hooks/useVerification.ts`, `src/hooks/useFeaturedWorker.ts`, `src/hooks/useNearbyFeatured.ts`.
+
+### Worker-facing UI
+- `src/components/verification/VerificationDialog.tsx` — multi-step: intro + price → Persona inquiry launch (uses `persona-create-inquiry` edge function and Persona web SDK loaded dynamically; if key missing, shows "Demo mode" with manual fake-submit) → success state.
+- `src/components/featured/FeaturedPurchaseDialog.tsx` — duration cards (1/7/15/30) with live Sparks price + balance check → confirm → success.
+- Entry points in **Worker Dashboard**: two new cards "Get Verified" and "Become Featured".
+
+### Display integration
+- `VerifiedBadge` already exists; ensure it reads `workers.verified` and is shown on:
+  - `WorkerCard`, `WorkerProfilePopup`, `WorkerAdCard`, `FeaturedWorkersCarousel`, ads cards on Home, Explore/Discover.
+- **Featured cards** — new `FeaturedWorkerCard.tsx` with subtle gold/accent ring, "Featured" pill, no aggressive ad styling.
+- **Explore/Discover ordering** (update `Discover.tsx`): `[ Sponsored Ads ] → [ Featured Workers (3 km, category match) ] → [ Normal workers ]`. Featured fetched via `nearby_featured_workers` RPC. Same ordering applied to category-filtered views.
+
+### Admin panel (Settings tab — extends existing structure)
+- New sub-tabs in `SettingsTab`:
+  - **Verification** — queue (pending/submitted), approve/reject/resubmit with note, view documents via signed URLs, edit `sparks_cost` + Persona template/env + auto-approve toggle.
+  - **Featured** — active listings table (worker, category, days left, ends_at, cancel/refund), pricing rules CRUD (duration × category × sparks).
+- Reuses existing `has_role('admin')` gating.
 
 ---
 
-### 6. UI
+## 4. Sparks integration
 
-Premium fintech feel: gradient hero balance card with animated count, soft shadows, semantic tokens from `index.css`, framer-motion micro-animations, mobile-first layouts mirroring existing AppLayout style.
+- All deductions go through existing `spend_sparks` RPC with new reasons `verification`, `featured`. No direct balance writes.
+- Insufficient balance → toast + CTA to `/wallet/buy`.
+- `sparks_transactions.reason` enum extended.
 
 ---
 
-### Order of execution
+## 5. Security
 
-1. Migration (tables, enums, RPCs, trigger, storage bucket, RLS, seed packages + settings row).
-2. Wallet service + context + hooks.
-3. Wallet pages (Wallet, BuySparks, Checkout, Status) + components.
-4. Header `SparksBalanceChip` in `AppLayout`.
-5. Admin panels.
-6. Wire Ads spending to RPC.
-7. Register routes in `App.tsx`.
+- Persona payload + documents are admin-only (RLS + private storage bucket).
+- Verification + featured activation only mutate via SECURITY DEFINER RPCs.
+- `workers.verified` only writable by RPC (revoke existing public update policy if any; add restriction).
+- Webhook signature verification mandatory; rejects unsigned calls.
+
+---
+
+## 6. Secrets needed later (placeholder now)
+
+- `PERSONA_API_KEY`
+- `PERSONA_WEBHOOK_SECRET`
+- `PERSONA_TEMPLATE_ID` (also editable via admin)
+
+Edge functions will read these via `Deno.env.get` and degrade to demo mode if absent, so the rest of the system is fully functional today.
+
+---
+
+## Order of execution
+
+1. Migration (tables, RPCs, storage bucket, RLS, pricing seed, cron).
+2. Edge functions (`persona-create-inquiry`, `persona-webhook`).
+3. Services + hooks.
+4. Worker dialogs (verification + featured purchase) and Worker Dashboard entry points.
+5. Display: `FeaturedWorkerCard`, Explore/Discover ordering, badge audit across cards.
+6. Admin sub-tabs in Settings (Verification queue, Featured management, pricing).
+7. Wire Sparks reasons; verify end-to-end in preview.
