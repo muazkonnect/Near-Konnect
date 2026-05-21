@@ -157,7 +157,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Final approval by our admins after Didit passes.</li>
             </ul>
 
-            <Button onClick={startScan} disabled={loading || insufficient} className="w-full" size="lg">
+            <Button onClick={createSession} disabled={loading || insufficient} className="w-full" size="lg">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> :
                 insufficient ? "Insufficient Sparks" :
                 <><ScanLine className="h-4 w-4 mr-2" /> Start ID scan</>}
