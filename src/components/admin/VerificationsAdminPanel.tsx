@@ -133,13 +133,36 @@ export default function VerificationsAdminPanel() {
           <p className="text-xs text-muted-foreground">Nothing waiting.</p>
         ) : (
           <ul className="space-y-2">
-            {pending.map((v) => (
+            {pending.map((v) => {
+              const payload: any = (v as any).persona_payload || {};
+              // Try to pull out commonly-named identity fields from Didit decision.
+              const idv = payload.id_verification || payload.kyc || payload.document || {};
+              const info = {
+                name: idv.full_name || [idv.first_name, idv.last_name].filter(Boolean).join(" ") || payload.full_name || "",
+                dob: idv.date_of_birth || idv.dob || "",
+                doc_type: idv.document_type || idv.type || "",
+                doc_number: idv.document_number || idv.number || "",
+                nationality: idv.nationality || idv.issuing_country || "",
+                expires: idv.expiration_date || idv.expires_at || "",
+              };
+              return (
               <li key={v.id} className="rounded-xl border bg-card p-3">
                 <div className="text-xs">
                   <p className="font-mono break-all">Worker: {v.worker_id}</p>
-                  <p className="text-muted-foreground">Persona: {v.persona_inquiry_id || "—"}</p>
+                  <p className="text-muted-foreground">Didit session: {v.persona_inquiry_id || "—"}</p>
+                  <p className="text-muted-foreground">Didit status: {(v as any).persona_status || "—"}</p>
                   <p className="text-muted-foreground">Submitted: {v.submitted_at ? new Date(v.submitted_at).toLocaleString() : "—"}</p>
                 </div>
+                {Object.values(info).some(Boolean) && (
+                  <div className="mt-2 rounded-lg border bg-muted/30 p-2 text-[11px] grid grid-cols-2 gap-x-3 gap-y-1">
+                    {info.name && <div><span className="text-muted-foreground">Name:</span> <span className="font-semibold">{info.name}</span></div>}
+                    {info.dob && <div><span className="text-muted-foreground">DOB:</span> {info.dob}</div>}
+                    {info.doc_type && <div><span className="text-muted-foreground">Doc type:</span> {info.doc_type}</div>}
+                    {info.doc_number && <div><span className="text-muted-foreground">Doc #:</span> {info.doc_number}</div>}
+                    {info.nationality && <div><span className="text-muted-foreground">Nationality:</span> {info.nationality}</div>}
+                    {info.expires && <div><span className="text-muted-foreground">Expires:</span> {info.expires}</div>}
+                  </div>
+                )}
                 <DocsViewer verificationId={v.id} />
                 <Textarea
                   placeholder="Optional note to user"
@@ -159,7 +182,8 @@ export default function VerificationsAdminPanel() {
                   </Button>
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>

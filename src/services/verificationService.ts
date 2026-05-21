@@ -71,6 +71,12 @@ export async function getDiditDecision(session_id: string): Promise<any> {
   return data;
 }
 
+export async function fetchDiditEvidence(session_id: string): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("didit-fetch-evidence", { body: { session_id } });
+  if (error) throw error;
+  return data;
+}
+
 export async function submitVerification(inquiryId: string, sessionToken?: string | null): Promise<WorkerVerification> {
   const { data, error } = await sb.rpc("submit_verification", { p_inquiry_id: inquiryId, p_session_token: sessionToken ?? null });
   if (error) throw error;

@@ -6,7 +6,7 @@ import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine } f
 import { useMyVerification, useVerificationSettings } from "@/hooks/useVerification";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
-import { startVerification, submitVerification, createDiditSession, getDiditDecision } from "@/services/verificationService";
+import { startVerification, submitVerification, createDiditSession, getDiditDecision, fetchDiditEvidence } from "@/services/verificationService";
 import { toast } from "sonner";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
@@ -27,6 +27,14 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   useEffect(() => { if (open) refetch(); }, [open, refetch]);
   useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
 
+  const finalize = async (sessionId: string, sessionToken: string | null) => {
+    await submitVerification(sessionId, sessionToken);
+    try { await fetchDiditEvidence(sessionId); } catch (e) { console.error("evidence fetch failed", e); }
+    sessionStorage.removeItem(PENDING_KEY);
+    toast.success("Verification submitted for admin approval");
+    refetch();
+  };
+
   const startPolling = (sessionId: string, sessionToken: string | null) => {
     if (pollRef.current) window.clearInterval(pollRef.current);
     pollRef.current = window.setInterval(async () => {
@@ -36,10 +44,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
         if (["approved", "in review", "in_review", "declined", "completed"].some(x => st.includes(x))) {
           window.clearInterval(pollRef.current!);
           pollRef.current = null;
-          await submitVerification(sessionId, sessionToken);
-          sessionStorage.removeItem(PENDING_KEY);
-          toast.success("Verification submitted for admin approval");
-          refetch();
+          await finalize(sessionId, sessionToken);
         }
       } catch { /* keep polling */ }
     }, 5000);
@@ -54,14 +59,8 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
       const params = new URLSearchParams(window.location.search);
       if (params.get("verification") === "complete") {
         (async () => {
-          try {
-            await submitVerification(s.session_id, s.session_token);
-            sessionStorage.removeItem(PENDING_KEY);
-            toast.success("Verification submitted for admin approval");
-            refetch();
-          } catch {
-            startPolling(s.session_id, s.session_token);
-          }
+          try { await finalize(s.session_id, s.session_token); }
+          catch { startPolling(s.session_id, s.session_token); }
         })();
         // clean query
         const url = new URL(window.location.href);
