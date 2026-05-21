@@ -64,15 +64,15 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-[330px] rounded-[24px] p-[1.25px] sm:w-[400px] ${
+        className={`group relative w-[330px] rounded-[24px] p-[1px] sm:w-[400px] ${
           premium
-            ? "bg-[conic-gradient(from_200deg_at_50%_50%,hsl(var(--primary)),hsl(var(--primary)/0.15),hsl(var(--primary)/0.75),hsl(var(--primary)/0.2),hsl(var(--primary)))] shadow-[0_20px_60px_-18px_hsl(var(--primary)/0.8)]"
-            : "bg-gradient-to-br from-primary/45 via-hero-foreground/10 to-primary/25 shadow-[0_16px_44px_-20px_hsl(var(--primary)/0.55)]"
+            ? "bg-gradient-to-br from-primary/70 via-primary/30 to-primary/50 shadow-[0_12px_32px_-18px_hsl(var(--primary)/0.5)]"
+            : "bg-gradient-to-br from-primary/30 via-hero-foreground/10 to-primary/15 shadow-[0_10px_28px_-20px_hsl(var(--primary)/0.35)]"
         }`}
       >
         <article
           onClick={handleOpen}
-          className="relative cursor-pointer overflow-hidden rounded-[23px] bg-hero/98 backdrop-blur-2xl transition-all duration-300 active:scale-[0.985] hover:shadow-[0_28px_70px_-22px_hsl(var(--primary)/0.5)]"
+          className="relative cursor-pointer overflow-hidden rounded-[23px] bg-hero transition-transform duration-200 active:scale-[0.99]"
         >
           {/* ====== COVER BAND ====== */}
           <div className="relative h-[88px] w-full overflow-hidden">
