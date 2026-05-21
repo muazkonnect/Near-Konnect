@@ -91,7 +91,7 @@ const FeaturedWorkersCarousel = ({
       if (currentIds !== newIds) setItems(enriched.slice(0, limit));
     })();
     return () => { cancelled = true; };
-  }, [mergedIds.join(","), limit, coords?.latitude, coords?.longitude]);
+  }, [mergedIds.join(","), limit, coords?.latitude, coords?.longitude, user?.id]);
 
   if (items.length === 0) return null;
 
