@@ -112,11 +112,9 @@ const WorkerDashboard = () => {
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
-        setContactMethods(stored.some((m) => m.type === "phone") ? stored : [{ type: "phone", value: profilePhone }, ...stored]);
+        setContactMethods(stored.some((m) => m.type === "whatsapp") ? stored : [{ type: "whatsapp", value: profilePhone }, ...stored]);
       } else {
-        const seed: ContactMethod[] = [{ type: "phone", value: profilePhone }];
-        if ((workerData as any).profiles?.use_whatsapp && profilePhone) seed.push({ type: "whatsapp", value: profilePhone });
-        setContactMethods(seed);
+        setContactMethods([{ type: "whatsapp", value: profilePhone }]);
       }
     }
   }, [workerData]);
