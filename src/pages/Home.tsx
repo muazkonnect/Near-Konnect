@@ -284,26 +284,44 @@ const Home = () => {
               gapClass="gap-4"
               trackClassName="pl-5 pr-5"
               dwellMs={2500}
+              paused={!!selectedDonor}
               items={donors.map((d) => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
+                const open = () =>
+                  setSelectedDonor({
+                    user_id: d.user_id,
+                    full_name: d.full_name,
+                    avatar_url: d.avatar_url,
+                    blood_group: d.blood_group,
+                    city: d.city,
+                    distance: isFinite(d.distance as number) ? (d.distance as number) : undefined,
+                    phone: (d as any).phone ?? null,
+                    contact_methods: (d as any).contact_methods,
+                  });
+                let downX = 0;
+                let downY = 0;
                 return (
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     key={d.user_id}
-                    onClick={() =>
-                      setSelectedDonor({
-                        user_id: d.user_id,
-                        full_name: d.full_name,
-                        avatar_url: d.avatar_url,
-                        blood_group: d.blood_group,
-                        city: d.city,
-                        distance: isFinite(d.distance as number) ? (d.distance as number) : undefined,
-                        phone: (d as any).phone ?? null,
-                        contact_methods: (d as any).contact_methods,
-                      })
-                    }
-                    className="group relative flex min-w-[260px] flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
+                    onPointerDown={(e) => {
+                      downX = e.clientX;
+                      downY = e.clientY;
+                    }}
+                    onPointerUp={(e) => {
+                      const dx = Math.abs(e.clientX - downX);
+                      const dy = Math.abs(e.clientY - downY);
+                      if (dx < 8 && dy < 8) open();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        open();
+                      }
+                    }}
+                    className="group relative flex min-w-[260px] cursor-pointer select-none flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
                   >
                     <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
                       <HeartPulse className="h-7 w-7 text-destructive/30" />
@@ -330,13 +348,14 @@ const Home = () => {
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
                       </div>
                     </div>
-                    <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-destructive/70 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-destructive/70">
                       Tap to view details
                     </span>
-                  </button>
+                  </div>
                 );
               })}
             />
+
           )}
         </motion.section>
 
