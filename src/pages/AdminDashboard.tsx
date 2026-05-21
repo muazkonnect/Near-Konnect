@@ -52,6 +52,7 @@ const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyMana
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedAdminPanel"));
+const VerificationsAdminPanel = lazy(() => import("@/components/admin/VerificationsAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
@@ -62,10 +63,10 @@ const TabFallback = () => (
     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
   </div>
 );
-import { Pencil } from "lucide-react";
+import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -74,6 +75,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "categories", label: "Categories", icon: Shield },
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
+  { key: "verifications", label: "Verifications", icon: BadgeCheck },
   { key: "running_ads", label: "Running Ads", icon: Megaphone },
   { key: "sparks", label: "Sparks & Payments", icon: Zap },
   { key: "settings", label: "Settings", icon: Sliders },
@@ -744,6 +746,16 @@ const AdminDashboard = () => {
                 <SectionHeader title="Featured Workers" subtitle="Sparks-based featured listings, pricing rules, and active promotions." />
                 <Suspense fallback={<TabFallback />}>
                   <FeaturedManagementTab />
+                </Suspense>
+              </div>
+            )}
+
+            {/* VERIFICATIONS */}
+            {tab === "verifications" && (
+              <div>
+                <SectionHeader title="Verified Badge System" subtitle="Review submissions, configure sparks cost and Persona auto-approval." />
+                <Suspense fallback={<TabFallback />}>
+                  <VerificationsAdminPanel />
                 </Suspense>
               </div>
             )}
