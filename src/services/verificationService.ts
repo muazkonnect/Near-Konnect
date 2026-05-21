@@ -58,6 +58,19 @@ export async function createPersonaInquiry(): Promise<{ demo: boolean; inquiry_i
   return data as any;
 }
 
+export async function createDiditSession(): Promise<{ session_id: string; session_token: string | null; url: string; status: string }> {
+  const { data, error } = await supabase.functions.invoke("didit-create-session");
+  if (error) throw error;
+  if ((data as any)?.error) throw new Error((data as any).error);
+  return data as any;
+}
+
+export async function getDiditDecision(session_id: string): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("didit-get-decision", { body: { session_id } });
+  if (error) throw error;
+  return data;
+}
+
 export async function submitVerification(inquiryId: string, sessionToken?: string | null): Promise<WorkerVerification> {
   const { data, error } = await sb.rpc("submit_verification", { p_inquiry_id: inquiryId, p_session_token: sessionToken ?? null });
   if (error) throw error;
