@@ -346,35 +346,36 @@ const Home = () => {
         </section>
 
         <PromotedSection
-          title="Within 5 KM"
+          title={`Within ${r0} KM`}
           subtitle="Promoted providers in your immediate vicinity"
           items={promoted5}
-          placement="nearby_5km"
+          placement={`nearby_${r0}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3}
           navigate={navigate}
         />
         <PromotedSection
-          title="Within 10 KM"
+          title={`Within ${r1} KM`}
           subtitle="Nearby promoted providers"
           items={promoted10}
-          placement="nearby_10km"
+          placement={`nearby_${r1}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3.3}
           navigate={navigate}
         />
         <PromotedSection
-          title="Within 15 KM"
+          title={`Within ${r2} KM`}
           subtitle="Promoted providers in your area"
           items={promoted15}
-          placement="nearby_15km"
+          placement={`nearby_${r2}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3.6}
           navigate={navigate}
         />
+
 
 
 
