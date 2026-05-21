@@ -304,19 +304,23 @@ const Home = () => {
                 const open = () => setSelectedDonor(toBloodDonorPopupData(d));
                 let downX = 0;
                 let downY = 0;
+                let moved = false;
                 return (
                   <button
                     type="button"
                     key={d.user_id}
-                    onClick={open}
+                    onClick={() => {
+                      if (!moved) open();
+                    }}
                     onPointerDown={(e) => {
                       downX = e.clientX;
                       downY = e.clientY;
+                      moved = false;
                     }}
                     onPointerUp={(e) => {
                       const dx = Math.abs(e.clientX - downX);
                       const dy = Math.abs(e.clientY - downY);
-                      if (dx < 8 && dy < 8) open();
+                      moved = dx >= 8 || dy >= 8;
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
