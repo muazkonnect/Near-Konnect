@@ -193,7 +193,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                 className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
                 aria-label="WhatsApp"
               >
-                <MessageCircle className="h-5 w-5" />
+                <WhatsappIcon size={20} className="text-[#25D366]" />
               </button>
               <button
                 onClick={requireAuth(() => {})}
