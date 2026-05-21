@@ -93,10 +93,12 @@ const Home = () => {
       .sort((a, b) => a.distance - b.distance);
   }, [workers, browsingCoords]);
 
-  // Promoted (Sparks) campaigns: 5/10/15 KM + Top Rated
-  const promoted5 = usePromotedNearby(browsingCoords, 5);
-  const promoted10 = usePromotedNearby(browsingCoords, 10);
-  const promoted15 = usePromotedNearby(browsingCoords, 15);
+  // Promoted (Sparks) campaigns: admin-configurable radius buckets + Top Rated
+  const homepageRadii = useAppSetting("homepage_promoted_radii_km");
+  const [r0 = 5, r1 = 10, r2 = 15] = Array.isArray(homepageRadii) ? homepageRadii : [5, 10, 15];
+  const promoted5 = usePromotedNearby(browsingCoords, r0);
+  const promoted10 = usePromotedNearby(browsingCoords, r1);
+  const promoted15 = usePromotedNearby(browsingCoords, r2);
   const promotedTop = usePromotedTopRated(browsingCoords);
 
   // Blood donors — top 3 nearest verified donors
