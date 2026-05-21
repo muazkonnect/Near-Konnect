@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -30,7 +32,15 @@ const AuthRequiredDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl">
+      <DialogContent className="relative rounded-2xl [&>button.absolute]:hidden">
+        <DialogClose asChild>
+          <button
+            className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </DialogClose>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
