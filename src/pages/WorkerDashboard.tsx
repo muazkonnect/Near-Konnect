@@ -319,9 +319,15 @@ const WorkerDashboard = () => {
 
   return (
     <AppLayout showSignOut hideMobileHeader>
-      <section className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero px-4 pb-40 pt-4 text-hero-foreground">
+      <section className={`-mx-4 -mt-[90px] -mb-[166px] min-h-screen px-4 pb-40 pt-4 text-hero-foreground ${
+        activePremium
+          ? "bg-gradient-to-b from-amber-500/[0.08] via-hero to-hero"
+          : "bg-hero"
+      }`}>
         {/* Top App Bar */}
-        <header className="sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b border-hero-foreground/10 bg-hero/90 px-5 py-3 backdrop-blur-md">
+        <header className={`sticky top-0 z-40 -mx-4 mb-5 flex items-center justify-between gap-3 border-b px-5 py-3 backdrop-blur-md ${
+          activePremium ? "border-amber-400/30 bg-hero/90" : "border-hero-foreground/10 bg-hero/90"
+        }`}>
           <Link to="/" className="inline-flex items-center">
             <img src={logoImg} alt="Near Konnect" className="h-8 object-contain" />
           </Link>
@@ -355,13 +361,39 @@ const WorkerDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto max-w-2xl space-y-4"
         >
+          {/* Premium status banner */}
+          {activePremium && (
+            <div className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-transparent p-4 shadow-[0_8px_32px_-12px_hsl(45_93%_47%/0.5)]">
+              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl" />
+              <div className="relative flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg">
+                  <Crown className="h-5 w-5 text-white" fill="currentColor" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-amber-400">Premium Featured · Active</p>
+                  <p className="text-[11px] text-hero-foreground/70">
+                    {activePremium.duration_days}-day plan · {premiumDaysLeft} day{premiumDaysLeft === 1 ? "" : "s"} left · 3 km premium reach
+                  </p>
+                </div>
+                <button
+                  onClick={() => setFeaturedOpen(true)}
+                  className="rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-1.5 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20"
+                >
+                  Extend
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Profile Summary */}
           <div className="px-1 py-2">
             <div className="flex flex-col items-center gap-3 text-center">
               <button
                 type="button"
                 onClick={() => setAvatarPreviewOpen(true)}
-                className="rounded-2xl transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className={`rounded-2xl transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                  activePremium ? "ring-2 ring-amber-400/70 ring-offset-2 ring-offset-hero shadow-[0_0_24px_-4px_hsl(45_93%_47%/0.6)]" : ""
+                }`}
                 aria-label="View profile photo"
               >
                 <AvatarUpload currentUrl={(workerData as any).profiles?.avatar_url} size={84} />
@@ -369,11 +401,11 @@ const WorkerDashboard = () => {
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   <span className="text-lg font-bold sm:text-2xl">{workerName}</span>
+                  {activePremium && (
+                    <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
+                  )}
                   {workerData.verified && (
-                    <>
-                      <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Pro" />
-                      <BadgeCheck className="h-4 w-4 text-primary" aria-label="Verified" />
-                    </>
+                    <BadgeCheck className="h-4 w-4 text-primary" aria-label="Verified" />
                   )}
                 </div>
                 {(workerData as any).uid && (
