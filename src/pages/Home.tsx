@@ -26,6 +26,7 @@ import AppLayout from "@/components/AppLayout";
 import { calculateDistance } from "@/lib/geolocation";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { useFeaturedWorkerIds, useNativeAds } from "@/hooks/useSponsored";
+import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import NativeAdCard from "@/components/NativeAdCard";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
