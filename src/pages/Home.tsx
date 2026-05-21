@@ -30,6 +30,7 @@ import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import NativeAdCard from "@/components/NativeAdCard";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
+import BloodDonorPopup, { type BloodDonorPopupData } from "@/components/BloodDonorPopup";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
