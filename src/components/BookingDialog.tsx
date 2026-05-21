@@ -86,7 +86,7 @@ const BookingDialog = ({ workerId, workerName, children }: Props) => {
       <DialogContent
         onPointerDownOutside={() => setOpen(false)}
         onInteractOutside={() => setOpen(false)}
-        className="relative sm:max-w-md [&>button.absolute]:hidden"
+        className="relative sm:max-w-md [&>button:last-child]:hidden"
       >
         <button
           onClick={() => setOpen(false)}

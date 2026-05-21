@@ -90,7 +90,7 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
       <DialogContent
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
-        className="max-w-[calc(100vw-2rem)] overflow-hidden rounded-3xl border border-destructive/20 bg-background p-0 text-foreground shadow-2xl sm:max-w-lg [&>button.absolute]:hidden"
+        className="max-w-[calc(100vw-2rem)] overflow-hidden rounded-3xl border border-destructive/20 bg-background p-0 text-foreground shadow-2xl sm:max-w-lg [&>button:last-child]:hidden"
       >
         <VisuallyHidden>
           <DialogTitle>{name}</DialogTitle>

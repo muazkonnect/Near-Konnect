@@ -42,7 +42,7 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
       <DialogContent
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
-        className="relative max-w-md [&>button.absolute]:hidden"
+        className="relative max-w-md [&>button:last-child]:hidden"
       >
         <button
           onClick={() => onOpenChange(false)}
