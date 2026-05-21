@@ -31,7 +31,18 @@ const AuthRequiredDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+        className="relative rounded-2xl [&>button.absolute]:hidden"
+      >
+        <button
+          onClick={() => {}}
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
