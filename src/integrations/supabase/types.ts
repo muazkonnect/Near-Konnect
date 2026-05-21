@@ -2433,6 +2433,7 @@ export type Database = {
           worker_id: string
         }[]
       }
+      get_recent_activity: { Args: { limit_count?: number }; Returns: Json }
       get_service_analytics_summary: {
         Args: { _days?: number; _owner_user_id: string; _service_id: string }
         Returns: {
