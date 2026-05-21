@@ -32,11 +32,11 @@ type WorkerCard = {
 };
 
 const QUICK = [
-  "Mujhe plumber chahiye",
-  "AC se pani tap raha hai",
-  "Electrician near me",
-  "Ad kaise post karun?",
-  "Profile verify kaise hogi?",
+  "I need a plumber",
+  "My AC is leaking water",
+  "Find an electrician near me",
+  "How do I post an ad?",
+  "How can I verify my profile?",
 ];
 
 export default function AssistantSheet() {
@@ -49,7 +49,7 @@ export default function AssistantSheet() {
     {
       role: "assistant",
       content:
-        "Hi! Main NearKonnect ka assistant hun. Apni problem batao ya app k baray mein kuch puchho — main nearest best worker dhoondh k dunga.",
+        "Hi! I'm the NearKonnect assistant. Tell me your problem or ask anything about the app — I'll find the nearest, best worker for you.",
     },
   ]);
   const [loading, setLoading] = useState(false);
