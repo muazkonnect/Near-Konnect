@@ -35,6 +35,7 @@ const FeaturedWorkersCarousel = ({
   limit = 8,
   className = "",
 }: Props) => {
+  const { user } = useAuth();
   const { coords } = useRealtimeLocation();
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
