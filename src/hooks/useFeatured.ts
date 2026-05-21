@@ -43,6 +43,18 @@ export function useNearbyFeatured(coords: { lat: number; lng: number } | null, c
   });
 }
 
+/** Set of worker ids that are sparks-paid featured within 3km of the user. */
+export function useNearbyFeaturedWorkerIds(
+  coords: { latitude: number; longitude: number } | null | undefined,
+  categoryId?: string | null
+) {
+  const { data } = useNearbyFeatured(
+    coords ? { lat: coords.latitude, lng: coords.longitude } : null,
+    categoryId ?? null
+  );
+  return new Set<string>((data ?? []).map((r) => r.worker_id));
+}
+
 // Admin
 export function useAdminAllPricing() {
   return useQuery({ queryKey: ["admin_featured_pricing"], queryFn: adminFetchAllPricing });

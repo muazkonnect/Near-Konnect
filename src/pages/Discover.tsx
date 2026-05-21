@@ -45,6 +45,7 @@ import ExploreCard from "@/components/ExploreCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
@@ -97,7 +98,12 @@ const Discover = () => {
   useEffect(() => { setRadiusKm(discoverDefault); }, [discoverDefault]);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
-  const featuredIds = useFeaturedWorkerIds();
+  const adminFeaturedIds = useFeaturedWorkerIds();
+  const paidFeaturedIds = useNearbyFeaturedWorkerIds(userCoords ?? null);
+  const featuredIds = useMemo(
+    () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
+    [adminFeaturedIds, paidFeaturedIds]
+  );
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
 

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Star, ChevronRight, BadgeCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices, trackFeaturedEvent } from "@/hooks/useSponsored";
+import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -32,14 +34,20 @@ const FeaturedWorkersCarousel = ({
   className = "",
 }: Props) => {
   const { user } = useAuth();
+  const { coords } = useRealtimeLocation();
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
+  const paidFeaturedIds = useNearbyFeaturedWorkerIds(coords ?? null);
   const [items, setItems] = useState<FeaturedWorker[]>([]);
+
+  const mergedIds = useMemo(() => {
+    const set = new Set<string>([...featured.map((f) => f.service_id), ...paidFeaturedIds]);
+    return Array.from(set);
+  }, [featured, paidFeaturedIds]);
 
   useEffect(() => {
     let cancelled = false;
-    const ids = featured.map((f) => f.service_id);
-    if (ids.length === 0) {
+    if (mergedIds.length === 0) {
       if (items.length > 0) setItems([]);
       return;
     }
@@ -47,7 +55,7 @@ const FeaturedWorkersCarousel = ({
       const { data, error } = await supabase
         .from("workers")
         .select("id, profession, experience, verified, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
-        .in("id", ids);
+        .in("id", mergedIds);
       if (error || cancelled) return;
       const priorityById = new Map(featured.map((f) => [f.service_id, f.priority]));
       const enriched = (data || []).map((w: any) => ({
@@ -58,21 +66,15 @@ const FeaturedWorkersCarousel = ({
         full_name: w.profiles?.full_name || "Service Provider",
         avatar_url: w.profiles?.avatar_url ?? null,
         city: w.profiles?.city ?? null,
-        priority: priorityById.get(w.id) ?? 0,
+        priority: priorityById.get(w.id) ?? (paidFeaturedIds.has(w.id) ? 1000 : 0),
       }));
       enriched.sort((a, b) => b.priority - a.priority);
-      
-      // Simple check to avoid redundant state updates
       const currentIds = items.map(i => i.id).join(',');
       const newIds = enriched.map(i => i.id).join(',');
-      if (currentIds !== newIds) {
-        setItems(enriched);
-      }
+      if (currentIds !== newIds) setItems(enriched);
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [featuredData, limit, items.length]);
+    return () => { cancelled = true; };
+  }, [mergedIds.join(","), limit]);
 
   if (items.length === 0) return null;
 
