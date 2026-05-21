@@ -51,7 +51,7 @@ const SettingsTab = lazy(() => import("@/components/admin/SettingsTab"));
 const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyManagementTab"));
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
-const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
+const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
@@ -741,7 +741,7 @@ const AdminDashboard = () => {
             {/* FEATURED */}
             {tab === "featured" && (
               <div>
-                <SectionHeader title="Featured Workers" subtitle="Promote, schedule, and review featured listings." />
+                <SectionHeader title="Featured Workers" subtitle="Sparks-based featured listings, pricing rules, and active promotions." />
                 <Suspense fallback={<TabFallback />}>
                   <FeaturedManagementTab />
                 </Suspense>
