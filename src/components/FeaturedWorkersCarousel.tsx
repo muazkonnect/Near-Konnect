@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices } from "@/hooks/useSponsored";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import SteppedCarousel from "@/components/SteppedCarousel";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
@@ -103,13 +104,14 @@ const FeaturedWorkersCarousel = ({
         </div>
       </div>
 
-      <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-3 pb-1">
-          {items.map((w, i) => (
-            <FeaturedWorkerCard key={w.id} worker={w} index={i} />
-          ))}
-        </div>
-      </div>
+      <SteppedCarousel
+        className="pb-3"
+        trackClassName="px-5"
+        dwellMs={2800}
+        items={items.map((w, i) => (
+          <FeaturedWorkerCard key={w.id} worker={w} index={i} />
+        ))}
+      />
     </section>
   );
 };
