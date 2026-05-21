@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Save, KeyRound, LogOut, MessageSquare } from "lucide-react";
+import { Save, KeyRound, LogOut, MessageSquare, Droplet } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
