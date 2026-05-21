@@ -353,17 +353,6 @@ const Home = () => {
         </section>
 
         <PromotedSection
-          title="Within 3 KM"
-          subtitle="Promoted providers right next to you"
-          items={promoted3}
-          placement="nearby_3km"
-          isAuthed={!!user}
-          loading={workersLoading}
-          custom={2.7}
-          navigate={navigate}
-          radiusKm={3}
-        />
-        <PromotedSection
           title={`Within ${r0} KM`}
           subtitle="Promoted providers in your immediate vicinity"
           items={promoted5}
