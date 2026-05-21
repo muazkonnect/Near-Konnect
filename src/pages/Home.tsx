@@ -458,6 +458,12 @@ const Home = () => {
           </div>
         </section>
       </div>
+      <BloodDonorPopup
+        donor={selectedDonor}
+        open={!!selectedDonor}
+        onOpenChange={(o) => { if (!o) setSelectedDonor(null); }}
+        isAuthed={!!user}
+      />
     </AppLayout>
   );
 };
