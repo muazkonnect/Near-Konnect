@@ -44,6 +44,7 @@ import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
+import { useAppSettings } from "@/hooks/useAppSettings";
 import SteppedCarousel from "@/components/SteppedCarousel";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
@@ -89,7 +90,11 @@ const Discover = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const [radiusKm, setRadiusKm] = useState<RadiusKm>(3);
+  const { data: appSettings } = useAppSettings();
+  const discoverDefault = (appSettings?.discover_default_radius_km ?? 3) as RadiusKm;
+  const exploreDefault = appSettings?.explore_default_radius_km ?? 10;
+  const [radiusKm, setRadiusKm] = useState<RadiusKm>(discoverDefault);
+  useEffect(() => { setRadiusKm(discoverDefault); }, [discoverDefault]);
   const { coords: userCoords, status: locationStatus, refresh: refreshLocation } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const featuredIds = useFeaturedWorkerIds();
@@ -100,8 +105,9 @@ const Discover = () => {
     mainCategory: selectedMainCategory,
     search,
     radiusKm: selectedMainCategory ? radiusKm : undefined,
+    defaultRadiusKm: exploreDefault,
   });
-  const promoted3km = usePromotedNearby(userCoords, 3);
+  const promoted3km = usePromotedNearby(userCoords, (discoverDefault as number) || 3);
   const promoted3kmFiltered = useMemo(() => {
     let list = promoted3km;
     if (selectedMainCategory && selectedSubCategory) {

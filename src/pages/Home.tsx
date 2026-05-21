@@ -32,6 +32,7 @@ import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
+import { useAppSetting } from "@/hooks/useAppSettings";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -92,10 +93,12 @@ const Home = () => {
       .sort((a, b) => a.distance - b.distance);
   }, [workers, browsingCoords]);
 
-  // Promoted (Sparks) campaigns: 5/10/15 KM + Top Rated
-  const promoted5 = usePromotedNearby(browsingCoords, 5);
-  const promoted10 = usePromotedNearby(browsingCoords, 10);
-  const promoted15 = usePromotedNearby(browsingCoords, 15);
+  // Promoted (Sparks) campaigns: admin-configurable radius buckets + Top Rated
+  const homepageRadii = useAppSetting("homepage_promoted_radii_km");
+  const [r0 = 5, r1 = 10, r2 = 15] = Array.isArray(homepageRadii) ? homepageRadii : [5, 10, 15];
+  const promoted5 = usePromotedNearby(browsingCoords, r0);
+  const promoted10 = usePromotedNearby(browsingCoords, r1);
+  const promoted15 = usePromotedNearby(browsingCoords, r2);
   const promotedTop = usePromotedTopRated(browsingCoords);
 
   // Blood donors — top 3 nearest verified donors
@@ -140,7 +143,7 @@ const Home = () => {
   const tickerItems = useMemo(() => {
     const items: { text: string; hot?: boolean }[] = [];
     if (donors.length) items.push({ text: `${donors.length}+ verified blood donors active nearby`, hot: true });
-    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within 5 KM` });
+    if (promoted5.length) items.push({ text: `${promoted5.length} promoted providers within ${r0} KM` });
     if (workers.length) items.push({ text: `${workers.length} total providers connected on Near Konnect` });
     items.push({ text: "Safety protocols for verified providers updated", hot: true });
     return items.length ? items : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
@@ -343,35 +346,36 @@ const Home = () => {
         </section>
 
         <PromotedSection
-          title="Within 5 KM"
+          title={`Within ${r0} KM`}
           subtitle="Promoted providers in your immediate vicinity"
           items={promoted5}
-          placement="nearby_5km"
+          placement={`nearby_${r0}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3}
           navigate={navigate}
         />
         <PromotedSection
-          title="Within 10 KM"
+          title={`Within ${r1} KM`}
           subtitle="Nearby promoted providers"
           items={promoted10}
-          placement="nearby_10km"
+          placement={`nearby_${r1}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3.3}
           navigate={navigate}
         />
         <PromotedSection
-          title="Within 15 KM"
+          title={`Within ${r2} KM`}
           subtitle="Promoted providers in your area"
           items={promoted15}
-          placement="nearby_15km"
+          placement={`nearby_${r2}km`}
           isAuthed={!!user}
           loading={workersLoading}
           custom={3.6}
           navigate={navigate}
         />
+
 
 
 
