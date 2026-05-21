@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine } from "lucide-react";
+import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine, Copy } from "lucide-react";
 import { useMyVerification, useVerificationSettings } from "@/hooks/useVerification";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
 import { startVerification, submitVerification, createDiditSession, getDiditDecision, fetchDiditEvidence } from "@/services/verificationService";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 const PENDING_KEY = "didit_pending_session";
@@ -81,10 +83,37 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
       await startVerification();
       const s = await createDiditSession();
       sessionStorage.setItem(PENDING_KEY, JSON.stringify({ session_id: s.session_id, session_token: s.session_token }));
-      // Full-page redirect — Didit's COOP blocks popups/iframes
-      window.location.href = s.url;
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({ url: s.url, presentationStyle: "fullscreen" });
+        const sub = await Browser.addListener("browserFinished", async () => {
+          sub.remove();
+          startPolling(s.session_id, s.session_token);
+        });
+        setLoading(false);
+      } else {
+        // Full-page redirect — Didit's COOP blocks popups/iframes
+        window.location.href = s.url;
+      }
     } catch (e: any) {
       toast.error(e?.message || "Failed to start verification");
+      setLoading(false);
+    }
+  };
+
+  const copySessionLink = async () => {
+    if (!user) return;
+    if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
+    setLoading(true);
+    try {
+      await startVerification();
+      const s = await createDiditSession();
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ session_id: s.session_id, session_token: s.session_token }));
+      await navigator.clipboard.writeText(s.url);
+      toast.success("Link copied — paste it in your browser to continue");
+      startPolling(s.session_id, s.session_token);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to start verification");
+    } finally {
       setLoading(false);
     }
   };
@@ -151,6 +180,9 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> :
                 insufficient ? "Insufficient Sparks" :
                 <><ScanLine className="h-4 w-4 mr-2" /> Start ID scan</>}
+            </Button>
+            <Button onClick={copySessionLink} disabled={loading || insufficient} variant="ghost" size="sm" className="w-full">
+              <Copy className="h-3.5 w-3.5 mr-2" /> Copy link instead
             </Button>
           </div>
         )}
