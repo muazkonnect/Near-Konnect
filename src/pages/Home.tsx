@@ -97,6 +97,7 @@ const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; o
           skipClick.current = true;
           return;
         }
+        skipClick.current = true;
         open();
       }}
       className="group relative flex min-w-[260px] cursor-pointer select-none flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
