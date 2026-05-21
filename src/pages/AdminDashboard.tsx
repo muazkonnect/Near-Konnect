@@ -741,7 +741,7 @@ const AdminDashboard = () => {
             {/* FEATURED */}
             {tab === "featured" && (
               <div>
-                <SectionHeader title="Featured Workers" subtitle="Promote, schedule, and review featured listings." />
+                <SectionHeader title="Featured Workers" subtitle="Sparks-based featured listings, pricing rules, and active promotions." />
                 <Suspense fallback={<TabFallback />}>
                   <FeaturedManagementTab />
                 </Suspense>
