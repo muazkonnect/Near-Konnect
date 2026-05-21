@@ -42,6 +42,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
+import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
@@ -417,9 +418,23 @@ const Discover = () => {
                 <Award className="h-3 w-3" /> Premium
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
               {featuredWorkers.map((w, i) => (
-                <ExploreCard key={`feat-${w.id}-${i}`} worker={w as any} premium isAuthed={!!user} />
+                <FeaturedWorkerCard
+                  key={`feat-${w.id}-${i}`}
+                  index={i}
+                  worker={{
+                    id: w.id,
+                    uid: (w as any).uid,
+                    full_name: w.name,
+                    profession: w.profession,
+                    experience: w.experience,
+                    verified: w.verified,
+                    avatar_url: w.profilePhoto || null,
+                    city: w.city || null,
+                    distance: w.distance,
+                  }}
+                />
               ))}
             </div>
           </section>
