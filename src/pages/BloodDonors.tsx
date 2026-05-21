@@ -204,17 +204,22 @@ const BloodDonors = () => {
                   ? calculateDistance(userCoords.latitude, userCoords.longitude, donor.latitude, donor.longitude)
                   : undefined;
 
-                const openPopup = () => setSelectedDonor({
-                  user_id: donor.user_id,
-                  full_name: donor.full_name,
-                  avatar_url: donor.avatar_url,
-                  blood_group: donor.blood_group,
-                  city: donor.city,
-                  distance: distNum,
-                  phone: donor.phone ?? null,
-                  contact_methods: donor.contact_methods,
-                  show_contact: donor.show_contact ?? true,
-                });
+                const openPopup = () => {
+                  const data: BloodDonorPopupData = {
+                    user_id: donor.user_id,
+                    full_name: donor.full_name,
+                    avatar_url: donor.avatar_url,
+                    blood_group: donor.blood_group,
+                    city: donor.city,
+                    distance: distNum,
+                    phone: donor.phone ?? null,
+                    contact_methods: donor.contact_methods,
+                    show_contact: donor.show_contact ?? true,
+                  };
+                  // Defer to next tick so the click that opens it isn't
+                  // interpreted by Radix as an outside-click closing it.
+                  setTimeout(() => setSelectedDonor(data), 0);
+                };
 
                 const ContactBtn = (
                   <button
