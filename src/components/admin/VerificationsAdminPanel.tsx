@@ -182,7 +182,8 @@ export default function VerificationsAdminPanel() {
                   </Button>
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>
