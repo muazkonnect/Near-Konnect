@@ -40,12 +40,14 @@ const CustomerDashboard = () => {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [bloodShowContact, setBloodShowContact] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setName(profile.full_name || "");
       setPhone(profile.phone || "");
+      setBloodShowContact((profile as any).blood_show_contact ?? true);
     }
   }, [profile]);
 
