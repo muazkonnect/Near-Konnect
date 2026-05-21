@@ -54,12 +54,16 @@ const CustomerDashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
-    if (!phone.trim()) { toast.error("Phone number is required."); return; }
+    const cleaned = sanitizePhone(phone);
+    if (!cleaned) { toast.error("WhatsApp number is required."); return; }
+    if (!isValidPhoneNumber(cleaned)) { toast.error("Please enter a valid WhatsApp number."); return; }
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: name,
-      phone: phone.trim(),
-    }).eq("user_id", user.id);
+      phone: cleaned,
+      use_whatsapp: true,
+      contact_methods: [{ type: "whatsapp", value: cleaned }],
+    } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error(error.message || "Failed to save");
     else {
