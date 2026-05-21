@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
-import WhatsappIcon from "@/components/icons/WhatsappIcon";
+import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { getExpertise } from "@/lib/categoryExpertise";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import type { ContactMethod } from "@/lib/contactMethods";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
