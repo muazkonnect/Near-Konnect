@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { BadgeCheck, X, RefreshCw, ShieldCheck, Loader2, ImageIcon, ChevronDown, User } from "lucide-react";
+import {
+  BadgeCheck, X, RefreshCw, ShieldCheck, Loader2, ImageIcon,
+  ChevronDown, User, Fingerprint, ScanFace, Activity, AlertTriangle, Clock, MapPin, Hash, Phone,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import {
@@ -15,6 +19,43 @@ import {
 } from "@/hooks/useVerification";
 import { supabase } from "@/integrations/supabase/client";
 import { getVerificationDocSignedUrl } from "@/services/verificationService";
+
+const DOC_LABELS: Record<string, string> = {
+  id_front: "ID — Front",
+  id_back: "ID — Back",
+  selfie: "Live Selfie",
+};
+
+function statusTone(s?: string | null) {
+  const v = (s || "").toLowerCase();
+  if (["approved", "passed", "success", "verified", "match"].some((k) => v.includes(k))) return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30";
+  if (["declined", "failed", "rejected", "no_match"].some((k) => v.includes(k))) return "bg-destructive/15 text-destructive border-destructive/30";
+  if (["review", "warn", "pending", "in_progress"].some((k) => v.includes(k))) return "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30";
+  return "bg-muted text-muted-foreground border-border";
+}
+
+function StatusPill({ label, status, icon: Icon }: { label: string; status?: string | null; icon?: any }) {
+  if (!status) return null;
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusTone(status)}`}>
+      {Icon ? <Icon className="h-3 w-3" /> : null}
+      {label}: {status}
+    </span>
+  );
+}
+
+function Field({ label, value, mono, icon: Icon }: { label: string; value?: any; mono?: boolean; icon?: any }) {
+  if (value === null || value === undefined || value === "") return null;
+  return (
+    <div className="flex items-start gap-1.5 min-w-0">
+      {Icon ? <Icon className="h-3 w-3 mt-0.5 text-muted-foreground shrink-0" /> : null}
+      <div className="min-w-0">
+        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className={`text-[12px] font-medium break-words ${mono ? "font-mono" : ""}`}>{String(value)}</p>
+      </div>
+    </div>
+  );
+}
 
 function DocsViewer({ verificationId }: { verificationId: string }) {
   const [docs, setDocs] = useState<{ kind: string; url: string }[]>([]);
@@ -34,16 +75,16 @@ function DocsViewer({ verificationId }: { verificationId: string }) {
     })();
     return () => { cancel = true; };
   }, [verificationId]);
-  if (loading) return <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2"><Loader2 className="h-3 w-3 animate-spin" /> Loading docs…</div>;
-  if (docs.length === 0) return <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground"><ImageIcon className="h-3 w-3" /> No documents uploaded</p>;
+  if (loading) return <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-2"><Loader2 className="h-3 w-3 animate-spin" /> Loading captures…</div>;
+  if (docs.length === 0) return <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground"><ImageIcon className="h-3 w-3" /> No captures stored yet</p>;
   return (
-    <div className="mt-2 grid grid-cols-3 gap-2">
+    <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-3">
       {docs.map((d) => (
-        <a key={d.kind + d.url} href={d.url} target="_blank" rel="noopener noreferrer" className="block">
-          <div className="aspect-[4/3] rounded-lg overflow-hidden border bg-muted">
+        <a key={d.kind + d.url} href={d.url} target="_blank" rel="noopener noreferrer" className="group block">
+          <div className="aspect-[4/3] rounded-lg overflow-hidden border bg-muted ring-1 ring-border group-hover:ring-primary/40 transition">
             <img src={d.url} alt={d.kind} className="h-full w-full object-cover" />
           </div>
-          <p className="mt-0.5 text-center text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{d.kind.replace("_", " ")}</p>
+          <p className="mt-1 text-center text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{DOC_LABELS[d.kind] || d.kind}</p>
         </a>
       ))}
     </div>
@@ -72,53 +113,59 @@ function useWorkerProfiles(userIds: string[]) {
 function VerificationItem({ v, onDecide, busy }: { v: any; onDecide: (id: string, status: "approved" | "rejected" | "resubmit", note: string) => void; busy: boolean }) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
-  const payload: any = v.persona_payload || {};
-  const idv = payload.id_verification || payload.kyc || payload.document || {};
-  const info = {
-    name: idv.full_name || [idv.first_name, idv.last_name].filter(Boolean).join(" ") || payload.full_name || "",
-    dob: idv.date_of_birth || idv.dob || "",
-    doc_type: idv.document_type || idv.type || "",
-    doc_number: idv.document_number || idv.number || "",
-    nationality: idv.nationality || idv.issuing_country || "",
-    expires: idv.expiration_date || idv.expires_at || "",
-    gender: idv.gender || "",
-    address: idv.address || idv.formatted_address || "",
-    issuing_state: idv.issuing_state || "",
-  };
+  const d: any = v.persona_payload || {};
+
+  const idv: any = d.id_verification || d.kyc || d.document || {};
+  const face: any = d.face_match || d.face || {};
+  const live: any = d.liveness || {};
+  const aml: any = d.aml || {};
+  const warnings: any[] = Array.isArray(d.warnings) ? d.warnings : [];
+  const reviews: any[] = Array.isArray(d.reviews) ? d.reviews : [];
+
+  const fullName =
+    idv.full_name || [idv.first_name, idv.last_name].filter(Boolean).join(" ") || d.full_name || "";
+
   const prof = v._profile || {};
-  const displayName = prof.full_name || info.name || "Unnamed worker";
+  const displayName = prof.full_name || fullName || "Unnamed worker";
+  const overall = d.status || d.decision || v.persona_status || v.status;
 
   return (
     <li className="rounded-xl border bg-card overflow-hidden">
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger className="w-full flex items-center gap-3 p-3 hover:bg-muted/40 transition-colors text-left">
-          <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center overflow-hidden shrink-0">
+          <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-border">
             {prof.avatar_url ? <img src={prof.avatar_url} alt="" className="h-full w-full object-cover" /> : <User className="h-4 w-4" />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">{displayName}</p>
-            <p className="text-[11px] text-muted-foreground truncate">
-              {prof.city || "—"} · {v.persona_status || "submitted"} · {v.submitted_at ? new Date(v.submitted_at).toLocaleString() : "—"}
+            <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+              <Clock className="h-3 w-3" />{v.submitted_at ? new Date(v.submitted_at).toLocaleString() : "—"}
+              {prof.city ? <> · <MapPin className="h-3 w-3" />{prof.city}</> : null}
             </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-1">
+            <StatusPill label="Didit" status={overall} icon={ShieldCheck} />
           </div>
           <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <div className="px-3 pb-3 space-y-3">
-            <div className="rounded-lg border bg-muted/30 p-2 text-[11px] grid grid-cols-2 gap-x-3 gap-y-1">
-              <div><span className="text-muted-foreground">Worker ID:</span> <span className="font-mono break-all">{v.worker_id}</span></div>
-              <div><span className="text-muted-foreground">User ID:</span> <span className="font-mono break-all">{v.user_id}</span></div>
-              <div><span className="text-muted-foreground">Didit session:</span> <span className="font-mono break-all">{v.persona_inquiry_id || "—"}</span></div>
-              <div><span className="text-muted-foreground">Phone:</span> {prof.phone || "—"}</div>
-              {info.name && <div><span className="text-muted-foreground">Name on ID:</span> <span className="font-semibold">{info.name}</span></div>}
-              {info.dob && <div><span className="text-muted-foreground">DOB:</span> {info.dob}</div>}
-              {info.gender && <div><span className="text-muted-foreground">Gender:</span> {info.gender}</div>}
-              {info.doc_type && <div><span className="text-muted-foreground">Doc type:</span> {info.doc_type}</div>}
-              {info.doc_number && <div><span className="text-muted-foreground">Doc #:</span> {info.doc_number}</div>}
-              {info.nationality && <div><span className="text-muted-foreground">Nationality:</span> {info.nationality}</div>}
-              {info.issuing_state && <div><span className="text-muted-foreground">Issuing state:</span> {info.issuing_state}</div>}
-              {info.expires && <div><span className="text-muted-foreground">Expires:</span> {info.expires}</div>}
-              {info.address && <div className="col-span-2"><span className="text-muted-foreground">Address:</span> {info.address}</div>}
+          <div className="px-3 pb-3 space-y-3 border-t">
+            <div className="flex flex-wrap gap-1.5 pt-3">
+              <StatusPill label="Overall" status={overall} icon={ShieldCheck} />
+              <StatusPill label="ID" status={idv.status} icon={Fingerprint} />
+              <StatusPill label="Face Match" status={face.status} icon={ScanFace} />
+              <StatusPill label="Liveness" status={live.status} icon={Activity} />
+              <StatusPill label="AML" status={aml.status} icon={AlertTriangle} />
+              {typeof face.score === "number" && (
+                <span className="inline-flex items-center rounded-full border bg-muted px-2 py-0.5 text-[10px] font-semibold">
+                  Face score: {Math.round(face.score * 100)}%
+                </span>
+              )}
+              {typeof live.score === "number" && (
+                <span className="inline-flex items-center rounded-full border bg-muted px-2 py-0.5 text-[10px] font-semibold">
+                  Liveness score: {Math.round(live.score * 100)}%
+                </span>
+              )}
             </div>
 
             <div>
@@ -126,15 +173,60 @@ function VerificationItem({ v, onDecide, busy }: { v: any; onDecide: (id: string
               <DocsViewer verificationId={v.id} />
             </div>
 
-            {Object.keys(payload).length > 0 && (
+            <div className="rounded-lg border bg-muted/30 p-3">
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Identity (from Didit)</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <Field label="Full name" value={fullName} icon={User} />
+                <Field label="Date of birth" value={idv.date_of_birth || idv.dob} />
+                <Field label="Gender" value={idv.gender} />
+                <Field label="Document type" value={idv.document_type || idv.type} />
+                <Field label="Document #" value={idv.document_number || idv.number} mono icon={Hash} />
+                <Field label="Nationality" value={idv.nationality} />
+                <Field label="Issuing country" value={idv.issuing_country || idv.country} />
+                <Field label="Issuing state" value={idv.issuing_state_name || idv.issuing_state} />
+                <Field label="Expires" value={idv.expiration_date || idv.expires_at} />
+                <Field label="Issued" value={idv.date_of_issue || idv.issued_at} />
+                <Field label="Place of birth" value={idv.place_of_birth} />
+                <Field label="Address" value={idv.formatted_address || idv.address} icon={MapPin} />
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-muted/20 p-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <Field label="Worker phone" value={prof.phone} icon={Phone} />
+              <Field label="Didit session" value={v.persona_inquiry_id} mono />
+              <Field label="Worker ID" value={v.worker_id} mono />
+              <Field label="User ID" value={v.user_id} mono />
+              <Field label="Submitted" value={v.submitted_at ? new Date(v.submitted_at).toLocaleString() : null} />
+              <Field label="Decision at" value={d.completed_at || d.decided_at} />
+            </div>
+
+            {(warnings.length > 0 || reviews.length > 0) && (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300 uppercase tracking-wide mb-1">
+                  Warnings & reviewer notes
+                </p>
+                {warnings.map((w, i) => (
+                  <p key={`w${i}`} className="text-[11px] text-amber-800 dark:text-amber-200">
+                    • {(w?.code || w?.type || "warning")}: {(w?.message || w?.description || JSON.stringify(w))}
+                  </p>
+                ))}
+                {reviews.map((r, i) => (
+                  <p key={`r${i}`} className="text-[11px] text-amber-800 dark:text-amber-200">
+                    • {(r?.label || r?.type || "review")}: {(r?.message || r?.comment || JSON.stringify(r))}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {Object.keys(d).length > 0 && (
               <details className="rounded-lg border bg-muted/20 p-2">
                 <summary className="text-[11px] font-semibold text-muted-foreground cursor-pointer">Raw Didit payload</summary>
-                <pre className="mt-2 max-h-64 overflow-auto text-[10px] leading-relaxed whitespace-pre-wrap break-all">{JSON.stringify(payload, null, 2)}</pre>
+                <pre className="mt-2 max-h-72 overflow-auto text-[10px] leading-relaxed whitespace-pre-wrap break-all">{JSON.stringify(d, null, 2)}</pre>
               </details>
             )}
 
             <Textarea
-              placeholder="Optional note to user"
+              placeholder="Optional note to user (sent with decision)"
               value={note}
               onChange={(e) => setNote(e.target.value)}
             />
@@ -148,6 +240,9 @@ function VerificationItem({ v, onDecide, busy }: { v: any; onDecide: (id: string
               <Button size="sm" variant="destructive" onClick={() => onDecide(v.id, "rejected", note)} disabled={busy}>
                 <X className="mr-1 h-3.5 w-3.5" /> Reject
               </Button>
+              {v.status && (
+                <Badge variant="outline" className="ml-auto self-center text-[10px]">Current: {v.status}</Badge>
+              )}
             </div>
           </div>
         </CollapsibleContent>
