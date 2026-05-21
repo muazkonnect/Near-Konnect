@@ -136,6 +136,7 @@ const WorkerDashboard = () => {
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
       setAvailable(workerData.available);
+      setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
