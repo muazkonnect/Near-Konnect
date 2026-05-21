@@ -133,6 +133,33 @@ const Register = () => {
         return;
       }
 
+      // Face dedup: one real face = one account. Uses Didit Face Search,
+      // which also enrolls the face for future signups.
+      try {
+        const { data: dedup, error: dedupErr } = await supabase.functions.invoke(
+          "didit-face-search",
+          { body: { imageBase64: faceDataUrl, vendorData: normalizedEmail, enroll: true } },
+        );
+        if (dedupErr) throw dedupErr;
+        if (dedup?.blocklisted) {
+          setLoading(false);
+          toast.error("This face is not allowed to register.");
+          return;
+        }
+        if (dedup?.duplicate) {
+          setLoading(false);
+          toast.error("An account already exists for this face. Please log in instead.");
+          navigate(`/login`, { replace: true });
+          return;
+        }
+      } catch (e) {
+        console.error("face dedup failed", e);
+        setLoading(false);
+        toast.error("Couldn't verify face uniqueness. Please try again.");
+        return;
+      }
+
+
       const metadata: Record<string, string> = {
         full_name: normalizedName,
         phone: normalizedPhone,
