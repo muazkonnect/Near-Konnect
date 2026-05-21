@@ -189,29 +189,15 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               </Button>
             </div>
 
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={requireAuth(() => { if (phone) window.open(`https://wa.me/${phone.replace(/^\+/, "")}`, "_blank"); })}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="WhatsApp"
-              >
-                <WhatsappIcon size={20} className="text-[#25D366]" />
-              </button>
-              <button
-                onClick={requireAuth(() => {})}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="Imo"
-              >
-                <Video className="h-5 w-5" />
-              </button>
-              <button
-                onClick={requireAuth(() => {})}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="Signal"
-              >
-                <Lock className="h-5 w-5" />
-              </button>
-            </div>
+            {savedMethods.length > 0 && (
+              <div className="flex justify-center">
+                <ContactMethodsBar
+                  methods={savedMethods}
+                  variant="hero"
+                  onChannelClick={isAuthed ? undefined : (() => { onOpenChange(false); navigate("/login"); })}
+                />
+              </div>
+            )}
 
             <div className="text-center">
               <button
