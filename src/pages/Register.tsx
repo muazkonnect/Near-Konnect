@@ -20,14 +20,12 @@ import { isValidPhoneNumber } from "libphonenumber-js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-const EXPERTISE_SUGGESTIONS: Record<string, string[]> = {
-  default: ["Residential", "Commercial", "Emergency", "Maintenance"],
-};
+const MAX_EXPERTISE = 5;
 
 const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
   const detectedCountry = useDetectedCountry();
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
