@@ -177,7 +177,7 @@ export default function AssistantSheet() {
   };
 
   const placeholder = useMemo(
-    () => "Apni problem batayein ya sawal puchein…",
+    () => "Describe your problem or ask a question…",
     []
   );
 
