@@ -302,11 +302,28 @@ const Home = () => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
                 const open = () => setSelectedDonor(toBloodDonorPopupData(d));
+                let downX = 0;
+                let downY = 0;
                 return (
                   <button
                     type="button"
                     key={d.user_id}
-                    onClick={open}
+                    onClick={(e) => e.preventDefault()}
+                    onPointerDown={(e) => {
+                      downX = e.clientX;
+                      downY = e.clientY;
+                    }}
+                    onPointerUp={(e) => {
+                      const dx = Math.abs(e.clientX - downX);
+                      const dy = Math.abs(e.clientY - downY);
+                      if (dx < 12 && dy < 12) open();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        open();
+                      }
+                    }}
                     className="group relative flex min-w-[260px] cursor-pointer select-none flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
                   >
                     <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
