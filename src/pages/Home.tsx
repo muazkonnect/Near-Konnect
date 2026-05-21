@@ -527,7 +527,7 @@ type PromotedItem = {
 } & Record<string, any>;
 
 const PromotedSection = ({
-  title, subtitle, items, placement, isAuthed, loading, custom, navigate,
+  title, subtitle, items, placement, isAuthed, loading, custom, navigate, radiusKm,
 }: {
   title: string;
   subtitle: string;
@@ -537,6 +537,7 @@ const PromotedSection = ({
   loading: boolean;
   custom: number;
   navigate: (path: string) => void;
+  radiusKm?: number;
 }) => {
   if (loading && items.length === 0) {
     return (
@@ -552,7 +553,6 @@ const PromotedSection = ({
       </motion.section>
     );
   }
-  if (items.length === 0) return null;
   return (
     <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={custom} className="mb-10">
       <div className="mb-5 px-5">
@@ -560,21 +560,28 @@ const PromotedSection = ({
           {title} <span className="ml-2 text-sm font-normal text-hero-muted">• {subtitle}</span>
         </h2>
       </div>
-      <SteppedCarousel
-        className="pb-3"
-        trackClassName="pl-5 pr-5"
-        dwellMs={2800}
-        items={items.map((w) => (
-          <div key={`${placement}-${w.id}`}>
-            <WorkerAdCard
-              worker={w as any}
-              isAuthed={isAuthed}
-              campaignId={w.campaignId}
-              placement={placement}
-            />
-          </div>
-        ))}
-      />
+      {items.length === 0 ? (
+        <div className="mx-5 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center">
+          <p className="text-sm font-semibold text-hero-foreground">No ads currently running{radiusKm ? ` within ${radiusKm} KM` : ""}</p>
+          <p className="mt-1 text-xs text-hero-muted">Check back soon for promoted providers in this area.</p>
+        </div>
+      ) : (
+        <SteppedCarousel
+          className="pb-3"
+          trackClassName="pl-5 pr-5"
+          dwellMs={2800}
+          items={items.map((w) => (
+            <div key={`${placement}-${w.id}`}>
+              <WorkerAdCard
+                worker={w as any}
+                isAuthed={isAuthed}
+                campaignId={w.campaignId}
+                placement={placement}
+              />
+            </div>
+          ))}
+        />
+      )}
     </motion.section>
   );
 };
