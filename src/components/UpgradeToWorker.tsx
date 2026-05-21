@@ -17,7 +17,7 @@ import { useCategories } from "@/hooks/useCategories";
 const UpgradeToWorker = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,8 +26,34 @@ const UpgradeToWorker = () => {
   const [experience, setExperience] = useState("");
   const [location, setLocation] = useState<Coords | null>(null);
   const [capturingLocation, setCapturingLocation] = useState(false);
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
+  const MAX_EXPERTISE = 5;
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+  const toggleTag = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+  const addCustomTag = () => {
+    const t = customTag.trim();
+    if (!t) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`Max ${MAX_EXPERTISE} reached.`);
+      return;
+    }
+    if (!expertiseTags.find((x) => x.toLowerCase() === t.toLowerCase())) {
+      setExpertiseTags([...expertiseTags, t]);
+    }
+    setCustomTag("");
+  };
 
   useEffect(() => {
     if (searchParams.get("upgrade") === "worker") {
