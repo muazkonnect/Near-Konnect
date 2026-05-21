@@ -57,14 +57,15 @@ const NearbyBloodRequestsForDonor = () => {
 
   const enabled = !!user && !!profile?.is_blood_donor && !!profile?.blood_group && !!coords;
 
+  const bloodRadius = useAppSetting("blood_donors_radius_km");
   const { data: requests = [] } = useQuery({
-    queryKey: ["nearby_blood_requests", coords?.latitude, coords?.longitude, profile?.blood_group],
+    queryKey: ["nearby_blood_requests", coords?.latitude, coords?.longitude, profile?.blood_group, bloodRadius],
     queryFn: async () => {
       const { data, error } = await (supabase.rpc as any)("get_nearby_blood_requests", {
         donor_lat: coords!.latitude,
         donor_lng: coords!.longitude,
         donor_blood_group: profile!.blood_group,
-        radius_km: 25,
+        radius_km: bloodRadius,
       });
       if (error) throw error;
       return ((data || []) as NearbyReq[]).filter((r) => r.requester_id !== user?.id);
