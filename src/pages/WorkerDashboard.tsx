@@ -629,7 +629,7 @@ const WorkerDashboard = () => {
                 {/* Contact options */}
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
-                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone variant="hero" />
+                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
 
                 {/* Quick actions row */}
