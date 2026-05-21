@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Sparkles, Loader2, CheckCircle2, MapPin, X } from "lucide-react";
+import { Star, Sparkles, Loader2, CheckCircle2, MapPin } from "lucide-react";
 import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
@@ -39,18 +39,8 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        onPointerDownOutside={() => onOpenChange(false)}
-        onInteractOutside={() => onOpenChange(false)}
-        className="relative max-w-md [&>button:last-child]:hidden"
-      >
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-          aria-label="Close"
-        >
-          <X className="h-5 w-5" />
-        </button>
+      <DialogContent className="max-w-md">
+
         <DialogHeader>
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400/30 to-amber-600/10 ring-1 ring-amber-500/40">
             <Star className="h-7 w-7 text-amber-500" fill="currentColor" />
