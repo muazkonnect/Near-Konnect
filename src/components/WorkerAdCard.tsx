@@ -94,13 +94,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/20 to-hero" />
             )}
-            {/* Heavy gradient overlay for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-hero/20 via-hero/45 to-hero" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/10 mix-blend-overlay" />
-            {/* Diagonal sheen */}
-            <div className="pointer-events-none absolute -inset-x-10 -top-10 h-24 rotate-[-8deg] bg-gradient-to-r from-transparent via-hero-foreground/8 to-transparent blur-2xl" />
-            {/* Glow */}
-            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/35 blur-3xl" />
+            {/* Gradient overlay for legibility */}
+            <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/55 to-hero" />
 
 
             {/* Top meta row */}
