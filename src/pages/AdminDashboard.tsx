@@ -52,6 +52,7 @@ const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyMana
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedAdminPanel"));
+const VerificationsAdminPanel = lazy(() => import("@/components/admin/VerificationsAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
