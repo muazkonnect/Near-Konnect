@@ -2,128 +2,90 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, Upload, IdCard, Camera, X } from "lucide-react";
+import { ShieldCheck, Sparkles, Loader2, CheckCircle2, AlertCircle, ScanLine, ExternalLink } from "lucide-react";
 import { useMyVerification, useVerificationSettings } from "@/hooks/useVerification";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
-import { supabase } from "@/integrations/supabase/client";
-import { uploadVerificationDoc, startVerification, submitVerification, createPersonaInquiry } from "@/services/verificationService";
+import { startVerification, submitVerification, createDiditSession, getDiditDecision } from "@/services/verificationService";
 import { toast } from "sonner";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
-type Kind = "id_front" | "id_back" | "selfie";
-
-const SLOTS: { kind: Kind; label: string; hint: string; icon: any }[] = [
-  { kind: "id_front", label: "CNIC – Front", hint: "Clear photo of the front side", icon: IdCard },
-  { kind: "id_back", label: "CNIC – Back", hint: "Clear photo of the back side", icon: IdCard },
-  { kind: "selfie", label: "Live Selfie", hint: "Face clearly visible, well lit", icon: Camera },
-];
 
 export default function VerificationDialog({ open, onOpenChange }: Props) {
   const { user } = useAuth();
   const { balance } = useWallet();
   const { data: verification, refetch } = useMyVerification(user?.id);
   const { data: settings } = useVerificationSettings();
-  const [files, setFiles] = useState<Partial<Record<Kind, File>>>({});
-  const [previews, setPreviews] = useState<Partial<Record<Kind, string>>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const inputs = useRef<Record<Kind, HTMLInputElement | null>>({ id_front: null, id_back: null, selfie: null });
+  const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<{ session_id: string; url: string; session_token: string | null } | null>(null);
+  const popupRef = useRef<Window | null>(null);
+  const pollRef = useRef<number | null>(null);
 
   const cost = settings?.sparks_cost ?? 500;
   const insufficient = balance < cost;
   const status = verification?.status ?? "none";
-  const allUploaded = SLOTS.every((s) => files[s.kind]);
 
   useEffect(() => { if (open) refetch(); }, [open, refetch]);
-  useEffect(() => () => { Object.values(previews).forEach((u) => u && URL.revokeObjectURL(u)); }, [previews]);
+  useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
 
-  const pick = (kind: Kind, f: File | null) => {
-    if (!f) return;
-    if (f.size > 8 * 1024 * 1024) return toast.error("Max 8 MB per image");
-    if (!f.type.startsWith("image/")) return toast.error("Image files only");
-    setFiles((s) => ({ ...s, [kind]: f }));
-    setPreviews((s) => ({ ...s, [kind]: URL.createObjectURL(f) }));
-  };
-
-  const toBase64 = (f: File) => new Promise<string>((res, rej) => {
-    const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(f);
-  });
-
-  const handleSubmit = async () => {
+  const startScan = async () => {
     if (!user) return;
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
-    if (!allUploaded) return toast.error("Upload all three images first");
-
-    setSubmitting(true);
+    setLoading(true);
     try {
-      // 1. Liveness/face check on selfie
-      const selfieB64 = await toBase64(files.selfie!);
-      try {
-        const { data: faceRes, error: faceErr } = await supabase.functions.invoke("verify-face-human", {
-          body: { imageBase64: selfieB64 },
-        });
-        if (faceErr) throw faceErr;
-        if (faceRes && faceRes.isHuman === false) {
-          throw new Error(faceRes.reason || "Selfie does not look like a real human face");
-        }
-      } catch (e: any) {
-        // Don't block submission on liveness service outage — only on explicit reject.
-        if (String(e?.message || "").toLowerCase().includes("human")) throw e;
-      }
+      await startVerification();
+      const s = await createDiditSession();
+      setSession(s);
+      popupRef.current = window.open(s.url, "didit_verify", "width=480,height=720");
+      if (!popupRef.current) toast.error("Popup blocked. Use the open link below.");
 
-      // 2. Ensure verification row exists (and reserves sparks via RPC)
-      const row = await startVerification();
+      if (pollRef.current) window.clearInterval(pollRef.current);
+      pollRef.current = window.setInterval(async () => {
+        try {
+          const d = await getDiditDecision(s.session_id);
+          const st = String(d?.status || "").toLowerCase();
+          if (["approved", "in review", "in_review", "declined", "completed"].some(x => st.includes(x))) {
+            window.clearInterval(pollRef.current!);
+            pollRef.current = null;
+            await submitVerification(s.session_id, s.session_token);
+            toast.success("Verification submitted for admin approval");
+            setSession(null);
+            try { popupRef.current?.close(); } catch {}
+            refetch();
+          }
+        } catch { /* keep polling */ }
+      }, 5000);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to start verification");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      // 3. Upload all three docs to private storage
-      const uploads = await Promise.all(
-        SLOTS.map(async (s) => {
-          const path = await uploadVerificationDoc(user.id, files[s.kind]!, s.kind);
-          return { kind: s.kind, path };
-        })
-      );
-
-      // 4. Insert verification_documents rows
-      const { error: docErr } = await (supabase as any).from("verification_documents").insert(
-        uploads.map((u) => ({
-          verification_id: row.id,
-          user_id: user.id,
-          kind: u.kind,
-          storage_path: u.path,
-        }))
-      );
-      if (docErr) throw docErr;
-
-      // 5. Optional Persona inquiry (no-op if not configured)
-      let inquiryId = `cnic_${crypto.randomUUID()}`;
-      let sessionToken: string | null = null;
-      try {
-        const persona = await createPersonaInquiry();
-        if (persona?.inquiry_id) { inquiryId = persona.inquiry_id; sessionToken = persona.session_token; }
-      } catch { /* ignore */ }
-
-      // 6. Mark submitted for admin review (this also deducts sparks via RPC)
-      await submitVerification(inquiryId, sessionToken);
-
-      toast.success("Documents submitted. Admin will review shortly.");
-      setFiles({}); setPreviews({});
+  const completeManually = async () => {
+    if (!session || !user) return;
+    setLoading(true);
+    try {
+      await submitVerification(session.session_id, session.session_token);
+      toast.success("Submitted for admin approval");
+      if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
+      setSession(null);
       refetch();
     } catch (e: any) {
       toast.error(e?.message || "Submission failed");
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-primary/30">
             <ShieldCheck className="h-7 w-7 text-primary" />
           </div>
           <DialogTitle className="text-center">Verified Worker Badge</DialogTitle>
           <DialogDescription className="text-center">
-            Upload your CNIC + a live selfie. Documents are private and reviewed by admins.
+            Real-time ID scan + face match powered by Didit. No uploads.
           </DialogDescription>
         </DialogHeader>
 
@@ -140,7 +102,22 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="font-bold">Under review</p>
             <p className="text-xs text-center text-muted-foreground">
-              An admin is verifying your CNIC. You'll be notified once approved.
+              Didit completed. An admin will approve shortly.
+            </p>
+          </div>
+        ) : session ? (
+          <div className="space-y-3 py-2">
+            <div className="rounded-xl border bg-muted/30 p-3 text-sm text-center">
+              Complete the Didit verification in the opened window.
+            </div>
+            <Button variant="outline" className="w-full" onClick={() => window.open(session.url, "didit_verify", "width=480,height=720")}>
+              <ExternalLink className="h-4 w-4 mr-2" /> Re-open verification window
+            </Button>
+            <Button onClick={completeManually} disabled={loading} className="w-full">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "I've completed verification"}
+            </Button>
+            <p className="text-[11px] text-center text-muted-foreground">
+              We'll auto-detect completion within a few seconds.
             </p>
           </div>
         ) : (
@@ -166,57 +143,16 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               <span className={`font-bold ${insufficient ? "text-destructive" : ""}`}>{balance} Sparks</span>
             </div>
 
-            <div className="grid gap-2">
-              {SLOTS.map((s) => {
-                const Icon = s.icon;
-                const preview = previews[s.kind];
-                return (
-                  <div key={s.kind} className="rounded-xl border p-2 flex items-center gap-3">
-                    <input
-                      ref={(el) => (inputs.current[s.kind] = el)}
-                      type="file"
-                      accept="image/*"
-                      capture={s.kind === "selfie" ? "user" : "environment"}
-                      hidden
-                      onChange={(e) => pick(s.kind, e.target.files?.[0] || null)}
-                    />
-                    <div className="h-14 w-14 rounded-lg bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                      {preview ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <Icon className="h-6 w-6 text-muted-foreground" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold">{s.label}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">{s.hint}</p>
-                    </div>
-                    {preview ? (
-                      <Button size="sm" variant="ghost" onClick={() => { setFiles((f) => { const c = { ...f }; delete c[s.kind]; return c; }); setPreviews((p) => { const c = { ...p }; delete c[s.kind]; return c; }); }}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" onClick={() => inputs.current[s.kind]?.click()}>
-                        <Upload className="h-3.5 w-3.5 mr-1" /> Upload
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
             <ul className="space-y-1 text-[11px] text-muted-foreground">
-              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />CNIC and selfie are stored privately, admin-only.</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Live ID scan + face match in your browser.</li>
               <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Sparks are deducted on submission.</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Badge appears across all your listings once approved.</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-3 w-3 text-success shrink-0 mt-0.5" />Final approval by our admins after Didit passes.</li>
             </ul>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting || insufficient || !allUploaded}
-              className="w-full"
-              size="lg"
-            >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> :
+            <Button onClick={startScan} disabled={loading || insufficient} className="w-full" size="lg">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> :
                 insufficient ? "Insufficient Sparks" :
-                !allUploaded ? "Upload all 3 images" :
-                "Submit for verification"}
+                <><ScanLine className="h-4 w-4 mr-2" /> Start ID scan</>}
             </Button>
           </div>
         )}
