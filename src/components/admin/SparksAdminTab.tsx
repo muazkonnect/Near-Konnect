@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  Sparkles, Pause, Play, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
+  Sparkles, Pause, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
   CheckCircle2, XCircle, Image as ImageIcon, Package, Settings2, Receipt, Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -563,7 +563,6 @@ const CampaignsPanel = () => {
           <span className="text-xs font-bold text-hero-foreground">{selected.size} selected</span>
           <div className="ml-auto flex flex-wrap gap-1.5">
             <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("paused")}><Pause className="mr-1 h-3 w-3" /> Pause</Button>
-            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => bulkSetStatus("active")}><Play className="mr-1 h-3 w-3" /> Resume</Button>
             <Button size="sm" variant="destructive" disabled={bulkBusy} onClick={bulkExpire}>Expire</Button>
             <Button size="sm" variant="ghost" disabled={bulkBusy} onClick={clearSelection}>Clear</Button>
           </div>
@@ -602,7 +601,6 @@ const CampaignsPanel = () => {
                       <td className="px-3 py-2 text-right font-bold tabular-nums text-hero-foreground">{c.sparks_cost}</td>
                       <td className="px-3 py-2 text-right">
                         {c.status === "active" && <Button size="sm" variant="outline" onClick={() => setStatus(c.id, "paused")}><Pause className="mr-1 h-3 w-3" /> Pause</Button>}
-                        {c.status === "paused" && <Button size="sm" variant="outline" onClick={() => setStatus(c.id, "active")}><Play className="mr-1 h-3 w-3" /> Resume</Button>}
                       </td>
                     </tr>
                   );
