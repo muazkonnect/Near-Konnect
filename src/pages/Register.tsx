@@ -78,7 +78,7 @@ const Register = () => {
       return;
     }
     if (!isValidPhoneNumber(normalizedPhone)) {
-      toast.error("Please enter a valid phone number with country code.");
+      toast.error("Please enter a valid WhatsApp number with country code.");
       return;
     }
     const pw = validatePassword(password);
