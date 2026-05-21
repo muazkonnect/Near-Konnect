@@ -47,7 +47,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 const UsersManagementTab = lazy(() => import("@/components/admin/UsersManagementTab"));
-const AdminProfileTab = lazy(() => import("@/components/admin/AdminProfileTab"));
+const SettingsTab = lazy(() => import("@/components/admin/SettingsTab"));
 const CategoriesManagementTab = lazy(() => import("@/components/admin/CategoriesManagementTab"));
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
@@ -56,7 +56,6 @@ const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").t
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
-import AppDefaultsTab from "@/components/admin/AppDefaultsTab";
 
 const TabFallback = () => (
   <div className="flex h-40 items-center justify-center">
