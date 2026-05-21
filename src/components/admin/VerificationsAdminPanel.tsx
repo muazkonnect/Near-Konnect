@@ -140,6 +140,7 @@ export default function VerificationsAdminPanel() {
                   <p className="text-muted-foreground">Persona: {v.persona_inquiry_id || "—"}</p>
                   <p className="text-muted-foreground">Submitted: {v.submitted_at ? new Date(v.submitted_at).toLocaleString() : "—"}</p>
                 </div>
+                <DocsViewer verificationId={v.id} />
                 <Textarea
                   placeholder="Optional note to user"
                   className="mt-2"
