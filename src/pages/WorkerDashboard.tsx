@@ -86,7 +86,7 @@ const WorkerDashboard = () => {
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
-  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
+  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
