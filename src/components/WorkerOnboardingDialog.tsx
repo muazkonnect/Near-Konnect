@@ -260,7 +260,10 @@ const WorkerOnboardingDialog = () => {
                 <Label className={labelClass}>Subcategory *</Label>
                 <select
                   value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
+                  onChange={(e) => {
+                    setSubCategory(e.target.value);
+                    setExpertiseTags([]);
+                  }}
                   disabled={!mainCategory}
                   className={`${selectClass} disabled:cursor-not-allowed disabled:opacity-50`}
                 >
@@ -272,6 +275,71 @@ const WorkerOnboardingDialog = () => {
                   ))}
                 </select>
               </div>
+
+              {subCategory && (
+                <div>
+                  <Label className={labelClass}>
+                    Expertise (pick up to {MAX_EXPERTISE})
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {expertiseOptions.map((tag) => {
+                      const active = expertiseTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleExpertise(tag)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                            active
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10"
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {expertiseTags.filter((t) => !expertiseOptions.includes(t)).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {expertiseTags
+                        .filter((t) => !expertiseOptions.includes(t))
+                        .map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => toggleExpertise(tag)}
+                            className="rounded-full border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                          >
+                            {tag} ✕
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      value={customExpertise}
+                      onChange={(e) => setCustomExpertise(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomExpertise();
+                        }
+                      }}
+                      placeholder="Add custom expertise…"
+                      className={inputClass}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={addCustomExpertise}
+                      disabled={!customExpertise.trim() || expertiseTags.length >= MAX_EXPERTISE}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <Label className={labelClass}>Years of experience *</Label>
