@@ -7,6 +7,7 @@ import SteppedCarousel from "@/components/SteppedCarousel";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
+import { useAuth } from "@/contexts/AuthContext";
 
 type FeaturedWorker = {
   id: string;
