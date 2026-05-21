@@ -81,35 +81,35 @@ const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; o
     <button
       type="button"
       onClick={open}
-      className="group relative flex min-w-[260px] cursor-pointer select-none flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
+      className="group relative flex min-w-[200px] cursor-pointer select-none flex-col gap-2 overflow-hidden rounded-xl border border-destructive/20 bg-white p-3 text-left shadow-md transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
     >
-      <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
-        <HeartPulse className="h-7 w-7 text-destructive/30" />
+      <div className="absolute -right-3 -top-3 grid h-12 w-12 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
+        <HeartPulse className="h-5 w-5 text-destructive/30" />
       </div>
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12 border-2 border-destructive/20">
+      <div className="flex items-center gap-2">
+        <Avatar className="h-9 w-9 border-2 border-destructive/20">
           <AvatarImage src={donor.avatar_url ?? undefined} alt={donor.full_name} />
-          <AvatarFallback className="bg-destructive/10 text-sm font-bold text-destructive">{initials}</AvatarFallback>
+          <AvatarFallback className="bg-destructive/10 text-xs font-bold text-destructive">{initials}</AvatarFallback>
         </Avatar>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-foreground">{donor.full_name || "Donor"}</p>
-          <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-            <BadgeCheck className="h-3 w-3 text-destructive" /> Verified Donor
+        <div className="min-w-1">
+          <p className="truncate text-[13px] font-bold text-foreground">{donor.full_name || "Donor"}</p>
+          <p className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
+            <BadgeCheck className="h-2.5 w-2.5 text-destructive" /> Verified Donor
           </p>
         </div>
       </div>
-      <div className="flex items-center justify-between rounded-lg bg-destructive/5 p-3">
+      <div className="flex items-center justify-between rounded-lg bg-destructive/5 p-2">
         <div>
-          <p className="text-xl font-bold text-foreground">{donor.blood_group || "—"}</p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Blood Group</p>
+          <p className="text-sm font-bold text-foreground">{donor.blood_group || "—"}</p>
+          <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">Blood Group</p>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-foreground">{dist}</p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
+          <p className="text-sm font-bold text-foreground">{dist}</p>
+          <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
         </div>
       </div>
-      <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-destructive/70">
-        Tap to view details
+      <span className="text-center text-[9px] font-semibold uppercase tracking-wider text-destructive/70">
+        Tap for details
       </span>
     </button>
   );
