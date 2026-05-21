@@ -32,6 +32,7 @@ import FeaturedWorkersCarousel from "@/components/FeaturedWorkersCarousel";
 import { useAdminUserIds } from "@/hooks/useAdminUserIds";
 import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
+import { useAppSetting } from "@/hooks/useAppSettings";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
