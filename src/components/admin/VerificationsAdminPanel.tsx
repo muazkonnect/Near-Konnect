@@ -256,7 +256,7 @@ export default function VerificationsAdminPanel() {
   const decide = useAdminDecideVerification();
   const { data: settings } = useVerificationSettings();
   const updateSettings = useUpdateVerificationSettings();
-  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean; persona_template_id?: string }>({});
+  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean }>({});
 
   const userIds = useMemo(() => Array.from(new Set((list as any[]).map((v) => v.user_id).filter(Boolean))), [list]);
   const profiles = useWorkerProfiles(userIds);
@@ -287,9 +287,12 @@ export default function VerificationsAdminPanel() {
   return (
     <div className="space-y-6">
       <div className="rounded-xl border bg-card p-4">
-        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
+        <h3 className="mb-1 flex items-center gap-2 text-sm font-bold">
           <ShieldCheck className="h-4 w-4" /> Verification settings
         </h3>
+        <p className="mb-3 text-[11px] text-muted-foreground">
+          Identity verification is powered by <span className="font-semibold">Didit</span>. The Didit workflow is configured via the <code className="font-mono">DIDIT_WORKFLOW_ID</code> backend secret — no template ID needed here.
+        </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label>Sparks cost</Label>
@@ -298,23 +301,23 @@ export default function VerificationsAdminPanel() {
               defaultValue={settings?.sparks_cost ?? 0}
               onChange={(e) => setEditing((s) => ({ ...s, sparks_cost: Number(e.target.value) }))}
             />
+            <p className="mt-1 text-[10px] text-muted-foreground">Sparks deducted when a worker starts a Didit session.</p>
           </div>
-          <div>
-            <Label>Persona template ID</Label>
-            <Input
-              defaultValue={settings?.persona_template_id ?? ""}
-              onChange={(e) => setEditing((s) => ({ ...s, persona_template_id: e.target.value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between rounded-lg border p-2">
-            <Label className="m-0">Enabled</Label>
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <div>
+              <Label className="m-0">Verification enabled</Label>
+              <p className="text-[10px] text-muted-foreground">Turn the Didit flow on/off for all workers.</p>
+            </div>
             <Switch
               defaultChecked={settings?.enabled ?? false}
               onCheckedChange={(v) => setEditing((s) => ({ ...s, enabled: v }))}
             />
           </div>
-          <div className="flex items-center justify-between rounded-lg border p-2">
-            <Label className="m-0">Auto-approve on Persona pass</Label>
+          <div className="flex items-center justify-between rounded-lg border p-3 sm:col-span-2">
+            <div>
+              <Label className="m-0">Auto-approve on Didit pass</Label>
+              <p className="text-[10px] text-muted-foreground">If Didit returns <span className="font-semibold">Approved</span>, mark the worker verified automatically. Otherwise it lands here for manual review.</p>
+            </div>
             <Switch
               defaultChecked={settings?.auto_approve_on_persona_pass ?? false}
               onCheckedChange={(v) => setEditing((s) => ({ ...s, auto_approve_on_persona_pass: v }))}
