@@ -83,10 +83,37 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
       await startVerification();
       const s = await createDiditSession();
       sessionStorage.setItem(PENDING_KEY, JSON.stringify({ session_id: s.session_id, session_token: s.session_token }));
-      // Full-page redirect — Didit's COOP blocks popups/iframes
-      window.location.href = s.url;
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({ url: s.url, presentationStyle: "fullscreen" });
+        const sub = await Browser.addListener("browserFinished", async () => {
+          sub.remove();
+          startPolling(s.session_id, s.session_token);
+        });
+        setLoading(false);
+      } else {
+        // Full-page redirect — Didit's COOP blocks popups/iframes
+        window.location.href = s.url;
+      }
     } catch (e: any) {
       toast.error(e?.message || "Failed to start verification");
+      setLoading(false);
+    }
+  };
+
+  const copySessionLink = async () => {
+    if (!user) return;
+    if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
+    setLoading(true);
+    try {
+      await startVerification();
+      const s = await createDiditSession();
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ session_id: s.session_id, session_token: s.session_token }));
+      await navigator.clipboard.writeText(s.url);
+      toast.success("Link copied — paste it in your browser to continue");
+      startPolling(s.session_id, s.session_token);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to start verification");
+    } finally {
       setLoading(false);
     }
   };
