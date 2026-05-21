@@ -466,9 +466,7 @@ const WorkerDashboard = () => {
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
-              { label: "Manage Services", icon: UserCheck, onClick: () => setActiveTab("profile") },
               { label: "Boost Ad", icon: Zap, onClick: () => navigate("/worker/ads") },
-              { label: "Get Support", icon: MessageSquare, onClick: () => window.dispatchEvent(new CustomEvent("open-support-chat")) },
             ].map((a) => (
               <button
                 key={a.label}
