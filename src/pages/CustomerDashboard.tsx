@@ -10,11 +10,15 @@ import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
 import UpgradeToWorker from "@/components/UpgradeToWorker";
 import AppLayout from "@/components/AppLayout";
+import PhoneField from "@/components/PhoneField";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import { sanitizePhone } from "@/lib/contactMethods";
 
 
 const CustomerDashboard = () => {
@@ -50,12 +54,16 @@ const CustomerDashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
-    if (!phone.trim()) { toast.error("Phone number is required."); return; }
+    const cleaned = sanitizePhone(phone);
+    if (!cleaned) { toast.error("WhatsApp number is required."); return; }
+    if (!isValidPhoneNumber(cleaned)) { toast.error("Please enter a valid WhatsApp number."); return; }
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: name,
-      phone: phone.trim(),
-    }).eq("user_id", user.id);
+      phone: cleaned,
+      use_whatsapp: true,
+      contact_methods: [{ type: "whatsapp", value: cleaned }],
+    } as any).eq("user_id", user.id);
     setSaving(false);
     if (error) toast.error(error.message || "Failed to save");
     else {
@@ -118,14 +126,18 @@ const CustomerDashboard = () => {
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">Phone Number</Label>
-                <Input
+                <Label className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/60">
+                  <WhatsappIcon className="h-3 w-3 text-[#25D366]" /> WhatsApp Number
+                </Label>
+                <PhoneField
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  type="tel"
-                  placeholder="+1 234 567 8900"
-                  className="mt-1.5 h-11 rounded-xl border-hero-foreground/15 bg-hero-foreground/5 text-hero-foreground placeholder:text-hero-foreground/40 focus-visible:border-primary/60 focus-visible:ring-0"
+                  onChange={setPhone}
+                  defaultCountry="PK"
+                  variant="hero"
+                  ariaLabel="WhatsApp number"
+                  className="mt-1.5"
                 />
+                <p className="mt-1 text-[11px] text-hero-foreground/50">Clients and workers will reach you on WhatsApp using this number.</p>
               </div>
             </div>
 

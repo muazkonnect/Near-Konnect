@@ -86,7 +86,7 @@ const WorkerDashboard = () => {
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
-  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "phone", value: "" }]);
+  const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -112,11 +112,9 @@ const WorkerDashboard = () => {
       const profilePhone = (workerData as any).profiles?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
-        setContactMethods(stored.some((m) => m.type === "phone") ? stored : [{ type: "phone", value: profilePhone }, ...stored]);
+        setContactMethods(stored.some((m) => m.type === "whatsapp") ? stored : [{ type: "whatsapp", value: profilePhone }, ...stored]);
       } else {
-        const seed: ContactMethod[] = [{ type: "phone", value: profilePhone }];
-        if ((workerData as any).profiles?.use_whatsapp && profilePhone) seed.push({ type: "whatsapp", value: profilePhone });
-        setContactMethods(seed);
+        setContactMethods([{ type: "whatsapp", value: profilePhone }]);
       }
     }
   }, [workerData]);
@@ -188,9 +186,9 @@ const WorkerDashboard = () => {
     const trimmed: ContactMethod[] = normalizeContactMethods(contactMethods);
     const err = validateContactMethods(trimmed);
     if (err) { toast.error(err); return; }
-    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || "";
-    if (!phoneVal) { toast.error("A phone number is required."); return; }
-    const hasWhatsapp = trimmed.some((m) => m.type === "whatsapp" && m.value);
+    const whatsappVal = trimmed.find((m) => m.type === "whatsapp")?.value || "";
+    if (!whatsappVal) { toast.error("A WhatsApp number is required."); return; }
+    const phoneVal = trimmed.find((m) => m.type === "phone")?.value || whatsappVal;
 
     setSaving(true);
 
@@ -208,7 +206,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone: phoneVal, use_whatsapp: hasWhatsapp, contact_methods: trimmed } as any)
+      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -631,7 +629,7 @@ const WorkerDashboard = () => {
                 {/* Contact options */}
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
-                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requirePhone variant="hero" />
+                  <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
 
                 {/* Quick actions row */}
