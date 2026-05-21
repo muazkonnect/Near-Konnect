@@ -123,6 +123,7 @@ const AppContent = () => {
         </Suspense>
         <Footer />
         <MobileBottomNav />
+        <AssistantSheet />
       </BrowserRouter>
     </>
   );
