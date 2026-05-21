@@ -15,10 +15,12 @@ interface Props {
   onChange: (next: ContactMethod[]) => void;
   /** When true, at least one Phone entry is locked in and cannot be removed */
   requirePhone?: boolean;
+  /** When true, at least one WhatsApp entry is locked in and cannot be removed */
+  requireWhatsapp?: boolean;
   variant?: "default" | "hero";
 }
 
-const ContactMethodsEditor = ({ value, onChange, requirePhone = false, variant = "default" }: Props) => {
+const ContactMethodsEditor = ({ value, onChange, requirePhone = false, requireWhatsapp = false, variant = "default" }: Props) => {
   const hero = variant === "hero";
   const detectedCountry = useDetectedCountry();
   const usedTypes = new Set(value.map((m) => m.type));
