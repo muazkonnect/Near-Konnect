@@ -350,29 +350,17 @@ const WorkerProfile = () => {
             />
           </section>
 
-          {/* 4. Quick Contact Icons */}
-          <section className="mb-5 flex justify-center gap-4">
-            <ActionCircle
-              onClick={() => { void trackEvent("contact_click"); user ? navigate(`/chat/${worker.userId}`) : navigate("/login"); }}
-              aria-label="In-app chat"
-            >
-              <MessageSquare className="h-5 w-5 text-hero-muted" />
-            </ActionCircle>
-            {phoneSan && (
-              <ActionCircle
-                onClick={() => { void trackEvent("contact_click"); window.open(`https://wa.me/${phoneSan.replace(/^\+/, "")}`, "_blank"); }}
-                aria-label="WhatsApp"
-              >
-                <WhatsappIcon size={20} className="text-[#25D366]" />
-              </ActionCircle>
-            )}
-            <ActionCircle aria-label="Video">
-              <Video className="h-5 w-5 text-[#3B82F6]" />
-            </ActionCircle>
-            <ActionCircle aria-label="Signal">
-              <Lock className="h-5 w-5 text-[#4A90E2]" />
-            </ActionCircle>
-          </section>
+          {/* 4. Quick Contact Icons — only saved methods */}
+          {showContact && (contactMethods.filter((m) => (m.value || "").trim()).length > 0 || true) && (
+            <section className="mb-5 flex justify-center">
+              <ContactMethodsBar
+                methods={contactMethods.filter((m) => (m.value || "").trim())}
+                onInAppMessage={() => { void trackEvent("contact_click"); user ? navigate(`/chat/${worker.userId}`) : navigate("/login"); }}
+                onChannelClick={() => void trackEvent("contact_click")}
+                variant="hero"
+              />
+            </section>
+          )}
 
           {/* 5. Give a Review */}
           {user && !isOwner && (

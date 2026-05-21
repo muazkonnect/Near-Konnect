@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
-import WhatsappIcon from "@/components/icons/WhatsappIcon";
+import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { getExpertise } from "@/lib/categoryExpertise";
+import ContactMethodsBar from "@/components/ContactMethodsBar";
+import type { ContactMethod } from "@/lib/contactMethods";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
@@ -24,6 +25,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = sanitizePhone(worker.phone);
   const expertise = getExpertise(worker.mainCategory, worker.subCategory, [worker.profession, ...(worker.serviceAreas || [])], 5);
+  const savedMethods: ContactMethod[] = (worker.contactMethods || []).filter((m) => (m.value || "").trim().length > 0);
   const isPremium = worker.verified;
   const dist = worker.distance;
   const hasDist = typeof dist === "number" && dist > 0 && isFinite(dist);
@@ -187,29 +189,15 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               </Button>
             </div>
 
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={requireAuth(() => { if (phone) window.open(`https://wa.me/${phone.replace(/^\+/, "")}`, "_blank"); })}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="WhatsApp"
-              >
-                <WhatsappIcon size={20} className="text-[#25D366]" />
-              </button>
-              <button
-                onClick={requireAuth(() => {})}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="Imo"
-              >
-                <Video className="h-5 w-5" />
-              </button>
-              <button
-                onClick={requireAuth(() => {})}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
-                aria-label="Signal"
-              >
-                <Lock className="h-5 w-5" />
-              </button>
-            </div>
+            {savedMethods.length > 0 && (
+              <div className="flex justify-center">
+                <ContactMethodsBar
+                  methods={savedMethods}
+                  variant="hero"
+                  onChannelClick={isAuthed ? undefined : (() => { onOpenChange(false); navigate("/login"); })}
+                />
+              </div>
+            )}
 
             <div className="text-center">
               <button

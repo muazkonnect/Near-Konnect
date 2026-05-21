@@ -1,3 +1,5 @@
+import type { ContactMethod } from "@/lib/contactMethods";
+
 export interface Worker {
   id: string;
   uid?: string;
@@ -19,6 +21,7 @@ export interface Worker {
   mainCategory?: string;
   subCategory?: string;
   userId?: string;
+  contactMethods?: ContactMethod[];
 }
 
 export interface ServiceCategory {
