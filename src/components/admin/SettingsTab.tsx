@@ -3,7 +3,9 @@ import { lazy, Suspense } from "react";
 import {
   Settings, Sliders, UserCircle, Package, CreditCard, Shield,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
 import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
@@ -25,6 +27,26 @@ const Fallback = () => (
     <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
   </div>
 );
+
+const CategoriesSection = () => {
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ["admin_categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("service_categories")
+        .select("*")
+        .order("name");
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+  if (isLoading) return <Fallback />;
+  return (
+    <Suspense fallback={<Fallback />}>
+      <CategoriesManagementTab categories={categories as any} />
+    </Suspense>
+  );
+};
 
 export default function SettingsTab() {
   const [sub, setSub] = useState<Sub>("defaults");
@@ -56,11 +78,7 @@ export default function SettingsTab() {
         {sub === "defaults" && <AppDefaultsTab />}
         {sub === "packages" && <PackagesPanel />}
         {sub === "payments" && <PaymentSettingsPanel />}
-        {sub === "categories" && (
-          <Suspense fallback={<Fallback />}>
-            <CategoriesManagementTab />
-          </Suspense>
-        )}
+        {sub === "categories" && <CategoriesSection />}
         {sub === "account" && <AdminProfileTab />}
       </div>
     </div>
