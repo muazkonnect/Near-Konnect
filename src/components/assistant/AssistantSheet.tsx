@@ -268,13 +268,13 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
         className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground rounded-br-sm"
-            : "bg-card border border-border rounded-bl-sm"
+            : "bg-white/5 border border-white/10 text-hero-foreground rounded-bl-sm"
         }`}
       >
         {isUser ? (
           <p className="whitespace-pre-wrap">{msg.content}</p>
         ) : (
-          <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1">
+          <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-a:text-primary">
             <ReactMarkdown>{msg.content || "…"}</ReactMarkdown>
           </div>
         )}
@@ -284,24 +284,24 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
               <button
                 key={w.id}
                 onClick={() => onOpenWorker(w.id)}
-                className="flex items-center gap-3 rounded-xl border border-border bg-background p-2.5 text-left hover:bg-accent transition"
+                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5 text-left hover:bg-white/10 transition"
               >
                 <Avatar className="h-12 w-12 rounded-xl">
                   <AvatarImage src={w.avatar_url ?? undefined} alt={w.full_name} />
-                  <AvatarFallback className="rounded-xl text-xs">
+                  <AvatarFallback className="rounded-xl text-xs bg-primary/20 text-primary">
                     {w.full_name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1">
-                    <span className="truncate text-sm font-semibold">{w.full_name || "Worker"}</span>
+                    <span className="truncate text-sm font-semibold text-hero-foreground">{w.full_name || "Worker"}</span>
                     {w.verified && <BadgeCheck className="h-3.5 w-3.5 text-primary" />}
-                    {w.is_featured && <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />}
+                    {w.is_featured && <Star className="h-3.5 w-3.5 fill-primary text-primary" />}
                   </div>
-                  <div className="truncate text-[11px] text-muted-foreground">
+                  <div className="truncate text-[11px] text-hero-muted">
                     {w.profession} • {w.experience}y exp
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-hero-muted">
                     {typeof w.distance_km === "number" && (
                       <span className="inline-flex items-center gap-0.5">
                         <MapPin className="h-3 w-3" />
@@ -310,13 +310,13 @@ function MessageBubble({ msg, onOpenWorker }: { msg: Msg; onOpenWorker: (id: str
                     )}
                     {!!w.review_count && (
                       <span className="inline-flex items-center gap-0.5">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        <Star className="h-3 w-3 fill-primary text-primary" />
                         {Number(w.avg_rating ?? 0).toFixed(1)} ({w.review_count})
                       </span>
                     )}
                   </div>
                 </div>
-                <Phone className="h-4 w-4 text-muted-foreground" />
+                <Phone className="h-4 w-4 text-primary" />
               </button>
             ))}
           </div>
