@@ -828,6 +828,15 @@ const WorkerDashboard = () => {
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
 
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-3.5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-hero-foreground">Show contact on Blood Konnect</p>
+                    <p className="text-[10px] text-hero-foreground/60">Controls visibility on donor cards, popups and profile.</p>
+                  </div>
+                  <Switch checked={bloodShowContact} onCheckedChange={setBloodShowContact} aria-label="Show contact on Blood Konnect" />
+                </div>
+
+
                 {/* Fixed service location */}
                 <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
                   <div className="mb-2 flex items-center justify-between gap-2">
