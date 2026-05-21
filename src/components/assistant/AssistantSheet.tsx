@@ -187,16 +187,23 @@ export default function AssistantSheet() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open assistant"
-        className="fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-amber-500 text-primary-foreground shadow-[0_10px_30px_-8px_hsl(var(--primary)/0.6)] ring-2 ring-amber-300/40 transition active:scale-95 md:bottom-6"
+        className="group fixed bottom-20 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-hero text-primary shadow-[0_10px_30px_-8px_hsl(var(--hero)/0.6)] ring-2 ring-primary/40 transition active:scale-95 md:bottom-6"
       >
-        <Sparkles className="h-6 w-6" />
+        <span className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-60 group-hover:opacity-90 transition" />
+        <Sparkle className="relative h-6 w-6 fill-primary" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="h-[88vh] rounded-t-3xl p-0">
-          <SheetHeader className="border-b px-5 py-3">
-            <SheetTitle className="flex items-center gap-2 text-base">
-              <Bot className="h-5 w-5 text-primary" /> NearKonnect Assistant
+        <SheetContent
+          side="bottom"
+          className="h-[88vh] rounded-t-3xl p-0 border-0 bg-hero text-hero-foreground"
+        >
+          <SheetHeader className="border-b border-white/10 px-5 py-3">
+            <SheetTitle className="flex items-center gap-2 text-base text-hero-foreground">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary/40">
+                <Sparkle className="h-4 w-4 fill-primary text-primary" />
+              </span>
+              NearKonnect Assistant
             </SheetTitle>
           </SheetHeader>
 
@@ -205,7 +212,7 @@ export default function AssistantSheet() {
               <MessageBubble key={i} msg={m} onOpenWorker={(id) => { setOpen(false); navigate(`/worker/${id}`); }} />
             ))}
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs text-hero-muted">
                 <Loader2 className="h-3 w-3 animate-spin" /> Sochne mein…
               </div>
             )}
@@ -215,7 +222,7 @@ export default function AssistantSheet() {
                   <button
                     key={q}
                     onClick={() => send(q)}
-                    className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-accent"
+                    className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-hero-foreground hover:bg-primary/20 transition"
                   >
                     {q}
                   </button>
@@ -229,16 +236,21 @@ export default function AssistantSheet() {
               e.preventDefault();
               send(input);
             }}
-            className="border-t bg-background px-4 py-3 flex items-center gap-2"
+            className="border-t border-white/10 bg-hero px-4 py-3 flex items-center gap-2"
           >
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={placeholder}
               disabled={loading}
-              className="flex-1"
+              className="flex-1 bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted focus-visible:ring-primary"
             />
-            <Button type="submit" size="icon" disabled={loading || !input.trim()}>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={loading || !input.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </form>
