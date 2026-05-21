@@ -288,11 +288,24 @@ const Home = () => {
                 const initials = (d.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const dist = isFinite(d.distance as number) ? `${(d.distance as number).toFixed(1)} KM` : "Nearby";
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={d.user_id}
-                    className="relative flex min-w-[260px] flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 shadow-xl"
+                    onClick={() =>
+                      setSelectedDonor({
+                        user_id: d.user_id,
+                        full_name: d.full_name,
+                        avatar_url: d.avatar_url,
+                        blood_group: d.blood_group,
+                        city: d.city,
+                        distance: isFinite(d.distance as number) ? (d.distance as number) : undefined,
+                        phone: (d as any).phone ?? null,
+                        contact_methods: (d as any).contact_methods,
+                      })
+                    }
+                    className="group relative flex min-w-[260px] flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
                   >
-                    <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5">
+                    <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
                       <HeartPulse className="h-7 w-7 text-destructive/30" />
                     </div>
                     <div className="flex items-center gap-3">
@@ -317,7 +330,10 @@ const Home = () => {
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Distance</p>
                       </div>
                     </div>
-                  </div>
+                    <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-destructive/70 opacity-0 transition-opacity group-hover:opacity-100">
+                      Tap to view details
+                    </span>
+                  </button>
                 );
               })}
             />
