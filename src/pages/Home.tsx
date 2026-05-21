@@ -377,10 +377,6 @@ const Home = () => {
           </motion.section>
         )}
 
-        {/* FEATURED CAROUSEL */}
-        <section className="mb-10 px-5">
-          <FeaturedWorkersCarousel className="text-foreground" />
-        </section>
 
         <PromotedSection
           title={`Within ${r0} KM`}
