@@ -62,7 +62,7 @@ const TabFallback = () => (
     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
   </div>
 );
-import { Pencil } from "lucide-react";
+import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
 type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
