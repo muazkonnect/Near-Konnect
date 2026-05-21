@@ -20,7 +20,7 @@ export interface BloodDonorPopupData {
   distance?: number;
   phone?: string | null;
   contact_methods?: unknown;
-  show_contact?: boolean;
+  blood_show_contact?: boolean;
 }
 
 interface Props {
@@ -34,12 +34,12 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isOwner = !!user && !!donor && user.id === donor.user_id;
-  const [ownerShowContact, setOwnerShowContact] = useState<boolean>(donor?.show_contact ?? true);
+  const [ownerShowContact, setOwnerShowContact] = useState<boolean>(donor?.blood_show_contact ?? true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (open) setOwnerShowContact(donor?.show_contact ?? true);
-  }, [open, donor?.user_id, donor?.show_contact]);
+    if (open) setOwnerShowContact(donor?.blood_show_contact ?? true);
+  }, [open, donor?.user_id, donor?.blood_show_contact]);
 
   if (!donor) return null;
 
@@ -48,15 +48,12 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
   const dist = donor.distance;
   const hasDist = typeof dist === "number" && isFinite(dist) && dist > 0;
 
-  let methods: ContactMethod[] = parseContactMethods(donor.contact_methods);
+  let methods: ContactMethod[] = parseContactMethods(donor.contact_methods).filter((m) => (m.value || "").trim().length > 0);
   if (methods.length === 0 && donor.phone) {
     methods = [{ type: "phone", value: donor.phone }];
   }
 
-  // Visibility rule:
-  // - Owner: sees their own contacts always, and can toggle visibility for others.
-  // - Viewer: only sees contacts if donor enabled show_contact; otherwise in-app message only.
-  const contactVisible = isOwner ? true : (donor.show_contact ?? true);
+  const contactVisible = isOwner ? true : (donor.blood_show_contact ?? true);
 
   const requireAuth = (fn: () => void) => () => {
     if (!isAuthed) {
@@ -74,14 +71,14 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ show_contact: next } as any)
+      .update({ blood_show_contact: next } as any)
       .eq("user_id", donor.user_id);
     setSaving(false);
     if (error) {
       setOwnerShowContact(!next);
       toast({ title: "Couldn't update", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: next ? "Contact visible to others" : "Contact hidden from others" });
+      toast({ title: next ? "Contact visible on Blood Konnect" : "Contact hidden on Blood Konnect" });
     }
   };
 
