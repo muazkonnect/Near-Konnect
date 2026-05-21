@@ -64,15 +64,15 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-[330px] rounded-[24px] p-[1.25px] sm:w-[400px] ${
+        className={`group relative w-[330px] rounded-[24px] p-[1px] sm:w-[400px] ${
           premium
-            ? "bg-[conic-gradient(from_200deg_at_50%_50%,hsl(var(--primary)),hsl(var(--primary)/0.15),hsl(var(--primary)/0.75),hsl(var(--primary)/0.2),hsl(var(--primary)))] shadow-[0_20px_60px_-18px_hsl(var(--primary)/0.8)]"
-            : "bg-gradient-to-br from-primary/45 via-hero-foreground/10 to-primary/25 shadow-[0_16px_44px_-20px_hsl(var(--primary)/0.55)]"
+            ? "bg-gradient-to-br from-primary/70 via-primary/30 to-primary/50 shadow-[0_12px_32px_-18px_hsl(var(--primary)/0.5)]"
+            : "bg-gradient-to-br from-primary/30 via-hero-foreground/10 to-primary/15 shadow-[0_10px_28px_-20px_hsl(var(--primary)/0.35)]"
         }`}
       >
         <article
           onClick={handleOpen}
-          className="relative cursor-pointer overflow-hidden rounded-[23px] bg-hero/98 backdrop-blur-2xl transition-all duration-300 active:scale-[0.985] hover:shadow-[0_28px_70px_-22px_hsl(var(--primary)/0.5)]"
+          className="relative cursor-pointer overflow-hidden rounded-[23px] bg-hero transition-transform duration-200 active:scale-[0.99]"
         >
           {/* ====== COVER BAND ====== */}
           <div className="relative h-[88px] w-full overflow-hidden">
@@ -94,13 +94,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/20 to-hero" />
             )}
-            {/* Heavy gradient overlay for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-hero/20 via-hero/45 to-hero" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/10 mix-blend-overlay" />
-            {/* Diagonal sheen */}
-            <div className="pointer-events-none absolute -inset-x-10 -top-10 h-24 rotate-[-8deg] bg-gradient-to-r from-transparent via-hero-foreground/8 to-transparent blur-2xl" />
-            {/* Glow */}
-            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/35 blur-3xl" />
+            {/* Gradient overlay for legibility */}
+            <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/55 to-hero" />
 
 
             {/* Top meta row */}
@@ -145,8 +140,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           {/* ====== AVATAR + IDENTITY ====== */}
           <div className="relative -mt-[52px] flex items-end gap-3 px-3.5">
             <div className="relative shrink-0">
-              <div className="absolute -inset-1 rounded-[20px] bg-gradient-to-br from-primary via-primary/40 to-transparent opacity-90 blur-[6px]" />
-              <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-2xl">
+              <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-xl">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
                 <AvatarFallback className="rounded-[16px] bg-gradient-to-br from-primary/20 to-hero-foreground/10 text-xl font-extrabold text-primary">
                   {initials}
@@ -205,8 +199,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
 
           {/* ====== STATS ====== */}
           <div className="relative mx-3.5 mt-3 grid grid-cols-2 gap-2">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/75 px-3 py-2.5 text-primary-foreground shadow-lg shadow-primary/30">
-              <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-hero-foreground/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/85 px-3 py-2.5 text-primary-foreground shadow-md shadow-primary/20">
               <div className="relative flex items-center gap-2.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-hero-foreground/15 backdrop-blur">
                   <MapPin className="h-4 w-4" />
@@ -272,10 +265,9 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {isAuthed ? (
               <Button
                 size="sm"
-                className="group/cta relative h-11 flex-[1.6] overflow-hidden rounded-xl bg-gradient-to-r from-primary via-primary to-primary/80 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
                 onClick={() => { fireClick(); setPopupOpen(true); }}
               >
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/cta:translate-x-full" />
                 <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
               </Button>
             ) : (
@@ -285,9 +277,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               >
                 <Button
                   size="sm"
-                  className="group/cta relative h-11 flex-[1.6] overflow-hidden rounded-xl bg-gradient-to-r from-primary via-primary to-primary/80 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-lg shadow-primary/40 hover:shadow-primary/60"
+                  className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
                 >
-                  <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/cta:translate-x-full" />
                   <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
                 </Button>
               </AuthRequiredDialog>
