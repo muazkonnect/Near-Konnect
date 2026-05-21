@@ -182,6 +182,7 @@ const WorkerProfile = () => {
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
+    bannerUrl: (dbWorker as any).banner_url || "",
   };
 
   const isOwner = !!user && user.id === worker.userId;
