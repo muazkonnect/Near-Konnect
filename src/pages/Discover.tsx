@@ -257,8 +257,8 @@ const Discover = () => {
   }), [filteredWithAdvanced, featuredIds, sort]);
 
   const featuredWorkers = useMemo(
-    () => sorted.filter((w) => featuredIds.has(w.id)).slice(0, 6),
-    [sorted, featuredIds]
+    () => sorted.filter((w) => featuredIds.has(w.id) && w.userId !== ownWorkerUserId).slice(0, 6),
+    [sorted, featuredIds, ownWorkerUserId]
   );
   const allOthers = useMemo(
     () => sorted.filter((w) => !featuredIds.has(w.id)),
