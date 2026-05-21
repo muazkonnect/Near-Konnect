@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Star, BadgeCheck, Award } from "lucide-react";
+import { Star, BadgeCheck, Crown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
