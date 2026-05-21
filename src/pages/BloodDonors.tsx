@@ -216,13 +216,12 @@ const BloodDonors = () => {
                     contact_methods: donor.contact_methods,
                     show_contact: donor.show_contact ?? true,
                   };
-                  // Defer to next tick so the click that opens it isn't
-                  // interpreted by Radix as an outside-click closing it.
-                  setTimeout(() => setSelectedDonor(data), 0);
+                  setSelectedDonor(data);
                 };
 
                 const ContactBtn = (
                   <button
+                    type="button"
                     onClick={(e) => { e.stopPropagation(); openPopup(); }}
                     className="rounded-lg bg-[#271716] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#b7131a]"
                   >
