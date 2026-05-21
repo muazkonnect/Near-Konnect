@@ -264,12 +264,12 @@ const Register = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Phone Number</label>
+              <label className={labelCls}>WhatsApp Number</label>
               <PhoneField
                 value={phone}
                 onChange={setPhone}
                 defaultCountry={detectedCountry}
-                ariaLabel="Phone number"
+                ariaLabel="WhatsApp number"
                 variant="dark"
               />
             </div>
