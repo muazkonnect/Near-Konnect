@@ -35,7 +35,7 @@ export function useWorkers() {
         .from("workers")
         .select(`
           *,
-          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url),
+          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods),
           reviews(rating)
         `)
         .order("experience", { ascending: false });
