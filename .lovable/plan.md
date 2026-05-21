@@ -1,26 +1,10 @@
-## Problem
+The error is still happening because Didit is being opened inside the app/preview browsing context. Didit's redirect docs recommend a full-page redirect to `session.url`, not a popup/window embed.
 
-`verify.didit.me` returns `ERR_BLOCKED_BY_RESPONSE` because Didit sends a `Cross-Origin-Opener-Policy` header that refuses to render inside a popup which (a) was first opened as `about:blank` on our origin and then (b) navigated cross-origin while keeping an opener relationship with our window.
+Plan:
+1. Update `VerificationDialog.tsx` so the Didit action uses `window.location.href = session.url` instead of `window.open(...)`.
+2. Keep the existing session creation and polling logic, but rely on Didit's callback URL to return the user to `/worker-dashboard?verification=complete`.
+3. Add handling for that callback query on the worker dashboard/dialog load so it refreshes verification status and shows a clear submitted/review state.
+4. Update `didit-create-session` to include `callback_method: "both"`, matching Didit's recommended redirect flow for reliability.
 
-The current `startScan` flow does exactly that: `window.open("about:blank", ...)` → `await` → `popup.location.href = s.url`. Didit blocks the navigated response.
-
-## Fix
-
-Refactor `src/components/verification/VerificationDialog.tsx` into a two-click flow:
-
-1. **Step 1 — "Start ID scan" button**
-   - Runs `startVerification()` + `createDiditSession()`.
-   - Stores the returned `session` in state.
-   - Starts the 5-second `getDiditDecision` polling loop immediately (independent of whether the popup is open).
-   - Does NOT open any window.
-
-2. **Step 2 — "Open verification window" button** (shown once `session` is set)
-   - Calls `window.open(session.url, "_blank", "noopener,noreferrer")` **synchronously inside the click handler**.
-   - `noopener` severs the opener relationship, which is what Didit's COOP requires — no more `ERR_BLOCKED_BY_RESPONSE`.
-   - No `about:blank`, no later redirect.
-
-3. **Manual "I've completed verification"** button stays as the final fallback.
-
-4. When the poll detects approved / in_review / completed, call `submitVerification(...)`, toast success, clear session, refetch.
-
-Only file touched: `src/components/verification/VerificationDialog.tsx`. No edge function, DB, or other component changes.
+Technical detail:
+- This removes popup/iframe behavior completely, which avoids `ERR_BLOCKED_BY_RESPONSE` caused by Didit's browser isolation headers.
