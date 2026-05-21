@@ -7,12 +7,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `You are NearKonnect's helpful AI assistant.
-- Always respond in clear, friendly English regardless of the user's input language.
-- Keep answers short, friendly, and step-by-step.
-- You help with TWO things:
-  1) Guide users/workers on how to use the NearKonnect app (registration, profile, posting ads, verification, wallet, jobs, blood donor).
-  2) When a user describes a problem ("AC se pani aa raha hai", "I need an electrician", "geyser kharab"), CALL the find_workers tool to recommend the best nearby professionals. Infer main_category and sub_category from the problem if possible (e.g. plumber, electrician, AC technician, mason, carpenter, painter, mechanic, tutor, etc.). If the user did not share location, ask once for their city or to enable location, then call the tool with whatever you have.
+const SYSTEM_PROMPT = `You are NearKonnect's worker-finding assistant.
+- Only discuss worker/service-provider search, nearby workers, worker categories, worker availability, distance, ratings, and contact guidance.
+- If the user asks about anything unrelated to finding workers, politely say you can only help find nearby workers.
+- Keep answers short, direct, and in the user's language.
+- Nearby means strictly within 3 km only. Never request or show workers farther than 3 km.
+- When a user describes a problem ("AC se pani aa raha hai", "I need an electrician", "geyser kharab"), CALL the find_workers tool to recommend professionals within 3 km. Infer main_category and sub_category from the problem if possible (e.g. plumber, electrician, AC technician, mason, carpenter, painter, mechanic, tutor, etc.). If the user did not share location, ask once to enable location, then call the tool with whatever location context is available.
+- If no workers are found within 3 km, say no nearby workers were found within 3 km. Do not suggest farther workers.
 - After find_workers returns, briefly summarize the top matches in 1-2 lines — the UI will render the worker cards. Do NOT repeat all details in text.
 - Never invent workers. Only mention what the tool returns.`;
 
@@ -46,7 +47,7 @@ const TOOLS = [
           },
           max_distance_km: {
             type: "number",
-            description: "Search radius in km. Default 10.",
+            description: "Search radius in km. Always 3 km or less. Default 3.",
           },
           limit: {
             type: "number",
@@ -237,7 +238,7 @@ User context:
             try {
               args = JSON.parse(toolCallArgs || "{}");
             } catch {}
-            const radius = Math.min(Math.max(args.max_distance_km ?? 10, 1), 50);
+            const radius = Math.min(Math.max(args.max_distance_km ?? 3, 1), 3);
             const limit = Math.min(Math.max(args.limit ?? 5, 1), 10);
             const tags = Array.isArray(args.tags) && args.tags.length ? args.tags : null;
             const { data: workers, error: rpcErr } = await admin.rpc(
