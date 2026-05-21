@@ -32,6 +32,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import AvatarUpload from "@/components/AvatarUpload";
+import BannerUpload from "@/components/BannerUpload";
+import PortfolioManager from "@/components/PortfolioManager";
 import WorkerShareCard from "@/components/WorkerShareCard";
 import AvatarResetFlow from "@/components/AvatarResetFlow";
 import ChangePasswordDialog from "@/components/ChangePasswordDialog";
@@ -698,6 +700,16 @@ const WorkerDashboard = () => {
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>
+
+                {/* Banner upload */}
+                <BannerUpload
+                  workerId={workerData.id}
+                  currentUrl={(workerData as any).banner_url}
+                  onChange={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })}
+                />
+
+                {/* Portfolio */}
+                <PortfolioManager workerId={workerData.id} verified={!!workerData.verified} />
 
                 {/* Service category & expertise */}
                 <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">

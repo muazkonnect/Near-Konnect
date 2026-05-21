@@ -15,6 +15,7 @@ export interface Worker {
   description: string;
   serviceAreas: string[];
   profilePhoto: string;
+  bannerUrl?: string;
   city: string;
   latitude?: number;
   longitude?: number;

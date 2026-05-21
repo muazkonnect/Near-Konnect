@@ -32,6 +32,7 @@ import AppLayout from "@/components/AppLayout";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import BookingDialog from "@/components/BookingDialog";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
+import { useWorkerPortfolio } from "@/components/PortfolioManager";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
 import { getExpertise } from "@/lib/categoryExpertise";
 import { isValidWorkerUid, normalizeWorkerUid } from "@/lib/workerUid";
@@ -97,6 +98,9 @@ const WorkerProfile = () => {
     },
     enabled: !!id,
   });
+
+  const { data: portfolio = [] } = useWorkerPortfolio(dbWorker?.id);
+
 
   useEffect(() => {
     if (!dbWorker || !id) return;
@@ -181,6 +185,7 @@ const WorkerProfile = () => {
     description: dbWorker.description || "",
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
+    bannerUrl: (dbWorker as any).banner_url || "",
   };
 
   const isOwner = !!user && user.id === worker.userId;
@@ -229,7 +234,17 @@ const WorkerProfile = () => {
           </button>
         </header>
 
-        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6">
+        {/* Banner */}
+        <div className="relative -mt-px h-44 w-full overflow-hidden bg-gradient-to-br from-primary/30 via-primary/10 to-hero sm:h-56">
+          {worker.bannerUrl ? (
+            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+          ) : worker.profilePhoto ? (
+            <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
+        </div>
+
+        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
           {/* 1. Compact Header */}
           <section className="mb-6 flex flex-col items-center gap-3 text-center">
             <div className="relative group shrink-0">
@@ -330,6 +345,29 @@ const WorkerProfile = () => {
               )}
             </div>
           </section>
+
+          {/* Portfolio gallery */}
+          {portfolio.length > 0 && (
+            <section className="mb-5">
+              <div className="mb-2 flex items-center justify-between px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider">Portfolio</h3>
+                <span className="text-xs text-hero-muted">{portfolio.length} {portfolio.length === 1 ? "image" : "images"}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {portfolio.map((p) => (
+                  <a
+                    key={p.id}
+                    href={p.image_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-white/5"
+                  >
+                    <img src={p.image_url} alt={p.caption || "Work sample"} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* 3. Horizontal Metrics */}
           <section className="mb-5 grid grid-cols-3 gap-2">

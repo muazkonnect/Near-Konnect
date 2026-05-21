@@ -80,6 +80,7 @@ export function useWorkers() {
           description: w.description || "",
           serviceAreas: w.service_areas || [],
           profilePhoto: profile?.avatar_url || "",
+          bannerUrl: (w as any).banner_url || "",
           city: w.city || "",
           latitude: w.latitude ?? undefined,
           longitude: w.longitude ?? undefined,
