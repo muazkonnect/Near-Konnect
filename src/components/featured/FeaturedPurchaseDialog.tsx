@@ -15,7 +15,7 @@ const DURATIONS: Array<1 | 7 | 15 | 30> = [1, 7, 15, 30];
 export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCategoryId }: Props) {
   const { balance } = useWallet();
   const { data: pricing = [] } = useFeaturedPricing();
-  const { data: categories = [] } = useCategories();
+  const { mainCategories: categories = [] } = useCategories();
   const purchase = usePurchaseFeatured();
   const [duration, setDuration] = useState<1 | 7 | 15 | 30>(7);
   const [categoryId, setCategoryId] = useState<string | null>(workerCategoryId ?? null);
