@@ -143,7 +143,18 @@ const CustomerDashboard = () => {
                 />
                 <p className="mt-1 text-[11px] text-hero-foreground/50">Clients and workers will reach you on WhatsApp using this number.</p>
               </div>
+
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-3.5">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-hero-foreground">
+                    <Droplet className="h-3.5 w-3.5 text-destructive" /> Show contact on Blood Konnect
+                  </p>
+                  <p className="text-[10px] text-hero-foreground/60">Controls visibility on donor cards, popups and profile.</p>
+                </div>
+                <Switch checked={bloodShowContact} onCheckedChange={setBloodShowContact} aria-label="Show contact on Blood Konnect" />
+              </div>
             </div>
+
 
             <Button onClick={handleSave} disabled={saving} className="mt-6 h-11 w-full gap-2 rounded-xl">
               <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save changes"}
