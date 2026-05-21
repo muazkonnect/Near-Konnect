@@ -23,7 +23,7 @@ const WorkerOnboardingDialog = () => {
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
 
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -33,10 +33,36 @@ const WorkerOnboardingDialog = () => {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customExpertise, setCustomExpertise] = useState("");
 
   const [adminAssigned, setAdminAssigned] = useState(false);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+  const MAX_EXPERTISE = 5;
+  const toggleExpertise = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+  const addCustomExpertise = () => {
+    const v = customExpertise.trim();
+    if (!v) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((t) => t.toLowerCase() === v.toLowerCase())) {
+      setExpertiseTags((p) => [...p, v]);
+    }
+    setCustomExpertise("");
+  };
 
   useEffect(() => {
     if (authLoading || roleLoading || !user) return;
