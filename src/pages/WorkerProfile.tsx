@@ -11,7 +11,6 @@ import {
   Mail,
   Phone,
   MessageSquare,
-  MessageCircle,
   Video,
   Lock,
   Sparkles,
@@ -20,6 +19,7 @@ import {
   Crown,
   BadgeCheck,
 } from "lucide-react";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -363,7 +363,7 @@ const WorkerProfile = () => {
                 onClick={() => { void trackEvent("contact_click"); window.open(`https://wa.me/${phoneSan.replace(/^\+/, "")}`, "_blank"); }}
                 aria-label="WhatsApp"
               >
-                <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                <WhatsappIcon size={20} className="text-[#25D366]" />
               </ActionCircle>
             )}
             <ActionCircle aria-label="Video">

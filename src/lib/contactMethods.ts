@@ -1,5 +1,6 @@
 import { Phone, Video, MessageCircle, Send } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { parsePhoneNumberFromString, isValidPhoneNumber, getCountryCallingCode } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 
@@ -23,14 +24,15 @@ export interface ContactAppDef {
 }
 
 export const CONTACT_APPS: ContactAppDef[] = [
+  { type: "whatsapp", label: "WhatsApp", icon: WhatsappIcon as unknown as LucideIcon, brandClass: "bg-[#25D366] text-white", placeholder: "+92 3XX XXXXXXX", isPhone: true },
   { type: "phone",    label: "Phone",    icon: Phone,          brandClass: "bg-foreground text-background",  placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
-  { type: "whatsapp", label: "WhatsApp", icon: MessageCircle,  brandClass: "bg-[#25D366] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "imo",      label: "IMO",      icon: Video,          brandClass: "bg-[#3776E5] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "botim",    label: "Botim",    icon: Video,          brandClass: "bg-[#34D9C8] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "viber",    label: "Viber",    icon: MessageCircle,  brandClass: "bg-[#7360F2] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
   { type: "telegram", label: "Telegram", icon: Send,           brandClass: "bg-[#229ED9] text-white",        placeholder: "@username or +92...", isPhone: false },
   { type: "signal",   label: "Signal",   icon: MessageCircle,  brandClass: "bg-[#3A76F0] text-white",        placeholder: "+92 3XX XXXXXXX",     isPhone: true  },
 ];
+
 
 export const CONTACT_APP_BY_TYPE: Record<ContactType, ContactAppDef> = CONTACT_APPS.reduce(
   (acc, app) => ({ ...acc, [app.type]: app }),

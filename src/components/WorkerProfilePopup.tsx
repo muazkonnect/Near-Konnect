@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageCircle, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
+import { Star, BadgeCheck, Phone, MessageSquare, Video, Lock, X, MapPin, Sparkles, Circle, Crown } from "lucide-react";
+import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -192,7 +193,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                 className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-hero-muted transition hover:border-primary/50 hover:text-primary"
                 aria-label="WhatsApp"
               >
-                <MessageCircle className="h-5 w-5" />
+                <WhatsappIcon size={20} className="text-[#25D366]" />
               </button>
               <button
                 onClick={requireAuth(() => {})}

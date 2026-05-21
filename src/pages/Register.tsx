@@ -78,7 +78,7 @@ const Register = () => {
       return;
     }
     if (!isValidPhoneNumber(normalizedPhone)) {
-      toast.error("Please enter a valid phone number with country code.");
+      toast.error("Please enter a valid WhatsApp number with country code.");
       return;
     }
     const pw = validatePassword(password);
@@ -127,7 +127,8 @@ const Register = () => {
         role,
         is_blood_donor: isBloodDonor ? "true" : "false",
         blood_group: isBloodDonor ? bloodGroup : "",
-        contact_methods: JSON.stringify([{ type: "phone", value: normalizedPhone }]),
+        contact_methods: JSON.stringify([{ type: "whatsapp", value: normalizedPhone }]),
+        use_whatsapp: "true",
       };
       if (role === "worker") {
         metadata.main_category = mainCategory;
@@ -264,12 +265,12 @@ const Register = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Phone Number</label>
+              <label className={labelCls}>WhatsApp Number</label>
               <PhoneField
                 value={phone}
                 onChange={setPhone}
                 defaultCountry={detectedCountry}
-                ariaLabel="Phone number"
+                ariaLabel="WhatsApp number"
                 variant="dark"
               />
             </div>
