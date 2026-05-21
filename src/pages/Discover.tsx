@@ -42,6 +42,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import ExploreCard from "@/components/ExploreCard";
+import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
