@@ -181,6 +181,9 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
                 insufficient ? "Insufficient Sparks" :
                 <><ScanLine className="h-4 w-4 mr-2" /> Start ID scan</>}
             </Button>
+            <Button onClick={copySessionLink} disabled={loading || insufficient} variant="ghost" size="sm" className="w-full">
+              <Copy className="h-3.5 w-3.5 mr-2" /> Copy link instead
+            </Button>
           </div>
         )}
       </DialogContent>
