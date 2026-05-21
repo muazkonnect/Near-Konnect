@@ -23,7 +23,7 @@ const WorkerOnboardingDialog = () => {
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
   const queryClient = useQueryClient();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
 
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -33,10 +33,36 @@ const WorkerOnboardingDialog = () => {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customExpertise, setCustomExpertise] = useState("");
 
   const [adminAssigned, setAdminAssigned] = useState(false);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+  const MAX_EXPERTISE = 5;
+  const toggleExpertise = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+  const addCustomExpertise = () => {
+    const v = customExpertise.trim();
+    if (!v) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((t) => t.toLowerCase() === v.toLowerCase())) {
+      setExpertiseTags((p) => [...p, v]);
+    }
+    setCustomExpertise("");
+  };
 
   useEffect(() => {
     if (authLoading || roleLoading || !user) return;
@@ -137,7 +163,8 @@ const WorkerOnboardingDialog = () => {
         service_areas: [],
         city: null,
         available: true,
-      });
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as never);
       if (workerErr && !/duplicate|unique/i.test(workerErr.message)) {
         throw workerErr;
       }
@@ -233,7 +260,10 @@ const WorkerOnboardingDialog = () => {
                 <Label className={labelClass}>Subcategory *</Label>
                 <select
                   value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
+                  onChange={(e) => {
+                    setSubCategory(e.target.value);
+                    setExpertiseTags([]);
+                  }}
                   disabled={!mainCategory}
                   className={`${selectClass} disabled:cursor-not-allowed disabled:opacity-50`}
                 >
@@ -245,6 +275,71 @@ const WorkerOnboardingDialog = () => {
                   ))}
                 </select>
               </div>
+
+              {subCategory && (
+                <div>
+                  <Label className={labelClass}>
+                    Expertise (pick up to {MAX_EXPERTISE})
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {expertiseOptions.map((tag) => {
+                      const active = expertiseTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleExpertise(tag)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                            active
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-white/15 bg-white/5 text-hero-foreground hover:bg-white/10"
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {expertiseTags.filter((t) => !expertiseOptions.includes(t)).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {expertiseTags
+                        .filter((t) => !expertiseOptions.includes(t))
+                        .map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => toggleExpertise(tag)}
+                            className="rounded-full border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                          >
+                            {tag} ✕
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      value={customExpertise}
+                      onChange={(e) => setCustomExpertise(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomExpertise();
+                        }
+                      }}
+                      placeholder="Add custom expertise…"
+                      className={inputClass}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={addCustomExpertise}
+                      disabled={!customExpertise.trim() || expertiseTags.length >= MAX_EXPERTISE}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <Label className={labelClass}>Years of experience *</Label>

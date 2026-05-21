@@ -1,81 +1,67 @@
-export const MAIN_SERVICE_CATEGORIES = [
-  "Home & Local Services",
-  "Automotive & Transport",
-  "Shops, Food & Daily Needs",
-  "Professional & Business Services",
-  "Health, Education & Community",
-  "Events & Lifestyle",
-] as const;
+// Auto-derived from src/data/nearkonnect-taxonomy.json
+// 23 main categories, 960 sub-categories, top-10 expertise per sub.
+import taxonomy from "./nearkonnect-taxonomy.json";
 
-export type MainServiceCategory = (typeof MAIN_SERVICE_CATEGORIES)[number];
+export interface TaxonomyMain {
+  name: string;
+  icon: string;
+  sort_order: number;
+}
+export interface TaxonomySub {
+  main: string;
+  name: string;
+  icon: string;
+  sort_order: number;
+  expertise: string[];
+}
 
-export const SUBCATEGORIES_BY_MAIN: Record<MainServiceCategory, readonly string[]> = {
-  "Home & Local Services": [
-    "Electrician",
-    "Plumber",
-    "Carpenter",
-    "Painter",
-    "Handyman",
-    "Cleaning",
-    "Pest Control",
-    "CCTV",
-    "Solar",
-  ],
-  "Automotive & Transport": [
-    "Mechanic",
-    "Puncture",
-    "Oil Change",
-    "Wash Service",
-    "Driver",
-    "Taxi",
-    "Rental",
-    "Towing",
-  ],
-  "Shops, Food & Daily Needs": [
-    "Grocery",
-    "Restaurant",
-    "Cafe",
-    "Bakery",
-    "Pharmacy",
-    "Clothing",
-    "Electronics",
-    "Pet Store",
-    "Barber",
-    "Salon",
-  ],
-  "Professional & Business Services": [
-    "Web/App Dev",
-    "Design",
-    "SEO",
-    "Marketing",
-    "IT Support",
-    "Accounting",
-    "Legal Support",
-    "Real Estate",
-  ],
-  "Health, Education & Community": [
-    "Doctor",
-    "Clinic",
-    "Dentist",
-    "Tutor",
-    "Coaching",
-    "Blood Donor",
-    "Ambulance",
-  ],
-  "Events & Lifestyle": [
-    "Event Planner",
-    "Wedding",
-    "Photographer",
-    "Videographer",
-    "DJ",
-    "Makeup",
-  ],
-} as const;
+export const TAXONOMY = taxonomy as { main: TaxonomyMain[]; sub: TaxonomySub[] };
 
-export const isValidMainCategory = (value: string): value is MainServiceCategory =>
-  (MAIN_SERVICE_CATEGORIES as readonly string[]).includes(value);
+export const MAIN_SERVICE_CATEGORIES: readonly string[] = TAXONOMY.main.map((m) => m.name);
+
+export type MainServiceCategory = string;
+
+export const SUBCATEGORIES_BY_MAIN: Record<string, readonly string[]> = (() => {
+  const map: Record<string, string[]> = {};
+  for (const s of TAXONOMY.sub) {
+    if (!map[s.main]) map[s.main] = [];
+    map[s.main].push(s.name);
+  }
+  return map;
+})();
+
+export const EXPERTISE_BY_SUB: Record<string, readonly string[]> = (() => {
+  const map: Record<string, string[]> = {};
+  for (const s of TAXONOMY.sub) {
+    map[`${s.main}::${s.name}`] = s.expertise;
+    // also keyed by sub name only (best-effort; collisions resolved by first occurrence)
+    if (!map[s.name]) map[s.name] = s.expertise;
+  }
+  return map;
+})();
+
+export const MAIN_ICONS: Record<string, string> = Object.fromEntries(
+  TAXONOMY.main.map((m) => [m.name, m.icon]),
+);
+
+export const SUB_ICONS: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  for (const s of TAXONOMY.sub) map[`${s.main}::${s.name}`] = s.icon;
+  return map;
+})();
+
+export const isValidMainCategory = (value: string): boolean =>
+  MAIN_SERVICE_CATEGORIES.includes(value);
 
 export const isValidSubcategoryForMain = (mainCategory: string, subCategory: string) => {
-  if (!isValidMainCategory(mainCategory)) return false;
-  return SUBCATEGORIES_BY_MAIN[mainCategory].includes(subCategory);
+  const subs = SUBCATEGORIES_BY_MAIN[mainCategory];
+  return !!subs && subs.includes(subCategory);
+};
+
+export const getExpertiseForSub = (mainCategory: string, subCategory: string): string[] => {
+  return (
+    (EXPERTISE_BY_SUB[`${mainCategory}::${subCategory}`] as string[] | undefined) ||
+    (EXPERTISE_BY_SUB[subCategory] as string[] | undefined) ||
+    []
+  );
 };

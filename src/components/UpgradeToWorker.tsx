@@ -17,7 +17,7 @@ import { useCategories } from "@/hooks/useCategories";
 const UpgradeToWorker = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,8 +26,34 @@ const UpgradeToWorker = () => {
   const [experience, setExperience] = useState("");
   const [location, setLocation] = useState<Coords | null>(null);
   const [capturingLocation, setCapturingLocation] = useState(false);
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
+  const MAX_EXPERTISE = 5;
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
+  const expertiseOptions = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
+  const toggleTag = (tag: string) => {
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+  const addCustomTag = () => {
+    const t = customTag.trim();
+    if (!t) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`Max ${MAX_EXPERTISE} reached.`);
+      return;
+    }
+    if (!expertiseTags.find((x) => x.toLowerCase() === t.toLowerCase())) {
+      setExpertiseTags([...expertiseTags, t]);
+    }
+    setCustomTag("");
+  };
 
   useEffect(() => {
     if (searchParams.get("upgrade") === "worker") {
@@ -81,7 +107,8 @@ const UpgradeToWorker = () => {
         latitude: location.latitude,
         longitude: location.longitude,
         available: true,
-      });
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as never);
 
       if (workerError) {
         if (workerError.message.includes("duplicate") || workerError.message.includes("unique")) {
@@ -168,7 +195,7 @@ const UpgradeToWorker = () => {
             <select
               className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
+              onChange={(e) => { setSubCategory(e.target.value); setExpertiseTags([]); }}
               disabled={!mainCategory}
             >
               <option value="">Select your profession</option>
@@ -179,6 +206,40 @@ const UpgradeToWorker = () => {
               ))}
             </select>
           </div>
+
+          {subCategory && (
+            <div className="space-y-2">
+              <Label>Expertise (max {MAX_EXPERTISE})</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {expertiseOptions.map((tag) => {
+                  const active = expertiseTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`rounded-full border px-3 py-1 text-xs ${active ? "border-primary bg-primary text-primary-foreground" : "border-input bg-background"}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+              {expertiseTags.filter((t) => !expertiseOptions.includes(t)).length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {expertiseTags.filter((t) => !expertiseOptions.includes(t)).map((tag) => (
+                    <button key={tag} type="button" onClick={() => toggleTag(tag)} className="rounded-full border border-primary bg-primary px-3 py-1 text-xs text-primary-foreground">
+                      {tag} ✕
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input value={customTag} onChange={(e) => setCustomTag(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }} placeholder="Add custom…" />
+                <Button type="button" variant="outline" onClick={addCustomTag} disabled={!customTag.trim() || expertiseTags.length >= MAX_EXPERTISE}>Add</Button>
+              </div>
+            </div>
+          )}
           <div>
             <Label>Years of Experience *</Label>
             <Input type="number" placeholder="e.g. 5" className="mt-1.5" value={experience} onChange={e => setExperience(e.target.value)} />

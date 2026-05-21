@@ -20,14 +20,12 @@ import { isValidPhoneNumber } from "libphonenumber-js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-const EXPERTISE_SUGGESTIONS: Record<string, string[]> = {
-  default: ["Residential", "Commercial", "Emergency", "Maintenance"],
-};
+const MAX_EXPERTISE = 5;
 
 const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { mainCategories, getSubCategories } = useCategories();
+  const { mainCategories, getSubCategories, getExpertise } = useCategories();
   const defaultRole = searchParams.get("role") === "worker" ? "worker" : "customer";
   const detectedCountry = useDetectedCountry();
   const [role, setRole] = useState<"customer" | "worker">(defaultRole);
@@ -55,15 +53,29 @@ const Register = () => {
   const [faceBlob, setFaceBlob] = useState<Blob | null>(null);
 
   const subCategories = mainCategory ? getSubCategories(mainCategory) : [];
-  const expertiseChips = EXPERTISE_SUGGESTIONS[subCategory] || EXPERTISE_SUGGESTIONS.default;
+  const expertiseChips = mainCategory && subCategory ? getExpertise(mainCategory, subCategory) : [];
 
   const toggleTag = (tag: string) => {
-    setExpertiseTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+    setExpertiseTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag);
+      if (prev.length >= MAX_EXPERTISE) {
+        toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
   };
 
   const addCustomTag = () => {
     const t = customTag.trim();
-    if (t && !expertiseTags.includes(t)) setExpertiseTags([...expertiseTags, t]);
+    if (!t) return;
+    if (expertiseTags.length >= MAX_EXPERTISE) {
+      toast.error(`You can select up to ${MAX_EXPERTISE} expertise tags.`);
+      return;
+    }
+    if (!expertiseTags.find((x) => x.toLowerCase() === t.toLowerCase())) {
+      setExpertiseTags([...expertiseTags, t]);
+    }
     setCustomTag("");
   };
 
@@ -311,7 +323,7 @@ const Register = () => {
                   <div className={fieldWrap}>
                     <select
                       value={subCategory}
-                      onChange={(e) => setSubCategory(e.target.value)}
+                      onChange={(e) => { setSubCategory(e.target.value); setExpertiseTags([]); }}
                       disabled={!mainCategory}
                       className={`${fieldInput} appearance-none cursor-pointer disabled:opacity-50`}
                       required
