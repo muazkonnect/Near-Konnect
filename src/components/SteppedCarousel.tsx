@@ -7,6 +7,7 @@ interface Props {
   gapClass?: string;
   className?: string;
   trackClassName?: string;
+  paused?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export default function SteppedCarousel({
   gapClass = "gap-3",
   className = "",
   trackClassName = "",
+  paused = false,
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -31,7 +33,7 @@ export default function SteppedCarousel({
   useEffect(() => {
     if (!items.length) return;
     const id = window.setInterval(() => {
-      if (pausedRef.current) return;
+      if (pausedRef.current || paused) return;
       setIndex((i) => i + 1);
     }, dwellMs + transitionMs);
     return () => window.clearInterval(id);
