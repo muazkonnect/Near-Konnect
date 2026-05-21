@@ -157,14 +157,14 @@ const WorkerOnboardingDialog = () => {
         profession: subCategory,
         main_category: mainCategory,
         sub_category: subCategory,
-        expertise_tags: expertiseTags,
         experience: exp,
         latitude: coords.latitude,
         longitude: coords.longitude,
         service_areas: [],
         city: null,
         available: true,
-      });
+        ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
+      } as never);
       if (workerErr && !/duplicate|unique/i.test(workerErr.message)) {
         throw workerErr;
       }
