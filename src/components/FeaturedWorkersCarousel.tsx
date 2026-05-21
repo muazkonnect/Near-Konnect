@@ -7,6 +7,7 @@ import SteppedCarousel from "@/components/SteppedCarousel";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
+import { useAuth } from "@/contexts/AuthContext";
 
 type FeaturedWorker = {
   id: string;
@@ -34,6 +35,7 @@ const FeaturedWorkersCarousel = ({
   limit = 8,
   className = "",
 }: Props) => {
+  const { user } = useAuth();
   const { coords } = useRealtimeLocation();
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
@@ -54,11 +56,12 @@ const FeaturedWorkersCarousel = ({
     (async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("id, uid, profession, experience, verified, latitude, longitude, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
+        .select("id, uid, user_id, profession, experience, verified, latitude, longitude, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
         .in("id", mergedIds);
       if (error || cancelled) return;
+      const filteredData = (data || []).filter((w: any) => !user?.id || w.user_id !== user.id);
       const priorityById = new Map(featured.map((f) => [f.service_id, f.priority]));
-      const enriched = (data || []).map((w: any) => {
+      const enriched = filteredData.map((w: any) => {
         let distance: number | undefined;
         if (
           coords &&
@@ -88,7 +91,7 @@ const FeaturedWorkersCarousel = ({
       if (currentIds !== newIds) setItems(enriched.slice(0, limit));
     })();
     return () => { cancelled = true; };
-  }, [mergedIds.join(","), limit, coords?.latitude, coords?.longitude]);
+  }, [mergedIds.join(","), limit, coords?.latitude, coords?.longitude, user?.id]);
 
   if (items.length === 0) return null;
 
