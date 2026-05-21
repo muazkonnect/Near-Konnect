@@ -88,6 +88,8 @@ const WorkerDashboard = () => {
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([{ type: "whatsapp", value: "" }]);
+  const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
+  const [customExpertise, setCustomExpertise] = useState("");
   const [saving, setSaving] = useState(false);
   const [settingLocation, setSettingLocation] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
