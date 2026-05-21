@@ -115,12 +115,12 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
         ) : session ? (
           <div className="space-y-3 py-2">
             <div className="rounded-xl border bg-muted/30 p-3 text-sm text-center">
-              Complete the Didit verification in the opened window.
+              Session ready. Open the verification window to scan your ID.
             </div>
-            <Button variant="outline" className="w-full" onClick={() => window.open(session.url, "didit_verify", "width=480,height=720")}>
-              <ExternalLink className="h-4 w-4 mr-2" /> Re-open verification window
+            <Button className="w-full" size="lg" onClick={() => openWindow(session.url)}>
+              <ExternalLink className="h-4 w-4 mr-2" /> Open verification window
             </Button>
-            <Button onClick={completeManually} disabled={loading} className="w-full">
+            <Button variant="outline" onClick={completeManually} disabled={loading} className="w-full">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "I've completed verification"}
             </Button>
             <p className="text-[11px] text-center text-muted-foreground">
@@ -128,6 +128,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
             </p>
           </div>
         ) : (
+
           <div className="space-y-4 py-2">
             {(status === "rejected" || status === "resubmit") && (
               <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-3 text-sm">
