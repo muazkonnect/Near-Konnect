@@ -25,6 +25,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = sanitizePhone(worker.phone);
   const expertise = getExpertise(worker.mainCategory, worker.subCategory, [worker.profession, ...(worker.serviceAreas || [])], 5);
+  const savedMethods: ContactMethod[] = (worker.contactMethods || []).filter((m) => (m.value || "").trim().length > 0);
   const isPremium = worker.verified;
   const dist = worker.distance;
   const hasDist = typeof dist === "number" && dist > 0 && isFinite(dist);
