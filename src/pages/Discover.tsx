@@ -257,8 +257,16 @@ const Discover = () => {
   }), [filteredWithAdvanced, featuredIds, sort]);
 
   const featuredWorkers = useMemo(
-    () => sorted.filter((w) => featuredIds.has(w.id) && w.userId !== ownWorkerUserId).slice(0, 6),
-    [sorted, featuredIds, ownWorkerUserId]
+    () =>
+      workersList
+        .filter(
+          (w) =>
+            featuredIds.has(w.id) &&
+            w.userId !== ownWorkerUserId &&
+            !adminUserIds.has(w.userId)
+        )
+        .slice(0, 6),
+    [workersList, featuredIds, ownWorkerUserId, adminUserIds]
   );
   const allOthers = useMemo(
     () => sorted.filter((w) => !featuredIds.has(w.id)),
