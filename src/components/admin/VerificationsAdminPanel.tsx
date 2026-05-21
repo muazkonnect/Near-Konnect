@@ -256,7 +256,7 @@ export default function VerificationsAdminPanel() {
   const decide = useAdminDecideVerification();
   const { data: settings } = useVerificationSettings();
   const updateSettings = useUpdateVerificationSettings();
-  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean; persona_template_id?: string }>({});
+  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean }>({});
 
   const userIds = useMemo(() => Array.from(new Set((list as any[]).map((v) => v.user_id).filter(Boolean))), [list]);
   const profiles = useWorkerProfiles(userIds);
