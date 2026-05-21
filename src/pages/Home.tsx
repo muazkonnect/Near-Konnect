@@ -59,6 +59,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
+  const [selectedDonor, setSelectedDonor] = useState<BloodDonorPopupData | null>(null);
   const { coords: browsingCoords } = useRealtimeLocation();
   const { data: allWorkers = [], isLoading: workersLoading } = useWorkers();
   const adminFeaturedIds = useFeaturedWorkerIds();
