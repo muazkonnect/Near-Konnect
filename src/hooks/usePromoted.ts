@@ -84,18 +84,19 @@ export function usePromotedTopRated(coords: Coords | null) {
 }
 
 const EXPLORE_PAGE_SIZE = 8;
+const EXPLORE_DEFAULT_RADIUS_KM = 10;
 
 export function usePromotedExploreInfinite(
   coords: Coords | null,
-  opts?: { mainCategory?: string; subCategory?: string; search?: string; radiusKm?: number | null }
+  opts?: { mainCategory?: string; search?: string; radiusKm?: number | null }
 ) {
   const { data: workers = [] } = useWorkers();
   const mainCategory = opts?.mainCategory || null;
-  const subCategory = opts?.subCategory || null;
   const search = opts?.search?.trim() || null;
-  const radiusKm = opts?.radiusKm ?? null;
+  // No category → default 10km. With category → respect explicit radius (or null = campaign boundary only).
+  const radiusKm = mainCategory ? (opts?.radiusKm ?? null) : (opts?.radiusKm ?? EXPLORE_DEFAULT_RADIUS_KM);
   const q = useInfiniteQuery({
-    queryKey: ["promoted_explore", coords?.latitude, coords?.longitude, mainCategory, subCategory, search, radiusKm],
+    queryKey: ["promoted_explore", coords?.latitude, coords?.longitude, mainCategory, search, radiusKm],
     enabled: !!coords,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
@@ -106,7 +107,7 @@ export function usePromotedExploreInfinite(
         _offset: pageParam,
         _exclude_campaign_ids: [],
         _main_category: mainCategory,
-        _sub_category: subCategory,
+        _sub_category: null,
         _search: search,
         _radius_km: radiusKm,
       });
