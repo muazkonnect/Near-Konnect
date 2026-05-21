@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -69,8 +69,6 @@ const toBloodDonorPopupData = (d: DonorWithDistance): BloodDonorPopupData => ({
 });
 
 const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; onOpen: (donor: DonorWithDistance) => void }) => {
-  const pointerStart = useRef({ x: 0, y: 0 });
-  const skipClick = useRef(false);
   const initials = (donor.full_name || "?").split(" ").map((n) => n[0]).join("").slice(0, 2);
   const dist = isFinite(donor.distance) ? `${donor.distance.toFixed(1)} KM` : "Nearby";
 
@@ -79,27 +77,7 @@ const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; o
   return (
     <button
       type="button"
-      onClick={() => {
-        if (skipClick.current) {
-          skipClick.current = false;
-          return;
-        }
-        open();
-      }}
-      onPointerDown={(e) => {
-        pointerStart.current = { x: e.clientX, y: e.clientY };
-        skipClick.current = false;
-      }}
-      onPointerUp={(e) => {
-        const dx = Math.abs(e.clientX - pointerStart.current.x);
-        const dy = Math.abs(e.clientY - pointerStart.current.y);
-        if (dx > 12 || dy > 12) {
-          skipClick.current = true;
-          return;
-        }
-        skipClick.current = true;
-        open();
-      }}
+      onClick={open}
       className="group relative flex min-w-[260px] cursor-pointer select-none flex-col gap-4 overflow-hidden rounded-2xl border border-destructive/20 bg-white p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-destructive/50 hover:shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
     >
       <div className="absolute -right-4 -top-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/5 transition-transform group-hover:scale-110">
