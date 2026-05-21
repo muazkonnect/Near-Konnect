@@ -323,7 +323,7 @@ const Register = () => {
                   <div className={fieldWrap}>
                     <select
                       value={subCategory}
-                      onChange={(e) => setSubCategory(e.target.value)}
+                      onChange={(e) => { setSubCategory(e.target.value); setExpertiseTags([]); }}
                       disabled={!mainCategory}
                       className={`${fieldInput} appearance-none cursor-pointer disabled:opacity-50`}
                       required
