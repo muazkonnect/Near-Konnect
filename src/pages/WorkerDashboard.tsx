@@ -466,7 +466,7 @@ const WorkerDashboard = () => {
             </button>
           </div>
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
-          <FeaturedPurchaseDialog open={featuredOpen} onOpenChange={setFeaturedOpen} workerCategoryId={worker?.category_id ?? null} />
+          <FeaturedPurchaseDialog open={featuredOpen} onOpenChange={setFeaturedOpen} workerCategoryId={(workerData as any)?.category_id ?? null} />
 
 
           <section className="space-y-3">
