@@ -65,7 +65,7 @@ const TabFallback = () => (
 import { Pencil } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -74,6 +74,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] 
   { key: "categories", label: "Categories", icon: Shield },
   { key: "donors", label: "Blood Donors", icon: Heart },
   { key: "featured", label: "Featured", icon: Star },
+  { key: "verifications", label: "Verifications", icon: BadgeCheck },
   { key: "running_ads", label: "Running Ads", icon: Megaphone },
   { key: "sparks", label: "Sparks & Payments", icon: Zap },
   { key: "settings", label: "Settings", icon: Sliders },
