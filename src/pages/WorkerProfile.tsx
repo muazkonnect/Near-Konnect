@@ -11,7 +11,7 @@ import {
   Mail,
   Phone,
   MessageSquare,
-  MessageCircle,
+  MessageSquare,
   Video,
   Lock,
   Sparkles,
