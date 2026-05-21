@@ -56,9 +56,10 @@ const FeaturedWorkersCarousel = ({
     (async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("id, uid, profession, experience, verified, latitude, longitude, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
+        .select("id, uid, user_id, profession, experience, verified, latitude, longitude, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, city)")
         .in("id", mergedIds);
       if (error || cancelled) return;
+      const filteredData = (data || []).filter((w: any) => !user?.id || w.user_id !== user.id);
       const priorityById = new Map(featured.map((f) => [f.service_id, f.priority]));
       const enriched = (data || []).map((w: any) => {
         let distance: number | undefined;
