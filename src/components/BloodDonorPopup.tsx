@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Droplet, BadgeCheck, MapPin, X, HeartPulse, Eye, EyeOff, MessageSquare, Phone } from "lucide-react";
+import { Droplet, BadgeCheck, MapPin, X, HeartPulse, Eye, EyeOff, MessageSquare, Phone, Lock } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import ContactMethodsBar from "@/components/ContactMethodsBar";
 import { parseContactMethods, type ContactMethod } from "@/lib/contactMethods";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export interface BloodDonorPopupData {
   user_id: string;
@@ -17,6 +20,7 @@ export interface BloodDonorPopupData {
   distance?: number;
   phone?: string | null;
   contact_methods?: unknown;
+  show_contact?: boolean;
 }
 
 interface Props {
@@ -28,11 +32,14 @@ interface Props {
 
 const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
   const navigate = useNavigate();
-  const [showContact, setShowContact] = useState(true);
+  const { user } = useAuth();
+  const isOwner = !!user && !!donor && user.id === donor.user_id;
+  const [ownerShowContact, setOwnerShowContact] = useState<boolean>(donor?.show_contact ?? true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (open) setShowContact(true);
-  }, [open, donor?.user_id]);
+    if (open) setOwnerShowContact(donor?.show_contact ?? true);
+  }, [open, donor?.user_id, donor?.show_contact]);
 
   if (!donor) return null;
 
@@ -46,6 +53,11 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
     methods = [{ type: "phone", value: donor.phone }];
   }
 
+  // Visibility rule:
+  // - Owner: sees their own contacts always, and can toggle visibility for others.
+  // - Viewer: only sees contacts if donor enabled show_contact; otherwise in-app message only.
+  const contactVisible = isOwner ? true : (donor.show_contact ?? true);
+
   const requireAuth = (fn: () => void) => () => {
     if (!isAuthed) {
       onOpenChange(false);
@@ -53,6 +65,24 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
       return;
     }
     fn();
+  };
+
+  const toggleOwnerVisibility = async () => {
+    if (!isOwner || saving) return;
+    const next = !ownerShowContact;
+    setOwnerShowContact(next);
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ show_contact: next } as any)
+      .eq("user_id", donor.user_id);
+    setSaving(false);
+    if (error) {
+      setOwnerShowContact(!next);
+      toast({ title: "Couldn't update", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: next ? "Contact visible to others" : "Contact hidden from others" });
+    }
   };
 
   return (
@@ -65,7 +95,6 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
           <DialogDescription>Blood donor profile preview</DialogDescription>
         </VisuallyHidden>
 
-        {/* Decorative red header */}
         <div className="relative bg-gradient-to-br from-destructive/15 via-destructive/5 to-transparent px-6 pt-8 pb-6 md:px-8">
           <button
             onClick={() => onOpenChange(false)}
@@ -114,7 +143,6 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
         </div>
 
         <div className="px-6 pb-6 md:px-8 md:pb-8">
-          {/* Stats */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-destructive/15 bg-destructive/5 p-3 text-center">
               <p className="text-2xl font-extrabold text-destructive">{donor.blood_group || "—"}</p>
@@ -133,51 +161,60 @@ const BloodDonorPopup = ({ donor, open, onOpenChange, isAuthed }: Props) => {
             </div>
           </div>
 
-          {/* Contact section with show/hide toggle */}
           <div className="mt-5 rounded-2xl border border-destructive/15 bg-gradient-to-br from-destructive/[0.04] to-transparent p-4">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-destructive" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-foreground">
-                  Contact Donor
+                  {isOwner ? "Your Contact" : "Contact Donor"}
                 </span>
               </div>
-              <button
-                onClick={() => setShowContact((v) => !v)}
-                className="inline-flex items-center gap-1 rounded-full border border-destructive/20 bg-white px-2.5 py-1 text-[11px] font-semibold text-destructive transition hover:bg-destructive/10"
-              >
-                {showContact ? (
-                  <>
-                    <EyeOff className="h-3 w-3" /> Hide
-                  </>
-                ) : (
-                  <>
-                    <Eye className="h-3 w-3" /> Show
-                  </>
-                )}
-              </button>
+              {isOwner && (
+                <button
+                  onClick={toggleOwnerVisibility}
+                  disabled={saving}
+                  className="inline-flex items-center gap-1 rounded-full border border-destructive/20 bg-white px-2.5 py-1 text-[11px] font-semibold text-destructive transition hover:bg-destructive/10 disabled:opacity-60"
+                >
+                  {ownerShowContact ? (
+                    <><Eye className="h-3 w-3" /> Visible</>
+                  ) : (
+                    <><EyeOff className="h-3 w-3" /> Hidden</>
+                  )}
+                </button>
+              )}
             </div>
 
-            {showContact ? (
+            {contactVisible ? (
               methods.length > 0 ? (
-                <ContactMethodsBar
-                  methods={methods}
-                  variant="card"
-                  className="!gap-2 justify-center [&>a]:!h-10 [&>a]:!w-10 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
-                />
+                <>
+                  <ContactMethodsBar
+                    methods={methods}
+                    variant="card"
+                    className="!gap-2 justify-center [&>a]:!h-10 [&>a]:!w-10 [&>a>svg]:!h-4 [&>a>svg]:!w-4"
+                  />
+                  {isOwner && !ownerShowContact && (
+                    <p className="mt-2 text-center text-[11px] italic text-muted-foreground">
+                      Hidden from other users — use the toggle above to share
+                    </p>
+                  )}
+                </>
               ) : (
                 <p className="text-center text-xs text-muted-foreground">
                   No contact options shared.
                 </p>
               )
             ) : (
-              <p className="text-center text-xs italic text-muted-foreground">
-                Contact details hidden
-              </p>
+              <div className="flex flex-col items-center gap-2 py-1">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-semibold text-destructive">
+                  <Lock className="h-3 w-3" /> Donor keeps contact private
+                </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  Reach out via in-app messaging instead.
+                </p>
+              </div>
             )}
           </div>
 
-          {/* Actions */}
           <div className="mt-5 flex gap-3">
             <Button
               className="flex-1 rounded-xl bg-destructive py-6 font-semibold text-destructive-foreground hover:bg-destructive/90"
