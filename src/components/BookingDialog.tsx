@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -83,7 +83,18 @@ const BookingDialog = ({ workerId, workerName, children }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        onPointerDownOutside={() => setOpen(false)}
+        onInteractOutside={() => setOpen(false)}
+        className="relative sm:max-w-md [&>button.absolute]:hidden"
+      >
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
         <DialogHeader>
           <DialogTitle>Book {workerName}</DialogTitle>
         </DialogHeader>
