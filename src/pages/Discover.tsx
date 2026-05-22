@@ -134,10 +134,9 @@ const Discover = () => {
       list = list.filter((w: any) => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search.trim()) {
-      const words = search.toLowerCase().trim().split(/\s+/);
       list = list.filter((w: any) => {
-        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`.toLowerCase();
-        return words.every((wd) => hay.includes(wd));
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`;
+        return matchesSearch(hay, search);
       });
     }
     return list;
