@@ -156,7 +156,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
       toast.success("Added");
       setNewMainName("");
       setNewSubName({});
-      setNewSubName({});
+
       refresh();
     },
     onError: (e: any) => toast.error(e.message || "Failed"),
