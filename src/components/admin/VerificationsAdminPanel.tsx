@@ -310,8 +310,8 @@ export default function VerificationsAdminPanel() {
             <Label>Sparks cost</Label>
             <Input
               type="number"
-              defaultValue={settings?.sparks_cost ?? 0}
-              onChange={(e) => setEditing((s) => ({ ...s, sparks_cost: Number(e.target.value) }))}
+              value={form.sparks_cost}
+              onChange={(e) => { setDirty(true); setForm((s) => ({ ...s, sparks_cost: Number(e.target.value) })); }}
             />
             <p className="mt-1 text-[10px] text-muted-foreground">Sparks deducted when a worker starts a Didit session.</p>
           </div>
@@ -321,8 +321,8 @@ export default function VerificationsAdminPanel() {
               <p className="text-[10px] text-muted-foreground">Turn the Didit flow on/off for all workers.</p>
             </div>
             <Switch
-              defaultChecked={settings?.enabled ?? false}
-              onCheckedChange={(v) => setEditing((s) => ({ ...s, enabled: v }))}
+              checked={form.enabled}
+              onCheckedChange={(v) => { setDirty(true); setForm((s) => ({ ...s, enabled: v })); }}
             />
           </div>
           <div className="flex items-center justify-between rounded-lg border p-3 sm:col-span-2">
@@ -331,13 +331,13 @@ export default function VerificationsAdminPanel() {
               <p className="text-[10px] text-muted-foreground">If Didit returns <span className="font-semibold">Approved</span>, mark the worker verified automatically. Otherwise it lands here for manual review.</p>
             </div>
             <Switch
-              defaultChecked={settings?.auto_approve_on_persona_pass ?? false}
-              onCheckedChange={(v) => setEditing((s) => ({ ...s, auto_approve_on_persona_pass: v }))}
+              checked={form.auto_approve_on_persona_pass}
+              onCheckedChange={(v) => { setDirty(true); setForm((s) => ({ ...s, auto_approve_on_persona_pass: v })); }}
             />
           </div>
         </div>
         <div className="mt-3 flex justify-end">
-          <Button size="sm" onClick={saveSettings} disabled={updateSettings.isPending || Object.keys(editing).length === 0}>
+          <Button size="sm" onClick={saveSettings} disabled={updateSettings.isPending || !dirty}>
             Save
           </Button>
         </div>
