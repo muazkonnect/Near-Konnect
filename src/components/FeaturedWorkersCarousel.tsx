@@ -113,7 +113,12 @@ const FeaturedWorkersCarousel = ({
         trackClassName="px-5"
         dwellMs={2800}
         items={items.map((w, i) => (
-          <FeaturedWorkerCard key={w.id} worker={w} index={i} />
+          <FeaturedWorkerCard
+            key={w.id}
+            worker={w}
+            index={i}
+            endsAt={nearbyFeaturedMap.get(w.id)?.ends_at ?? null}
+          />
         ))}
       />
     </section>
