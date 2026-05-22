@@ -12,6 +12,7 @@ import {
   useAdminUpsertPricing,
   useAdminDeletePricing,
 } from "@/hooks/useFeatured";
+import { useAppSetting, useUpdateAppSetting } from "@/hooks/useAppSettings";
 
 const sb = supabase as any;
 
@@ -26,6 +27,11 @@ const FeaturedManagementTab = () => {
 
   const [newDays, setNewDays] = useState("7");
   const [newSparks, setNewSparks] = useState("100");
+
+  const defaultRadius = useAppSetting("featured_default_radius_km");
+  const updateSetting = useUpdateAppSetting();
+  const [radiusInput, setRadiusInput] = useState<string>("");
+  const radiusValue = radiusInput === "" ? String(defaultRadius ?? 3) : radiusInput;
 
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ["admin_featured_workers"],
@@ -137,6 +143,39 @@ const FeaturedManagementTab = () => {
 
   return (
     <div className="space-y-5">
+      {/* Default radius */}
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+        <h3 className="mb-2 text-sm font-bold text-hero-foreground">Default Radius (km)</h3>
+        <p className="mb-3 text-xs text-hero-foreground/60">
+          Radius around the worker's location where their featured listing appears. Applied to new promotions only.
+        </p>
+        <div className="flex items-end gap-2">
+          <Input
+            type="number"
+            min={1}
+            className="h-9 w-28"
+            value={radiusValue}
+            onChange={(e) => setRadiusInput(e.target.value)}
+          />
+          <Button
+            size="sm"
+            className="h-9"
+            disabled={updateSetting.isPending || Number(radiusValue) <= 0 || Number(radiusValue) === defaultRadius}
+            onClick={async () => {
+              try {
+                await updateSetting.mutateAsync({ key: "featured_default_radius_km", value: Number(radiusValue) });
+                toast.success("Default radius saved");
+                setRadiusInput("");
+              } catch (e: any) {
+                toast.error(e?.message || "Failed to save");
+              }
+            }}
+          >
+            Save
+          </Button>
+        </div>
+      </div>
+
       {/* Pricing Rules */}
       <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
         <div className="mb-3 flex items-center justify-between">

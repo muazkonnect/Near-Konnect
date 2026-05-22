@@ -7,6 +7,7 @@ export type AppSettingsMap = {
   discover_default_radius_km: number;
   blood_donors_radius_km: number;
   workers_default_radius_km: number;
+  featured_default_radius_km: number;
   announcement_messages: string[];
 };
 
@@ -16,6 +17,7 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
   discover_default_radius_km: 3,
   blood_donors_radius_km: 25,
   workers_default_radius_km: 10,
+  featured_default_radius_km: 3,
   announcement_messages: [
     "Welcome to Near Konnect — your hyperlocal network",
     "Safety protocols for verified providers updated",
