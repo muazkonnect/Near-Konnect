@@ -350,11 +350,6 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                 {isEditingMain ? (
                   <>
                     <Input
-                      className="w-14 sm:w-16 shrink-0 text-center text-lg px-1"
-                      value={editIcon}
-                      onChange={(e) => setEditIcon(e.target.value)}
-                    />
-                    <Input
                       className="flex-1 min-w-0"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -368,7 +363,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                         editName.trim() &&
                         updateCat.mutate({
                           id: main.id,
-                          patch: { name: editName.trim(), icon: editIcon.trim() },
+                          patch: { name: editName.trim(), icon: "" },
                         })
                       }
                     >
@@ -385,10 +380,8 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                   </>
                 ) : (
                   <>
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg">
-                      {main.icon}
-                    </div>
                     <div className="flex-1 min-w-0">
+
                       <p className="font-semibold text-hero-foreground truncate text-sm sm:text-base">
                         {main.name}
                       </p>
