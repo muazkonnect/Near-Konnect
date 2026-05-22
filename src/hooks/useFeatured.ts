@@ -37,11 +37,23 @@ export function usePurchaseFeatured() {
 }
 
 export function useNearbyFeatured(coords: { lat: number; lng: number } | null, categoryId?: string | null) {
+  const qc = useQueryClient();
+  useEffect(() => {
+    const ch = supabase
+      .channel("rt-featured-workers")
+      .on("postgres_changes", { event: "*", schema: "public", table: "featured_workers" }, () => {
+        qc.invalidateQueries({ queryKey: ["nearby_featured"] });
+        qc.invalidateQueries({ queryKey: ["my_featured"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [qc]);
   return useQuery({
     queryKey: ["nearby_featured", coords?.lat, coords?.lng, categoryId ?? null],
     queryFn: () => fetchNearbyFeatured(coords!.lat, coords!.lng, categoryId ?? null),
     enabled: !!coords,
-    staleTime: 60_000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
   });
 }
 
