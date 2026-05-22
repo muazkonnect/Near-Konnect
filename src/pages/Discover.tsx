@@ -110,6 +110,7 @@ const Discover = () => {
   const featuredLookupCoords = userCoords;
   const adminFeaturedIds = useFeaturedWorkerIds();
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(featuredLookupCoords);
+  const nearbyFeaturedMap = useNearbyFeaturedMap(featuredLookupCoords);
   const featuredIds = useMemo(
     () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
     [adminFeaturedIds, paidFeaturedIds]
