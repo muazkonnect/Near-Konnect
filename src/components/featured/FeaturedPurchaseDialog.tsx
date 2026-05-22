@@ -6,6 +6,7 @@ import { Star, Sparkles, Loader2, CheckCircle2, MapPin } from "lucide-react";
 import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
+import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { toast } from "sonner";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; workerCategoryId?: string | null };
