@@ -247,11 +247,11 @@ const WorkerOnboardingDialog = () => {
                     setMainCategory(e.target.value);
                     setSubCategory("");
                   }}
-                  className={selectClass}
+                  className={`${selectClass} [color-scheme:dark]`}
                 >
-                  <option value="" className="text-foreground">Select main category</option>
+                  <option value="" className="bg-popover text-foreground">Select main category</option>
                   {mainCategories.map((cat) => (
-                    <option key={cat.id} value={cat.name} className="text-foreground">
+                    <option key={cat.id} value={cat.name} className="bg-popover text-foreground">
                       {cat.name}
                     </option>
                   ))}
@@ -267,11 +267,11 @@ const WorkerOnboardingDialog = () => {
                     setExpertiseTags([]);
                   }}
                   disabled={!mainCategory}
-                  className={`${selectClass} disabled:cursor-not-allowed disabled:opacity-50`}
+                  className={`${selectClass} [color-scheme:dark] disabled:cursor-not-allowed disabled:opacity-50`}
                 >
-                  <option value="" className="text-foreground">Select subcategory</option>
+                  <option value="" className="bg-popover text-foreground">Select subcategory</option>
                   {subCategories.map((sub) => (
-                    <option key={sub.id} value={sub.name} className="text-foreground">
+                    <option key={sub.id} value={sub.name} className="bg-popover text-foreground">
                       {sub.name}
                     </option>
                   ))}
@@ -387,11 +387,11 @@ const WorkerOnboardingDialog = () => {
                   <select
                     value={bloodGroup}
                     onChange={(e) => setBloodGroup(e.target.value)}
-                    className={selectClass}
+                    className={`${selectClass} [color-scheme:dark]`}
                   >
-                    <option value="" className="text-foreground">Select blood group</option>
+                    <option value="" className="bg-popover text-foreground">Select blood group</option>
                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
-                      <option key={bg} value={bg} className="text-foreground">{bg}</option>
+                      <option key={bg} value={bg} className="bg-popover text-foreground">{bg}</option>
                     ))}
                   </select>
                 </div>

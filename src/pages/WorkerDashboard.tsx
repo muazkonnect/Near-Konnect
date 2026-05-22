@@ -749,11 +749,11 @@ const WorkerDashboard = () => {
                           setSubCategory("");
                           setExpertiseTags([]);
                         }}
-                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground"
+                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground [color-scheme:dark]"
                       >
-                        <option value="" className="text-foreground">Select main category</option>
+                        <option value="" className="bg-popover text-foreground">Select main category</option>
                         {mainCategories.map((cat) => (
-                          <option key={cat.id} value={cat.name} className="text-foreground">{cat.name}</option>
+                          <option key={cat.id} value={cat.name} className="bg-popover text-foreground">{cat.name}</option>
                         ))}
                       </select>
                     </div>
@@ -766,11 +766,11 @@ const WorkerDashboard = () => {
                           setExpertiseTags([]);
                         }}
                         disabled={!mainCategory}
-                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground disabled:opacity-50"
+                        className="mt-1 h-9 w-full rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 px-2 text-xs text-hero-foreground [color-scheme:dark] disabled:opacity-50"
                       >
-                        <option value="" className="text-foreground">Select subcategory</option>
+                        <option value="" className="bg-popover text-foreground">Select subcategory</option>
                         {subCategories.map((sub) => (
-                          <option key={sub.id} value={sub.name} className="text-foreground">{sub.name}</option>
+                          <option key={sub.id} value={sub.name} className="bg-popover text-foreground">{sub.name}</option>
                         ))}
                       </select>
                     </div>

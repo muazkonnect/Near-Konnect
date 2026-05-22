@@ -174,16 +174,16 @@ const UpgradeToWorker = () => {
           <div className="space-y-2">
             <Label>Main Category</Label>
             <select
-              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background [color-scheme:dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               value={mainCategory}
               onChange={(e) => {
                 setMainCategory(e.target.value);
                 setSubCategory("");
               }}
             >
-              <option value="">Select a main category</option>
+              <option value="" className="bg-popover text-foreground">Select a main category</option>
               {mainCategories.map((cat) => (
-                <option key={cat.id} value={cat.name}>
+                <option key={cat.id} value={cat.name} className="bg-popover text-foreground">
                   {cat.name}
                 </option>
               ))}
@@ -193,14 +193,14 @@ const UpgradeToWorker = () => {
           <div className="space-y-2">
             <Label>Profession (Subcategory)</Label>
             <select
-              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background [color-scheme:dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={subCategory}
               onChange={(e) => { setSubCategory(e.target.value); setExpertiseTags([]); }}
               disabled={!mainCategory}
             >
-              <option value="">Select your profession</option>
+              <option value="" className="bg-popover text-foreground">Select your profession</option>
               {subCategories.map((sub) => (
-                <option key={sub.id} value={sub.name}>
+                <option key={sub.id} value={sub.name} className="bg-popover text-foreground">
                   {sub.name}
                 </option>
               ))}
