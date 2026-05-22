@@ -169,6 +169,20 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                 {worker.profession}
               </p>
             )}
+            {(worker.mainCategory || worker.subCategory) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                {worker.mainCategory && (
+                  <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary ring-1 ring-primary/30">
+                    {worker.mainCategory}
+                  </span>
+                )}
+                {worker.subCategory && (
+                  <span className="rounded-md bg-hero-foreground/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/80 ring-1 ring-hero-foreground/10">
+                    {worker.subCategory}
+                  </span>
+                )}
+              </div>
+            )}
             {worker.city && (
               <span className="mt-1 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
                 <MapPin className="h-3 w-3 shrink-0 text-primary/70" />
