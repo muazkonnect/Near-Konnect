@@ -70,21 +70,24 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "blood_requests" | "featured" | "verifications" | "running_ads" | "sparks" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
-const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
-  { key: "overview", label: "Overview", icon: LayoutDashboard },
-  { key: "workers", label: "Workers", icon: Briefcase },
-  { key: "users", label: "Users", icon: Users },
-  { key: "categories", label: "Categories", icon: Shield },
-  { key: "donors", label: "Blood Donors", icon: Heart },
-  { key: "featured", label: "Featured", icon: Star },
-  { key: "verifications", label: "Verifications", icon: BadgeCheck },
-  { key: "running_ads", label: "Running Ads", icon: Megaphone },
-  { key: "sparks", label: "Sparks & Payments", icon: Zap },
-  { key: "settings", label: "Settings", icon: Sliders },
-  { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
-  { key: "location_requests", label: "Location Requests", icon: UserCog },
+const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
+  { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
+  { key: "workers", label: "Workers", icon: Briefcase, group: "Manage" },
+  { key: "users", label: "Users", icon: Users, group: "Manage" },
+  { key: "categories", label: "Categories", icon: Shield, group: "Manage" },
+  { key: "donors", label: "Blood Donors", icon: Heart, group: "Manage" },
+  { key: "blood_requests", label: "Blood Requests", icon: Droplet, group: "Manage" },
+  { key: "featured", label: "Featured", icon: Star, group: "Operations" },
+  { key: "verifications", label: "Verifications", icon: BadgeCheck, group: "Operations" },
+  { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
+  { key: "sparks", label: "Sparks & Payments", icon: Zap, group: "Operations" },
+  { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
+  { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
+  { key: "location_requests", label: "Location Requests", icon: UserCog, group: "Operations" },
+  { key: "audit", label: "Audit & Access", icon: ScrollText, group: "System" },
+  { key: "settings", label: "Settings", icon: Sliders, group: "System" },
 ];
 
 const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void }) => {
