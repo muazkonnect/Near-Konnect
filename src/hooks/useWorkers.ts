@@ -89,6 +89,7 @@ export function useWorkers() {
           shopName: (w as any).shop_name || "",
           userId: w.user_id,
           contactMethods,
+          showContact: profile?.show_contact ?? true,
         };
       });
 
