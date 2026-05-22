@@ -2691,6 +2691,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      push_to_admins: {
+        Args: { _body: string; _tag: string; _title: string; _url: string }
+        Returns: undefined
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

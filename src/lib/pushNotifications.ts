@@ -111,14 +111,16 @@ export async function isSubscribed(): Promise<boolean> {
   return !!sub;
 }
 
-// Native (Capacitor) — opt-in. Plugin is dynamically imported so web builds don't need it.
+// Native (Capacitor) — opt-in. Plugin imported dynamically so the web bundle
+// stays small and works without the native runtime.
+let _nativeListenersBound = false;
+
 export async function registerNativePush(userId: string) {
   try {
     const cap = (window as any).Capacitor;
     if (!cap?.isNativePlatform?.()) return false;
-    const moduleName = "@capacitor/push-notifications";
-    const mod: any = await import(/* @vite-ignore */ moduleName);
-    const PushNotifications = mod.PushNotifications;
+
+    const { PushNotifications } = await import("@capacitor/push-notifications");
 
     const perm = await PushNotifications.checkPermissions();
     if (perm.receive !== "granted") {
@@ -128,25 +130,53 @@ export async function registerNativePush(userId: string) {
 
     await PushNotifications.register();
 
-    PushNotifications.addListener("registration", async (token: { value: string }) => {
-      const platform: "ios" | "android" = cap.getPlatform() === "ios" ? "ios" : "android";
-      await sb.from("push_subscriptions").upsert(
-        {
-          user_id: userId,
-          platform,
-          fcm_token: token.value,
-          user_agent: `Capacitor/${platform}`,
-        },
-        { onConflict: "user_id,fcm_token" }
-      );
-    });
+    if (!_nativeListenersBound) {
+      _nativeListenersBound = true;
 
-    PushNotifications.addListener("registrationError", (err: unknown) => {
-      console.warn("Native push registration error", err);
-    });
+      PushNotifications.addListener("registration", async (token) => {
+        const platform: "ios" | "android" = cap.getPlatform() === "ios" ? "ios" : "android";
+        await sb.from("push_subscriptions").upsert(
+          {
+            user_id: userId,
+            platform,
+            fcm_token: token.value,
+            user_agent: `Capacitor/${platform}`,
+          },
+          { onConflict: "user_id,fcm_token" }
+        );
+      });
+
+      PushNotifications.addListener("registrationError", (err) => {
+        console.warn("Native push registration error", err);
+      });
+
+      // Tap on a notification → navigate to the URL we packed in data
+      PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+        const url = (action.notification?.data as any)?.url as string | undefined;
+        if (url && typeof window !== "undefined") {
+          window.location.assign(url.startsWith("http") ? url : url || "/");
+        }
+      });
+    }
 
     return true;
-  } catch {
+  } catch (e) {
+    console.warn("registerNativePush failed", e);
     return false;
   }
 }
+
+// Clean up the device's FCM token from the DB on logout
+export async function unregisterNativePush(userId: string) {
+  try {
+    const cap = (window as any).Capacitor;
+    if (!cap?.isNativePlatform?.()) return;
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    await PushNotifications.removeAllListeners();
+    _nativeListenersBound = false;
+    await sb.from("push_subscriptions").delete().eq("user_id", userId).not("fcm_token", "is", null);
+  } catch (e) {
+    console.warn("unregisterNativePush failed", e);
+  }
+}
+
