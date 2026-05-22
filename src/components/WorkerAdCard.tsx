@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Star, BadgeCheck, Crown, MapPin, Briefcase, ArrowUpRight, Sparkles, Zap, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Star, BadgeCheck, Crown, MapPin, Briefcase, ArrowUpRight, Sparkles, Zap, ShieldCheck, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
