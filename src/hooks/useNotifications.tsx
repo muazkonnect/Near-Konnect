@@ -5,7 +5,16 @@ import { toast } from "sonner";
 
 export interface AppNotification {
   id: string;
-  type: "message" | "booking" | "blood_request" | "contact_request" | "featured_request";
+  type:
+    | "message"
+    | "booking"
+    | "blood_request"
+    | "contact_request"
+    | "featured_request"
+    | "avatar_reset_request"
+    | "location_change_request"
+    | "payment_request"
+    | "request_update";
   title: string;
   body: string;
   created_at: string;
