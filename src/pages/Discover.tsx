@@ -205,15 +205,9 @@ const Discover = () => {
       list = list.filter(w => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search) {
-      const words = search.toLowerCase().trim().split(/\s+/);
       list = list.filter(w => {
-        const name = w.name.toLowerCase();
-        const prof = w.profession.toLowerCase();
-        const mainCategory = w.mainCategory.toLowerCase();
-        const subCategory = w.subCategory.toLowerCase();
-        return words.every(
-          word => name.includes(word) || prof.includes(word) || mainCategory.includes(word) || subCategory.includes(word)
-        );
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`;
+        return matchesSearch(hay, search);
       });
     }
     if (userCoords) {
