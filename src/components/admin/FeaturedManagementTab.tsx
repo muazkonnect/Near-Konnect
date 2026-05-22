@@ -12,6 +12,7 @@ import {
   useAdminUpsertPricing,
   useAdminDeletePricing,
 } from "@/hooks/useFeatured";
+import { useAppSetting, useUpdateAppSetting } from "@/hooks/useAppSettings";
 
 const sb = supabase as any;
 
