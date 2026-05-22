@@ -1161,7 +1161,13 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           usdt_address: string | null
+          usdt_address_bep: string | null
+          usdt_address_erc: string | null
+          usdt_address_trc: string | null
           usdt_network: string | null
+          usdt_qr_bep_url: string | null
+          usdt_qr_erc_url: string | null
+          usdt_qr_trc_url: string | null
           usdt_qr_url: string | null
         }
         Insert: {
@@ -1176,7 +1182,13 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           usdt_address?: string | null
+          usdt_address_bep?: string | null
+          usdt_address_erc?: string | null
+          usdt_address_trc?: string | null
           usdt_network?: string | null
+          usdt_qr_bep_url?: string | null
+          usdt_qr_erc_url?: string | null
+          usdt_qr_trc_url?: string | null
           usdt_qr_url?: string | null
         }
         Update: {
@@ -1191,7 +1203,13 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           usdt_address?: string | null
+          usdt_address_bep?: string | null
+          usdt_address_erc?: string | null
+          usdt_address_trc?: string | null
           usdt_network?: string | null
+          usdt_qr_bep_url?: string | null
+          usdt_qr_erc_url?: string | null
+          usdt_qr_trc_url?: string | null
           usdt_qr_url?: string | null
         }
         Relationships: []
@@ -1857,6 +1875,7 @@ export type Database = {
       }
       workers: {
         Row: {
+          auto_disabled: boolean
           available: boolean
           banner_url: string | null
           city: string | null
@@ -1866,6 +1885,7 @@ export type Database = {
           experience: number
           expertise_tags: string[]
           id: string
+          last_active_at: string
           latitude: number | null
           longitude: number | null
           main_category: string | null
@@ -1880,6 +1900,7 @@ export type Database = {
           workplace_location: unknown
         }
         Insert: {
+          auto_disabled?: boolean
           available?: boolean
           banner_url?: string | null
           city?: string | null
@@ -1889,6 +1910,7 @@ export type Database = {
           experience?: number
           expertise_tags?: string[]
           id?: string
+          last_active_at?: string
           latitude?: number | null
           longitude?: number | null
           main_category?: string | null
@@ -1903,6 +1925,7 @@ export type Database = {
           workplace_location?: unknown
         }
         Update: {
+          auto_disabled?: boolean
           available?: boolean
           banner_url?: string | null
           city?: string | null
@@ -1912,6 +1935,7 @@ export type Database = {
           experience?: number
           expertise_tags?: string[]
           id?: string
+          last_active_at?: string
           latitude?: number | null
           longitude?: number | null
           main_category?: string | null
@@ -2175,6 +2199,7 @@ export type Database = {
         Args: { p_id: string; p_note?: string }
         Returns: string
       }
+      auto_disable_inactive_workers: { Args: never; Returns: number }
       calc_sparks_cost: {
         Args: {
           _ad_type: Database["public"]["Enums"]["ad_type"]
@@ -2221,6 +2246,7 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      delete_my_account: { Args: never; Returns: undefined }
       disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
         | {
@@ -3351,6 +3377,7 @@ export type Database = {
         }
         Returns: string
       }
+      worker_mark_active: { Args: never; Returns: undefined }
     }
     Enums: {
       ad_placement: "homepage" | "explore"

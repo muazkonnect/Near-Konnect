@@ -17,6 +17,12 @@ import {
 } from "@/services/walletService";
 
 type Method = "easypaisa" | "jazzcash" | "usdt";
+type UsdtNet = "trc" | "bep" | "erc";
+const NET_META: Record<UsdtNet, { label: string; full: string; addrKey: keyof any; qrKey: keyof any }> = {
+  trc: { label: "TRC20", full: "Tron (TRC20)", addrKey: "usdt_address_trc", qrKey: "usdt_qr_trc_url" },
+  bep: { label: "BEP20", full: "BNB Smart Chain (BEP20)", addrKey: "usdt_address_bep", qrKey: "usdt_qr_bep_url" },
+  erc: { label: "ERC20", full: "Ethereum (ERC20)", addrKey: "usdt_address_erc", qrKey: "usdt_qr_erc_url" },
+};
 
 const CopyBtn = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false);
@@ -76,12 +82,15 @@ const PaymentCheckoutPage = () => {
 
   const defaultMethod: Method = region === "pk" ? "easypaisa" : "usdt";
   const [method, setMethod] = useState<Method>(defaultMethod);
+  const [usdtNet, setUsdtNet] = useState<UsdtNet>("trc");
   const [reference, setReference] = useState("");
   const [proof, setProof] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const price = method === "usdt" ? priceUsdt : pricePkr;
   const currency = method === "usdt" ? "USDT" : "PKR";
+  const usdtAddr = (settings as any)?.[NET_META[usdtNet].addrKey as string] || (usdtNet === "trc" ? settings?.usdt_address : "") || "";
+  const usdtQr = (settings as any)?.[NET_META[usdtNet].qrKey as string] || (usdtNet === "trc" ? settings?.usdt_qr_url : "") || "";
 
   const submit = async () => {
     if (!user) return;
@@ -101,7 +110,7 @@ const PaymentCheckoutPage = () => {
         priceAmount: price,
         currency,
         method,
-        reference: reference.trim(),
+        reference: reference.trim() + (method === "usdt" ? ` (${NET_META[usdtNet].label})` : ""),
         proofUrl: proofPath,
       });
       toast.success("Payment submitted for review");
@@ -152,8 +161,26 @@ const PaymentCheckoutPage = () => {
             {settings?.jazzcash_qr_url && <img src={settings.jazzcash_qr_url} alt="JazzCash QR" className="mx-auto h-40 w-40 rounded-xl border border-hero-foreground/10 object-contain bg-white p-2" />}
           </TabsContent>
           <TabsContent value="usdt" className="mt-4 space-y-3">
-            <InfoRow label={`USDT Address (${settings?.usdt_network || "TRC20"})`} value={settings?.usdt_address || ""} />
-            {settings?.usdt_qr_url && <img src={settings.usdt_qr_url} alt="USDT QR" className="mx-auto h-40 w-40 rounded-xl border border-hero-foreground/10 object-contain bg-white p-2" />}
+            <div className="flex gap-2">
+              {(["trc", "bep", "erc"] as UsdtNet[]).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setUsdtNet(n)}
+                  className={`flex-1 rounded-lg border px-2 py-2 text-xs font-semibold transition ${
+                    usdtNet === n
+                      ? "border-primary bg-primary/15 text-primary"
+                      : "border-hero-foreground/10 text-hero-foreground/70 hover:border-hero-foreground/30"
+                  }`}
+                >
+                  {NET_META[n].label}
+                  <div className="text-[10px] font-normal opacity-70">{NET_META[n].full.split("(")[0].trim()}</div>
+                </button>
+              ))}
+            </div>
+            <InfoRow label={`USDT Address (${NET_META[usdtNet].full})`} value={usdtAddr} />
+            {usdtQr && <img src={usdtQr} alt={`USDT ${NET_META[usdtNet].label} QR`} className="mx-auto h-40 w-40 rounded-xl border border-hero-foreground/10 object-contain bg-white p-2" />}
+            {!usdtAddr && <p className="text-center text-xs text-amber-500">No {NET_META[usdtNet].label} address configured yet. Try another network.</p>}
           </TabsContent>
         </Tabs>
 
