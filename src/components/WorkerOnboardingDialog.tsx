@@ -164,7 +164,7 @@ const WorkerOnboardingDialog = () => {
         service_areas: [],
         city: null,
         available: true,
-        shop_name: shopName.trim() || null,
+        
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as never);
       if (workerErr && !/duplicate|unique/i.test(workerErr.message)) {
