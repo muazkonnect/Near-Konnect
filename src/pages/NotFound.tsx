@@ -59,38 +59,38 @@ const NotFound = () => {
 
           {/* Actions */}
           <div className="mt-12 grid w-full max-w-md grid-cols-1 gap-3 md:grid-cols-2">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-95"
             >
               <Home className="h-4 w-4" />
               Go Home
-            </a>
-            <a
-              href="/discover"
+            </Link>
+            <Link
+              to="/discover"
               className="flex items-center justify-center gap-2 rounded-xl border border-border/40 bg-transparent px-8 py-4 text-sm font-medium text-muted-foreground backdrop-blur-sm transition-all hover:bg-muted/30 hover:text-primary active:scale-95"
             >
               <Compass className="h-4 w-4" />
               Search Nearby
-            </a>
+            </Link>
           </div>
 
           {/* Sub-links */}
           <div className="mt-20 flex flex-wrap items-center justify-center gap-6">
-            <a href="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
+            <Link to="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
               <HelpCircle className="h-3 w-3" />
               Contact Support
-            </a>
+            </Link>
             <div className="h-1 w-1 rounded-full bg-border" />
-            <a href="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
+            <Link to="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
               <Info className="h-3 w-3" />
               Status Page
-            </a>
+            </Link>
             <div className="h-1 w-1 rounded-full bg-border" />
-            <a href="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
+            <Link to="/" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/60 transition-colors hover:text-foreground">
               <Network className="h-3 w-3" />
               Community Hub
-            </a>
+            </Link>
           </div>
         </section>
 
