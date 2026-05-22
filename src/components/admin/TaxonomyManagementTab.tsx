@@ -288,16 +288,6 @@ export default function TaxonomyManagementTab({ categories }: Props) {
 
       {/* Add new main */}
       <div className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:p-4 sm:flex-row sm:items-end">
-        <div className="w-20 sm:w-24 space-y-1.5 shrink-0">
-          <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
-            Icon
-          </label>
-          <Input
-            placeholder="🏠"
-            value={newMainIcon}
-            onChange={(e) => setNewMainIcon(e.target.value)}
-          />
-        </div>
         <div className="flex-1 space-y-1.5 min-w-0">
           <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
             New main category
@@ -313,7 +303,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
             newMainName.trim() &&
             addCat.mutate({
               name: newMainName.trim(),
-              icon: newMainIcon.trim() || "🔧",
+              icon: "",
               parent_id: null,
             })
           }
@@ -328,6 +318,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
           Add Main
         </Button>
       </div>
+
 
       {/* Mains list */}
       <div className="space-y-3">
