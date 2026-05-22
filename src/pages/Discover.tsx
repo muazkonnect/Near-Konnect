@@ -426,7 +426,7 @@ const Discover = () => {
                   <div key={`feat-${w.id}-${i}`} className="shrink-0">
                     <FeaturedWorkerCard
                       index={i}
-                      endsAt={nearbyFeaturedMap.get(w.id)?.ends_at ?? null}
+                      
                       worker={{
                         id: w.id,
                         uid: (w as any).uid,
