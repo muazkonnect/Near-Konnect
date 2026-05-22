@@ -175,7 +175,7 @@ const Register = () => {
         metadata.sub_category = subCategory;
         metadata.profession = subCategory;
         metadata.experience = experience.trim();
-        if (shopName.trim()) metadata.shop_name = shopName.trim();
+        
         metadata.expertise_tags = JSON.stringify(expertiseTags);
         if (serviceLocation) {
           metadata.latitude = String(serviceLocation.latitude);
