@@ -243,13 +243,6 @@ const WorkerProfile = () => {
             <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
-          {worker.shopName && (
-            <div className="absolute bottom-3 left-4 right-4">
-              <span className="block text-right text-[20px] font-black uppercase tracking-tight text-hero-foreground [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
-                {worker.shopName}
-              </span>
-            </div>
-          )}
         </div>
 
         <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
@@ -268,9 +261,15 @@ const WorkerProfile = () => {
               )}
             </div>
 
-            <div className="mt-3 text-center">
+            {worker.shopName && (
+              <h1 className="text-[20px] font-black uppercase tracking-tight text-hero-foreground">
+                {worker.shopName}
+              </h1>
+            )}
+
+            <div className="mt-1 text-center">
               <div className="flex items-center justify-center gap-2 flex-nowrap">
-                <h2 className="font-sora text-2xl font-semibold tracking-tight leading-none">{worker.name}</h2>
+                <h2 className="text-[20px] font-black uppercase tracking-tight text-hero-foreground">{worker.name}</h2>
                 {worker.verified && (
                   <span
                     title="Premium Worker"
