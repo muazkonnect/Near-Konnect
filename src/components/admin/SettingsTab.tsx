@@ -1,29 +1,20 @@
 import { useState } from "react";
 import { lazy, Suspense } from "react";
-import {
-  Settings, Sliders, UserCircle, Package, CreditCard, Shield, BadgeCheck, Star, Megaphone,
-} from "lucide-react";
+import { Settings, Sliders, UserCircle, Shield, Megaphone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
 import AnnouncementBarTab from "./AnnouncementBarTab";
-import { PackagesPanel, PaymentSettingsPanel } from "./SparksAdminTab";
-import VerificationsAdminPanel from "./VerificationsAdminPanel";
-import FeaturedAdminPanel from "./FeaturedAdminPanel";
 
 const CategoriesManagementTab = lazy(() => import("./TaxonomyManagementTab"));
 
-type Sub = "defaults" | "announcement" | "packages" | "payments" | "verifications" | "featured" | "categories" | "account";
+type Sub = "defaults" | "announcement" | "categories" | "account";
 
 const SUBS: { key: Sub; label: string; icon: typeof Sliders }[] = [
   { key: "defaults", label: "App Defaults", icon: Sliders },
   { key: "announcement", label: "Announcement Bar", icon: Megaphone },
-  { key: "packages", label: "Packages & Discounts", icon: Package },
-  { key: "payments", label: "Payment Methods", icon: CreditCard },
-  { key: "verifications", label: "Verifications", icon: BadgeCheck },
-  { key: "featured", label: "Featured Workers", icon: Star },
   { key: "categories", label: "Categories", icon: Shield },
   { key: "account", label: "Account", icon: UserCircle },
 ];
@@ -83,10 +74,6 @@ export default function SettingsTab() {
       <div>
         {sub === "defaults" && <AppDefaultsTab />}
         {sub === "announcement" && <AnnouncementBarTab />}
-        {sub === "packages" && <PackagesPanel />}
-        {sub === "payments" && <PaymentSettingsPanel />}
-        {sub === "verifications" && <VerificationsAdminPanel />}
-        {sub === "featured" && <FeaturedAdminPanel />}
         {sub === "categories" && <CategoriesSection />}
         {sub === "account" && <AdminProfileTab />}
       </div>
