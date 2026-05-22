@@ -8,19 +8,20 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  
   Heart,
   Droplet,
   Megaphone,
   Star,
   LayoutDashboard,
-  
   LogOut,
   Crown,
   UserCog,
   Home,
   Zap,
   Sliders,
+  Search,
+  Bell,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,9 +52,12 @@ const SettingsTab = lazy(() => import("@/components/admin/SettingsTab"));
 const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyManagementTab"));
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
-const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedAdminPanel"));
+const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 const VerificationsAdminPanel = lazy(() => import("@/components/admin/VerificationsAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
+const BloodRequestsTab = lazy(() => import("@/components/admin/BloodRequestsTab"));
+const AuditLogTab = lazy(() => import("@/components/admin/AuditLogTab"));
+const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
