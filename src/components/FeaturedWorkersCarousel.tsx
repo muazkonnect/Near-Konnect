@@ -117,7 +117,7 @@ const FeaturedWorkersCarousel = ({
             key={w.id}
             worker={w}
             index={i}
-            endsAt={nearbyFeaturedMap.get(w.id)?.ends_at ?? null}
+            
           />
         ))}
       />

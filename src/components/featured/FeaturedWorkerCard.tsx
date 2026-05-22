@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef } from "react";
 import { Star, BadgeCheck, MapPin, Briefcase, ArrowRight, Zap, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -21,33 +21,14 @@ type Props = {
     distance?: number;
   };
   index?: number;
-  endsAt?: string | null;
 };
 
-export default function FeaturedWorkerCard({ worker, index = 0, endsAt }: Props) {
+export default function FeaturedWorkerCard({ worker, index = 0 }: Props) {
   const { user } = useAuth();
   const [popupOpen, setPopupOpen] = useState(false);
   const lastClosedRef = useRef(0);
   const initials = worker.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const distLabel = worker.distance && worker.distance > 0 && isFinite(worker.distance) ? `${worker.distance} km` : null;
-
-  const [nowTick, setNowTick] = useState(Date.now());
-  useEffect(() => {
-    if (!endsAt) return;
-    const id = setInterval(() => setNowTick(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, [endsAt]);
-  const remaining = useMemo(() => {
-    if (!endsAt) return null;
-    const ms = new Date(endsAt).getTime() - nowTick;
-    if (ms <= 0) return "ended";
-    const d = Math.floor(ms / 86400000);
-    const h = Math.floor((ms % 86400000) / 3600000);
-    const m = Math.floor((ms % 3600000) / 60000);
-    if (d > 0) return `${d}d ${h}h`;
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
-  }, [endsAt, nowTick]);
 
   const handleOpen = () => {
     if (popupOpen) return;
@@ -143,11 +124,6 @@ export default function FeaturedWorkerCard({ worker, index = 0, endsAt }: Props)
                   <Star className="h-3 w-3 fill-current" />
                   <span className="text-[10px] font-extrabold leading-none">Premium</span>
                 </span>
-                {remaining && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-hero-foreground/5 px-2 py-0.5 text-hero-foreground/80 ring-1 ring-hero-foreground/10">
-                    <span className="text-[10px] font-bold leading-none">{remaining === "ended" ? "ended" : `${remaining} left`}</span>
-                  </span>
-                )}
               </div>
 
               {/* CTAs */}
