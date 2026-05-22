@@ -48,6 +48,7 @@ import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromot
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
+import { matchesSearch } from "@/lib/searchKeywords";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
