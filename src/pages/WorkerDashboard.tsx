@@ -472,16 +472,20 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
-              { label: "Boost Ad", icon: Zap, onClick: () => navigate("/worker/ads") },
+              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
+              { label: "Boost Ad", icon: Zap, onClick: () => {
+                if (!workerData?.verified) { toast.error("Get verified to create ads."); setVerifyOpen(true); return; }
+                navigate("/worker/ads");
+              }, gated: !workerData?.verified },
             ].map((a) => (
               <button
                 key={a.label}
                 onClick={a.onClick}
-                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 text-center transition hover:border-primary/30 hover:bg-hero-foreground/10"
+                className="group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 text-center transition hover:border-primary/30 hover:bg-hero-foreground/10"
               >
                 <a.icon className="h-5 w-5 text-hero-foreground/70 transition group-hover:text-primary" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-hero-foreground/70">{a.label}</span>
+                {a.gated && <ShieldCheck className="absolute right-2 top-2 h-3.5 w-3.5 text-amber-400" />}
               </button>
             ))}
           </div>
