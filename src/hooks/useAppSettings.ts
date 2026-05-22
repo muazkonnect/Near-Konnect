@@ -57,6 +57,13 @@ export function useUpdateAppSetting() {
         .upsert({ key, value, updated_by: user?.id ?? null, updated_at: new Date().toISOString() }, { onConflict: "key" });
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_settings"] }),
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["app_settings"] });
+      if (vars.key === "featured_default_radius_km") {
+        qc.invalidateQueries({ queryKey: ["nearby_featured"] });
+        qc.invalidateQueries({ queryKey: ["my_featured"] });
+        qc.invalidateQueries({ queryKey: ["admin_featured_workers"] });
+      }
+    },
   });
 }
