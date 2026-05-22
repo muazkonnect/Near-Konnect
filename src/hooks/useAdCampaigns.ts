@@ -57,8 +57,9 @@ export function useMyCampaigns() {
 }
 
 export function useCampaignAnalytics(campaignIds: string[]) {
+  const sortedKey = [...campaignIds].sort().join(",");
   return useQuery({
-    queryKey: ["campaign_analytics", campaignIds.sort().join(",")],
+    queryKey: ["campaign_analytics", sortedKey],
     queryFn: async () => {
       const empty = {
         byId: {} as Record<string, { impressions: number; clicks: number }>,

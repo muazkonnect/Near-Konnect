@@ -20,7 +20,10 @@ const PaymentStatusPage = () => {
   const { data: req, isLoading } = useQuery({
     queryKey: ["payment_request", id],
     queryFn: () => fetchPaymentRequest(id),
-    refetchInterval: 5_000,
+    refetchInterval: (query) => {
+      const status = (query.state.data as any)?.status;
+      return status && status !== "pending" ? false : 5_000;
+    },
   });
   const [proofUrl, setProofUrl] = useState<string | null>(null);
 
