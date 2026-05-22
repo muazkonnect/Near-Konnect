@@ -30,7 +30,7 @@ const WorkerOnboardingDialog = () => {
   const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
-  const [shopName, setShopName] = useState("");
+  
   const [coords, setCoords] = useState<Coords | null>(null);
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
@@ -164,7 +164,7 @@ const WorkerOnboardingDialog = () => {
         service_areas: [],
         city: null,
         available: true,
-        shop_name: shopName.trim() || null,
+        
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as never);
       if (workerErr && !/duplicate|unique/i.test(workerErr.message)) {
@@ -355,17 +355,6 @@ const WorkerOnboardingDialog = () => {
                 />
               </div>
 
-              <div>
-                <Label className={labelClass}>Shop / Business name (optional)</Label>
-                <Input
-                  type="text"
-                  maxLength={24}
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="e.g. Ali Carpentry"
-                  className={inputClass}
-                />
-              </div>
 
               <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-sm font-semibold">Pin your service location *</p>

@@ -98,7 +98,7 @@ const WorkerDashboard = () => {
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
-  const [shopName, setShopName] = useState("");
+  
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
   const [bloodShowContact, setBloodShowContact] = useState(true);
@@ -150,7 +150,7 @@ const WorkerDashboard = () => {
       setSubCategory(workerData.sub_category || "");
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
-      setShopName((workerData as any).shop_name || "");
+      
       setAvailable(workerData.available);
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
@@ -247,7 +247,7 @@ const WorkerDashboard = () => {
         experience: parseInt(experience) || 0,
         description,
         available,
-        shop_name: shopName.trim() || null,
+        
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as any)
       .eq("id", workerData.id);
@@ -714,24 +714,6 @@ const WorkerDashboard = () => {
                 {/* Portfolio */}
                 <PortfolioManager workerId={workerData.id} verified={!!workerData.verified} />
 
-                {/* Shop name */}
-                <div className="space-y-2 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Shop / Business</p>
-                  <div>
-                    <Label className="text-[11px] text-hero-foreground/70">Shop name (optional)</Label>
-                    <Input
-                      value={shopName}
-                      onChange={(e) => setShopName(e.target.value)}
-                      maxLength={24}
-                      placeholder="e.g. Ali Carpentry"
-                      className="mt-1 h-9 bg-hero-foreground/5 text-xs"
-                    />
-                    <p className="mt-1 flex items-center justify-between text-[10px] text-hero-foreground/50">
-                      <span>Shown on your banner across cards and profile.</span>
-                      <span className="tabular-nums">{shopName.length}/24</span>
-                    </p>
-                  </div>
-                </div>
 
                 {/* Service category & expertise */}
                 <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">

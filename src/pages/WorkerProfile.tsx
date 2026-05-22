@@ -186,7 +186,7 @@ const WorkerProfile = () => {
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
     bannerUrl: (dbWorker as any).banner_url || "",
-    shopName: (dbWorker as any).shop_name || "",
+    
   };
 
   const isOwner = !!user && user.id === worker.userId;
@@ -260,12 +260,6 @@ const WorkerProfile = () => {
                 </div>
               )}
             </div>
-
-            {worker.shopName && (
-              <h1 className="text-[15px] font-bold uppercase tracking-wide text-primary">
-                {worker.shopName}
-              </h1>
-            )}
 
             <div className="mt-0.5 text-center">
               <div className="flex items-center justify-center gap-2 flex-nowrap">

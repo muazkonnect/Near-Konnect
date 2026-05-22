@@ -99,13 +99,6 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               </span>
             </div>
 
-            {(worker as any).shopName && (
-              <div className="absolute bottom-2 left-[140px] right-4">
-                <span className="block text-[18px] font-black uppercase tracking-tight text-hero-foreground [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
-                  {(worker as any).shopName}
-                </span>
-              </div>
-            )}
           </div>
 
           {/* AVATAR + RATING */}
