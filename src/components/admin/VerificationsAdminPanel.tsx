@@ -279,8 +279,8 @@ export default function VerificationsAdminPanel() {
 
   const saveSettings = async () => {
     try {
-      await updateSettings.mutateAsync(editing);
-      setEditing({});
+      await updateSettings.mutateAsync(form);
+      setDirty(false);
       toast.success("Verification settings saved");
     } catch (e: any) {
       toast.error(e?.message || "Save failed");
