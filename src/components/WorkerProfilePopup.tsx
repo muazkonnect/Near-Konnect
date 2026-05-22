@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Briefcase, ShieldCheck, Crown, Sparkles, Zap } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Briefcase, ShieldCheck, Crown, Sparkles, Zap, MessageCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
