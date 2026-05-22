@@ -156,7 +156,7 @@ const init = async (userId: string) => {
   initializing = false;
 
   if (channel) supabase.removeChannel(channel);
-  const ch = supabase.channel(`notif-${userId}`);
+  const ch = supabase.channel(`notif-${userId}-${Math.random().toString(36).slice(2)}`);
 
   ch.on(
     "postgres_changes",

@@ -107,7 +107,7 @@ export default function UsersManagementTab({ profiles, userRoles }: Props) {
   // Realtime: refresh whenever user_roles changes anywhere (any admin/session)
   useEffect(() => {
     const channel = supabase
-      .channel("admin-user-roles-realtime")
+      .channel(`admin-user-roles-realtime-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "user_roles" },
