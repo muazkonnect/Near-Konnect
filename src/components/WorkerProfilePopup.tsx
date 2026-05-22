@@ -116,36 +116,37 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                 </div>
               )}
             </div>
-            <div className="mb-1 flex flex-1 items-center justify-end">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-500/5 px-2.5 py-1 ring-1 ring-amber-500/20 backdrop-blur">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span className="text-[13px] font-extrabold leading-none text-hero-foreground">
+            {/* Identity column on right of avatar */}
+            <div className="min-w-0 flex-1 pt-[60px]">
+              <div className="flex items-start gap-1.5">
+                <h3 className="line-clamp-2 text-[22px] font-black leading-[1.05] tracking-tight text-hero-foreground">
+                  {worker.name}
+                </h3>
+                {worker.verified && <BadgeCheck className="mt-1 h-4 w-4 shrink-0 fill-primary text-hero" />}
+              </div>
+              {worker.profession && (
+                <p className="mt-0.5 truncate text-[12px] font-bold uppercase tracking-wide text-primary">
+                  {worker.profession}
+                </p>
+              )}
+              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-500/5 px-2 py-0.5 ring-1 ring-amber-500/20 backdrop-blur">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <span className="text-[11.5px] font-extrabold leading-none text-hero-foreground">
                   {worker.rating?.toFixed(1) || "—"}
                 </span>
                 {worker.reviewCount > 0 && (
-                  <span className="text-[9.5px] font-semibold leading-none text-hero-muted">
-                    {worker.reviewCount} {worker.reviewCount === 1 ? "review" : "reviews"}
+                  <span className="text-[9px] font-semibold leading-none text-hero-muted">
+                    ({worker.reviewCount})
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* NAME */}
-          <div className="relative mt-3 px-4">
-            <div className="flex items-start gap-1.5">
-              <h3 className="line-clamp-2 text-[24px] font-black leading-[1.05] tracking-tight text-hero-foreground">
-                {worker.name}
-              </h3>
-              {worker.verified && <BadgeCheck className="mt-1.5 h-5 w-5 shrink-0 fill-primary text-hero" />}
-            </div>
-            {worker.profession && (
-              <p className="mt-1 truncate text-[13px] font-bold uppercase tracking-wide text-primary">
-                {worker.profession}
-              </p>
-            )}
+          {/* LOCATION */}
+          <div className="relative mt-2.5 px-4">
             {worker.city && (
-              <span className="mt-1 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
+              <span className="inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
                 <MapPin className="h-3 w-3 shrink-0 text-primary/70" />
                 <span className="truncate">{worker.city}</span>
               </span>
