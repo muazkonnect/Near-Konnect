@@ -254,7 +254,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, blood_show_contact: bloodShowContact } as any)
+      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, show_contact: showContact, blood_show_contact: bloodShowContact } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
