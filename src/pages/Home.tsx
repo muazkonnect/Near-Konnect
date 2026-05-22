@@ -88,7 +88,7 @@ const BloodDonorCarouselCard = ({ donor, onOpen }: { donor: DonorWithDistance; o
         <AvatarFallback className="bg-destructive/10 text-sm font-bold text-destructive">{initials}</AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-base font-bold leading-tight text-foreground">{donor.full_name || "Donor"}</p>
+        <p className="truncate text-base font-bold leading-tight text-destructive">{donor.full_name || "Donor"}</p>
         <p className="mt-0.5 flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
           <BadgeCheck className="h-3 w-3 text-destructive" /> Verified
         </p>
