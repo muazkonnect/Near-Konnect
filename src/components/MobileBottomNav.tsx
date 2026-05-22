@@ -61,8 +61,8 @@ const MobileBottomNav = () => {
               className={`tap-feedback group relative flex items-center justify-center rounded-full transition-all duration-300 ${
                 active
                   ? accent
-                    ? "bg-destructive text-destructive-foreground gap-1.5 px-3.5 py-2 shadow-[0_8px_20px_-6px_hsl(var(--destructive)/0.6)]"
-                    : "bg-primary text-primary-foreground gap-1.5 px-3.5 py-2 shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.6)]"
+                    ? "bg-destructive text-destructive-foreground h-11 w-11 shadow-[0_8px_20px_-6px_hsl(var(--destructive)/0.6)]"
+                    : "bg-primary text-primary-foreground h-11 w-11 shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.6)]"
                   : "h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-muted/60"
               }`}
             >
@@ -80,11 +80,6 @@ const MobileBottomNav = () => {
                   </span>
                 )}
               </span>
-              {active && (
-                <span className="text-[12px] font-bold leading-none animate-in fade-in slide-in-from-left-1 duration-200">
-                  {item.label}
-                </span>
-              )}
             </Link>
           );
         })}
