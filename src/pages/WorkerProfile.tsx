@@ -244,8 +244,8 @@ const WorkerProfile = () => {
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
           {worker.shopName && (
-            <div className="absolute bottom-3 right-4 max-w-[70%]">
-              <span className="block truncate rounded-md bg-hero/65 px-3 py-1 text-[18px] font-black uppercase tracking-tight text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+            <div className="absolute bottom-3 left-4 right-4">
+              <span className="block text-right text-[20px] font-black uppercase tracking-tight text-hero-foreground [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
                 {worker.shopName}
               </span>
             </div>

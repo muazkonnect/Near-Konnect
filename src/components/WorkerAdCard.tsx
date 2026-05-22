@@ -123,8 +123,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {worker.shopName && (
-              <div className="absolute bottom-2 left-[124px] right-3 flex">
-                <span className="max-w-full truncate rounded-md bg-hero/65 px-2.5 py-1 text-[17px] font-black uppercase tracking-tight text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+              <div className="absolute bottom-2 left-[124px] right-3">
+                <span className="block text-[17px] font-black uppercase tracking-tight text-hero-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] [text-shadow:0_1px_3px_rgba(0,0,0,0.7)]">
                   {worker.shopName}
                 </span>
               </div>
