@@ -61,19 +61,28 @@ buildTypes {
 Open `android/` in Android Studio → **Build → Generate Signed App Bundle** → Release.
 Output: `android/app/release/app-release.aab`
 
-### 5. Google OAuth redirect URIs
-In your Google Cloud Console OAuth client, add:
-- `https://nearkonnectapp.lovable.app`
-- Your custom domain (if any)
-- `com.nearkonnect.app://` (for native deep-link callback)
+### 5. Deploy the web app to Vercel (for Privacy Policy URL)
+Play Store requires a **public HTTPS** Privacy Policy URL. The app already ships a `/privacy` route — host it on Vercel at `www.nearkonnect.com`:
+
+1. Push the repo to GitHub.
+2. In Vercel: **New Project → Import** your GitHub repo.
+   - Framework preset: **Vite**
+   - Build command: `npm run build`
+   - Output directory: `dist`
+3. Add env vars (copy from local `.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`.
+4. Deploy. Then **Settings → Domains → Add** `www.nearkonnect.com` and follow Vercel's DNS instructions (CNAME `cname.vercel-dns.com`).
+5. `vercel.json` (already in repo) handles SPA deep-link rewrites so `/privacy` works on refresh.
+6. Verify `https://www.nearkonnect.com/privacy` loads before submitting to Play Store.
+7. In Lovable Cloud → Auth → URL Configuration, add `https://www.nearkonnect.com` as Site URL / additional redirect so email magic-links work from the production domain.
 
 ### 6. Play Console
 - [ ] App name, short/full description, screenshots (phone + 7" tablet), feature graphic (1024×500)
-- [ ] **Privacy Policy URL** (mandatory — auth + FCM + location)
+- [ ] **Privacy Policy URL:** `https://www.nearkonnect.com/privacy`
 - [ ] Data safety form: declare email, name, phone, location, photos, FCM token
 - [ ] Content rating questionnaire
 - [ ] Target audience & content
 - [ ] Upload AAB to Internal testing → promote to Production
+
 
 ### 7. Smoke test on a real device
 - [ ] Login (email + Google)
