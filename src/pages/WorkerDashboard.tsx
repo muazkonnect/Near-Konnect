@@ -98,7 +98,7 @@ const WorkerDashboard = () => {
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
-  const [shopName, setShopName] = useState("");
+  
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
   const [bloodShowContact, setBloodShowContact] = useState(true);
