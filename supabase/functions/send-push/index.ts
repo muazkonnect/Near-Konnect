@@ -126,6 +126,31 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    // Admin gate: broadcast / multi-user sends require an authenticated admin caller
+    if (broadcast || Array.isArray(user_ids)) {
+      const authHeader = req.headers.get("Authorization") || "";
+      const jwt = authHeader.replace(/^Bearer\s+/i, "");
+      if (!jwt) {
+        return new Response(JSON.stringify({ error: "Admin auth required" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: u } = await supabase.auth.getUser(jwt);
+      const uid = u?.user?.id;
+      if (!uid) {
+        return new Response(JSON.stringify({ error: "Invalid session" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Admin only" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     let query = supabase.from("push_subscriptions").select("*");
     if (broadcast) {
       // no filter — all subscriptions
