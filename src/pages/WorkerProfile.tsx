@@ -261,12 +261,6 @@ const WorkerProfile = () => {
               )}
             </div>
 
-            {worker.shopName && (
-              <h1 className="text-[15px] font-bold uppercase tracking-wide text-primary">
-                {worker.shopName}
-              </h1>
-            )}
-
             <div className="mt-0.5 text-center">
               <div className="flex items-center justify-center gap-2 flex-nowrap">
                 <h2 className="text-[22px] font-black tracking-tight text-hero-foreground">{worker.name}</h2>
