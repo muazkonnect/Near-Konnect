@@ -122,6 +122,13 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </span>
             </div>
 
+            {worker.shopName && (
+              <div className="absolute bottom-2 left-[124px] right-3 flex">
+                <span className="max-w-full truncate rounded-md bg-hero/55 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+                  {worker.shopName}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* ====== AVATAR + IDENTITY ====== */}
