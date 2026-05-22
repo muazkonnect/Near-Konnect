@@ -88,9 +88,23 @@ const WorkerDashboard = () => {
       (f) => f.status === "active" && new Date(f.ends_at).getTime() > now && new Date(f.starts_at).getTime() <= now
     ) || null;
   }, [myFeatured]);
-  const premiumDaysLeft = activePremium
-    ? Math.max(0, Math.ceil((new Date(activePremium.ends_at).getTime() - Date.now()) / 86400000))
-    : 0;
+  const [nowTick, setNowTick] = useState(Date.now());
+  useEffect(() => {
+    if (!activePremium) return;
+    const id = setInterval(() => setNowTick(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, [activePremium]);
+  const premiumRemaining = useMemo(() => {
+    if (!activePremium) return "";
+    const ms = new Date(activePremium.ends_at).getTime() - nowTick;
+    if (ms <= 0) return "expired";
+    const d = Math.floor(ms / 86400000);
+    const h = Math.floor((ms % 86400000) / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    if (d > 0) return `${d}d ${h}h left`;
+    if (h > 0) return `${h}h ${m}m left`;
+    return `${m}m left`;
+  }, [activePremium, nowTick]);
   const queryClient = useQueryClient();
 
   const [profession, setProfession] = useState("");
