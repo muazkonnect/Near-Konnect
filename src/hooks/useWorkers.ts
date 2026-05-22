@@ -35,7 +35,7 @@ export function useWorkers() {
         .from("workers")
         .select(`
           *,
-          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods),
+          profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact),
           reviews(rating)
         `)
         .order("experience", { ascending: false });
@@ -89,6 +89,7 @@ export function useWorkers() {
           shopName: (w as any).shop_name || "",
           userId: w.user_id,
           contactMethods,
+          showContact: profile?.show_contact ?? true,
         };
       });
 

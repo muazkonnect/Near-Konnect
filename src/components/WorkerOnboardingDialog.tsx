@@ -359,10 +359,10 @@ const WorkerOnboardingDialog = () => {
                 <Label className={labelClass}>Shop / Business name (optional)</Label>
                 <Input
                   type="text"
-                  maxLength={60}
+                  maxLength={24}
                   value={shopName}
                   onChange={(e) => setShopName(e.target.value)}
-                  placeholder="e.g. Ali Carpentry Works"
+                  placeholder="e.g. Ali Carpentry"
                   className={inputClass}
                 />
               </div>

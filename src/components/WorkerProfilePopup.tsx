@@ -219,32 +219,40 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
 
           {/* ACTIONS */}
           <div className="relative mt-4 space-y-3 border-t border-hero-foreground/8 bg-gradient-to-b from-hero-foreground/[0.02] to-transparent px-4 py-4">
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-11 flex-1 rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10"
-                onClick={requireAuth(() => { if (phone) window.location.href = `tel:${phone}`; })}
-              >
-                <Phone className="mr-1.5 h-4 w-4" /> Call
-              </Button>
-              <Button
-                size="sm"
-                className="h-11 flex-[1.4] rounded-xl bg-gradient-to-r from-primary to-primary/85 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                onClick={requireAuth(() => navigate(`/messages?worker=${worker.id}`))}
-              >
-                <Zap className="mr-1 h-4 w-4 fill-current" /> Message
-              </Button>
-            </div>
+            {(worker as any).showContact !== false ? (
+              <>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-11 flex-1 rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10"
+                    onClick={requireAuth(() => { if (phone) window.location.href = `tel:${phone}`; })}
+                  >
+                    <Phone className="mr-1.5 h-4 w-4" /> Call
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-11 flex-[1.4] rounded-xl bg-gradient-to-r from-primary to-primary/85 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                    onClick={requireAuth(() => navigate(`/messages?worker=${worker.id}`))}
+                  >
+                    <Zap className="mr-1 h-4 w-4 fill-current" /> Message
+                  </Button>
+                </div>
 
-            {savedMethods.length > 0 && (
-              <div className="flex justify-center">
-                <ContactMethodsBar
-                  methods={savedMethods}
-                  variant="hero"
-                  onChannelClick={isAuthed ? undefined : (() => { onOpenChange(false); navigate("/login"); })}
-                />
-              </div>
+                {savedMethods.length > 0 && (
+                  <div className="flex justify-center">
+                    <ContactMethodsBar
+                      methods={savedMethods}
+                      variant="hero"
+                      onChannelClick={isAuthed ? undefined : (() => { onOpenChange(false); navigate("/login"); })}
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] px-3 py-2.5 text-center text-[11px] font-semibold text-hero-muted">
+                Contact info is hidden by this provider.
+              </p>
             )}
 
             <div className="text-center">

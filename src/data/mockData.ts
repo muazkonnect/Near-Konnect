@@ -24,6 +24,7 @@ export interface Worker {
   shopName?: string;
   userId?: string;
   contactMethods?: ContactMethod[];
+  showContact?: boolean;
 }
 
 export interface ServiceCategory {

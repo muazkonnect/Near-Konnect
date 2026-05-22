@@ -264,32 +264,34 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             <Button
               variant="ghost"
               size="sm"
-              className="h-11 flex-1 rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] px-2 text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10"
+              className={`h-11 ${worker.showContact === false ? "flex-1" : "flex-1"} rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] px-2 text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10`}
               onClick={() => { fireClick(); setPopupOpen(true); }}
             >
               Profile
               <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
             </Button>
-            {isAuthed ? (
-              <Button
-                size="sm"
-                className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                onClick={() => { fireClick(); setPopupOpen(true); }}
-              >
-                <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
-              </Button>
-            ) : (
-              <AuthRequiredDialog
-                title="Log in to contact"
-                description="Sign in or create an account to contact this provider."
-              >
+            {worker.showContact !== false && (
+              isAuthed ? (
                 <Button
                   size="sm"
                   className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                  onClick={() => { fireClick(); setPopupOpen(true); }}
                 >
                   <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
                 </Button>
-              </AuthRequiredDialog>
+              ) : (
+                <AuthRequiredDialog
+                  title="Log in to contact"
+                  description="Sign in or create an account to contact this provider."
+                >
+                  <Button
+                    size="sm"
+                    className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                  >
+                    <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
+                  </Button>
+                </AuthRequiredDialog>
+              )
             )}
           </div>
         </article>

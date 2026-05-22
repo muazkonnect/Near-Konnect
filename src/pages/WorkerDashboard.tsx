@@ -254,7 +254,7 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, blood_show_contact: bloodShowContact } as any)
+      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, show_contact: showContact, blood_show_contact: bloodShowContact } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -722,11 +722,14 @@ const WorkerDashboard = () => {
                     <Input
                       value={shopName}
                       onChange={(e) => setShopName(e.target.value)}
-                      maxLength={60}
-                      placeholder="e.g. Ali Carpentry Works"
+                      maxLength={24}
+                      placeholder="e.g. Ali Carpentry"
                       className="mt-1 h-9 bg-hero-foreground/5 text-xs"
                     />
-                    <p className="mt-1 text-[10px] text-hero-foreground/50">Shown on your banner across cards and profile.</p>
+                    <p className="mt-1 flex items-center justify-between text-[10px] text-hero-foreground/50">
+                      <span>Shown on your banner across cards and profile.</span>
+                      <span className="tabular-nums">{shopName.length}/24</span>
+                    </p>
                   </div>
                 </div>
 
@@ -857,6 +860,14 @@ const WorkerDashboard = () => {
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Contact apps</p>
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-3.5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-hero-foreground">Show contact on worker listings</p>
+                    <p className="text-[10px] text-hero-foreground/60">Controls Call / Message and contact icons on cards, popups and profile.</p>
+                  </div>
+                  <Switch checked={showContact} onCheckedChange={setShowContact} aria-label="Show contact on worker listings" />
                 </div>
 
                 <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-3.5">
