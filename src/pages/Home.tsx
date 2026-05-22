@@ -300,7 +300,7 @@ const Home = () => {
           </form>
 
           <div className="relative mt-4 flex flex-wrap justify-center gap-2">
-            {MAIN_SERVICE_CATEGORIES.slice(1, 4).map((cat) => (
+            {MAIN_SERVICE_CATEGORIES.slice(0, 3).map((cat) => (
               <button
                 key={cat}
                 onClick={() => submitSearch(cat)}
