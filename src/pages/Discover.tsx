@@ -46,7 +46,7 @@ import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useNearbyFeaturedWorkerIds, useMyFeatured } from "@/hooks/useFeatured";
+import { useNearbyFeaturedWorkerIds, useNearbyFeaturedMap, useMyFeatured } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import { matchesSearch } from "@/lib/searchKeywords";
 
@@ -110,6 +110,7 @@ const Discover = () => {
   const featuredLookupCoords = userCoords;
   const adminFeaturedIds = useFeaturedWorkerIds();
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(featuredLookupCoords);
+  const nearbyFeaturedMap = useNearbyFeaturedMap(featuredLookupCoords);
   const featuredIds = useMemo(
     () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
     [adminFeaturedIds, paidFeaturedIds]
@@ -425,6 +426,7 @@ const Discover = () => {
                   <div key={`feat-${w.id}-${i}`} className="shrink-0">
                     <FeaturedWorkerCard
                       index={i}
+                      endsAt={nearbyFeaturedMap.get(w.id)?.ends_at ?? null}
                       worker={{
                         id: w.id,
                         uid: (w as any).uid,
@@ -434,7 +436,9 @@ const Discover = () => {
                         verified: w.verified,
                         avatar_url: w.profilePhoto || null,
                         city: w.city || null,
-                        distance: w.distance,
+                        distance: nearbyFeaturedMap.get(w.id)?.distance_km != null
+                          ? parseFloat(nearbyFeaturedMap.get(w.id)!.distance_km.toFixed(1))
+                          : w.distance,
                       }}
                     />
                   </div>

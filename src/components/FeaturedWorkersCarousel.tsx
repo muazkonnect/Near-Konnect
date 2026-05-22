@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices } from "@/hooks/useSponsored";
-import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import { useNearbyFeaturedWorkerIds, useNearbyFeaturedMap } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
@@ -40,6 +40,7 @@ const FeaturedWorkersCarousel = ({
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(coords ?? null);
+  const nearbyFeaturedMap = useNearbyFeaturedMap(coords ?? null);
   const [items, setItems] = useState<FeaturedWorker[]>([]);
 
   const mergedIds = useMemo(() => {
@@ -112,7 +113,12 @@ const FeaturedWorkersCarousel = ({
         trackClassName="px-5"
         dwellMs={2800}
         items={items.map((w, i) => (
-          <FeaturedWorkerCard key={w.id} worker={w} index={i} />
+          <FeaturedWorkerCard
+            key={w.id}
+            worker={w}
+            index={i}
+            endsAt={nearbyFeaturedMap.get(w.id)?.ends_at ?? null}
+          />
         ))}
       />
     </section>
