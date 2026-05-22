@@ -300,15 +300,22 @@ const Home = () => {
           </form>
 
           <div className="relative mt-4 flex flex-wrap justify-center gap-2">
-            {QUICK_CHIPS.map((chip) => (
+            {MAIN_SERVICE_CATEGORIES.slice(1, 4).map((cat) => (
               <button
-                key={chip}
-                onClick={() => submitSearch(chip)}
-                className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+                key={cat}
+                onClick={() => submitSearch(cat)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
               >
-                {chip}
+                <span className="text-xs">{MAIN_ICONS[cat]}</span>
+                {cat}
               </button>
             ))}
+            <Link
+              to="/discover"
+              className="inline-flex items-center gap-0.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-semibold text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+            >
+              More <ChevronRight className="h-3 w-3" />
+            </Link>
           </div>
         </motion.section>
 
