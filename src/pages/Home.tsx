@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
+  ChevronRight,
   Droplet,
   HeartPulse,
   MapPin,
@@ -36,6 +37,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
+import { MAIN_SERVICE_CATEGORIES, MAIN_ICONS } from "@/data/serviceCategories";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -43,8 +45,6 @@ const fadeUp = {
   hidden: { opacity: 0, y: 14 },
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35 } }),
 };
-
-const QUICK_CHIPS = ["Carpenter", "Electrician", "Plumber", "Painter", "Gardener"];
 
 type DonorRow = {
   user_id: string;
@@ -300,15 +300,22 @@ const Home = () => {
           </form>
 
           <div className="relative mt-4 flex flex-wrap justify-center gap-2">
-            {QUICK_CHIPS.map((chip) => (
+            {MAIN_SERVICE_CATEGORIES.slice(0, 3).map((cat) => (
               <button
-                key={chip}
-                onClick={() => submitSearch(chip)}
-                className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+                key={cat}
+                onClick={() => submitSearch(cat)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
               >
-                {chip}
+                <span className="text-xs">{MAIN_ICONS[cat]}</span>
+                {cat}
               </button>
             ))}
+            <Link
+              to="/discover"
+              className="inline-flex items-center gap-0.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-semibold text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+            >
+              More <ChevronRight className="h-3 w-3" />
+            </Link>
           </div>
         </motion.section>
 
