@@ -862,6 +862,14 @@ const WorkerDashboard = () => {
                   <ContactMethodsEditor value={contactMethods} onChange={setContactMethods} requireWhatsapp variant="hero" />
                 </div>
 
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-3.5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-hero-foreground">Show contact on worker listings</p>
+                    <p className="text-[10px] text-hero-foreground/60">Controls Call / Message and contact icons on cards, popups and profile.</p>
+                  </div>
+                  <Switch checked={showContact} onCheckedChange={setShowContact} aria-label="Show contact on worker listings" />
+                </div>
+
                 <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-3.5">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-hero-foreground">Show contact on Blood Konnect</p>
