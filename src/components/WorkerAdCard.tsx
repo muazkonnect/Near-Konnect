@@ -123,17 +123,10 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </span>
             </div>
 
-            {worker.shopName && (
-              <div className="absolute bottom-2 left-[124px] right-3">
-                <span className="block text-[17px] font-black uppercase tracking-tight text-hero-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] [text-shadow:0_1px_3px_rgba(0,0,0,0.7)]">
-                  {worker.shopName}
-                </span>
-              </div>
-            )}
           </div>
 
-          {/* ====== AVATAR + IDENTITY ====== */}
-          <div className="relative -mt-[52px] flex items-end gap-3 px-3.5">
+          {/* ====== AVATAR + IDENTITY (name on right of avatar) ====== */}
+          <div className="relative -mt-[52px] flex items-start gap-3 px-3.5">
             <div className="relative shrink-0">
               <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-xl">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
@@ -148,37 +141,37 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               )}
             </div>
 
-            {/* Rating chip floats right of avatar */}
-            <div className="mb-1 flex flex-1 items-center justify-end">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-500/5 px-2.5 py-1 shadow-md ring-1 ring-amber-500/20 backdrop-blur">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span className="text-[13px] font-extrabold leading-none text-hero-foreground">
+            {/* Identity column on right of avatar */}
+            <div className="min-w-0 flex-1 pt-[54px]">
+              <div className="flex items-start gap-1.5">
+                <h3 className="line-clamp-2 bg-gradient-to-br from-hero-foreground via-hero-foreground to-hero-foreground/70 bg-clip-text text-[20px] font-black leading-[1.05] tracking-tight text-transparent">
+                  {worker.name}
+                </h3>
+                {worker.verified && <BadgeCheck className="mt-1 h-4 w-4 shrink-0 fill-primary text-hero" />}
+              </div>
+              {worker.profession && (
+                <p className="mt-0.5 truncate text-[12px] font-bold uppercase tracking-wide text-primary">
+                  {worker.profession}
+                </p>
+              )}
+              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-500/5 px-2 py-0.5 ring-1 ring-amber-500/20 backdrop-blur">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <span className="text-[11.5px] font-extrabold leading-none text-hero-foreground">
                   {worker.rating?.toFixed(1) || "—"}
                 </span>
                 {worker.reviewCount > 0 && (
-                  <span className="text-[9.5px] font-semibold leading-none text-hero-muted">
-                    {worker.reviewCount} {worker.reviewCount === 1 ? "review" : "reviews"}
+                  <span className="text-[9px] font-semibold leading-none text-hero-muted">
+                    ({worker.reviewCount})
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* ====== NAME & PROFESSION ====== */}
+          {/* ====== CATEGORY + LOCATION ====== */}
           <div className="relative mt-2.5 px-3.5">
-            <div className="flex items-start gap-1.5">
-              <h3 className="line-clamp-2 bg-gradient-to-br from-hero-foreground via-hero-foreground to-hero-foreground/70 bg-clip-text text-[24px] font-black leading-[1.02] tracking-tight text-transparent">
-                {worker.name}
-              </h3>
-              {worker.verified && <BadgeCheck className="mt-1.5 h-5 w-5 shrink-0 fill-primary text-hero" />}
-            </div>
-            {worker.profession && (
-              <p className="mt-1 truncate text-[13px] font-bold uppercase tracking-wide text-primary">
-                {worker.profession}
-              </p>
-            )}
             {(worker.mainCategory || worker.subCategory) && (
-              <div className="mt-1.5 flex flex-wrap items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 {worker.mainCategory && (
                   <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary ring-1 ring-primary/30">
                     {worker.mainCategory}
@@ -192,12 +185,13 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </div>
             )}
             {worker.city && (
-              <span className="mt-1 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
+              <span className="mt-1.5 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
                 <MapPin className="h-3 w-3 shrink-0 text-primary/70" />
                 <span className="truncate">{worker.city}</span>
               </span>
             )}
           </div>
+
 
           {/* Description */}
           {worker.description && (
