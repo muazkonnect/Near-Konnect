@@ -55,7 +55,6 @@ const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
 const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 const VerificationsAdminPanel = lazy(() => import("@/components/admin/VerificationsAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
-const BloodRequestsTab = lazy(() => import("@/components/admin/BloodRequestsTab"));
 const AuditLogTab = lazy(() => import("@/components/admin/AuditLogTab"));
 const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
@@ -70,7 +69,7 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "blood_requests" | "featured" | "verifications" | "running_ads" | "sparks" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
@@ -78,7 +77,6 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "users", label: "Users", icon: Users, group: "Manage" },
   { key: "categories", label: "Categories", icon: Shield, group: "Manage" },
   { key: "donors", label: "Blood Donors", icon: Heart, group: "Manage" },
-  { key: "blood_requests", label: "Blood Requests", icon: Droplet, group: "Manage" },
   { key: "featured", label: "Featured", icon: Star, group: "Operations" },
   { key: "verifications", label: "Verifications", icon: BadgeCheck, group: "Operations" },
   { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
@@ -786,8 +784,21 @@ const AdminDashboard = () => {
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
 
-
             {tab === "location_requests" && <LocationChangeRequestsTab />}
+
+            {/* PUSH BROADCAST */}
+            {tab === "push" && (
+              <Suspense fallback={<TabFallback />}>
+                <PushBroadcastTab />
+              </Suspense>
+            )}
+
+            {/* AUDIT & ACCESS */}
+            {tab === "audit" && (
+              <Suspense fallback={<TabFallback />}>
+                <AuditLogTab />
+              </Suspense>
+            )}
           </main>
         </div>
       </div>

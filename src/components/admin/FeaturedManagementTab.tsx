@@ -4,392 +4,224 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import {
-  Star,
-  Plus,
-  Trash2,
-  Eye,
-  MousePointerClick,
-  Calendar as CalendarIcon,
-  CheckCircle,
-  XCircle,
-  Clock,
-  TrendingUp,
-} from "lucide-react";
+import { Star, Search, Zap, Clock, XCircle, Loader2 } from "lucide-react";
+import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
+
+const sb = supabase as any;
 
 const FeaturedManagementTab = () => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  const [selectedWorkerId, setSelectedWorkerId] = useState("");
-  const [priority, setPriority] = useState("100");
-  const [startsAt, setStartsAt] = useState<Date | undefined>(undefined);
-  const [endsAt, setEndsAt] = useState<Date | undefined>(undefined);
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"active" | "all">("active");
 
-  const { data: workers = [] } = useQuery({
-    queryKey: ["admin_workers"],
+  const { data: featured = [], isLoading } = useQuery({
+    queryKey: ["admin_featured_workers"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("workers")
-        .select("id, profession, user_id, profiles!workers_user_id_fkey_profiles(full_name)")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: featuredServices = [] } = useQuery({
-    queryKey: ["admin_featured_services"],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("featured_services")
-        .select("id, service_id, owner_user_id, priority, is_active, starts_at, ends_at, created_at")
-        .order("priority", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: requests = [] } = useQuery({
-    queryKey: ["admin_featured_requests"],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("featured_requests")
-        .select("id, worker_id, user_id, message, status, created_at, decided_at")
-        .order("created_at", { ascending: false });
+      const { data, error } = await sb
+        .from("featured_workers")
+        .select("id, worker_id, user_id, category_id, duration_days, sparks_cost, starts_at, ends_at, status, radius_km, created_at")
+        .order("created_at", { ascending: false })
+        .limit(500);
       if (error) throw error;
       return data as any[];
     },
+    refetchInterval: 30_000,
   });
 
-  const { data: stats = [] } = useQuery({
-    queryKey: ["admin_featured_stats"],
+  const workerIds = useMemo(() => Array.from(new Set(featured.map((f) => f.worker_id))), [featured]);
+  const userIds = useMemo(() => Array.from(new Set(featured.map((f) => f.user_id))), [featured]);
+
+  const { data: workers = {} } = useQuery({
+    queryKey: ["admin_featured_workers_map", workerIds.sort().join(",")],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).rpc("get_featured_stats", { _days: 30 });
-      if (error) throw error;
-      return data as { worker_id: string; impressions: number; clicks: number; ctr: number }[];
+      if (!workerIds.length) return {};
+      const { data } = await sb.from("workers").select("id, profession, main_category").in("id", workerIds);
+      const m: Record<string, any> = {};
+      (data || []).forEach((w: any) => (m[w.id] = w));
+      return m;
     },
+    enabled: workerIds.length > 0,
   });
 
-  const statsMap = useMemo(
-    () => new Map(stats.map((s) => [s.worker_id, s])),
-    [stats]
-  );
-  const featuredMap = useMemo(
-    () => new Map((featuredServices as any[]).map((f) => [f.service_id, f])),
-    [featuredServices]
-  );
-  const workerMap = useMemo(
-    () => new Map((workers as any[]).map((w) => [w.id, w])),
-    [workers]
-  );
-
-  const totalImpressions = stats.reduce((s, r) => s + Number(r.impressions || 0), 0);
-  const totalClicks = stats.reduce((s, r) => s + Number(r.clicks || 0), 0);
-  const overallCtr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100).toFixed(2) : "0.00";
-
-  const addFeatured = async (workerIdParam?: string, priorityParam?: number) => {
-    const wId = workerIdParam || selectedWorkerId;
-    if (!wId) return toast.error("Select a worker first");
-    const worker = workerMap.get(wId);
-    const { error } = await (supabase as any).from("featured_services").insert({
-      service_id: wId,
-      owner_user_id: worker?.user_id || null,
-      priority: priorityParam ?? (Number(priority) || 100),
-      is_active: true,
-      starts_at: startsAt ? startsAt.toISOString() : null,
-      ends_at: endsAt ? endsAt.toISOString() : null,
-      created_by: user?.id || null,
-    });
-    if (error) return toast.error("Failed to add featured listing");
-    toast.success("Featured listing created");
-    setSelectedWorkerId("");
-    setStartsAt(undefined);
-    setEndsAt(undefined);
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
-    queryClient.invalidateQueries({ queryKey: ["featured_services_active"] });
-  };
-
-  const removeFeatured = async (id: string) => {
-    const { error } = await (supabase as any).from("featured_services").delete().eq("id", id);
-    if (error) return toast.error("Failed to remove");
-    toast.success("Removed from featured");
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
-    queryClient.invalidateQueries({ queryKey: ["featured_services_active"] });
-  };
-
-  const toggleActive = async (id: string, active: boolean) => {
-    const { error } = await (supabase as any)
-      .from("featured_services")
-      .update({ is_active: !active })
-      .eq("id", id);
-    if (error) return toast.error("Failed to toggle");
-    toast.success(!active ? "Enabled" : "Disabled");
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
-    queryClient.invalidateQueries({ queryKey: ["featured_services_active"] });
-  };
-
-  const updatePriority = async (id: string, newPriority: number) => {
-    const { error } = await (supabase as any)
-      .from("featured_services")
-      .update({ priority: newPriority })
-      .eq("id", id);
-    if (error) return toast.error("Failed to update priority");
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
-    queryClient.invalidateQueries({ queryKey: ["featured_services_active"] });
-  };
-
-  const approveRequest = async (req: any) => {
-    // Add to featured_services and mark approved
-    const worker = workerMap.get(req.worker_id);
-    const { error: insertError } = await (supabase as any).from("featured_services").insert({
-      service_id: req.worker_id,
-      owner_user_id: worker?.user_id || req.user_id,
-      priority: 100,
-      is_active: true,
-      created_by: user?.id || null,
-    });
-    if (insertError && !String(insertError.message || "").includes("duplicate")) {
-      return toast.error("Failed to feature worker");
-    }
-    const { error } = await (supabase as any)
-      .from("featured_requests")
-      .update({ status: "approved", decided_at: new Date().toISOString(), decided_by: user?.id })
-      .eq("id", req.id);
-    if (error) return toast.error("Failed to update request");
-    toast.success("Request approved & worker featured");
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_requests"] });
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_services"] });
-    queryClient.invalidateQueries({ queryKey: ["featured_services_active"] });
-  };
-
-  const denyRequest = async (req: any) => {
-    const { error } = await (supabase as any)
-      .from("featured_requests")
-      .update({ status: "denied", decided_at: new Date().toISOString(), decided_by: user?.id })
-      .eq("id", req.id);
-    if (error) return toast.error("Failed to update request");
-    toast.success("Request denied");
-    queryClient.invalidateQueries({ queryKey: ["admin_featured_requests"] });
-  };
-
-  const filteredFeatured = (featuredServices as any[]).filter((f) => {
-    if (!search) return true;
-    const w = workerMap.get(f.service_id);
-    return (
-      (w?.profiles?.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
-      (w?.profession || "").toLowerCase().includes(search.toLowerCase())
-    );
+  const { data: profiles = {} } = useQuery({
+    queryKey: ["admin_featured_profiles", userIds.sort().join(",")],
+    queryFn: async () => {
+      if (!userIds.length) return {};
+      const { data } = await sb.from("profiles").select("user_id, full_name, avatar_url").in("user_id", userIds);
+      const m: Record<string, any> = {};
+      (data || []).forEach((p: any) => (m[p.user_id] = p));
+      return m;
+    },
+    enabled: userIds.length > 0,
   });
 
-  const pendingRequests = requests.filter((r: any) => r.status === "pending");
+  const now = Date.now();
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return featured.filter((f: any) => {
+      const isActive = f.status === "active" && new Date(f.ends_at).getTime() > now;
+      if (filter === "active" && !isActive) return false;
+      if (!q) return true;
+      const p = (profiles as any)[f.user_id];
+      const w = (workers as any)[f.worker_id];
+      return (
+        (p?.full_name || "").toLowerCase().includes(q) ||
+        (w?.profession || "").toLowerCase().includes(q) ||
+        (w?.main_category || "").toLowerCase().includes(q)
+      );
+    });
+  }, [featured, profiles, workers, search, filter, now]);
+
+  const activeCount = featured.filter((f: any) => f.status === "active" && new Date(f.ends_at).getTime() > now).length;
+  const totalSparks = featured.reduce((s: number, f: any) => s + (f.sparks_cost || 0), 0);
+
+  const cancel = async (id: string) => {
+    if (!confirm("Cancel this featured listing? It will end immediately (no refund).")) return;
+    const { error } = await sb
+      .from("featured_workers")
+      .update({ status: "cancelled", ends_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Featured listing cancelled");
+    qc.invalidateQueries({ queryKey: ["admin_featured_workers"] });
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Stats overview */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="space-y-5">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Active</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">Active Now</p>
             <Star className="h-4 w-4 text-star" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-hero-foreground">
-            {(featuredServices as any[]).filter((f) => f.is_active).length}
-          </p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{activeCount}</p>
         </div>
         <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Impressions (30d)</p>
-            <Eye className="h-4 w-4 text-hero-foreground/60" />
+            <p className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">Total Promotions</p>
+            <Clock className="h-4 w-4 text-hero-foreground/60" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-hero-foreground">{totalImpressions.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{featured.length}</p>
         </div>
         <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">Clicks (30d)</p>
-            <MousePointerClick className="h-4 w-4 text-hero-foreground/60" />
+            <p className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">Sparks Spent</p>
+            <Zap className="h-4 w-4 text-primary" />
           </div>
-          <p className="mt-1 text-2xl font-bold text-hero-foreground">{totalClicks.toLocaleString()}</p>
-        </div>
-        <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wider text-hero-foreground/60">CTR</p>
-            <TrendingUp className="h-4 w-4 text-hero-foreground/60" />
-          </div>
-          <p className="mt-1 text-2xl font-bold text-hero-foreground">{overallCtr}%</p>
+          <p className="mt-1 text-2xl font-bold text-hero-foreground">{totalSparks.toLocaleString()}</p>
         </div>
       </div>
 
-      {/* Pending requests */}
-      {pendingRequests.length > 0 && (
-        <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-hero-foreground" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground">
-              Pending Requests ({pendingRequests.length})
-            </h3>
-          </div>
-          <div className="space-y-2">
-            {pendingRequests.map((req: any) => {
-              const worker = workerMap.get(req.worker_id);
-              return (
-                <div key={req.id} className="flex flex-col gap-3 rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:flex-wrap sm:items-center">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-hero-foreground">
-                      {worker?.profiles?.full_name || "Unknown"} · <span className="font-medium text-hero-foreground/50">{worker?.profession}</span>
-                    </p>
-                    {req.message && (
-                      <p className="mt-1 line-clamp-2 text-xs text-hero-foreground/60">"{req.message}"</p>
-                    )}
-                    <p className="text-[10px] text-hero-foreground/60">
-                      Requested {new Date(req.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                    <Button size="sm" onClick={() => approveRequest(req)} className="gap-1">
-                      <CheckCircle className="h-3 w-3" /> Approve
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => denyRequest(req)} className="gap-1">
-                      <XCircle className="h-3 w-3" /> Deny
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <p className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.03] p-3 text-xs text-hero-foreground/60">
+        Workers feature their listings instantly by spending Sparks — no admin approval required. This panel is a read-only view of all promotions.
+      </p>
 
-      {/* Add featured form */}
-      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
-        <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Add Featured Worker</h3>
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5">
-          <div className="md:col-span-2">
-            <Select value={selectedWorkerId} onValueChange={setSelectedWorkerId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select worker" />
-              </SelectTrigger>
-              <SelectContent>
-                {(workers as any[]).map((w) => (
-                  <SelectItem key={w.id} value={w.id}>
-                    {w.profiles?.full_name || "Unnamed"} — {w.profession}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-foreground/40" />
           <Input
-            type="number"
-            placeholder="Priority"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-          />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("justify-start font-normal", !startsAt && "text-hero-foreground/60")}>
-                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                <span className="truncate">{startsAt ? format(startsAt, "PP") : "Start date"}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={startsAt} onSelect={setStartsAt} initialFocus className="p-3 pointer-events-auto" />
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("justify-start font-normal", !endsAt && "text-hero-foreground/60")}>
-                <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                <span className="truncate">{endsAt ? format(endsAt, "PP") : "End date"}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={endsAt} onSelect={setEndsAt} initialFocus className="p-3 pointer-events-auto" />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div className="mt-3 flex justify-end">
-          <Button onClick={() => addFeatured()} className="gap-1">
-            <Plus className="h-4 w-4" /> Add to Featured
-          </Button>
-        </div>
-      </div>
-
-      {/* Featured list */}
-      <div>
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-            Active Featured ({filteredFeatured.length})
-          </h3>
-          <Input
-            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            placeholder="Search by worker name, profession or category…"
+            className="pl-9 h-9"
           />
         </div>
+        <div className="flex gap-1.5">
+          {(["active", "all"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setFilter(s)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${
+                filter === s
+                  ? "bg-primary text-primary-foreground ring-primary"
+                  : "ring-hero-foreground/15 text-hero-foreground/70 hover:bg-hero-foreground/10"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* List */}
+      {isLoading ? (
+        <div className="flex h-32 items-center justify-center">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <p className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-8 text-center text-sm text-hero-foreground/60">
+          No featured workers.
+        </p>
+      ) : (
         <div className="space-y-2">
-          {filteredFeatured.map((f: any) => {
-            const w = workerMap.get(f.service_id);
-            const s = statsMap.get(f.service_id);
+          {filtered.map((f: any) => {
+            const p = (profiles as any)[f.user_id];
+            const w = (workers as any)[f.worker_id];
+            const isActive = f.status === "active" && new Date(f.ends_at).getTime() > now;
             return (
-              <div key={f.id} className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:flex-wrap sm:items-center">
-                <div className="flex flex-1 items-center gap-2">
-                  <Star className={`h-4 w-4 shrink-0 ${f.is_active ? "fill-star text-star" : "text-hero-foreground/60"}`} />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-hero-foreground">
-                      {w?.profiles?.full_name || w?.profession || "Service"}
+              <div
+                key={f.id}
+                className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:flex-row sm:flex-wrap sm:items-center"
+              >
+                <div className="flex flex-1 items-center gap-3 min-w-0">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/15 text-sm font-bold text-primary">
+                    {p?.avatar_url ? (
+                      <img src={p.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      (p?.full_name || "??").slice(0, 2).toUpperCase()
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-hero-foreground">{p?.full_name || "Unknown"}</p>
+                    <p className="truncate text-[11px] text-hero-foreground/60">
+                      {w?.profession || "—"}
+                      {w?.main_category && <> · {w.main_category}</>}
                     </p>
-                    <p className="truncate text-[11px] text-hero-foreground/50">
-                      {w?.profession}
-                      {f.starts_at && ` · from ${format(new Date(f.starts_at), "MMM d")}`}
-                      {f.ends_at && ` · until ${format(new Date(f.ends_at), "MMM d")}`}
+                    <p className="mt-0.5 text-[10px] text-hero-foreground/50">
+                      {format(new Date(f.starts_at), "MMM d")} → {format(new Date(f.ends_at), "MMM d, yyyy")}
+                      {isActive && (
+                        <> · ends {formatDistanceToNow(new Date(f.ends_at), { addSuffix: true })}</>
+                      )}
                     </p>
                   </div>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-3 text-[11px] text-hero-foreground/60">
-                  <span className="inline-flex items-center gap-1">
-                    <Eye className="h-3 w-3" /> {s?.impressions ?? 0}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <MousePointerClick className="h-3 w-3" /> {s?.clicks ?? 0}
-                  </span>
-                  <Badge variant="outline" className="text-[10px]">CTR {s?.ctr ?? 0}%</Badge>
-                </div>
-
                 <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                  <Input
-                    type="number"
-                    defaultValue={f.priority}
-                    className="h-9 w-20"
-                    onBlur={(e) => {
-                      const v = Number(e.target.value);
-                      if (v && v !== f.priority) updatePriority(f.id, v);
-                    }}
-                  />
-                  <Button size="sm" variant="outline" onClick={() => toggleActive(f.id, f.is_active)}>
-                    {f.is_active ? "Disable" : "Enable"}
-                  </Button>
-                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeFeatured(f.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <Badge variant="outline" className="gap-1 text-[10px]">
+                    <Zap className="h-3 w-3 text-primary" /> {f.sparks_cost}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px]">{f.duration_days}d</Badge>
+                  <Badge variant="outline" className="text-[10px]">{f.radius_km}km</Badge>
+                  <Badge
+                    variant="outline"
+                    className={
+                      isActive
+                        ? "border-success/40 text-success"
+                        : f.status === "cancelled"
+                        ? "border-destructive/40 text-destructive"
+                        : "border-hero-foreground/20 text-hero-foreground/50"
+                    }
+                  >
+                    {isActive ? "active" : f.status}
+                  </Badge>
+                  {isActive && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => cancel(f.id)}
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <XCircle className="mr-1 h-3 w-3" /> Cancel
+                    </Button>
+                  )}
                 </div>
               </div>
             );
           })}
-          {filteredFeatured.length === 0 && (
-            <p className="py-8 text-center text-sm text-hero-foreground/60">No featured workers yet.</p>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
