@@ -75,6 +75,18 @@ const AdsDashboard = () => {
 
   if (wpLoading) return <AppLayout><div className="flex h-60 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div></AppLayout>;
   if (!workerProfile) return <AppLayout><div className="p-6 text-center text-sm text-muted-foreground">Set up your worker profile first.</div></AppLayout>;
+  if (!(workerProfile as any).verified) return (
+    <AppLayout title="Ads Dashboard">
+      <div className="mx-auto mt-10 max-w-md rounded-2xl border border-amber-400/40 bg-amber-50/40 p-6 text-center dark:bg-amber-500/5">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/15 ring-1 ring-amber-500/40">
+          <Sparkles className="h-6 w-6 text-amber-500" />
+        </div>
+        <h2 className="text-lg font-bold">Verification required</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Only verified workers can create ad campaigns. Get verified to unlock ads and featured placement.</p>
+        <Button className="mt-4" onClick={() => navigate("/worker")}>Go to Verification</Button>
+      </div>
+    </AppLayout>
+  );
 
   const togglePauseResume = async (c: AdCampaign) => {
     try {

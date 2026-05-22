@@ -472,16 +472,20 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile") },
-              { label: "Boost Ad", icon: Zap, onClick: () => navigate("/worker/ads") },
+              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
+              { label: "Boost Ad", icon: Zap, onClick: () => {
+                if (!workerData?.verified) { toast.error("Get verified to create ads."); setVerifyOpen(true); return; }
+                navigate("/worker/ads");
+              }, gated: !workerData?.verified },
             ].map((a) => (
               <button
                 key={a.label}
                 onClick={a.onClick}
-                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 text-center transition hover:border-primary/30 hover:bg-hero-foreground/10"
+                className="group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-hero-foreground/10 bg-hero-foreground/5 p-4 text-center transition hover:border-primary/30 hover:bg-hero-foreground/10"
               >
                 <a.icon className="h-5 w-5 text-hero-foreground/70 transition group-hover:text-primary" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-hero-foreground/70">{a.label}</span>
+                {a.gated && <ShieldCheck className="absolute right-2 top-2 h-3.5 w-3.5 text-amber-400" />}
               </button>
             ))}
           </div>
@@ -533,12 +537,15 @@ const WorkerDashboard = () => {
               <p className="text-[11px] text-hero-foreground/60">Lifetime trust badge</p>
             </button>
             <button
-              onClick={() => setFeaturedOpen(true)}
-              className="group rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
+              onClick={() => {
+                if (!workerData?.verified) { toast.error("Get verified to become featured."); setVerifyOpen(true); return; }
+                setFeaturedOpen(true);
+              }}
+              className="group relative rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
             >
               <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
               <p className="text-sm font-bold">Become Featured</p>
-              <p className="text-[11px] text-hero-foreground/60">3 km premium reach</p>
+              <p className="text-[11px] text-hero-foreground/60">{workerData?.verified ? "3 km premium reach" : "Verification required"}</p>
             </button>
           </div>
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />

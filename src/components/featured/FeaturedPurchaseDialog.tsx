@@ -6,6 +6,7 @@ import { Star, Sparkles, Loader2, CheckCircle2, MapPin } from "lucide-react";
 import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
+import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { toast } from "sonner";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; workerCategoryId?: string | null };
@@ -16,6 +17,8 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const { balance } = useWallet();
   const { data: pricing = [] } = useFeaturedPricing();
   const { mainCategories: categories = [] } = useCategories();
+  const { data: workerProfile } = useWorkerProfile();
+  const isVerified = !!(workerProfile as any)?.verified;
   const purchase = usePurchaseFeatured();
   const [duration, setDuration] = useState<1 | 7 | 15 | 30>(7);
   const [categoryId, setCategoryId] = useState<string | null>(workerCategoryId ?? null);
@@ -30,6 +33,7 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const insufficient = balance < cost;
 
   const handlePurchase = async () => {
+    if (!isVerified) return toast.error("Only verified workers can become featured.");
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
     try {
       await purchase.mutateAsync({ duration, categoryId });
@@ -97,8 +101,13 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
             <li className="flex gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0 mt-0.5" />Auto-expires after duration</li>
           </ul>
 
-          <Button onClick={handlePurchase} disabled={purchase.isPending || insufficient || cost <= 0} className="w-full" size="lg">
-            {purchase.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : insufficient ? "Insufficient Sparks" : `Activate for ${cost} Sparks`}
+          {!isVerified && (
+            <div className="rounded-lg border border-amber-400/40 bg-amber-50/40 p-2.5 text-xs text-amber-900 dark:bg-amber-500/5 dark:text-amber-300">
+              Verification required. Verify your worker profile to activate featured placement.
+            </div>
+          )}
+          <Button onClick={handlePurchase} disabled={!isVerified || purchase.isPending || insufficient || cost <= 0} className="w-full" size="lg">
+            {purchase.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : !isVerified ? "Verification required" : insufficient ? "Insufficient Sparks" : `Activate for ${cost} Sparks`}
           </Button>
         </div>
       </DialogContent>
