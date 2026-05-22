@@ -85,7 +85,7 @@ function AuditPanel() {
           className="h-9 rounded-md border border-hero-foreground/15 bg-hero-foreground/[0.04] px-2 text-xs text-hero-foreground"
         >
           <option value="">All actions</option>
-          {actions.map((a) => (
+          {(actions as string[]).map((a) => (
             <option key={a} value={a}>
               {a}
             </option>
