@@ -1,35 +1,45 @@
-## Plan
 
-Deploying to **Vercel** at `www.nearkonnect.com`. Vercel serves Vite SPAs out of the box — no special config needed for the `/privacy` route beyond a tiny rewrite file so deep links don't 404.
+## Goal
+Extend the existing push-notification system to cover three new event groups, using the same `invoke_send_push` → `send-push` edge function pattern already wired for messages/bookings/blood/contact-reveal.
 
-### 1. Create `src/pages/Privacy.tsx`
-NearKonnect-specific privacy policy. Uses existing design tokens. Includes:
-- App name, contact email placeholder (`support@nearkonnect.com`)
-- Data collected: email, auth credentials, FCM push token, profile data, location/media (if used)
-- Third parties: Lovable Cloud (backend/auth/storage), Firebase Cloud Messaging
-- Data retention + user deletion request flow
-- Children's policy (13+)
-- Effective date
-- SEO: `react-helmet-async` with `<title>`, meta description, canonical = `https://www.nearkonnect.com/privacy`, single H1
+## New triggers (all via DB triggers, SECURITY DEFINER, search_path=public)
 
-### 2. Register route in `src/App.tsx`
-Add `/privacy` → `<Privacy />` (public, no auth guard).
+### 1. Wallet / Sparks transactions
+**Trigger:** `push_on_payment_request_status` — `AFTER UPDATE OF status` on `payment_requests`
+- `approved` → user: "Payment approved 🎉" / "{sparks_amount + bonus_sparks} Sparks added to your wallet" → `/wallet`
+- `rejected` → user: "Payment rejected" / admin_note (if any) → `/wallet`
+- `cancelled` → no push (user-initiated)
 
-### 3. Add `vercel.json` at project root
-SPA rewrite so `/privacy` and other deep links work on refresh:
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
+**Trigger:** `push_on_sparks_transaction` — `AFTER INSERT` on `sparks_transactions`
+- Fires only for admin-initiated credit/debit (reason in `'admin_added'`, `'deduction'`) so users learn when an admin adjusts their balance manually. Skip `ad_spent`, `purchase` (already covered by payment_requests trigger), and refunds tied to a payment_request.
+- Credit → "Sparks added" / "+{delta} Sparks" → `/wallet`
+- Debit → "Sparks deducted" / "{delta} Sparks" + notes → `/wallet`
 
-### 4. Update `LAUNCH_CHECKLIST.md`
-- Privacy Policy URL = `https://www.nearkonnect.com/privacy`
-- Remove Google OAuth redirect URI section (not used)
-- Add Vercel deploy notes: connect GitHub repo → framework preset Vite → build command `npm run build` → output `dist` → add `www.nearkonnect.com` as custom domain in Vercel
-- Add Lovable Cloud Auth Site URL update: set to `https://www.nearkonnect.com` and add to Additional Redirect URLs
+### 2. Featured-listing approvals
+**Trigger:** `push_on_featured_request_status` — `AFTER UPDATE OF status` on `featured_requests`
+- `approved` → user: "Featured listing approved ⭐" / "Your profile is now featured" → `/worker-dashboard`
+- `rejected` → user: "Featured request declined" → `/worker-dashboard`
 
-### Notes
-- You'll still need DNS for `www.nearkonnect.com` pointed to Vercel (CNAME `cname.vercel-dns.com`).
-- After deploy, update Lovable Cloud → Auth → URL Configuration to add `https://www.nearkonnect.com` so email links/auth callbacks work.
-- No business logic, auth, or notification code is touched.
+### 3. Verification status changes
+Verification state lives on the `workers` table (verified flag + status fields). Confirm exact column during implementation by reading `workers` schema and `verificationService.ts`.
+
+**Trigger:** `push_on_worker_verification` — `AFTER UPDATE OF verified` (or `verification_status`) on `workers`
+- Verified=true / approved → "Verification approved ✅" / "You're now a verified worker" → `/worker-dashboard`
+- Rejected → "Verification declined" / reason → `/worker-dashboard`
+
+## What stays the same
+- `send-push` edge function — no changes needed (already handles single-user sends)
+- `push_subscriptions`, VAPID/FCM secrets — already configured
+- In-app bell — already realtime; no UI work needed unless we want a dedicated entry in `useNotifications` mapping for these reasons (will check the hook during implementation and add icon/route mapping if needed).
+
+## Deliverables
+1. One SQL migration creating the 4 new trigger functions + triggers above.
+2. Minor edit to `src/hooks/useNotifications.tsx` if needed so the bell renders proper icon/title for the new reasons.
+
+## Out of scope
+- Job-application notifications (user previously declined).
+- Review/rating notifications.
+- Edge function code changes.
+
+## Open question before implementing
+Verification column name on `workers` — I'll inspect it during build. No user input needed.
