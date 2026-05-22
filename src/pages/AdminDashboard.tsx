@@ -109,32 +109,34 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-hero-foreground/50">Manage</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV_ITEMS.map((it) => {
-                const active = tab === it.key;
-                const Icon = it.icon;
-                return (
-                  <SidebarMenuItem key={it.key}>
-                    <SidebarMenuButton
-                      onClick={() => setTab(it.key)}
-                      className={
-                        active
-                          ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
-                          : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
-                      }
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{it.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {(["Manage", "Operations", "System"] as const).map((grp) => (
+          <SidebarGroup key={grp}>
+            <SidebarGroupLabel className="text-hero-foreground/50">{grp}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {NAV_ITEMS.filter((n) => n.group === grp).map((it) => {
+                  const active = tab === it.key;
+                  const Icon = it.icon;
+                  return (
+                    <SidebarMenuItem key={it.key}>
+                      <SidebarMenuButton
+                        onClick={() => setTab(it.key)}
+                        className={
+                          active
+                            ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
+                            : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
+                        }
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{it.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter className="p-2 space-y-1">
         <SidebarMenu>
