@@ -44,7 +44,8 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35 } }),
 };
 
-const QUICK_CHIPS = ["Carpenter", "Electrician", "Plumber", "Painter", "Gardener"];
+import { MAIN_SERVICE_CATEGORIES, MAIN_ICONS } from "@/data/serviceCategories";
+import { ChevronRight } from "lucide-react";
 
 type DonorRow = {
   user_id: string;
