@@ -150,7 +150,7 @@ const WorkerDashboard = () => {
       setSubCategory(workerData.sub_category || "");
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
-      setShopName((workerData as any).shop_name || "");
+      
       setAvailable(workerData.available);
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
