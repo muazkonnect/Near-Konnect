@@ -143,6 +143,11 @@ export default function FeaturedWorkerCard({ worker, index = 0, endsAt }: Props)
                   <Star className="h-3 w-3 fill-current" />
                   <span className="text-[10px] font-extrabold leading-none">Premium</span>
                 </span>
+                {remaining && (
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-hero-foreground/5 px-2 py-0.5 text-hero-foreground/80 ring-1 ring-hero-foreground/10">
+                    <span className="text-[10px] font-bold leading-none">{remaining === "ended" ? "ended" : `${remaining} left`}</span>
+                  </span>
+                )}
               </div>
 
               {/* CTAs */}
