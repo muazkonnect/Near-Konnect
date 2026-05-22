@@ -40,6 +40,7 @@ const FeaturedWorkersCarousel = ({
   const { data: featuredData } = useFeaturedServices();
   const featured = featuredData || [];
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(coords ?? null);
+  const nearbyFeaturedMap = useNearbyFeaturedMap(coords ?? null);
   const [items, setItems] = useState<FeaturedWorker[]>([]);
 
   const mergedIds = useMemo(() => {
