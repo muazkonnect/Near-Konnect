@@ -186,6 +186,7 @@ const WorkerProfile = () => {
     serviceAreas: dbWorker.service_areas || [],
     profilePhoto: (dbWorker as any).profiles?.avatar_url || "",
     bannerUrl: (dbWorker as any).banner_url || "",
+    shopName: (dbWorker as any).shop_name || "",
   };
 
   const isOwner = !!user && user.id === worker.userId;
@@ -242,6 +243,13 @@ const WorkerProfile = () => {
             <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
+          {worker.shopName && (
+            <div className="absolute bottom-3 right-4 max-w-[70%]">
+              <span className="block truncate rounded-md bg-hero/60 px-2.5 py-1 text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+                {worker.shopName}
+              </span>
+            </div>
+          )}
         </div>
 
         <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">

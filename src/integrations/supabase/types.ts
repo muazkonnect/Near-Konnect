@@ -1871,6 +1871,7 @@ export type Database = {
           main_category: string | null
           profession: string
           service_areas: string[] | null
+          shop_name: string | null
           sub_category: string | null
           uid: string | null
           updated_at: string
@@ -1893,6 +1894,7 @@ export type Database = {
           main_category?: string | null
           profession: string
           service_areas?: string[] | null
+          shop_name?: string | null
           sub_category?: string | null
           uid?: string | null
           updated_at?: string
@@ -1915,6 +1917,7 @@ export type Database = {
           main_category?: string | null
           profession?: string
           service_areas?: string[] | null
+          shop_name?: string | null
           sub_category?: string | null
           uid?: string | null
           updated_at?: string

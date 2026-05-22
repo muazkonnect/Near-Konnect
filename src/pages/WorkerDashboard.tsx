@@ -98,6 +98,7 @@ const WorkerDashboard = () => {
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
+  const [shopName, setShopName] = useState("");
   const [available, setAvailable] = useState(true);
   const [showContact, setShowContact] = useState(true);
   const [bloodShowContact, setBloodShowContact] = useState(true);
@@ -149,6 +150,7 @@ const WorkerDashboard = () => {
       setSubCategory(workerData.sub_category || "");
       setExperience(String(workerData.experience || 0));
       setDescription(workerData.description || "");
+      setShopName((workerData as any).shop_name || "");
       setAvailable(workerData.available);
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
@@ -245,6 +247,7 @@ const WorkerDashboard = () => {
         experience: parseInt(experience) || 0,
         description,
         available,
+        shop_name: shopName.trim() || null,
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as any)
       .eq("id", workerData.id);
@@ -822,6 +825,17 @@ const WorkerDashboard = () => {
                         className="mt-1 h-9 bg-hero-foreground/5 text-xs"
                       />
                     </div>
+                  </div>
+                  <div>
+                    <Label className="text-[11px] text-hero-foreground/70">Shop / Business name (optional)</Label>
+                    <Input
+                      value={shopName}
+                      onChange={(e) => setShopName(e.target.value)}
+                      maxLength={60}
+                      placeholder="e.g. Ali Carpentry Works"
+                      className="mt-1 h-9 bg-hero-foreground/5 text-xs"
+                    />
+                    <p className="mt-1 text-[10px] text-hero-foreground/50">Shown on your banner across cards and profile.</p>
                   </div>
                   <div>
                     <Label className="text-[11px] text-hero-foreground/70">About / description</Label>

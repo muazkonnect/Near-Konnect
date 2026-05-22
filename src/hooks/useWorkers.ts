@@ -86,6 +86,7 @@ export function useWorkers() {
           longitude: w.longitude ?? undefined,
           mainCategory: w.main_category || "",
           subCategory: w.sub_category || "",
+          shopName: (w as any).shop_name || "",
           userId: w.user_id,
           contactMethods,
         };

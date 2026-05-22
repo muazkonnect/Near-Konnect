@@ -30,6 +30,7 @@ const WorkerOnboardingDialog = () => {
   const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
+  const [shopName, setShopName] = useState("");
   const [coords, setCoords] = useState<Coords | null>(null);
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
@@ -163,6 +164,7 @@ const WorkerOnboardingDialog = () => {
         service_areas: [],
         city: null,
         available: true,
+        shop_name: shopName.trim() || null,
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as never);
       if (workerErr && !/duplicate|unique/i.test(workerErr.message)) {
@@ -349,6 +351,18 @@ const WorkerOnboardingDialog = () => {
                   value={experience}
                   onChange={(e) => setExperience(e.target.value)}
                   placeholder="e.g. 5"
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <Label className={labelClass}>Shop / Business name (optional)</Label>
+                <Input
+                  type="text"
+                  maxLength={60}
+                  value={shopName}
+                  onChange={(e) => setShopName(e.target.value)}
+                  placeholder="e.g. Ali Carpentry Works"
                   className={inputClass}
                 />
               </div>

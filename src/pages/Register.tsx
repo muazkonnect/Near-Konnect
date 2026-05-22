@@ -39,6 +39,7 @@ const Register = () => {
   const [mainCategory, setMainCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
+  const [shopName, setShopName] = useState("");
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
   const [serviceLocation, setServiceLocation] = useState<Coords | null>(null);
@@ -174,6 +175,7 @@ const Register = () => {
         metadata.sub_category = subCategory;
         metadata.profession = subCategory;
         metadata.experience = experience.trim();
+        if (shopName.trim()) metadata.shop_name = shopName.trim();
         metadata.expertise_tags = JSON.stringify(expertiseTags);
         if (serviceLocation) {
           metadata.latitude = String(serviceLocation.latitude);
@@ -413,6 +415,13 @@ const Register = () => {
                   <label className={labelCls}>Years of Experience</label>
                   <div className={fieldWrap}>
                     <input type="number" min="0" className={fieldInput} placeholder="5" value={experience} onChange={(e) => setExperience(e.target.value)} required />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Shop / Business Name <span className="text-[#c4c7c7]/50">(optional)</span></label>
+                  <div className={fieldWrap}>
+                    <input type="text" maxLength={60} className={fieldInput} placeholder="e.g. Ali Carpentry Works" value={shopName} onChange={(e) => setShopName(e.target.value)} />
                   </div>
                 </div>
 
