@@ -419,6 +419,13 @@ const Register = () => {
                 </div>
 
                 <div>
+                  <label className={labelCls}>Shop / Business Name <span className="text-[#c4c7c7]/50">(optional)</span></label>
+                  <div className={fieldWrap}>
+                    <input type="text" maxLength={60} className={fieldInput} placeholder="e.g. Ali Carpentry Works" value={shopName} onChange={(e) => setShopName(e.target.value)} />
+                  </div>
+                </div>
+
+                <div>
                   <label className={labelCls}>Fixed Service Location</label>
                   <div className="rounded-lg border border-[#444748]/20 bg-[#1c1b1b] p-3">
                     <MapLocationPicker value={serviceLocation} onChange={setServiceLocation} />
