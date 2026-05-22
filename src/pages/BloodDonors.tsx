@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Droplet, Search, MapPin, Heart, Bell } from "lucide-react";
+import { Droplet, Search, MapPin, Heart } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
