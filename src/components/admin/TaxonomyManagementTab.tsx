@@ -235,11 +235,11 @@ export default function TaxonomyManagementTab({ categories }: Props) {
     onSettled: () => setBusyId(null),
   });
 
-  const startEdit = (item: { id: string; name: string; icon?: string }) => {
+  const startEdit = (item: { id: string; name: string }) => {
     setEditingId(item.id);
     setEditName(item.name);
-    setEditIcon(item.icon ?? "");
   };
+
 
   const handleDeleteCat = (cat: Category) => {
     if (
