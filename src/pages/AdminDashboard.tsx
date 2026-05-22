@@ -586,8 +586,12 @@ const AdminDashboard = () => {
                       className="flex flex-col gap-3 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3.5 sm:p-4 sm:flex-row sm:flex-wrap sm:items-center transition-colors hover:border-hero-foreground/20"
                     >
                       <div className="flex items-start gap-3 sm:flex-1 min-w-0">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-sm font-bold text-primary">
-                          {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/15 text-sm font-bold text-primary">
+                          {w.profiles?.avatar_url ? (
+                            <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-hero-foreground">{w.profiles?.full_name}</p>
