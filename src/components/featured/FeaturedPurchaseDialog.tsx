@@ -17,6 +17,8 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const { balance } = useWallet();
   const { data: pricing = [] } = useFeaturedPricing();
   const { mainCategories: categories = [] } = useCategories();
+  const { data: workerProfile } = useWorkerProfile();
+  const isVerified = !!(workerProfile as any)?.verified;
   const purchase = usePurchaseFeatured();
   const [duration, setDuration] = useState<1 | 7 | 15 | 30>(7);
   const [categoryId, setCategoryId] = useState<string | null>(workerCategoryId ?? null);
@@ -31,6 +33,7 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const insufficient = balance < cost;
 
   const handlePurchase = async () => {
+    if (!isVerified) return toast.error("Only verified workers can become featured.");
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
     try {
       await purchase.mutateAsync({ duration, categoryId });
