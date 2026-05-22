@@ -247,6 +247,7 @@ const WorkerDashboard = () => {
         experience: parseInt(experience) || 0,
         description,
         available,
+        shop_name: shopName.trim() || null,
         ...({ expertise_tags: expertiseTags } as Record<string, unknown>),
       } as any)
       .eq("id", workerData.id);
