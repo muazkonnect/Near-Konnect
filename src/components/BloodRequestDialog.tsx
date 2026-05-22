@@ -99,7 +99,7 @@ const BloodRequestDialog = ({ trigger }: Props) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="blood-shell sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <Droplet className="h-5 w-5" /> Guided Blood Request
