@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/i18n";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import OfflineBanner from "@/components/OfflineBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -104,9 +105,9 @@ const AppContent = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
-            <Route path="/worker-dashboard" element={<ProtectedRoute><WorkerDashboard /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/worker/ads" element={<ProtectedRoute><AdsDashboard /></ProtectedRoute>} />
+            <Route path="/worker-dashboard" element={<RoleProtectedRoute allow={["worker","admin","manager","moderator","ads_manager"]}><WorkerDashboard /></RoleProtectedRoute>} />
+            <Route path="/admin" element={<RoleProtectedRoute allow={["admin","manager","moderator","ads_manager"]}><AdminDashboard /></RoleProtectedRoute>} />
+            <Route path="/worker/ads" element={<RoleProtectedRoute allow={["worker","admin","manager","ads_manager"]}><AdsDashboard /></RoleProtectedRoute>} />
             <Route path="/blood-donors" element={<BloodDonors />} />
             <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/messages" element={<Messages />} />
