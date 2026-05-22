@@ -46,13 +46,12 @@ export default function TaxonomyManagementTab({ categories }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const [editIcon, setEditIcon] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const [newMainName, setNewMainName] = useState("");
-  const [newMainIcon, setNewMainIcon] = useState("");
   const [newSubName, setNewSubName] = useState<Record<string, string>>({});
   const [newExpertiseName, setNewExpertiseName] = useState<Record<string, string>>({});
+
 
   const sortFn = (a: Category, b: Category) =>
     (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name);
@@ -156,8 +155,8 @@ export default function TaxonomyManagementTab({ categories }: Props) {
     onSuccess: () => {
       toast.success("Added");
       setNewMainName("");
-      setNewMainIcon("");
       setNewSubName({});
+
       refresh();
     },
     onError: (e: any) => toast.error(e.message || "Failed"),
@@ -236,11 +235,11 @@ export default function TaxonomyManagementTab({ categories }: Props) {
     onSettled: () => setBusyId(null),
   });
 
-  const startEdit = (item: { id: string; name: string; icon?: string }) => {
+  const startEdit = (item: { id: string; name: string }) => {
     setEditingId(item.id);
     setEditName(item.name);
-    setEditIcon(item.icon ?? "");
   };
+
 
   const handleDeleteCat = (cat: Category) => {
     if (
@@ -288,16 +287,6 @@ export default function TaxonomyManagementTab({ categories }: Props) {
 
       {/* Add new main */}
       <div className="flex flex-col gap-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3 sm:p-4 sm:flex-row sm:items-end">
-        <div className="w-20 sm:w-24 space-y-1.5 shrink-0">
-          <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
-            Icon
-          </label>
-          <Input
-            placeholder="🏠"
-            value={newMainIcon}
-            onChange={(e) => setNewMainIcon(e.target.value)}
-          />
-        </div>
         <div className="flex-1 space-y-1.5 min-w-0">
           <label className="text-xs font-semibold uppercase tracking-wider text-hero-foreground/60">
             New main category
@@ -313,7 +302,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
             newMainName.trim() &&
             addCat.mutate({
               name: newMainName.trim(),
-              icon: newMainIcon.trim() || "🔧",
+              icon: "",
               parent_id: null,
             })
           }
@@ -328,6 +317,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
           Add Main
         </Button>
       </div>
+
 
       {/* Mains list */}
       <div className="space-y-3">
@@ -359,11 +349,6 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                 {isEditingMain ? (
                   <>
                     <Input
-                      className="w-14 sm:w-16 shrink-0 text-center text-lg px-1"
-                      value={editIcon}
-                      onChange={(e) => setEditIcon(e.target.value)}
-                    />
-                    <Input
                       className="flex-1 min-w-0"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -377,7 +362,7 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                         editName.trim() &&
                         updateCat.mutate({
                           id: main.id,
-                          patch: { name: editName.trim(), icon: editIcon.trim() },
+                          patch: { name: editName.trim(), icon: "" },
                         })
                       }
                     >
@@ -394,10 +379,8 @@ export default function TaxonomyManagementTab({ categories }: Props) {
                   </>
                 ) : (
                   <>
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg">
-                      {main.icon}
-                    </div>
                     <div className="flex-1 min-w-0">
+
                       <p className="font-semibold text-hero-foreground truncate text-sm sm:text-base">
                         {main.name}
                       </p>
