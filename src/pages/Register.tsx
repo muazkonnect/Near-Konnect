@@ -39,6 +39,7 @@ const Register = () => {
   const [mainCategory, setMainCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
+  const [shopName, setShopName] = useState("");
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
   const [serviceLocation, setServiceLocation] = useState<Coords | null>(null);
