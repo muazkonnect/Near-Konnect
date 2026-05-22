@@ -537,12 +537,15 @@ const WorkerDashboard = () => {
               <p className="text-[11px] text-hero-foreground/60">Lifetime trust badge</p>
             </button>
             <button
-              onClick={() => setFeaturedOpen(true)}
-              className="group rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
+              onClick={() => {
+                if (!workerData?.verified) { toast.error("Get verified to become featured."); setVerifyOpen(true); return; }
+                setFeaturedOpen(true);
+              }}
+              className="group relative rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
             >
               <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
               <p className="text-sm font-bold">Become Featured</p>
-              <p className="text-[11px] text-hero-foreground/60">3 km premium reach</p>
+              <p className="text-[11px] text-hero-foreground/60">{workerData?.verified ? "3 km premium reach" : "Verification required"}</p>
             </button>
           </div>
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
