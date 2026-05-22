@@ -827,6 +827,17 @@ const WorkerDashboard = () => {
                     </div>
                   </div>
                   <div>
+                    <Label className="text-[11px] text-hero-foreground/70">Shop / Business name (optional)</Label>
+                    <Input
+                      value={shopName}
+                      onChange={(e) => setShopName(e.target.value)}
+                      maxLength={60}
+                      placeholder="e.g. Ali Carpentry Works"
+                      className="mt-1 h-9 bg-hero-foreground/5 text-xs"
+                    />
+                    <p className="mt-1 text-[10px] text-hero-foreground/50">Shown on your banner across cards and profile.</p>
+                  </div>
+                  <div>
                     <Label className="text-[11px] text-hero-foreground/70">About / description</Label>
                     <Textarea
                       value={description}
