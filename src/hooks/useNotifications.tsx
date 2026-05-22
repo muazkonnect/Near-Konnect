@@ -312,29 +312,103 @@ const init = async (userId: string) => {
   );
 
   if (isAdmin) {
-    ch.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "featured_requests" },
-      async (payload: any) => {
-        const { data: rp } = await supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("user_id", payload.new.user_id)
-          .maybeSingle();
-        const name = rp?.full_name || "A worker";
-        upsert({
-          id: `featreq-${payload.new.id}`,
-          type: "featured_request",
-          title: "Featured request",
-          body: `${name} requested to be featured`,
-          created_at: payload.new.created_at,
-          link: "/admin",
-          read: false,
-        });
-        toast.info("⭐ Featured request", { description: `${name} requested to be featured` });
-      }
+    const adminReqHandler = (
+      table: string,
+      keyPrefix: string,
+      type: AppNotification["type"],
+      title: string,
+      emoji: string,
+      getUserId: (row: any) => string,
+      bodyFor: (row: any, name: string) => string,
+    ) => {
+      ch.on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table },
+        async (payload: any) => {
+          const { data: rp } = await supabase
+            .from("profiles").select("full_name").eq("user_id", getUserId(payload.new)).maybeSingle();
+          const name = rp?.full_name || "A user";
+          upsert({
+            id: `${keyPrefix}-${payload.new.id}`,
+            type,
+            title,
+            body: bodyFor(payload.new, name),
+            created_at: payload.new.created_at,
+            link: "/admin",
+            read: false,
+          });
+          toast.info(`${emoji} ${title}`, { description: bodyFor(payload.new, name) });
+        }
+      );
+      ch.on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table },
+        (payload: any) => {
+          if (payload.new?.status && payload.new.status !== "pending") {
+            removeNotification(`${keyPrefix}-${payload.new.id}`);
+          }
+        }
+      );
+      ch.on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table },
+        (payload: any) => {
+          if (payload.old?.id) removeNotification(`${keyPrefix}-${payload.old.id}`);
+        }
+      );
+    };
+
+    adminReqHandler(
+      "featured_requests", "featreq", "featured_request", "Featured request", "⭐",
+      (r) => r.user_id, (_r, n) => `${n} requested to be featured`
+    );
+    adminReqHandler(
+      "avatar_reset_requests", "avreset", "avatar_reset_request", "Avatar reset request", "🖼️",
+      (r) => r.user_id, (_r, n) => `${n} requested an avatar reset`
+    );
+    adminReqHandler(
+      "worker_location_change_requests", "locreq", "location_change_request", "Location change request", "📍",
+      (r) => r.worker_user_id, (_r, n) => `${n} requested a location change`
+    );
+    adminReqHandler(
+      "payment_requests", "payreq", "payment_request", "Payment request", "💳",
+      (r) => r.user_id, (r, n) => `${n} requested ${r.sparks_amount} sparks (${r.price_amount} ${r.currency})`
     );
   }
+
+  // User-side: notify when status of own request changes
+  const ownUpdate = (
+    table: string,
+    userCol: string,
+    keyPrefix: string,
+    label: string,
+    emoji: string,
+  ) => {
+    ch.on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table, filter: `${userCol}=eq.${userId}` },
+      (payload: any) => {
+        const oldS = payload.old?.status;
+        const newS = payload.new?.status;
+        if (!newS || newS === oldS || newS === "pending") return;
+        upsert({
+          id: `${keyPrefix}upd-${payload.new.id}-${newS}`,
+          type: "request_update",
+          title: `${label} ${newS}`,
+          body: payload.new.admin_comment || payload.new.admin_note || `Your ${label.toLowerCase()} was ${newS}`,
+          created_at: payload.new.updated_at || payload.new.decided_at || new Date().toISOString(),
+          link: "/dashboard",
+          read: false,
+        });
+        toast.info(`${emoji} ${label} ${newS}`);
+      }
+    );
+  };
+  ownUpdate("featured_requests", "user_id", "feat", "Featured request", "⭐");
+  ownUpdate("avatar_reset_requests", "user_id", "av", "Avatar reset", "🖼️");
+  ownUpdate("worker_location_change_requests", "worker_user_id", "loc", "Location change", "📍");
+  ownUpdate("payment_requests", "user_id", "pay", "Payment request", "💳");
+
 
   ch.subscribe();
   channel = ch;
