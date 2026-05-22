@@ -17,6 +17,7 @@ import DisclosureModals from "@/components/DisclosureModals";
 import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
 import AssistantSheet from "@/components/assistant/AssistantSheet";
 import SplashScreen from "@/components/SplashScreen";
+import LocationGate from "@/components/LocationGate";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
 import { WalletProvider } from "@/contexts/WalletContext";
