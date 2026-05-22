@@ -223,6 +223,7 @@ const AdminDashboard = () => {
   const [featurePriority, setFeaturePriority] = useState("100");
   const [donorFilter, setDonorFilter] = useState("");
   const [editingWorker, setEditingWorker] = useState<any | null>(null);
+  const [workerSearch, setWorkerSearch] = useState("");
 
   // Apply admin-shell scope to body so portaled popovers/dialogs inherit dark theme
   useEffect(() => {
