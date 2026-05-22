@@ -387,11 +387,11 @@ const WorkerOnboardingDialog = () => {
                   <select
                     value={bloodGroup}
                     onChange={(e) => setBloodGroup(e.target.value)}
-                    className={selectClass}
+                    className={`${selectClass} [color-scheme:dark]`}
                   >
-                    <option value="" className="text-foreground">Select blood group</option>
+                    <option value="" className="bg-popover text-foreground">Select blood group</option>
                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
-                      <option key={bg} value={bg} className="text-foreground">{bg}</option>
+                      <option key={bg} value={bg} className="bg-popover text-foreground">{bg}</option>
                     ))}
                   </select>
                 </div>
