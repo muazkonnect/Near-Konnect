@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Briefcase, ShieldCheck, Crown, Sparkles, Zap } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Star, BadgeCheck, Phone, MessageSquare, X, MapPin, Briefcase, ShieldCheck, Crown, Sparkles, Zap, MessageCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -250,9 +250,25 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
                 )}
               </>
             ) : (
-              <p className="rounded-xl border border-hero-foreground/10 bg-hero-foreground/[0.04] px-3 py-2.5 text-center text-[11px] font-semibold text-hero-muted">
-                Contact info is hidden by this provider.
-              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-11 flex-1 rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10"
+                  onClick={() => navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } })}
+                >
+                  View Full Profile
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className="h-11 flex-[1.4] rounded-xl bg-gradient-to-r from-primary to-primary/85 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                >
+                  <Link to={`/chat/${(worker as any).userId || worker.userId}`} aria-label="Message in app">
+                    <MessageCircle className="mr-1 h-4 w-4" /> Message
+                  </Link>
+                </Button>
+              </div>
             )}
 
             <div className="text-center">
