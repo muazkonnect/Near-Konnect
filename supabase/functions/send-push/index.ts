@@ -111,19 +111,30 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { user_id, title, body: text, url, tag, urgent } = body || {};
-    if (!user_id || !title) {
-      return new Response(JSON.stringify({ error: "Missing user_id or title" }), {
+    const { user_id, user_ids, broadcast, title, body: text, url, tag, urgent } = body || {};
+    if (!title) {
+      return new Response(JSON.stringify({ error: "Missing title" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!user_id && !Array.isArray(user_ids) && !broadcast) {
+      return new Response(JSON.stringify({ error: "Provide user_id, user_ids[], or broadcast=true" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: subs, error } = await supabase
-      .from("push_subscriptions")
-      .select("*")
-      .eq("user_id", user_id);
+    let query = supabase.from("push_subscriptions").select("*");
+    if (broadcast) {
+      // no filter — all subscriptions
+    } else if (Array.isArray(user_ids) && user_ids.length) {
+      query = query.in("user_id", user_ids);
+    } else if (user_id) {
+      query = query.eq("user_id", user_id);
+    }
+    const { data: subs, error } = await query;
 
     if (error) throw error;
     if (!subs || subs.length === 0) {
