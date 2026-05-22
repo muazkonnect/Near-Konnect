@@ -180,6 +180,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           void ensureUserRecords(session.user);
+          void (supabase.rpc as any)("worker_mark_active").then(() => {});
         }
       } catch (err) {
         console.error("Auth init error:", err);
@@ -199,6 +200,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           void ensureUserRecords(session.user);
+          // Mark worker as active — re-enables auto-disabled accounts on login
+          void (supabase.rpc as any)("worker_mark_active").then(() => {});
         }
         setLoading(false);
       }
