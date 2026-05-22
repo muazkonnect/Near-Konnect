@@ -256,7 +256,19 @@ export default function VerificationsAdminPanel() {
   const decide = useAdminDecideVerification();
   const { data: settings } = useVerificationSettings();
   const updateSettings = useUpdateVerificationSettings();
-  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean }>({});
+  const [form, setForm] = useState<{ sparks_cost: number; enabled: boolean; auto_approve_on_persona_pass: boolean }>({
+    sparks_cost: 0, enabled: false, auto_approve_on_persona_pass: false,
+  });
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => {
+    if (settings && !dirty) {
+      setForm({
+        sparks_cost: settings.sparks_cost ?? 0,
+        enabled: settings.enabled ?? false,
+        auto_approve_on_persona_pass: settings.auto_approve_on_persona_pass ?? false,
+      });
+    }
+  }, [settings, dirty]);
 
   const userIds = useMemo(() => Array.from(new Set((list as any[]).map((v) => v.user_id).filter(Boolean))), [list]);
   const profiles = useWorkerProfiles(userIds);
