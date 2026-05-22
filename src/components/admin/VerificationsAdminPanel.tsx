@@ -256,7 +256,19 @@ export default function VerificationsAdminPanel() {
   const decide = useAdminDecideVerification();
   const { data: settings } = useVerificationSettings();
   const updateSettings = useUpdateVerificationSettings();
-  const [editing, setEditing] = useState<{ sparks_cost?: number; enabled?: boolean; auto_approve_on_persona_pass?: boolean }>({});
+  const [form, setForm] = useState<{ sparks_cost: number; enabled: boolean; auto_approve_on_persona_pass: boolean }>({
+    sparks_cost: 0, enabled: false, auto_approve_on_persona_pass: false,
+  });
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => {
+    if (settings && !dirty) {
+      setForm({
+        sparks_cost: settings.sparks_cost ?? 0,
+        enabled: settings.enabled ?? false,
+        auto_approve_on_persona_pass: settings.auto_approve_on_persona_pass ?? false,
+      });
+    }
+  }, [settings, dirty]);
 
   const userIds = useMemo(() => Array.from(new Set((list as any[]).map((v) => v.user_id).filter(Boolean))), [list]);
   const profiles = useWorkerProfiles(userIds);
@@ -267,8 +279,8 @@ export default function VerificationsAdminPanel() {
 
   const saveSettings = async () => {
     try {
-      await updateSettings.mutateAsync(editing);
-      setEditing({});
+      await updateSettings.mutateAsync(form);
+      setDirty(false);
       toast.success("Verification settings saved");
     } catch (e: any) {
       toast.error(e?.message || "Save failed");
@@ -298,8 +310,8 @@ export default function VerificationsAdminPanel() {
             <Label>Sparks cost</Label>
             <Input
               type="number"
-              defaultValue={settings?.sparks_cost ?? 0}
-              onChange={(e) => setEditing((s) => ({ ...s, sparks_cost: Number(e.target.value) }))}
+              value={form.sparks_cost}
+              onChange={(e) => { setDirty(true); setForm((s) => ({ ...s, sparks_cost: Number(e.target.value) })); }}
             />
             <p className="mt-1 text-[10px] text-muted-foreground">Sparks deducted when a worker starts a Didit session.</p>
           </div>
@@ -309,8 +321,8 @@ export default function VerificationsAdminPanel() {
               <p className="text-[10px] text-muted-foreground">Turn the Didit flow on/off for all workers.</p>
             </div>
             <Switch
-              defaultChecked={settings?.enabled ?? false}
-              onCheckedChange={(v) => setEditing((s) => ({ ...s, enabled: v }))}
+              checked={form.enabled}
+              onCheckedChange={(v) => { setDirty(true); setForm((s) => ({ ...s, enabled: v })); }}
             />
           </div>
           <div className="flex items-center justify-between rounded-lg border p-3 sm:col-span-2">
@@ -319,13 +331,13 @@ export default function VerificationsAdminPanel() {
               <p className="text-[10px] text-muted-foreground">If Didit returns <span className="font-semibold">Approved</span>, mark the worker verified automatically. Otherwise it lands here for manual review.</p>
             </div>
             <Switch
-              defaultChecked={settings?.auto_approve_on_persona_pass ?? false}
-              onCheckedChange={(v) => setEditing((s) => ({ ...s, auto_approve_on_persona_pass: v }))}
+              checked={form.auto_approve_on_persona_pass}
+              onCheckedChange={(v) => { setDirty(true); setForm((s) => ({ ...s, auto_approve_on_persona_pass: v })); }}
             />
           </div>
         </div>
         <div className="mt-3 flex justify-end">
-          <Button size="sm" onClick={saveSettings} disabled={updateSettings.isPending || Object.keys(editing).length === 0}>
+          <Button size="sm" onClick={saveSettings} disabled={updateSettings.isPending || !dirty}>
             Save
           </Button>
         </div>
