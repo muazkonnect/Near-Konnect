@@ -46,7 +46,7 @@ import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
+import { useNearbyFeaturedWorkerIds, useMyFeatured } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import { matchesSearch } from "@/lib/searchKeywords";
 
@@ -110,9 +110,18 @@ const Discover = () => {
   const featuredLookupCoords = userCoords ?? ownWorkerCoords;
   const adminFeaturedIds = useFeaturedWorkerIds();
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(featuredLookupCoords);
+  const { data: myFeaturedList = [] } = useMyFeatured(user?.id ?? null);
+  const myActiveFeaturedWorkerIds = useMemo(() => {
+    const now = Date.now();
+    return new Set<string>(
+      (myFeaturedList as any[])
+        .filter((f) => f.status === "active" && new Date(f.ends_at).getTime() > now && new Date(f.starts_at).getTime() <= now)
+        .map((f) => f.worker_id)
+    );
+  }, [myFeaturedList]);
   const featuredIds = useMemo(
-    () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds]),
-    [adminFeaturedIds, paidFeaturedIds]
+    () => new Set<string>([...adminFeaturedIds, ...paidFeaturedIds, ...myActiveFeaturedWorkerIds]),
+    [adminFeaturedIds, paidFeaturedIds, myActiveFeaturedWorkerIds]
   );
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);

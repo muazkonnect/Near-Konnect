@@ -88,9 +88,23 @@ const WorkerDashboard = () => {
       (f) => f.status === "active" && new Date(f.ends_at).getTime() > now && new Date(f.starts_at).getTime() <= now
     ) || null;
   }, [myFeatured]);
-  const premiumDaysLeft = activePremium
-    ? Math.max(0, Math.ceil((new Date(activePremium.ends_at).getTime() - Date.now()) / 86400000))
-    : 0;
+  const [nowTick, setNowTick] = useState(Date.now());
+  useEffect(() => {
+    if (!activePremium) return;
+    const id = setInterval(() => setNowTick(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, [activePremium]);
+  const premiumRemaining = useMemo(() => {
+    if (!activePremium) return "";
+    const ms = new Date(activePremium.ends_at).getTime() - nowTick;
+    if (ms <= 0) return "expired";
+    const d = Math.floor(ms / 86400000);
+    const h = Math.floor((ms % 86400000) / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    if (d > 0) return `${d}d ${h}h left`;
+    if (h > 0) return `${h}h ${m}m left`;
+    return `${m}m left`;
+  }, [activePremium, nowTick]);
   const queryClient = useQueryClient();
 
   const [profession, setProfession] = useState("");
@@ -379,7 +393,7 @@ const WorkerDashboard = () => {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-amber-400">Premium Featured · Active</p>
                   <p className="text-[11px] text-hero-foreground/70">
-                    {activePremium.duration_days}-day plan · {premiumDaysLeft} day{premiumDaysLeft === 1 ? "" : "s"} left · 3 km premium reach
+                    {activePremium.duration_days}-day plan · {premiumRemaining} · {activePremium.radius_km ?? 3} km premium reach
                   </p>
                 </div>
                 <button
