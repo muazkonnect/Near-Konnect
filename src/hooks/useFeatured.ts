@@ -40,7 +40,7 @@ export function useNearbyFeatured(coords: { lat: number; lng: number } | null, c
   const qc = useQueryClient();
   useEffect(() => {
     const ch = supabase
-      .channel("rt-featured-workers")
+      .channel(`rt-featured-workers-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "featured_workers" }, () => {
         qc.invalidateQueries({ queryKey: ["nearby_featured"] });
         qc.invalidateQueries({ queryKey: ["my_featured"] });
