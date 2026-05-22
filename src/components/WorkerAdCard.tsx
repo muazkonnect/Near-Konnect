@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Star, BadgeCheck, Crown, MapPin, Briefcase, ArrowUpRight, Sparkles, Zap, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Star, BadgeCheck, Crown, MapPin, Briefcase, ArrowUpRight, Sparkles, Zap, ShieldCheck, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -270,7 +271,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               Profile
               <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
             </Button>
-            {worker.showContact !== false && (
+            {worker.showContact !== false ? (
               isAuthed ? (
                 <Button
                   size="sm"
@@ -289,6 +290,31 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                     className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
                   >
                     <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
+                  </Button>
+                </AuthRequiredDialog>
+              )
+            ) : (
+              isAuthed && worker.userId ? (
+                <Button
+                  asChild
+                  size="sm"
+                  className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                  onClick={(e) => { e.stopPropagation(); fireClick(); }}
+                >
+                  <Link to={`/chat/${worker.userId}`} aria-label="Message in app">
+                    <MessageCircle className="mr-1 h-4 w-4" /> Message
+                  </Link>
+                </Button>
+              ) : (
+                <AuthRequiredDialog
+                  title="Log in to message"
+                  description="Sign in or create an account to message this provider."
+                >
+                  <Button
+                    size="sm"
+                    className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
+                  >
+                    <MessageCircle className="mr-1 h-4 w-4" /> Message
                   </Button>
                 </AuthRequiredDialog>
               )
