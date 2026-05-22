@@ -271,14 +271,7 @@ const WorkerProfile = () => {
               <div className="flex items-center justify-center gap-2 flex-nowrap">
                 <h2 className="text-[22px] font-black tracking-tight text-hero-foreground">{worker.name}</h2>
                 {worker.verified && (
-                  <span
-                    title="Premium Worker"
-                    aria-label="Premium Worker"
-                    className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground shadow-[0_0_20px_-2px_hsl(var(--primary)/0.9)] ring-2 ring-primary/30"
-                  >
-                    <Crown className="h-4 w-4" />
-                    <span className="absolute inset-0 rounded-full bg-primary/30 blur-md -z-10 animate-pulse" />
-                  </span>
+                  <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
                 )}
               </div>
               <div className="mt-3 flex flex-wrap items-stretch justify-center gap-2">
