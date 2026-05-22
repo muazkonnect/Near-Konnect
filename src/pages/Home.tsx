@@ -37,7 +37,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
-import { MAIN_SERVICE_CATEGORIES, MAIN_ICONS } from "@/data/serviceCategories";
+import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -304,9 +304,8 @@ const Home = () => {
               <button
                 key={cat}
                 onClick={() => submitSearch(cat)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
+                className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[11px] font-medium text-hero-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
               >
-                <span className="text-xs">{MAIN_ICONS[cat]}</span>
                 {cat}
               </button>
             ))}
