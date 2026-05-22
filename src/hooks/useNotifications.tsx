@@ -93,41 +93,6 @@ const init = async (userId: string) => {
     });
   });
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("blood_group, is_blood_donor")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (profile?.is_blood_donor && profile?.blood_group) {
-    const { data: bloodReqs } = await supabase
-      .from("blood_requests")
-      .select("id, blood_group, urgency, message, city, created_at, requester_id")
-      .eq("status", "open")
-      .eq("blood_group", profile.blood_group)
-      .neq("requester_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(5);
-
-    for (const req of bloodReqs || []) {
-      const { data: rp } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("user_id", req.requester_id)
-        .maybeSingle();
-
-      list.push({
-        id: `blood-${req.id}`,
-        type: "blood_request",
-        title: `🩸 ${req.urgency === "critical" ? "CRITICAL: " : ""}${req.blood_group} Blood Needed`,
-        body: `${rp?.full_name || "Someone"} needs ${req.blood_group} blood${req.city ? ` in ${req.city}` : ""}`,
-        created_at: req.created_at,
-        link: "/blood-donors",
-        read: false,
-      });
-    }
-  }
-
   // Pending contact-reveal requests where current user is the worker
   const { data: reveals } = await sb
     .from("contact_reveals")
@@ -234,38 +199,6 @@ const init = async (userId: string) => {
     }
   );
 
-  ch.on(
-    "postgres_changes",
-    { event: "INSERT", schema: "public", table: "blood_requests" },
-    async (payload: any) => {
-      if (payload.new.requester_id === userId) return;
-      const { data: dp } = await supabase
-        .from("profiles")
-        .select("blood_group, is_blood_donor")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (dp?.is_blood_donor && dp.blood_group === payload.new.blood_group) {
-        const { data: rp } = await supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("user_id", payload.new.requester_id)
-          .maybeSingle();
-        upsert({
-          id: `blood-${payload.new.id}`,
-          type: "blood_request",
-          title: `🩸 ${payload.new.urgency === "critical" ? "CRITICAL: " : ""}${payload.new.blood_group} Blood Needed`,
-          body: `${rp?.full_name || "Someone"} needs ${payload.new.blood_group} blood${payload.new.city ? ` in ${payload.new.city}` : ""}`,
-          created_at: payload.new.created_at,
-          link: "/blood-donors",
-          read: false,
-        });
-        toast.error(`🩸 ${payload.new.blood_group} Blood Needed!`, {
-          description: `${rp?.full_name || "Someone"} needs help`,
-          duration: 8000,
-        });
-      }
-    }
-  );
 
   ch.on(
     "postgres_changes",

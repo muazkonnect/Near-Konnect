@@ -1,12 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Droplet, Search, MapPin, Heart, Siren, Bell } from "lucide-react";
+import { Droplet, Search, MapPin, Heart } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import BloodRequestDialog from "@/components/BloodRequestDialog";
-import ActiveBloodRequests from "@/components/ActiveBloodRequests";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +28,7 @@ const BloodDonors = () => {
   const { coords: userCoords } = useRealtimeLocation();
 
   useEffect(() => {
-    if (user) markRead((n) => n.type === "blood_request" || n.type === "booking");
+    if (user) markRead((n) => n.type === "booking");
   }, [user]);
 
   const { data: donors = [], isLoading } = useQuery({
@@ -85,17 +83,6 @@ const BloodDonors = () => {
       queryClient.invalidateQueries({ queryKey: ["blood_donors"] });
     });
   }, [user, userCoords?.latitude, userCoords?.longitude, queryClient]);
-
-  const { data: openRequestsCount = 0 } = useQuery({
-    queryKey: ["blood_requests_open_count"],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from("blood_requests")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "open");
-      return count || 0;
-    },
-  });
 
   const filtered = useMemo(() => {
     let list = donors.filter((d) => d.user_id !== user?.id);
@@ -314,31 +301,6 @@ const BloodDonors = () => {
             )}
           </section>
 
-          {/* OPEN REQUESTS */}
-          {openRequestsCount > 0 && (
-            <section className="mt-8">
-              <div className="mb-3 flex items-center gap-2">
-                <Siren className="h-5 w-5 text-[#b7131a]" />
-                <h3 className="text-xl font-semibold">Active Requests</h3>
-                <span className="rounded-full bg-[#ffdad6] px-2 py-0.5 text-[11px] font-bold text-[#b7131a]">
-                  {openRequestsCount}
-                </span>
-              </div>
-              <ActiveBloodRequests hideTitle />
-            </section>
-          )}
-
-          <div className="mt-6 flex justify-center">
-            {user ? (
-              <BloodRequestDialog />
-            ) : (
-              <AuthRequiredDialog title="Log in to request" description="Sign in to post a blood request.">
-                <Button className="rounded-full bg-[#b7131a] px-6 text-white hover:bg-[#b7131a]/90">
-                  Create Blood Request
-                </Button>
-              </AuthRequiredDialog>
-            )}
-          </div>
         </main>
       </div>
       <BloodDonorPopup
