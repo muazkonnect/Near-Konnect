@@ -915,6 +915,26 @@ const WorkerDashboard = () => {
                       <KeyRound className="h-3 w-3" /> Password
                     </Button>
                   </ChangePasswordDialog>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={async () => {
+                      const c1 = window.prompt('This permanently deletes your account, profile, worker record, bookings, reviews, and portfolio.\n\nType DELETE to confirm:');
+                      if (c1 !== "DELETE") return;
+                      try {
+                        const { error } = await (supabase.rpc as any)("delete_my_account");
+                        if (error) throw error;
+                        toast.success("Account deleted");
+                        await supabase.auth.signOut();
+                        navigate("/", { replace: true });
+                      } catch (e: any) {
+                        toast.error(e?.message || "Failed to delete account");
+                      }
+                    }}
+                    className="h-9 gap-1 rounded-lg border-destructive/40 bg-transparent px-3 text-xs text-destructive hover:bg-destructive/10"
+                  >
+                    <XCircle className="h-3 w-3" /> Delete account
+                  </Button>
                 </div>
 
               </div>
