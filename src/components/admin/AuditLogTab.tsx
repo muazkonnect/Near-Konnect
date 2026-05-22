@@ -48,7 +48,7 @@ function AuditPanel() {
   });
 
   const actions = useMemo(
-    () => Array.from(new Set(rows.map((r: any) => r.action))).sort(),
+    () => Array.from(new Set(rows.map((r: any) => r.action as string))).sort(),
     [rows]
   );
 
