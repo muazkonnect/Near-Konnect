@@ -722,11 +722,14 @@ const WorkerDashboard = () => {
                     <Input
                       value={shopName}
                       onChange={(e) => setShopName(e.target.value)}
-                      maxLength={60}
-                      placeholder="e.g. Ali Carpentry Works"
+                      maxLength={24}
+                      placeholder="e.g. Ali Carpentry"
                       className="mt-1 h-9 bg-hero-foreground/5 text-xs"
                     />
-                    <p className="mt-1 text-[10px] text-hero-foreground/50">Shown on your banner across cards and profile.</p>
+                    <p className="mt-1 flex items-center justify-between text-[10px] text-hero-foreground/50">
+                      <span>Shown on your banner across cards and profile.</span>
+                      <span className="tabular-nums">{shopName.length}/24</span>
+                    </p>
                   </div>
                 </div>
 
