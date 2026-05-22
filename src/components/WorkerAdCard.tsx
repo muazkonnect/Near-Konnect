@@ -122,19 +122,6 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </span>
             </div>
 
-            {/* Category breadcrumb on cover */}
-            {(worker.mainCategory || worker.subCategory) && (
-              <div className="absolute bottom-2 left-[124px] right-3.5 flex flex-wrap items-center gap-x-1 text-[9.5px] font-bold uppercase tracking-[0.1em]">
-                {worker.mainCategory && (
-                  <span className="rounded-md bg-primary/30 px-1.5 py-0.5 text-primary-foreground ring-1 ring-primary/50 backdrop-blur-sm">
-                    {worker.mainCategory}
-                  </span>
-                )}
-                {worker.subCategory && (
-                  <span className="truncate text-hero-foreground/85">› {worker.subCategory}</span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* ====== AVATAR + IDENTITY ====== */}
