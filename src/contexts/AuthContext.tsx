@@ -98,23 +98,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      const { data: existingRole, error: existingRoleError } = await supabase
+      // Fetch ALL existing roles for this user — needed to detect staff accounts
+      // (admin/manager/ads_manager/moderator) which must never be inserted as workers.
+      const { data: allRoles, error: allRolesError } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", nextUser.id)
-        .eq("role", role)
-        .maybeSingle();
-      if (existingRoleError) throw existingRoleError;
+        .eq("user_id", nextUser.id);
+      if (allRolesError) throw allRolesError;
+      const roleSet = new Set((allRoles ?? []).map((r: any) => r.role));
+      const STAFF_ROLES = ["admin", "manager", "ads_manager", "moderator"];
+      const isStaff = STAFF_ROLES.some((r) => roleSet.has(r));
 
-      if (!existingRole) {
+      if (!roleSet.has(role) && !isStaff) {
         const { error: insertRoleError } = await supabase.from("user_roles").insert({ user_id: nextUser.id, role });
-        // Ignore uniqueness races (UNIQUE(user_id, role))
         if (insertRoleError && !String(insertRoleError.message).toLowerCase().includes("duplicate")) {
           throw insertRoleError;
         }
       }
 
-      if (role === "worker") {
+      if (role === "worker" && !isStaff) {
         const lat = toNumberOrNull(md.latitude);
         const lng = toNumberOrNull(md.longitude);
 
