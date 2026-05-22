@@ -77,7 +77,7 @@ const NearbyBloodRequestsForDonor = () => {
   if (!enabled || requests.length === 0) return null;
 
   return (
-    <section className="mb-5 rounded-3xl border border-destructive/30 bg-destructive/5 p-4">
+    <section className="blood-shell mb-5 rounded-3xl border border-destructive/30 bg-destructive/5 p-4">
       <div className="mb-3 flex items-center gap-2">
         <Siren className="h-5 w-5 text-destructive animate-pulse" />
         <h3 className="font-bold text-foreground">Incoming requests for you</h3>

@@ -119,7 +119,7 @@ const BloodDonors = () => {
 
   return (
     <AppLayout variant="blood" title="Blood Konnect" subtitle="Find and reach nearby blood donors.">
-      <div className="-mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
+      <div className="blood-shell -mx-4 -mt-[90px] -mb-[166px] bg-white text-[#271716]">
 
 
 
