@@ -269,6 +269,52 @@ const init = async (userId: string) => {
     }
   );
 
+  ch.on(
+    "postgres_changes",
+    { event: "UPDATE", schema: "public", table: "bookings", filter: `customer_id=eq.${userId}` },
+    (payload: any) => {
+      if (payload.new?.status === payload.old?.status) return;
+      const s = payload.new.status;
+      upsert({
+        id: `book-upd-${payload.new.id}-${s}`,
+        type: "booking",
+        title: `Booking ${s}`,
+        body: `${payload.new.service_description} on ${payload.new.booking_date}`,
+        created_at: payload.new.updated_at || new Date().toISOString(),
+        link: "/dashboard",
+        read: false,
+      });
+      toast.info(`📋 Booking ${s}`, { description: payload.new.service_description });
+    }
+  );
+
+  // Reviews on the current user's worker profile
+  const { data: myWorker } = await sb
+    .from("workers").select("id").eq("user_id", userId).maybeSingle();
+  if (myWorker?.id) {
+    ch.on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "reviews", filter: `worker_id=eq.${myWorker.id}` },
+      async (payload: any) => {
+        const { data: cp } = await supabase
+          .from("profiles").select("full_name").eq("user_id", payload.new.customer_id).maybeSingle();
+        const name = cp?.full_name || "A customer";
+        upsert({
+          id: `review-${payload.new.id}`,
+          type: "request_update",
+          title: "New review",
+          body: `${name} rated you ${payload.new.rating}★`,
+          created_at: payload.new.created_at,
+          link: "/worker-dashboard",
+          read: false,
+        });
+        toast.info("⭐ New review", { description: `${name} rated you ${payload.new.rating}★` });
+      }
+    );
+  }
+
+
+
 
   ch.on(
     "postgres_changes",
