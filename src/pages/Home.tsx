@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
+  ChevronRight,
   Droplet,
   HeartPulse,
   MapPin,
@@ -36,6 +37,7 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
+import { MAIN_SERVICE_CATEGORIES, MAIN_ICONS } from "@/data/serviceCategories";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -43,9 +45,6 @@ const fadeUp = {
   hidden: { opacity: 0, y: 14 },
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35 } }),
 };
-
-import { MAIN_SERVICE_CATEGORIES, MAIN_ICONS } from "@/data/serviceCategories";
-import { ChevronRight } from "lucide-react";
 
 type DonorRow = {
   user_id: string;
