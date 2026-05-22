@@ -30,7 +30,7 @@ const WorkerOnboardingDialog = () => {
   const [mainCategory, setMainCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState("");
   const [experience, setExperience] = useState("");
-  const [shopName, setShopName] = useState("");
+  
   const [coords, setCoords] = useState<Coords | null>(null);
   const [willingToDonate, setWillingToDonate] = useState(false);
   const [bloodGroup, setBloodGroup] = useState("");
