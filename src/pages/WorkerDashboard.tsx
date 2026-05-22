@@ -393,7 +393,7 @@ const WorkerDashboard = () => {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-amber-400">Premium Featured · Active</p>
                   <p className="text-[11px] text-hero-foreground/70">
-                    {activePremium.duration_days}-day plan · {premiumDaysLeft} day{premiumDaysLeft === 1 ? "" : "s"} left · 3 km premium reach
+                    {activePremium.duration_days}-day plan · {premiumRemaining} · {activePremium.radius_km ?? 3} km premium reach
                   </p>
                 </div>
                 <button
