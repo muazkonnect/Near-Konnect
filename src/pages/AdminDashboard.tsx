@@ -559,8 +559,28 @@ const AdminDashboard = () => {
             {tab === "workers" && (
               <div>
                 <SectionHeader title="Workers" subtitle="Verify, feature, and review your providers." />
+                <div className="mb-3 relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-foreground/40" />
+                  <Input
+                    value={workerSearch}
+                    onChange={(e) => setWorkerSearch(e.target.value)}
+                    placeholder="Search by name, profession or category…"
+                    className="pl-9 h-9"
+                  />
+                </div>
                 <div className="space-y-3">
-                  {workers.map((w: any) => (
+                  {workers
+                    .filter((w: any) => {
+                      const q = workerSearch.trim().toLowerCase();
+                      if (!q) return true;
+                      return (
+                        (w.profiles?.full_name || "").toLowerCase().includes(q) ||
+                        (w.profession || "").toLowerCase().includes(q) ||
+                        (w.main_category || "").toLowerCase().includes(q) ||
+                        (w.sub_category || "").toLowerCase().includes(q)
+                      );
+                    })
+                    .map((w: any) => (
                     <div
                       key={w.id}
                       className="flex flex-col gap-3 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3.5 sm:p-4 sm:flex-row sm:flex-wrap sm:items-center transition-colors hover:border-hero-foreground/20"
