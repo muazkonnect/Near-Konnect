@@ -421,7 +421,7 @@ const Register = () => {
                 <div>
                   <label className={labelCls}>Shop / Business Name <span className="text-[#c4c7c7]/50">(optional)</span></label>
                   <div className={fieldWrap}>
-                    <input type="text" maxLength={60} className={fieldInput} placeholder="e.g. Ali Carpentry Works" value={shopName} onChange={(e) => setShopName(e.target.value)} />
+                    <input type="text" maxLength={24} className={fieldInput} placeholder="e.g. Ali Carpentry" value={shopName} onChange={(e) => setShopName(e.target.value)} />
                   </div>
                 </div>
 
