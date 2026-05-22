@@ -714,24 +714,6 @@ const WorkerDashboard = () => {
                 {/* Portfolio */}
                 <PortfolioManager workerId={workerData.id} verified={!!workerData.verified} />
 
-                {/* Shop name */}
-                <div className="space-y-2 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Shop / Business</p>
-                  <div>
-                    <Label className="text-[11px] text-hero-foreground/70">Shop name (optional)</Label>
-                    <Input
-                      value={shopName}
-                      onChange={(e) => setShopName(e.target.value)}
-                      maxLength={24}
-                      placeholder="e.g. Ali Carpentry"
-                      className="mt-1 h-9 bg-hero-foreground/5 text-xs"
-                    />
-                    <p className="mt-1 flex items-center justify-between text-[10px] text-hero-foreground/50">
-                      <span>Shown on your banner across cards and profile.</span>
-                      <span className="tabular-nums">{shopName.length}/24</span>
-                    </p>
-                  </div>
-                </div>
 
                 {/* Service category & expertise */}
                 <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/5 p-3.5">
