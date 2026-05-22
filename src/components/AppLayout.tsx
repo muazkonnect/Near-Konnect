@@ -72,7 +72,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
                     <HeartPulse className="h-3 w-3" /> Save Lives
                   </span>
                 )}
-                <h1 className="text-[22px] font-bold leading-tight tracking-tight">{title}</h1>
+                <h1 className="text-[22px] font-bold leading-tight tracking-tight line-clamp-2 break-words">{title}</h1>
                 {subtitle && <p className="mt-1 text-[13px] leading-snug text-hero-muted line-clamp-2">{subtitle}</p>}
               </div>
               {action && <div className="shrink-0">{action}</div>}
