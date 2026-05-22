@@ -122,19 +122,6 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </span>
             </div>
 
-            {/* Category breadcrumb on cover */}
-            {(worker.mainCategory || worker.subCategory) && (
-              <div className="absolute bottom-2 left-[124px] right-3.5 flex flex-wrap items-center gap-x-1 text-[9.5px] font-bold uppercase tracking-[0.1em]">
-                {worker.mainCategory && (
-                  <span className="rounded-md bg-primary/30 px-1.5 py-0.5 text-primary-foreground ring-1 ring-primary/50 backdrop-blur-sm">
-                    {worker.mainCategory}
-                  </span>
-                )}
-                {worker.subCategory && (
-                  <span className="truncate text-hero-foreground/85">› {worker.subCategory}</span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* ====== AVATAR + IDENTITY ====== */}
@@ -181,6 +168,20 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               <p className="mt-1 truncate text-[13px] font-bold uppercase tracking-wide text-primary">
                 {worker.profession}
               </p>
+            )}
+            {(worker.mainCategory || worker.subCategory) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                {worker.mainCategory && (
+                  <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary ring-1 ring-primary/30">
+                    {worker.mainCategory}
+                  </span>
+                )}
+                {worker.subCategory && (
+                  <span className="rounded-md bg-hero-foreground/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/80 ring-1 ring-hero-foreground/10">
+                    {worker.subCategory}
+                  </span>
+                )}
+              </div>
             )}
             {worker.city && (
               <span className="mt-1 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
