@@ -21,7 +21,7 @@ export interface Worker {
   longitude?: number;
   mainCategory?: string;
   subCategory?: string;
-  shopName?: string;
+  
   userId?: string;
   contactMethods?: ContactMethod[];
   showContact?: boolean;
