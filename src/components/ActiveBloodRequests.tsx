@@ -74,7 +74,7 @@ const ActiveBloodRequests = ({ compact = false, hideTitle = false }: ActiveBlood
   if (requests.length === 0) return null;
 
   return (
-    <section className={compact ? "py-2" : "container mx-auto px-4 py-8"}>
+    <section className={`blood-shell ${compact ? "py-2" : "container mx-auto px-4 py-8"}`}>
       {!hideTitle && (
       <div className="mb-5 flex items-center gap-2">
         <AlertTriangle className="h-5 w-5 text-destructive" />
