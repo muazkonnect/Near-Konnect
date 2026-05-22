@@ -132,19 +132,21 @@ const AppContent = () => {
 
 const App = () => (
   <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <I18nProvider>
-        <AuthProvider>
-          <WalletProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <AppContent />
-            </TooltipProvider>
-          </WalletProvider>
-        </AuthProvider>
-      </I18nProvider>
-    </QueryClientProvider>
+    <LocationGate>
+      <QueryClientProvider client={queryClient}>
+        <I18nProvider>
+          <AuthProvider>
+            <WalletProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <AppContent />
+              </TooltipProvider>
+            </WalletProvider>
+          </AuthProvider>
+        </I18nProvider>
+      </QueryClientProvider>
+    </LocationGate>
   </ErrorBoundary>
 );
 
