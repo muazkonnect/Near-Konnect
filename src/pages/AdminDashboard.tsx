@@ -8,19 +8,20 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  
   Heart,
   Droplet,
   Megaphone,
   Star,
   LayoutDashboard,
-  
   LogOut,
   Crown,
   UserCog,
   Home,
   Zap,
   Sliders,
+  Search,
+  Bell,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,9 +52,12 @@ const SettingsTab = lazy(() => import("@/components/admin/SettingsTab"));
 const TaxonomyManagementTab = lazy(() => import("@/components/admin/TaxonomyManagementTab"));
 
 const SparksAdminTab = lazy(() => import("@/components/admin/SparksAdminTab"));
-const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedAdminPanel"));
+const FeaturedManagementTab = lazy(() => import("@/components/admin/FeaturedManagementTab"));
 const VerificationsAdminPanel = lazy(() => import("@/components/admin/VerificationsAdminPanel"));
 const RunningAdsPanel = lazy(() => import("@/components/admin/SparksAdminTab").then((m) => ({ default: m.CampaignsPanel })));
+const BloodRequestsTab = lazy(() => import("@/components/admin/BloodRequestsTab"));
+const AuditLogTab = lazy(() => import("@/components/admin/AuditLogTab"));
+const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"));
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
@@ -66,21 +70,24 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "blood_requests" | "featured" | "verifications" | "running_ads" | "sparks" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
-const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
-  { key: "overview", label: "Overview", icon: LayoutDashboard },
-  { key: "workers", label: "Workers", icon: Briefcase },
-  { key: "users", label: "Users", icon: Users },
-  { key: "categories", label: "Categories", icon: Shield },
-  { key: "donors", label: "Blood Donors", icon: Heart },
-  { key: "featured", label: "Featured", icon: Star },
-  { key: "verifications", label: "Verifications", icon: BadgeCheck },
-  { key: "running_ads", label: "Running Ads", icon: Megaphone },
-  { key: "sparks", label: "Sparks & Payments", icon: Zap },
-  { key: "settings", label: "Settings", icon: Sliders },
-  { key: "avatar_resets", label: "Avatar Resets", icon: UserCog },
-  { key: "location_requests", label: "Location Requests", icon: UserCog },
+const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
+  { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
+  { key: "workers", label: "Workers", icon: Briefcase, group: "Manage" },
+  { key: "users", label: "Users", icon: Users, group: "Manage" },
+  { key: "categories", label: "Categories", icon: Shield, group: "Manage" },
+  { key: "donors", label: "Blood Donors", icon: Heart, group: "Manage" },
+  { key: "blood_requests", label: "Blood Requests", icon: Droplet, group: "Manage" },
+  { key: "featured", label: "Featured", icon: Star, group: "Operations" },
+  { key: "verifications", label: "Verifications", icon: BadgeCheck, group: "Operations" },
+  { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
+  { key: "sparks", label: "Sparks & Payments", icon: Zap, group: "Operations" },
+  { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
+  { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
+  { key: "location_requests", label: "Location Requests", icon: UserCog, group: "Operations" },
+  { key: "audit", label: "Audit & Access", icon: ScrollText, group: "System" },
+  { key: "settings", label: "Settings", icon: Sliders, group: "System" },
 ];
 
 const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void }) => {
@@ -102,32 +109,34 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-hero-foreground/50">Manage</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV_ITEMS.map((it) => {
-                const active = tab === it.key;
-                const Icon = it.icon;
-                return (
-                  <SidebarMenuItem key={it.key}>
-                    <SidebarMenuButton
-                      onClick={() => setTab(it.key)}
-                      className={
-                        active
-                          ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
-                          : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
-                      }
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{it.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {(["Manage", "Operations", "System"] as const).map((grp) => (
+          <SidebarGroup key={grp}>
+            <SidebarGroupLabel className="text-hero-foreground/50">{grp}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {NAV_ITEMS.filter((n) => n.group === grp).map((it) => {
+                  const active = tab === it.key;
+                  const Icon = it.icon;
+                  return (
+                    <SidebarMenuItem key={it.key}>
+                      <SidebarMenuButton
+                        onClick={() => setTab(it.key)}
+                        className={
+                          active
+                            ? "bg-primary/15 font-semibold text-hero-foreground hover:bg-primary/20 hover:text-hero-foreground"
+                            : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
+                        }
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{it.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter className="p-2 space-y-1">
         <SidebarMenu>
@@ -214,6 +223,7 @@ const AdminDashboard = () => {
   const [featurePriority, setFeaturePriority] = useState("100");
   const [donorFilter, setDonorFilter] = useState("");
   const [editingWorker, setEditingWorker] = useState<any | null>(null);
+  const [workerSearch, setWorkerSearch] = useState("");
 
   // Apply admin-shell scope to body so portaled popovers/dialogs inherit dark theme
   useEffect(() => {
@@ -549,15 +559,39 @@ const AdminDashboard = () => {
             {tab === "workers" && (
               <div>
                 <SectionHeader title="Workers" subtitle="Verify, feature, and review your providers." />
+                <div className="mb-3 relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hero-foreground/40" />
+                  <Input
+                    value={workerSearch}
+                    onChange={(e) => setWorkerSearch(e.target.value)}
+                    placeholder="Search by name, profession or category…"
+                    className="pl-9 h-9"
+                  />
+                </div>
                 <div className="space-y-3">
-                  {workers.map((w: any) => (
+                  {workers
+                    .filter((w: any) => {
+                      const q = workerSearch.trim().toLowerCase();
+                      if (!q) return true;
+                      return (
+                        (w.profiles?.full_name || "").toLowerCase().includes(q) ||
+                        (w.profession || "").toLowerCase().includes(q) ||
+                        (w.main_category || "").toLowerCase().includes(q) ||
+                        (w.sub_category || "").toLowerCase().includes(q)
+                      );
+                    })
+                    .map((w: any) => (
                     <div
                       key={w.id}
                       className="flex flex-col gap-3 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-3.5 sm:p-4 sm:flex-row sm:flex-wrap sm:items-center transition-colors hover:border-hero-foreground/20"
                     >
                       <div className="flex items-start gap-3 sm:flex-1 min-w-0">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-sm font-bold text-primary">
-                          {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/15 text-sm font-bold text-primary">
+                          {w.profiles?.avatar_url ? (
+                            <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-hero-foreground">{w.profiles?.full_name}</p>
