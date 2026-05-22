@@ -4,9 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Star, Search, Zap, Clock, XCircle, Loader2 } from "lucide-react";
+import { Star, Search, Zap, Clock, XCircle, Loader2, Plus, Trash2 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
+import {
+  useAdminAllPricing,
+  useAdminUpsertPricing,
+  useAdminDeletePricing,
+} from "@/hooks/useFeatured";
 
 const sb = supabase as any;
 
@@ -14,6 +19,13 @@ const FeaturedManagementTab = () => {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"active" | "all">("active");
+
+  const { data: pricingRules = [], isLoading: pricingLoading } = useAdminAllPricing();
+  const upsertPricing = useAdminUpsertPricing();
+  const deletePricing = useAdminDeletePricing();
+
+  const [newDays, setNewDays] = useState("7");
+  const [newSparks, setNewSparks] = useState("100");
 
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ["admin_featured_workers"],
@@ -87,8 +99,133 @@ const FeaturedManagementTab = () => {
     qc.invalidateQueries({ queryKey: ["admin_featured_workers"] });
   };
 
+  const addRule = async () => {
+    const days = Number(newDays);
+    const sparks = Number(newSparks);
+    if (!days || days <=  0 || sparks < 0) {
+      toast.error("Enter valid days and sparks");
+      return;
+    }
+    try {
+      await upsertPricing.mutateAsync({ duration_days: days, base_sparks: sparks, multiplier: 1, active: true } as any);
+      toast.success("Pricing rule added");
+      setNewDays("7");
+      setNewSparks("100");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to add rule");
+    }
+  };
+
+  const toggleRule = async (rule: any) => {
+    try {
+      await upsertPricing.mutateAsync({ id: rule.id, active: !rule.active } as any);
+      toast.success(rule.active ? "Rule disabled" : "Rule enabled");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to update rule");
+    }
+  };
+
+  const removeRule = async (id: string) => {
+    if (!confirm("Delete this pricing rule?")) return;
+    try {
+      await deletePricing.mutateAsync(id);
+      toast.success("Pricing rule deleted");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to delete rule");
+    }
+  };
+
   return (
     <div className="space-y-5">
+      {/* Pricing Rules */}
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-sm font-bold text-hero-foreground">
+            <Zap className="h-4 w-4 text-primary" /> Sparks Cost (Pricing Rules)
+          </h3>
+          <span className="text-[10px] uppercase tracking-wider text-hero-foreground/50">
+            {pricingRules.length} rule{pricingRules.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {pricingLoading ? (
+          <div className="flex h-20 items-center justify-center">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {pricingRules.length === 0 && (
+              <p className="text-xs text-hero-foreground/50">No pricing rules yet. Add one below.</p>
+            )}
+            {pricingRules.map((r: any) => (
+              <div
+                key={r.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-hero-foreground/10 bg-hero/[0.03] px-3 py-2"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-semibold text-hero-foreground">{r.duration_days} days</span>
+                  <span className="text-xs text-hero-foreground/60">
+                    <Zap className="mr-0.5 inline h-3 w-3 text-primary" />
+                    {r.base_sparks} sparks
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleRule(r)}
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ring-1 transition-colors ${
+                      r.active
+                        ? "bg-success/15 text-success ring-success/30"
+                        : "bg-hero-foreground/5 text-hero-foreground/40 ring-hero-foreground/10"
+                    }`}
+                  >
+                    {r.active ? "active" : "off"}
+                  </button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => removeRule(r.id)}
+                    className="h-7 w-7 p-0 text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-end gap-2 border-t border-hero-foreground/10 pt-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Duration (days)</label>
+            <Input
+              type="number"
+              min={1}
+              className="h-9 w-24"
+              value={newDays}
+              onChange={(e) => setNewDays(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Sparks cost</label>
+            <Input
+              type="number"
+              min={1}
+              className="h-9 w-28"
+              value={newSparks}
+              onChange={(e) => setNewSparks(e.target.value)}
+            />
+          </div>
+          <Button
+            size="sm"
+            onClick={addRule}
+            disabled={upsertPricing.isPending}
+            className="h-9"
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" /> Add Rule
+          </Button>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
