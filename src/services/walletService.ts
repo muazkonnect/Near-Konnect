@@ -44,6 +44,12 @@ export type PaymentSettings = {
   usdt_address: string;
   usdt_network: string;
   usdt_qr_url: string;
+  usdt_address_trc: string;
+  usdt_address_bep: string;
+  usdt_address_erc: string;
+  usdt_qr_trc_url: string;
+  usdt_qr_bep_url: string;
+  usdt_qr_erc_url: string;
   instructions: string;
 };
 

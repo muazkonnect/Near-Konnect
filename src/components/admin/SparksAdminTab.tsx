@@ -394,10 +394,19 @@ const PaymentSettingsPanel = () => {
           {fld("jazzcash_qr_url", "QR image URL")}
         </div>
         <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
-          <p className="text-sm font-bold text-hero-foreground">USDT</p>
-          {fld("usdt_address", "Wallet address")}
-          {fld("usdt_network", "Network", "TRC20")}
-          {fld("usdt_qr_url", "QR image URL")}
+          <p className="text-sm font-bold text-hero-foreground">USDT — TRC20 (Tron)</p>
+          {fld("usdt_address_trc" as any, "TRC20 address", "T...")}
+          {fld("usdt_qr_trc_url" as any, "TRC20 QR URL")}
+        </div>
+        <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+          <p className="text-sm font-bold text-hero-foreground">USDT — BEP20 (BNB Smart Chain)</p>
+          {fld("usdt_address_bep" as any, "BEP20 address", "0x...")}
+          {fld("usdt_qr_bep_url" as any, "BEP20 QR URL")}
+        </div>
+        <div className="space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+          <p className="text-sm font-bold text-hero-foreground">USDT — ERC20 (Ethereum)</p>
+          {fld("usdt_address_erc" as any, "ERC20 address", "0x...")}
+          {fld("usdt_qr_erc_url" as any, "ERC20 QR URL")}
         </div>
       </div>
       <div className="mt-4 space-y-3 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
