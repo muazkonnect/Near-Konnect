@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "47748107423",
+    "project_id": "near-konnect-a7aad",
+    "storage_bucket": "near-konnect-a7aad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47748107423:android:ab970e5f4af0654a0126aa",
+        "android_client_info": {
+          "package_name": "com.nearkonnect.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFEcgD3HQGnt2rjQbrfPpUqplJYlaJAx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
