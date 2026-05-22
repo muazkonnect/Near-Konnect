@@ -28,6 +28,11 @@ const FeaturedManagementTab = () => {
   const [newDays, setNewDays] = useState("7");
   const [newSparks, setNewSparks] = useState("100");
 
+  const defaultRadius = useAppSetting("featured_default_radius_km");
+  const updateSetting = useUpdateAppSetting();
+  const [radiusInput, setRadiusInput] = useState<string>("");
+  const radiusValue = radiusInput === "" ? String(defaultRadius ?? 3) : radiusInput;
+
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ["admin_featured_workers"],
     queryFn: async () => {
