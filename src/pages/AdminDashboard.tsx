@@ -253,7 +253,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!isStaff) return;
     const channel = supabase
-      .channel("admin-realtime")
+      .channel(`admin-realtime-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "workers" }, () => {
         queryClient.invalidateQueries({ queryKey: ["admin_workers"] });
       })
