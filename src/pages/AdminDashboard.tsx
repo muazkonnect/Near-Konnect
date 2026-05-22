@@ -341,6 +341,37 @@ const AdminDashboard = () => {
     enabled: isStaff,
   });
 
+  // Pending action counts for overview
+  const { data: pending } = useQuery({
+    queryKey: ["admin_pending_counts"],
+    queryFn: async () => {
+      const head = { count: "exact" as const, head: true };
+      const [ver, feat, pay, avt, loc] = await Promise.all([
+        (supabase as any).from("worker_verifications").select("id", head).eq("status", "pending"),
+        (supabase as any).from("featured_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("payment_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("avatar_reset_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("worker_location_change_requests").select("id", head).eq("status", "pending"),
+      ]);
+      return {
+        verifications: ver.count ?? 0,
+        featured: feat.count ?? 0,
+        payments: pay.count ?? 0,
+        avatars: avt.count ?? 0,
+        locations: loc.count ?? 0,
+      };
+    },
+    enabled: isStaff,
+    refetchInterval: 60_000,
+  });
+
+  // New signups in last 24h
+  const newUsers24h = useMemo(() => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    return (allProfiles as any[]).filter((p) => new Date(p.created_at).getTime() >= cutoff).length;
+  }, [allProfiles]);
+
+
   const featuredMap = useMemo(
     () => new Map((featuredServices as any[]).map((row) => [row.service_id, row])),
     [featuredServices]
