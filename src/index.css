@@ -175,6 +175,17 @@
     letter-spacing: -0.02em;
     font-weight: 700;
   }
+
+  /* Responsive safety: prevent long unbroken strings (URLs, addresses, tokens)
+     from blowing out narrow layouts on mobile. */
+  p, span, h1, h2, h3, h4, h5, h6, a, li, td, th, label {
+    overflow-wrap: anywhere;
+  }
+  /* Inputs/media never grow wider than their container */
+  input, textarea, select,
+  img, video, svg, canvas {
+    max-width: 100%;
+  }
 }
 
 @layer utilities {
