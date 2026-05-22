@@ -48,6 +48,7 @@ import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromot
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useNearbyFeaturedWorkerIds } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
+import { matchesSearch } from "@/lib/searchKeywords";
 
 type SortKey = "distance" | "rating" | "experience" | "price";
 type RadiusKm = 1 | 2 | 3 | 5 | 10 | 20 | null;
@@ -133,10 +134,9 @@ const Discover = () => {
       list = list.filter((w: any) => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search.trim()) {
-      const words = search.toLowerCase().trim().split(/\s+/);
       list = list.filter((w: any) => {
-        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`.toLowerCase();
-        return words.every((wd) => hay.includes(wd));
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`;
+        return matchesSearch(hay, search);
       });
     }
     return list;
@@ -205,15 +205,9 @@ const Discover = () => {
       list = list.filter(w => w.subCategory === selectedSubCategory || w.mainCategory === selectedSubCategory);
     }
     if (search) {
-      const words = search.toLowerCase().trim().split(/\s+/);
       list = list.filter(w => {
-        const name = w.name.toLowerCase();
-        const prof = w.profession.toLowerCase();
-        const mainCategory = w.mainCategory.toLowerCase();
-        const subCategory = w.subCategory.toLowerCase();
-        return words.every(
-          word => name.includes(word) || prof.includes(word) || mainCategory.includes(word) || subCategory.includes(word)
-        );
+        const hay = `${w.name} ${w.profession} ${w.mainCategory} ${w.subCategory}`;
+        return matchesSearch(hay, search);
       });
     }
     if (userCoords) {
