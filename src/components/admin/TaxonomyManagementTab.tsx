@@ -46,13 +46,12 @@ export default function TaxonomyManagementTab({ categories }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const [editIcon, setEditIcon] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const [newMainName, setNewMainName] = useState("");
-  const [newMainIcon, setNewMainIcon] = useState("");
   const [newSubName, setNewSubName] = useState<Record<string, string>>({});
   const [newExpertiseName, setNewExpertiseName] = useState<Record<string, string>>({});
+
 
   const sortFn = (a: Category, b: Category) =>
     (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name);
