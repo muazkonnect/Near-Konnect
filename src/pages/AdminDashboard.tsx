@@ -341,6 +341,37 @@ const AdminDashboard = () => {
     enabled: isStaff,
   });
 
+  // Pending action counts for overview
+  const { data: pending } = useQuery({
+    queryKey: ["admin_pending_counts"],
+    queryFn: async () => {
+      const head = { count: "exact" as const, head: true };
+      const [ver, feat, pay, avt, loc] = await Promise.all([
+        (supabase as any).from("worker_verifications").select("id", head).eq("status", "pending"),
+        (supabase as any).from("featured_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("payment_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("avatar_reset_requests").select("id", head).eq("status", "pending"),
+        (supabase as any).from("worker_location_change_requests").select("id", head).eq("status", "pending"),
+      ]);
+      return {
+        verifications: ver.count ?? 0,
+        featured: feat.count ?? 0,
+        payments: pay.count ?? 0,
+        avatars: avt.count ?? 0,
+        locations: loc.count ?? 0,
+      };
+    },
+    enabled: isStaff,
+    refetchInterval: 60_000,
+  });
+
+  // New signups in last 24h
+  const newUsers24h = useMemo(() => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    return (allProfiles as any[]).filter((p) => new Date(p.created_at).getTime() >= cutoff).length;
+  }, [allProfiles]);
+
+
   const featuredMap = useMemo(
     () => new Map((featuredServices as any[]).map((row) => [row.service_id, row])),
     [featuredServices]
@@ -481,76 +512,56 @@ const AdminDashboard = () => {
               <div>
                 <SectionHeader title="Overview" subtitle="A quick pulse on your platform." />
 
-                {/* Bento grid: mobile 2-col compact, desktop 6-col with mixed spans */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-6 auto-rows-[minmax(0,auto)]">
-                  <StatCard
-                    label="Users"
-                    value={allProfiles.length}
-                    icon={Users}
-                    accent
-                    className="col-span-2 md:col-span-2 lg:col-span-2 lg:row-span-2 min-h-[140px] lg:min-h-[200px]"
-                    onClick={() => setTab("users")}
-                  />
+                {/* Headline stats */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                  <StatCard label="Users" value={allProfiles.length} icon={Users} accent onClick={() => setTab("users")} />
                   <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
-                  <StatCard label="Categories" value={categories.length} icon={Shield} onClick={() => setTab("categories")} />
-                  <StatCard label="Donors" value={bloodDonors.length} icon={Heart} onClick={() => setTab("donors")} />
-                  <StatCard label="Featured" value={featuredServices.length} icon={Star} onClick={() => setTab("featured")} />
-                  <StatCard
-                    label="Running Ads"
-                    value={nativeAds.length}
-                    icon={Megaphone}
-                    className="col-span-2 md:col-span-2 lg:col-span-2"
-                    onClick={() => setTab("running_ads")}
-                  />
+                  <StatCard label="Blood Donors" value={bloodDonors.length} icon={Heart} onClick={() => setTab("donors")} />
+                  <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
                 </div>
 
-                {/* Latest activity bento */}
-                <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5 lg:col-span-2">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
-                      <button onClick={() => setTab("workers")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
-                    </div>
-                    <ul className="space-y-2.5">
-                      {workers.slice(0, 5).map((w: any) => (
-                        <li key={w.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04] transition-colors">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-[11px] font-bold text-primary">
-                              {w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"}
-                            </div>
-                            <span className="truncate text-sm font-medium text-hero-foreground">
-                              {w.profiles?.full_name || "Unnamed"}
-                            </span>
-                          </div>
-                          <div className="flex flex-col items-end shrink-0">
-                            <span className="text-xs text-hero-foreground/60">{w.profession}</span>
-                            <span className="text-[10px] text-hero-foreground/40 truncate max-w-[140px]">{w.main_category}</span>
-                          </div>
-                        </li>
-                      ))}
-                      {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No workers yet.</li>}
-                    </ul>
+                {/* Pending actions */}
+                <h3 className="mt-6 mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                  Needs your attention
+                </h3>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+                  <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} onClick={() => setTab("verifications")} />
+                  <StatCard label="Featured Req" value={pending?.featured ?? 0} icon={Star} onClick={() => setTab("featured")} />
+                  <StatCard label="Payments" value={pending?.payments ?? 0} icon={Zap} onClick={() => setTab("sparks")} />
+                  <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} onClick={() => setTab("avatar_resets")} />
+                  <StatCard label="Location Req" value={pending?.locations ?? 0} icon={UserCog} onClick={() => setTab("location_requests")} />
+                </div>
+
+                {/* Latest workers */}
+                <div className="mt-6 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
+                    <button onClick={() => setTab("workers")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
                   </div>
-                  <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest ads</h3>
-                      <button onClick={() => setTab("running_ads")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
-                    </div>
-                    <ul className="space-y-2.5">
-                      {(nativeAds as any[]).slice(0, 5).map((a) => (
-                        <li key={a.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04] transition-colors">
-                          <span className="truncate text-sm font-medium text-hero-foreground">{a.title}</span>
-                          <Badge variant="outline" className="text-[10px] shrink-0 border-hero-foreground/20 text-hero-foreground/70">
-                            {a.placement}
-                          </Badge>
-                        </li>
-                      ))}
-                      {nativeAds.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No ads yet.</li>}
-                    </ul>
-                  </div>
+                  <ul className="space-y-2.5">
+                    {workers.slice(0, 5).map((w: any) => (
+                      <li key={w.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-[11px] font-bold text-primary overflow-hidden">
+                            {w.profiles?.avatar_url ? (
+                              <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
+                            ) : (
+                              w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
+                            )}
+                          </div>
+                          <span className="truncate text-sm font-medium text-hero-foreground">
+                            {w.profiles?.full_name || "Unnamed"}
+                          </span>
+                        </div>
+                        <span className="text-xs text-hero-foreground/60 shrink-0 truncate max-w-[140px]">{w.profession}</span>
+                      </li>
+                    ))}
+                    {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No workers yet.</li>}
+                  </ul>
                 </div>
               </div>
             )}
+
 
 
             {/* WORKERS */}
