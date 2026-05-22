@@ -5,7 +5,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const liveReload = process.env.CAP_LIVE_RELOAD === "1";
 
 const config: CapacitorConfig = {
-  appId: "app.lovable.49dc22d21a144885a7ae05d9e3832c1f",
+  appId: "com.nearkonnect.app",
   appName: "nearkonnectapp",
   webDir: "dist",
   ...(liveReload
