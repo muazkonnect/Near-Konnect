@@ -355,17 +355,6 @@ const WorkerOnboardingDialog = () => {
                 />
               </div>
 
-              <div>
-                <Label className={labelClass}>Shop / Business name (optional)</Label>
-                <Input
-                  type="text"
-                  maxLength={24}
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="e.g. Ali Carpentry"
-                  className={inputClass}
-                />
-              </div>
 
               <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-sm font-semibold">Pin your service location *</p>
