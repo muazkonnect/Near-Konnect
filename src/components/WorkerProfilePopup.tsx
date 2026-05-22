@@ -100,8 +100,8 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
             </div>
 
             {(worker as any).shopName && (
-              <div className="absolute bottom-2 left-[140px] right-4 flex">
-                <span className="max-w-full truncate rounded-md bg-hero/65 px-2.5 py-1 text-[18px] font-black uppercase tracking-tight text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+              <div className="absolute bottom-2 left-[140px] right-4">
+                <span className="block text-[18px] font-black uppercase tracking-tight text-hero-foreground [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
                   {(worker as any).shopName}
                 </span>
               </div>
