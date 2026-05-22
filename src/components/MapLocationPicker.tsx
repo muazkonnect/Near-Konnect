@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, Navigation, Search } from "lucide-react";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { toast } from "sonner";
 import LocationLabel from "@/components/LocationLabel";
@@ -21,11 +22,16 @@ interface MapLocationPickerProps {
   radiusKm?: number;
 }
 
+type Suggestion = { display_name: string; lat: string; lon: string };
 
 const DEFAULT_CENTER: Coords = { latitude: 24.8607, longitude: 67.0011 };
 
 const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps) => {
   const [locating, setLocating] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -33,8 +39,6 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
-
-  // Init map once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const center = value ?? DEFAULT_CENTER;
@@ -68,7 +72,6 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
     };
   }, []);
 
-  // Sync marker + recenter when value changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -86,7 +89,6 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
     }
   }, [value]);
 
-  // Sync radius circle
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -112,7 +114,44 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
     }
   }, [value, radiusKm]);
 
+  // Debounced autocomplete via Nominatim
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        setSearching(true);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(q)}`,
+          { signal: ctrl.signal, headers: { "Accept-Language": navigator.language || "en" } },
+        );
+        const data: Suggestion[] = await res.json();
+        setSuggestions(data || []);
+        setShowSuggestions(true);
+      } catch {
+        // ignore
+      } finally {
+        setSearching(false);
+      }
+    }, 350);
+    return () => {
+      ctrl.abort();
+      clearTimeout(t);
+    };
+  }, [query]);
 
+  const pickSuggestion = (s: Suggestion) => {
+    const lat = parseFloat(s.lat);
+    const lon = parseFloat(s.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+    setQuery(s.display_name);
+    setShowSuggestions(false);
+    onChange({ latitude: lat, longitude: lon });
+  };
 
   const useCurrent = async () => {
     setLocating(true);
@@ -128,8 +167,39 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-muted-foreground">Tap the map to drop a pin at your fixed service location.</p>
-      <div className="h-56 w-full rounded-lg overflow-hidden border">
+      <p className="text-xs text-muted-foreground">
+        Search for a place, use your current location, or tap the map to drop a pin.
+      </p>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => suggestions.length && setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+          placeholder="Search address, area, or city…"
+          className="pl-9"
+        />
+        {searching && (
+          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+        )}
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-lg">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pickSuggestion(s)}
+                className="block w-full truncate px-3 py-2 text-left text-xs hover:bg-accent"
+              >
+                {s.display_name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="h-56 w-full overflow-hidden rounded-lg border">
         <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       </div>
       <Button type="button" variant="outline" size="sm" className="w-full gap-2" onClick={useCurrent} disabled={locating}>
