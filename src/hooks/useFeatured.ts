@@ -43,7 +43,7 @@ export function useNearbyFeatured(coords: { lat: number; lng: number } | null, c
   });
 }
 
-/** Set of worker ids that are sparks-paid featured within 3km of the user. */
+/** Set of worker ids that are sparks-paid featured within radius of the user. */
 export function useNearbyFeaturedWorkerIds(
   coords: { latitude: number; longitude: number } | null | undefined,
   categoryId?: string | null
@@ -53,6 +53,20 @@ export function useNearbyFeaturedWorkerIds(
     categoryId ?? null
   );
   return new Set<string>((data ?? []).map((r) => r.worker_id));
+}
+
+/** Map of worker_id -> { ends_at, distance_km } for nearby paid featured. */
+export function useNearbyFeaturedMap(
+  coords: { latitude: number; longitude: number } | null | undefined,
+  categoryId?: string | null
+) {
+  const { data } = useNearbyFeatured(
+    coords ? { lat: coords.latitude, lng: coords.longitude } : null,
+    categoryId ?? null
+  );
+  const map = new Map<string, { ends_at: string; distance_km: number }>();
+  (data ?? []).forEach((r) => map.set(r.worker_id, { ends_at: r.ends_at, distance_km: r.distance_km }));
+  return map;
 }
 
 // Admin
