@@ -136,15 +136,28 @@ Deno.serve(async (req) => {
           status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const { data: u } = await supabase.auth.getUser(jwt);
-      const uid = u?.user?.id;
+      let uid: string | undefined;
+      try {
+        const { data: c } = await (supabase.auth as any).getClaims(jwt);
+        uid = c?.claims?.sub;
+      } catch (_) { /* fall through */ }
+      if (!uid) {
+        const { data: u } = await supabase.auth.getUser(jwt);
+        uid = u?.user?.id;
+      }
       if (!uid) {
         return new Response(JSON.stringify({ error: "Invalid session" }), {
           status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
-      if (!isAdmin) {
+      const { data: roleRows, error: roleErr } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", uid)
+        .eq("role", "admin");
+      if (roleErr) console.error("role lookup failed", roleErr);
+      if (!roleRows || roleRows.length === 0) {
+        console.warn("Non-admin attempted broadcast", uid);
         return new Response(JSON.stringify({ error: "Admin only" }), {
           status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
