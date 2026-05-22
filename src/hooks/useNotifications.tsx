@@ -159,7 +159,68 @@ const init = async (userId: string) => {
         read: false,
       });
     }
+
+    const { data: avReqs } = await sb
+      .from("avatar_reset_requests")
+      .select("id, user_id, status, created_at, reason")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    for (const r of (avReqs || []) as any[]) {
+      const { data: rp } = await supabase
+        .from("profiles").select("full_name").eq("user_id", r.user_id).maybeSingle();
+      list.push({
+        id: `avreset-${r.id}`,
+        type: "avatar_reset_request",
+        title: "Avatar reset request",
+        body: `${rp?.full_name || "A user"} requested an avatar reset`,
+        created_at: r.created_at,
+        link: "/admin",
+        read: false,
+      });
+    }
+
+    const { data: locReqs } = await sb
+      .from("worker_location_change_requests")
+      .select("id, worker_user_id, status, created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    for (const r of (locReqs || []) as any[]) {
+      const { data: rp } = await supabase
+        .from("profiles").select("full_name").eq("user_id", r.worker_user_id).maybeSingle();
+      list.push({
+        id: `locreq-${r.id}`,
+        type: "location_change_request",
+        title: "Location change request",
+        body: `${rp?.full_name || "A worker"} requested a location change`,
+        created_at: r.created_at,
+        link: "/admin",
+        read: false,
+      });
+    }
+
+    const { data: payReqs } = await sb
+      .from("payment_requests")
+      .select("id, user_id, status, created_at, sparks_amount, price_amount, currency")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    for (const r of (payReqs || []) as any[]) {
+      const { data: rp } = await supabase
+        .from("profiles").select("full_name").eq("user_id", r.user_id).maybeSingle();
+      list.push({
+        id: `payreq-${r.id}`,
+        type: "payment_request",
+        title: "Payment request",
+        body: `${rp?.full_name || "A user"} requested ${r.sparks_amount} sparks (${r.price_amount} ${r.currency})`,
+        created_at: r.created_at,
+        link: "/admin",
+        read: false,
+      });
+    }
   }
+
   store = list.slice(0, 25);
   broadcast();
   initializing = false;
