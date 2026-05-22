@@ -99,16 +99,11 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => 
               </span>
             </div>
 
-            {(worker.mainCategory || worker.subCategory) && (
-              <div className="absolute bottom-2 left-[140px] right-4 flex flex-wrap items-center gap-x-1 text-[9.5px] font-bold uppercase tracking-[0.1em]">
-                {worker.mainCategory && (
-                  <span className="rounded-md bg-primary/30 px-1.5 py-0.5 text-primary-foreground ring-1 ring-primary/50 backdrop-blur-sm">
-                    {worker.mainCategory}
-                  </span>
-                )}
-                {worker.subCategory && (
-                  <span className="truncate text-hero-foreground/85">› {worker.subCategory}</span>
-                )}
+            {(worker as any).shopName && (
+              <div className="absolute bottom-2 left-[140px] right-4 flex">
+                <span className="max-w-full truncate rounded-md bg-hero/55 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15">
+                  {(worker as any).shopName}
+                </span>
               </div>
             )}
           </div>
