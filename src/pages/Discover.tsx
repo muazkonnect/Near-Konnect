@@ -46,7 +46,7 @@ import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import WorkerAdCard from "@/components/WorkerAdCard";
 import { usePromotedExploreInfinite, usePromotedNearby } from "@/hooks/usePromoted";
 import { useAppSettings } from "@/hooks/useAppSettings";
-import { useNearbyFeaturedWorkerIds, useMyFeatured } from "@/hooks/useFeatured";
+import { useNearbyFeaturedWorkerIds, useNearbyFeaturedMap, useMyFeatured } from "@/hooks/useFeatured";
 import SteppedCarousel from "@/components/SteppedCarousel";
 import { matchesSearch } from "@/lib/searchKeywords";
 
