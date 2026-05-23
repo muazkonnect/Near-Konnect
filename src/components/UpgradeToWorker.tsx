@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { useCategories } from "@/hooks/useCategories";
+import MapLocationPickerLazy from "@/components/MapLocationPickerLazy";
 
 const UpgradeToWorker = () => {
   const { user } = useAuth();
