@@ -303,8 +303,8 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
   <div class="stat"><div class="l">Rejected</div><div class="v">${stats.rejected}</div></div>
   <div class="stat"><div class="l">Sparks Sold</div><div class="v">${stats.sparksSold.toLocaleString()}</div></div>
 </div>
-<h2>Revenue by Currency</h2>
-<table><thead><tr><th>Currency</th><th class="right">Total</th></tr></thead><tbody>${revRows || '<tr><td colspan="2">No approved revenue</td></tr>'}</tbody></table>
+<h2>Profit by Currency (fees: ${feePct}% + ${fixedFee} fixed/tx)</h2>
+<table><thead><tr><th>Currency</th><th class="right">Revenue</th><th class="right">Fees</th><th class="right">Net Profit</th></tr></thead><tbody>${revRows || '<tr><td colspan="4">No approved revenue</td></tr>'}</tbody></table>
 <h2>Transactions (${payments.length})</h2>
 <table><thead><tr><th>Date</th><th>User</th><th>Method</th><th class="right">Sparks</th><th class="right">Amount</th><th>Status</th></tr></thead><tbody>${txRows}</tbody></table>
 <div style="margin-top:30px;text-align:center"><button onclick="window.print()" style="padding:10px 20px;background:#0f172a;color:#fff;border:0;border-radius:8px;cursor:pointer">Print / Save as PDF</button></div>
