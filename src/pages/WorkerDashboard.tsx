@@ -152,7 +152,7 @@ const WorkerDashboard = () => {
       setShowContact((workerData as any).profiles?.show_contact ?? true);
       setBloodShowContact((workerData as any).profiles?.blood_show_contact ?? true);
       const profilePhone = (workerData as any).profiles?.profile_phones?.phone || "";
-      const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
+      const stored = parseContactMethods((workerData as any).profiles?.profile_contact_methods?.methods);
       if (stored.length > 0) {
         setContactMethods(stored.some((m) => m.type === "whatsapp") ? stored : [{ type: "whatsapp", value: profilePhone }, ...stored]);
       } else {
@@ -250,12 +250,15 @@ const WorkerDashboard = () => {
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ phone: phoneVal, use_whatsapp: true, contact_methods: trimmed, show_contact: showContact, blood_show_contact: bloodShowContact } as any)
+      .update({ phone: phoneVal, use_whatsapp: true, show_contact: showContact, blood_show_contact: bloodShowContact } as any)
       .eq("user_id", user.id);
+    const { error: methodsError } = await (supabase as any)
+      .from("profile_contact_methods")
+      .upsert({ user_id: user.id, methods: trimmed }, { onConflict: "user_id" });
 
     setSaving(false);
-    if (workerError || profileError) {
-      toast.error(profileError?.message || workerError?.message || "Failed to save changes");
+    if (workerError || profileError || methodsError) {
+      toast.error(methodsError?.message || profileError?.message || workerError?.message || "Failed to save changes");
     } else {
       setContactMethods(trimmed);
       toast.success("Profile updated!");

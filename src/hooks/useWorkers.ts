@@ -35,7 +35,7 @@ export function useWorkers() {
         .from("workers")
         .select(`
           *,
-          profiles!workers_user_id_fkey_profiles(full_name, avatar_url, use_whatsapp, contact_methods, show_contact, profile_phones(phone)),
+          profiles!workers_user_id_fkey_profiles(full_name, avatar_url, use_whatsapp, show_contact, profile_phones(phone), profile_contact_methods(methods)),
           reviews(rating)
         `)
         .order("experience", { ascending: false });
@@ -56,7 +56,7 @@ export function useWorkers() {
         const finalProfession = w.profession || "General Service";
 
         const phoneVal = profile?.profile_phones?.phone || "";
-        const stored = parseContactMethods(profile?.contact_methods);
+        const stored = parseContactMethods(profile?.profile_contact_methods?.methods);
         const fallback: ContactMethod[] = phoneVal
           ? [
               { type: "phone", value: phoneVal },

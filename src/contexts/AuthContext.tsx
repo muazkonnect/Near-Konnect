@@ -90,10 +90,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           blood_group: bloodGroup,
           is_blood_donor: isBloodDonor,
           use_whatsapp: useWhatsapp,
-          contact_methods: contactMethods,
         } as any);
         if (profileError && !String(profileError.message).toLowerCase().includes("duplicate")) {
           throw profileError;
+        }
+        if (contactMethods.length > 0) {
+          await (supabase as any).from("profile_contact_methods").upsert({ user_id: nextUser.id, methods: contactMethods }, { onConflict: "user_id" });
         }
         if (phone) {
           await (supabase as any).from("profile_phones").upsert({ user_id: nextUser.id, phone }, { onConflict: "user_id" });
