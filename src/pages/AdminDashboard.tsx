@@ -561,16 +561,6 @@ const AdminDashboard = () => {
 
           <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
             {/* OVERVIEW */}
-            {tab === "overview" && (() => {
-              const items = [
-                { key: "finance", label: "Payments", count: pending?.payments ?? 0, icon: Zap },
-                { key: "verifications", label: "Verifications", count: pending?.verifications ?? 0, icon: BadgeCheck },
-                { key: "featured", label: "Featured", count: pending?.featured ?? 0, icon: Star },
-                { key: "avatar_resets", label: "Avatar Resets", count: pending?.avatars ?? 0, icon: UserCog },
-                { key: "location_requests", label: "Location Req", count: pending?.locations ?? 0, icon: UserCog },
-              ];
-              const open = items.filter((i) => i.count > 0);
-              return (
             {tab === "overview" && (
               <div className="space-y-8">
                 <SectionHeader title="Overview" subtitle="A complete pulse on your platform." />
