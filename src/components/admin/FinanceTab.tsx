@@ -70,6 +70,14 @@ const FinanceTab = () => {
   const [period, setPeriod] = useState<Period>("monthly");
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
+  const [feePct, setFeePct] = useState<number>(() => {
+    const v = Number(localStorage.getItem("finance_fee_pct"));
+    return Number.isFinite(v) && v >= 0 ? v : 2.5;
+  });
+  const [fixedFee, setFixedFee] = useState<number>(() => {
+    const v = Number(localStorage.getItem("finance_fixed_fee"));
+    return Number.isFinite(v) && v >= 0 ? v : 0;
+  });
 
   const range = useMemo(() => rangeFor(period, from, to), [period, from, to]);
   const startIso = range.start.toISOString();
