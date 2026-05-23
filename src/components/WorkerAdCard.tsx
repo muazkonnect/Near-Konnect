@@ -279,7 +279,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                     </span>
                   </>
                 );
-                const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15`;
+                const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15 text-center`;
                 if (worker.showContact === false) {
                   return isAuthed && worker.userId ? (
                     <Link to={`/chat/${worker.userId}`} onClick={fireClick} className={ctaClass}>{ContactInner}</Link>
