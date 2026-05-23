@@ -382,11 +382,11 @@ const Discover = () => {
               <style>{`@keyframes ads-slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
             </div>
           </section>
-        ) : (
+        ) : !hasAnyAds ? (
           <section className="mt-5 px-5">
             <PromoteYourselfBanner />
           </section>
-        )}
+        ) : null}
 
         {/* PROMOTED 3KM ADS */}
         <section className="mt-6 mb-2">
@@ -395,11 +395,11 @@ const Discover = () => {
               Promoted Nearby <span className="ml-2 text-xs font-normal text-hero-muted">• Within 3 KM</span>
             </h2>
           </div>
-          {promoted3kmFiltered.length === 0 ? (
+          {promoted3kmFiltered.length === 0 && !hasAnyAds ? (
             <div className="mx-5">
               <PromoteYourselfBanner />
             </div>
-          ) : (
+          ) : promoted3kmFiltered.length === 1 ? null : (
             <SteppedCarousel
               className="pb-3"
               trackClassName="pl-5 pr-5"
