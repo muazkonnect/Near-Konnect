@@ -357,18 +357,24 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
           <div className="relative mx-3.5 mt-3 space-y-2.5">
             {(worker as any).showContact !== false ? (
               <>
-                <div className="grid grid-cols-[1fr_1.5fr] gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => { navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } }); onOpenChange(false); }}
+                    className="flex items-center justify-center gap-1.5 rounded-2xl border border-white/12 bg-white/[0.05] px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-white transition hover:bg-white/[0.09]"
+                  >
+                    <Trophy className={`h-3.5 w-3.5 ${t.textStrong}`} /> Profile
+                  </button>
                   <button
                     onClick={requireAuth(() => { if (phone) window.location.href = `tel:${phone}`; })}
-                    className="flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.05] px-3 py-2.5 text-[12px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-white/[0.09]"
+                    className="flex items-center justify-center gap-1.5 rounded-2xl border border-white/12 bg-white/[0.05] px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-white transition hover:bg-white/[0.09]"
                   >
-                    <Phone className={`h-4 w-4 ${t.textStrong}`} /> Call
+                    <Phone className={`h-3.5 w-3.5 ${t.textStrong}`} /> Call
                   </button>
                   <button
                     onClick={requireAuth(() => navigate(`/messages?worker=${worker.id}`))}
-                    className={`flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r ${t.grad} px-3 py-2.5 text-[12.5px] font-black uppercase tracking-[0.14em] text-black shadow-lg`}
+                    className={`flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r ${t.grad} px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-black shadow-lg`}
                   >
-                    <MessageCircle className="h-4 w-4" strokeWidth={2.6} /> Message {firstName}
+                    <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.6} /> Message
                   </button>
                 </div>
 
@@ -385,7 +391,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
             ) : (
               <div className="grid grid-cols-[1fr_1.5fr] gap-2">
                 <button
-                  onClick={() => navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } })}
+                  onClick={() => { navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } }); onOpenChange(false); }}
                   className="flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.05] px-3 py-2.5 text-[12px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-white/[0.09]"
                 >
                   View Profile
