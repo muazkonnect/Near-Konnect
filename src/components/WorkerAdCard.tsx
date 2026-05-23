@@ -374,20 +374,11 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── FOOTER TRUST BAR ──────────────────────────────────── */}
-          <div className={`relative mt-3 grid grid-cols-4 gap-1.5 border-t ${t.border} bg-black/50 px-3 py-2.5 backdrop-blur`}>
+          <div className={`relative mt-3 grid grid-cols-3 gap-1.5 border-t ${t.border} bg-black/50 px-3 py-2.5 backdrop-blur`}>
             <div className="flex flex-col items-center text-center">
               <ShieldCheck className={`h-4 w-4 ${t.textStrong}`} />
               <div className="mt-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">Verified</div>
               <div className="text-[8px] leading-tight text-white/50">ID Checked</div>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex -space-x-1">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className={`h-3.5 w-3.5 rounded-full border border-black bg-gradient-to-br ${t.grad}`} />
-                ))}
-              </div>
-              <div className={`mt-0.5 text-[10px] font-black ${t.textStrong}`}>500+</div>
-              <div className="text-[8px] leading-tight text-white/50">Customers</div>
             </div>
             <div className="flex flex-col items-center text-center">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
