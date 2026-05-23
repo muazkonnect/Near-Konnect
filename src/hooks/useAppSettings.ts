@@ -11,6 +11,7 @@ export type AppSettingsMap = {
   workers_default_radius_km: number;
   featured_default_radius_km: number;
   announcement_messages: string[];
+  announcement_ticker_speed_seconds: number;
   special_announcement: SpecialAnnouncement;
 };
 
