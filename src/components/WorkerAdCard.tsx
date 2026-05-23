@@ -109,10 +109,22 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         ref={cardRef}
         className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow}`}
       >
+        {/* pulsing outer aura */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute -inset-1 rounded-[26px] bg-gradient-to-br ${t.grad} opacity-40 blur-2xl animate-pulse`}
+        />
         <article
           onClick={handleOpen}
           className="relative flex cursor-pointer overflow-hidden rounded-[20px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
         >
+          {/* animated sheen sweep */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]"
+          >
+            <div className="absolute -inset-y-4 -left-1/3 h-[140%] w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-[shimmer_3.5s_ease-in-out_infinite]" />
+          </div>
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]">
             {worker.bannerUrl ? (
