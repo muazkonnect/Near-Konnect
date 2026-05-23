@@ -147,7 +147,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
-          <div className="relative w-[120px] shrink-0 flex-col gap-1.5 p-2.5 pt-7 flex items-center justify-center">
+          <div className="relative w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-0 py-0 my-px gap-[5px]">
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
               <Avatar className="h-[96px] w-[88px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
@@ -178,7 +178,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── RIGHT: INFO COLUMN ────────────────────────────────── */}
-          <div className="relative flex min-w-0 flex-1 flex-col gap-1.5 p-2.5 pt-7 pr-3">
+          <div className="relative min-w-0 flex-1 flex-col p-2.5 pt-7 pr-3 flex items-start justify-center gap-0">
             {/* identity */}
             <div className="min-w-0">
               <div className="flex items-start gap-1.5">
