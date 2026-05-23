@@ -388,7 +388,9 @@ const CampaignWizard = ({
         country: adType === "international" ? countryName || null : null,
         city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
         area: adType === "international" ? areaText || null : null,
+        currentCC,
       });
+
 
       toast.success("Campaign launched 🚀");
       queryClient.invalidateQueries({ queryKey: ["sparks_wallet"] });
