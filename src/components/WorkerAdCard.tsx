@@ -206,7 +206,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               {worker.available ? "Available" : "Busy"}
             </span>
             {isTopRated && (
-              <div className="gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px] flex-row flex items-center justify-start my- 0">
+              <div className="gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px] flex-row flex items-center justify-start my-0">
                 <Trophy className="h-2.5 w-2.5 fill-amber-400 text-amber-500" />
                 <span className="text-[8px] font-black uppercase tracking-[0.14em] text-amber-300">Top Rated</span>
               </div>
