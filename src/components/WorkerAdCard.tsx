@@ -146,13 +146,13 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           <div className="pointer-events-none absolute -top-px left-[150px] h-[2px] w-12 rotate-[20deg] bg-white/70 blur-[2px]" />
 
           {/* ── TOP ROW ───────────────────────────────────────────── */}
-          <div className="relative flex items-center justify-between px-3.5 pt-3">
-            <div className="relative z-10 flex items-center gap-1.5 pl-0.5">
-              <t.Icon className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
-              <span className="text-[11px] font-black uppercase tracking-[0.22em] text-black">{t.label}</span>
+          <div className="relative flex items-center justify-between px-3 pt-2.5">
+            <div className="relative z-10 flex items-center gap-1.5 pl-1">
+              <t.Icon className="h-3 w-3 text-black" strokeWidth={2.5} />
+              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-black">{t.label}</span>
             </div>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] backdrop-blur`}
+              className={`inline-flex items-center gap-1 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/50 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-[0.18em] backdrop-blur`}
             >
               <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${worker.available ? "bg-lime-400" : "bg-white/40"}`}>
                 {worker.available && <span className="absolute inset-0 animate-ping rounded-full bg-lime-400/80" />}
@@ -162,26 +162,26 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── HERO ──────────────────────────────────────────────── */}
-          <div className="relative mt-3 flex gap-3 px-3.5">
+          <div className="relative mt-2 flex gap-2.5 px-3">
             {/* photo */}
             <div className={`relative shrink-0 rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
-              <Avatar className="h-[96px] w-[88px] rounded-[14px] border-2 border-black">
+              <Avatar className="h-[72px] w-[64px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className={`rounded-[12px] bg-black text-xl font-black ${t.text}`}>
+                <AvatarFallback className={`rounded-[10px] bg-black text-lg font-black ${t.text}`}>
                   {initials}
                 </AvatarFallback>
               </Avatar>
               {worker.verified && (
-                <div className={`absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black ring-2 ${t.ring}`}>
-                  <ShieldCheck className={`h-3.5 w-3.5 ${t.textStrong}`} strokeWidth={3} />
+                <div className={`absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black ring-2 ${t.ring}`}>
+                  <ShieldCheck className={`h-3 w-3 ${t.textStrong}`} strokeWidth={3} />
                 </div>
               )}
             </div>
 
             {/* identity */}
-            <div className="min-w-0 flex-1">
+            <div className="min-w-1 flex-1">
               <div className="flex items-start gap-1.5">
-                <h3 className="line-clamp-2 text-[19px] font-black leading-[1.05] tracking-tight text-white">
+                <h3 className="line-clamp-2 text-[17px] font-black leading-[1.1] tracking-tight text-white">
                   {worker.name}
                 </h3>
                 {worker.verified && (
@@ -191,29 +191,29 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                 )}
               </div>
               {worker.profession && (
-                <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
+                <p className={`mt-0.5 flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
                   <span className="truncate">{worker.profession}</span>
                   <Hammer className="h-3 w-3 shrink-0" />
                 </p>
               )}
               {worker.verified && (
-                <div className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full border ${t.border} bg-white/[0.04] px-2 py-[3px]`}>
-                  <ShieldCheck className={`h-3 w-3 ${t.textStrong}`} />
-                  <span className="text-[10px] font-bold text-white/85">Verified Professional</span>
+                <div className={`mt-1 inline-flex items-center gap-1 rounded-full border ${t.border} bg-white/[0.04] px-1.5 py-[2px]`}>
+                  <ShieldCheck className={`h-2.5 w-2.5 ${t.textStrong}`} />
+                  <span className="text-[9px] font-bold text-white/85">Verified Professional</span>
                 </div>
               )}
             </div>
 
             {/* top-rated emblem */}
             {isTopRated && (
-              <div className="relative -mr-1 hidden shrink-0 items-center justify-center xs:flex">
-                <div className="relative flex h-[88px] w-[68px] flex-col items-center justify-center rounded-lg border border-amber-400/40 bg-gradient-to-b from-amber-500/20 to-transparent">
-                  <Trophy className="absolute -top-2.5 h-5 w-5 fill-amber-400 text-amber-500 drop-shadow" />
-                  <span className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">Top</span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">Rated</span>
+              <div className="relative -mr-1 hidden shrink-1 items-center justify-center xs:flex">
+                <div className="relative flex h-[72px] w-[56px] flex-col items-center justify-center rounded-lg border border-amber-400/40 bg-gradient-to-b from-amber-500/20 to-transparent">
+                  <Trophy className="absolute -top-2 h-4 w-4 fill-amber-400 text-amber-500 drop-shadow" />
+                  <span className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-amber-300">Top</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-amber-300">Rated</span>
                   <div className="mt-0.5 flex gap-[1px]">
                     {[0, 1, 2, 3, 4].map((i) => (
-                      <Star key={i} className="h-2 w-2 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="h-[7px] w-[7px] fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                 </div>
