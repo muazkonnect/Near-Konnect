@@ -38,6 +38,7 @@ import { usePromotedNearby, usePromotedTopRated } from "@/hooks/usePromoted";
 import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
+import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
 
 type DonorWithDistance = DonorRow & { distance: number };
 

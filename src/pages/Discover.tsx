@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
 import {
   Search,
   MapPin,
