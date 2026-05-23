@@ -160,6 +160,7 @@ const Home = () => {
   const promoted10 = usePromotedNearby(browsingCoords, r1);
   const promoted15 = usePromotedNearby(browsingCoords, r2);
   const promotedTop = usePromotedTopRated(browsingCoords);
+  const hasAnyAds = bannerAds.length > 0 || inlineAds.length > 0 || feedAds.length > 0 || promotedTop.length > 0 || promoted5.length > 0 || promoted10.length > 0 || promoted15.length > 0 || featuredIds.size > 0;
 
   // Blood donors — top 3 nearest verified donors
   const { data: donors = [] } = useQuery({
@@ -388,11 +389,11 @@ const Home = () => {
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
             <NativeAdCard ad={bannerAds[0]} variant="banner" viewerCoords={browsingCoords} />
           </motion.section>
-        ) : (
+        ) : !hasAnyAds ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
             <PromoteYourselfBanner />
           </motion.section>
-        )}
+        ) : null}
 
         {/* PROMOTED SECTIONS — Top Rated + 5/10/15 KM (Sparks campaigns only) */}
         <PromotedSection
@@ -411,11 +412,11 @@ const Home = () => {
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
             <NativeAdCard ad={inlineAds[0]} variant="inline" viewerCoords={browsingCoords} />
           </motion.section>
-        ) : (
+        ) : !hasAnyAds ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
             <PromoteYourselfBanner />
           </motion.section>
-        )}
+        ) : null}
 
 
         <PromotedSection
@@ -478,11 +479,11 @@ const Home = () => {
           <section className="mb-12 px-5">
             <NativeAdCard ad={feedAds[0]} variant="feed" viewerCoords={browsingCoords} />
           </section>
-        ) : (
+        ) : !hasAnyAds ? (
           <section className="mb-12 px-5">
             <PromoteYourselfBanner />
           </section>
-        )}
+        ) : null}
 
         {/* FINAL CTA */}
         <section className="px-5 pb-16">
