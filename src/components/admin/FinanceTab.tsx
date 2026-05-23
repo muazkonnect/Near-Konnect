@@ -147,20 +147,34 @@ const FinanceTab = () => {
   });
 
   const stats = useMemo(() => {
-    const byCurrency: Record<string, number> = {};
-    let approved = 0, pending = 0, rejected = 0, sparksSold = 0, bonusGranted = 0;
+    const byCurrency: Record<string, { revenue: number; count: number; sparks: number }> = {};
+    let approved = 0, pending = 0, rejected = 0, sparksSold = 0, bonusGranted = 0, pendingRevenueByCurrency: Record<string, number> = {};
     payments.forEach((p) => {
       if (p.status === "approved") {
         approved++;
-        byCurrency[p.currency] = (byCurrency[p.currency] || 0) + Number(p.price_amount);
+        const c = byCurrency[p.currency] || (byCurrency[p.currency] = { revenue: 0, count: 0, sparks: 0 });
+        c.revenue += Number(p.price_amount); c.count++; c.sparks += p.sparks_amount + (p.bonus_sparks || 0);
         sparksSold += p.sparks_amount;
         bonusGranted += p.bonus_sparks || 0;
-      } else if (p.status === "pending") pending++;
-      else if (p.status === "rejected") rejected++;
+      } else if (p.status === "pending") {
+        pending++;
+        pendingRevenueByCurrency[p.currency] = (pendingRevenueByCurrency[p.currency] || 0) + Number(p.price_amount);
+      } else if (p.status === "rejected") rejected++;
     });
     const sparksSpent = spends.filter((t) => t.delta < 0).reduce((a, t) => a + Math.abs(t.delta), 0);
-    return { byCurrency, approved, pending, rejected, sparksSold, bonusGranted, sparksSpent, total: payments.length };
+    const sparksCredited = spends.filter((t) => t.delta > 0 && t.status === "completed").reduce((a, t) => a + t.delta, 0);
+    return { byCurrency, approved, pending, rejected, sparksSold, bonusGranted, sparksSpent, sparksCredited, pendingRevenueByCurrency, total: payments.length };
   }, [payments, spends]);
+
+  const profit = useMemo(() => {
+    const rows: { currency: string; revenue: number; count: number; sparks: number; fees: number; net: number }[] = [];
+    Object.entries(stats.byCurrency).forEach(([currency, v]) => {
+      const fees = (v.revenue * feePct) / 100 + fixedFee * v.count;
+      rows.push({ currency, revenue: v.revenue, count: v.count, sparks: v.sparks, fees, net: v.revenue - fees });
+    });
+    rows.sort((a, b) => b.revenue - a.revenue);
+    return rows;
+  }, [stats.byCurrency, feePct, fixedFee]);
 
   const monthlyHistory = useMemo(() => {
     const map: Record<string, { month: string; approved: number; pending: number; rejected: number; revenue: Record<string, number>; sparks: number }> = {};
