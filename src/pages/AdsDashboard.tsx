@@ -549,6 +549,16 @@ const CampaignWizard = ({
             <div className="rounded-xl border bg-muted/30 p-3 text-sm">
               <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> Ends on {new Date(Date.now() + duration * 86400000).toLocaleDateString()}</p>
             </div>
+            {freeDays > 0 && (
+              <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/10 to-primary/5 p-3 text-sm">
+                <p className="flex items-center gap-2 font-semibold text-primary">
+                  <Sparkles className="h-4 w-4" /> Discount applied
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  You're getting <b className="text-foreground">{freeDays} day{freeDays > 1 ? "s" : ""} free</b> — pay for only {paidDays} of {duration} days.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
