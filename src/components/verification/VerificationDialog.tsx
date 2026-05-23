@@ -24,9 +24,13 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   const [loading, setLoading] = useState(false);
   const pollRef = useRef<number | null>(null);
 
-  const cost = settings?.sparks_cost ?? 500;
+  const { tier, multiplier } = useUserTier();
+  const currentCC = useCurrentCC();
+  const baseCost = settings?.sparks_cost ?? 500;
+  const cost = Math.ceil(baseCost * (multiplier || 1));
   const insufficient = balance < cost;
   const status = verification?.status ?? "none";
+
 
   useEffect(() => { if (open) refetch(); }, [open, refetch]);
   useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
