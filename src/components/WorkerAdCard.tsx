@@ -107,7 +107,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} shadow-[0_10px_40px_-18px_rgba(0,0,0,0.8)]`}
+        className={`group relative w-full max-w-[calc(100vw-2.5rem)] sm:max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} shadow-[0_10px_40px_-18px_rgba(0,0,0,0.8)]`}
       >
         <article
           onClick={handleOpen}
@@ -183,11 +183,11 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
-          <div className="relative w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-0 py-0 my-px gap-[5px]">
+          <div className="relative w-[100px] sm:w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-1 py-1 my-px gap-[5px]">
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
-              <Avatar className="h-[96px] w-[88px] rounded-[12px] border-2 border-black">
+              <Avatar className="h-[72px] w-[64px] sm:h-[96px] sm:w-[88px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className={`rounded-[10px] bg-black text-2xl font-black ${t.text}`}>
+                <AvatarFallback className={`rounded-[10px] bg-black text-lg sm:text-2xl font-black ${t.text}`}>
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -218,7 +218,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {/* identity */}
             <div className="min-w-0">
               <div className="flex items-start gap-1.5">
-                <h3 className="line-clamp-1 font-black leading-tight tracking-tight text-white text-3xl">
+                <h3 className="line-clamp-1 font-black leading-tight tracking-tight text-white text-xl sm:text-3xl">
                   {worker.name}
                 </h3>
                 {worker.verified && (
@@ -256,7 +256,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <MapPin className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} />
                   <div className="min-w-0">
                     <div className="flex items-baseline gap-0.5 leading-none">
-                      <span className="text-[14px] font-black text-white tabular-nums">
+                      <span className="text-[12px] sm:text-[14px] font-black text-white tabular-nums">
                         {hasDistance ? worker.distance.toFixed(2) : "—"}
                       </span>
                       {hasDistance && <span className="text-[8px] font-bold text-white/70">km</span>}
@@ -269,7 +269,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                 <div className="flex items-center gap-1.5">
                   <CalendarClock className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} />
                   <div className="min-w-0">
-                    <div className="text-[14px] font-black leading-none text-white tabular-nums">
+                    <div className="text-[12px] sm:text-[14px] font-black leading-none text-white tabular-nums">
                       {worker.experience > 0 ? `${worker.experience}+` : "—"}
                     </div>
                     <div className={`mt-0.5 text-[7.5px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>Yrs Exp</div>
@@ -308,7 +308,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <>
                     <div className="flex min-w-0 items-center gap-1">
                       <MessageCircle className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-                      <div className="text-[10.5px] font-black uppercase tracking-[0.14em] px-[13px]">Message</div>
+                      <div className="text-[10.5px] font-black uppercase tracking-[0.14em] px-1 sm:px-[13px]">Message</div>
                     </div>
                     <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black/85 text-white">
                       <ChevronRight className="h-2.5 w-2.5" />
