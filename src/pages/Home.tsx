@@ -377,9 +377,13 @@ const Home = () => {
         </motion.section>
 
         {/* AD: BANNER */}
-        {bannerAds[0] && (
+        {bannerAds[0] ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
             <NativeAdCard ad={bannerAds[0]} variant="banner" viewerCoords={browsingCoords} />
+          </motion.section>
+        ) : (
+          <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
+            <PromoteYourselfBanner />
           </motion.section>
         )}
 
@@ -396,9 +400,13 @@ const Home = () => {
         />
 
         {/* AD: INLINE */}
-        {inlineAds[0] && (
+        {inlineAds[0] ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
             <NativeAdCard ad={inlineAds[0]} variant="inline" viewerCoords={browsingCoords} />
+          </motion.section>
+        ) : (
+          <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
+            <PromoteYourselfBanner />
           </motion.section>
         )}
 
@@ -459,9 +467,13 @@ const Home = () => {
         </section>
 
         {/* AD: FEED */}
-        {feedAds[0] && (
+        {feedAds[0] ? (
           <section className="mb-12 px-5">
             <NativeAdCard ad={feedAds[0]} variant="feed" viewerCoords={browsingCoords} />
+          </section>
+        ) : (
+          <section className="mb-12 px-5">
+            <PromoteYourselfBanner />
           </section>
         )}
 
