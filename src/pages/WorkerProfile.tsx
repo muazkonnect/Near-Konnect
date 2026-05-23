@@ -83,6 +83,42 @@ const WorkerProfile = () => {
 
   const { data: portfolio = [] } = useWorkerPortfolio(dbWorker?.id);
 
+  // Detect featured / active-ad status to theme the profile
+  const { data: featuredRow } = useQuery({
+    queryKey: ["worker_featured_active", dbWorker?.id],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("featured_workers")
+        .select("id, ends_at")
+        .eq("worker_id", dbWorker!.id)
+        .gt("ends_at", new Date().toISOString())
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!dbWorker?.id,
+    staleTime: 60_000,
+  });
+
+  const { data: activeCampaign } = useQuery({
+    queryKey: ["worker_active_campaign", dbWorker?.id],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("ad_campaigns")
+        .select("id, ends_at, status")
+        .eq("worker_id", dbWorker!.id)
+        .eq("status", "active")
+        .gt("ends_at", new Date().toISOString())
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!dbWorker?.id,
+    staleTime: 60_000,
+  });
+
 
   useEffect(() => {
     if (!dbWorker || !id) return;
