@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Zap, Check, Zap } from "lucide-react";
+import { Zap, Check } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import SparksBalanceCard from "@/components/wallet/SparksBalanceCard";
 import { Button } from "@/components/ui/button";
