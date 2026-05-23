@@ -7,7 +7,9 @@ import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useUserTier, useCurrentCC } from "@/hooks/useUserTier";
 import { toast } from "sonner";
+
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; workerCategoryId?: string | null };
 
