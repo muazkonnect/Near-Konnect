@@ -198,8 +198,9 @@ const FinanceTab = () => {
   }, [history]);
 
   const exportPaymentsCsv = () => {
-    const headers = ["id", "date", "user_name", "user_phone", "method", "reference", "currency", "amount", "sparks", "bonus_sparks", "status", "decided_at"];
+    const headers = ["invoice_no", "id", "date", "user_name", "user_phone", "method", "reference", "currency", "amount", "sparks", "bonus_sparks", "status", "decided_at"];
     const rows = payments.map((p) => [
+      formatInvoiceNo(p.invoice_number, p.id),
       p.id,
       format(new Date(p.created_at), "yyyy-MM-dd HH:mm"),
       profileMap[p.user_id]?.full_name || p.user_id,
