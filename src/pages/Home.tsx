@@ -28,6 +28,7 @@ import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
+import { useIsVisible, useReducedMotion } from "@/hooks/useIsVisible";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
