@@ -10,6 +10,7 @@ import { fetchPackages } from "@/services/walletService";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
 import { useAppSetting } from "@/hooks/useAppSettings";
 import { useState } from "react";
+import { sparksToPrice, formatPrice } from "@/lib/sparkPricing";
 
 const BuySparksPage = () => {
   const navigate = useNavigate();
@@ -19,10 +20,12 @@ const BuySparksPage = () => {
   const priceUsdt = useAppSetting("spark_price_usdt");
   const [customSparks, setCustomSparks] = useState("");
 
-  const formatPrice = (sparks: number) =>
-    region === "pk"
-      ? `PKR ${Math.round(sparks * pricePkr).toLocaleString()}`
-      : `$${(sparks * priceUsdt).toFixed(2)} USDT`;
+  const displayPrice = (sparks: number) => {
+    const ccy = region === "pk" ? "PKR" : "USDT";
+    const rate = ccy === "PKR" ? pricePkr : priceUsdt;
+    return formatPrice(sparksToPrice(sparks, rate, ccy), ccy);
+  };
+
 
   const goCustom = () => {
     const n = parseInt(customSparks);
