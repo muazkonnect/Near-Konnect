@@ -191,6 +191,7 @@ const Home = () => {
 
   // Live ticker: admin static messages + real-time activity
   const announcementMessages = useAppSetting("announcement_messages");
+  const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds") || 30;
   const specialAnnouncement = useAppSetting("special_announcement");
   const { data: activity = [] } = useRecentActivity(20);
 
