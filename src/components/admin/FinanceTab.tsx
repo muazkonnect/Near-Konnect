@@ -70,6 +70,14 @@ const FinanceTab = () => {
   const [period, setPeriod] = useState<Period>("monthly");
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
+  const [feePct, setFeePct] = useState<number>(() => {
+    const v = Number(localStorage.getItem("finance_fee_pct"));
+    return Number.isFinite(v) && v >= 0 ? v : 2.5;
+  });
+  const [fixedFee, setFixedFee] = useState<number>(() => {
+    const v = Number(localStorage.getItem("finance_fixed_fee"));
+    return Number.isFinite(v) && v >= 0 ? v : 0;
+  });
 
   const range = useMemo(() => rangeFor(period, from, to), [period, from, to]);
   const startIso = range.start.toISOString();
@@ -139,20 +147,34 @@ const FinanceTab = () => {
   });
 
   const stats = useMemo(() => {
-    const byCurrency: Record<string, number> = {};
-    let approved = 0, pending = 0, rejected = 0, sparksSold = 0, bonusGranted = 0;
+    const byCurrency: Record<string, { revenue: number; count: number; sparks: number }> = {};
+    let approved = 0, pending = 0, rejected = 0, sparksSold = 0, bonusGranted = 0, pendingRevenueByCurrency: Record<string, number> = {};
     payments.forEach((p) => {
       if (p.status === "approved") {
         approved++;
-        byCurrency[p.currency] = (byCurrency[p.currency] || 0) + Number(p.price_amount);
+        const c = byCurrency[p.currency] || (byCurrency[p.currency] = { revenue: 0, count: 0, sparks: 0 });
+        c.revenue += Number(p.price_amount); c.count++; c.sparks += p.sparks_amount + (p.bonus_sparks || 0);
         sparksSold += p.sparks_amount;
         bonusGranted += p.bonus_sparks || 0;
-      } else if (p.status === "pending") pending++;
-      else if (p.status === "rejected") rejected++;
+      } else if (p.status === "pending") {
+        pending++;
+        pendingRevenueByCurrency[p.currency] = (pendingRevenueByCurrency[p.currency] || 0) + Number(p.price_amount);
+      } else if (p.status === "rejected") rejected++;
     });
     const sparksSpent = spends.filter((t) => t.delta < 0).reduce((a, t) => a + Math.abs(t.delta), 0);
-    return { byCurrency, approved, pending, rejected, sparksSold, bonusGranted, sparksSpent, total: payments.length };
+    const sparksCredited = spends.filter((t) => t.delta > 0 && t.status === "completed").reduce((a, t) => a + t.delta, 0);
+    return { byCurrency, approved, pending, rejected, sparksSold, bonusGranted, sparksSpent, sparksCredited, pendingRevenueByCurrency, total: payments.length };
   }, [payments, spends]);
+
+  const profit = useMemo(() => {
+    const rows: { currency: string; revenue: number; count: number; sparks: number; fees: number; net: number }[] = [];
+    Object.entries(stats.byCurrency).forEach(([currency, v]) => {
+      const fees = (v.revenue * feePct) / 100 + fixedFee * v.count;
+      rows.push({ currency, revenue: v.revenue, count: v.count, sparks: v.sparks, fees, net: v.revenue - fees });
+    });
+    rows.sort((a, b) => b.revenue - a.revenue);
+    return rows;
+  }, [stats.byCurrency, feePct, fixedFee]);
 
   const monthlyHistory = useMemo(() => {
     const map: Record<string, { month: string; approved: number; pending: number; rejected: number; revenue: Record<string, number>; sparks: number }> = {};
@@ -255,7 +277,7 @@ ${p.admin_note ? `<div class="muted" style="margin-top:20px">Note: ${p.admin_not
   const printPeriodReport = () => {
     const w = window.open("", "_blank", "width=900,height=900");
     if (!w) return toast.error("Popup blocked");
-    const revRows = Object.entries(stats.byCurrency).map(([c, a]) => `<tr><td>${c}</td><td class="right">${a.toLocaleString()}</td></tr>`).join("");
+    const revRows = profit.map((r) => `<tr><td>${r.currency}</td><td class="right">${r.revenue.toLocaleString()}</td><td class="right">-${r.fees.toLocaleString(undefined,{maximumFractionDigits:2})}</td><td class="right"><b>${r.net.toLocaleString(undefined,{maximumFractionDigits:2})}</b></td></tr>`).join("");
     const txRows = payments.slice(0, 200).map((p) => `<tr>
       <td>${format(new Date(p.created_at), "MMM d, HH:mm")}</td>
       <td>${profileMap[p.user_id]?.full_name || p.user_id.slice(0, 8)}</td>
@@ -281,8 +303,8 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
   <div class="stat"><div class="l">Rejected</div><div class="v">${stats.rejected}</div></div>
   <div class="stat"><div class="l">Sparks Sold</div><div class="v">${stats.sparksSold.toLocaleString()}</div></div>
 </div>
-<h2>Revenue by Currency</h2>
-<table><thead><tr><th>Currency</th><th class="right">Total</th></tr></thead><tbody>${revRows || '<tr><td colspan="2">No approved revenue</td></tr>'}</tbody></table>
+<h2>Profit by Currency (fees: ${feePct}% + ${fixedFee} fixed/tx)</h2>
+<table><thead><tr><th>Currency</th><th class="right">Revenue</th><th class="right">Fees</th><th class="right">Net Profit</th></tr></thead><tbody>${revRows || '<tr><td colspan="4">No approved revenue</td></tr>'}</tbody></table>
 <h2>Transactions (${payments.length})</h2>
 <table><thead><tr><th>Date</th><th>User</th><th>Method</th><th class="right">Sparks</th><th class="right">Amount</th><th>Status</th></tr></thead><tbody>${txRows}</tbody></table>
 <div style="margin-top:30px;text-align:center"><button onclick="window.print()" style="padding:10px 20px;background:#0f172a;color:#fff;border:0;border-radius:8px;cursor:pointer">Print / Save as PDF</button></div>
@@ -327,18 +349,79 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
         <StatCard icon={Receipt} label="Sparks Spent" value={stats.sparksSpent.toLocaleString()} accent="rose" />
       </div>
 
-      {Object.keys(stats.byCurrency).length > 0 && (
-        <Card className="p-4 bg-hero-foreground/[0.03] border-hero-foreground/10">
-          <h3 className="text-sm font-semibold mb-2">Revenue (approved) — {range.label}</h3>
-          <div className="flex flex-wrap gap-3">
-            {Object.entries(stats.byCurrency).map(([c, a]) => (
-              <div key={c} className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 font-semibold tabular-nums">
-                {c} {a.toLocaleString()}
-              </div>
+      <Card className="p-4 bg-hero-foreground/[0.03] border-hero-foreground/10 space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-400" /> Profit & Loss — {range.label}</h3>
+            <p className="text-xs text-hero-foreground/60">Approved revenue minus platform/processing fees, per currency.</p>
+          </div>
+          <div className="flex gap-2 items-end">
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-hero-foreground/60">Fee %</label>
+              <Input type="number" step="0.1" min="0" value={feePct} className="h-8 w-20"
+                onChange={(e) => { const v = Number(e.target.value) || 0; setFeePct(v); localStorage.setItem("finance_fee_pct", String(v)); }} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-hero-foreground/60">Fixed/tx</label>
+              <Input type="number" step="0.01" min="0" value={fixedFee} className="h-8 w-20"
+                onChange={(e) => { const v = Number(e.target.value) || 0; setFixedFee(v); localStorage.setItem("finance_fixed_fee", String(v)); }} />
+            </div>
+          </div>
+        </div>
+
+        {profit.length === 0 ? (
+          <div className="text-sm text-hero-foreground/60 py-4 text-center">No approved revenue in this period.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Currency</TableHead>
+                  <TableHead className="text-right">Txns</TableHead>
+                  <TableHead className="text-right">Sparks Issued</TableHead>
+                  <TableHead className="text-right">Revenue</TableHead>
+                  <TableHead className="text-right">Fees</TableHead>
+                  <TableHead className="text-right">Net Profit</TableHead>
+                  <TableHead className="text-right">Margin</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {profit.map((r) => {
+                  const margin = r.revenue > 0 ? (r.net / r.revenue) * 100 : 0;
+                  return (
+                    <TableRow key={r.currency}>
+                      <TableCell className="font-semibold">{r.currency}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.count}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.sparks.toLocaleString()}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.revenue.toLocaleString()}</TableCell>
+                      <TableCell className="text-right tabular-nums text-rose-400">-{r.fees.toLocaleString(undefined, { maximumFractionDigits: 2 })}</TableCell>
+                      <TableCell className="text-right tabular-nums font-semibold text-emerald-400">{r.net.toLocaleString(undefined, { maximumFractionDigits: 2 })}</TableCell>
+                      <TableCell className="text-right tabular-nums">{margin.toFixed(1)}%</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-hero-foreground/10">
+          <MiniStat label="Sparks Sold" value={stats.sparksSold.toLocaleString()} />
+          <MiniStat label="Bonus Granted" value={stats.bonusGranted.toLocaleString()} />
+          <MiniStat label="Sparks Spent" value={stats.sparksSpent.toLocaleString()} />
+          <MiniStat label="Net Liability Δ" value={(stats.sparksSold + stats.bonusGranted - stats.sparksSpent).toLocaleString()}
+            hint="Sparks issued minus sparks spent in period" />
+        </div>
+
+        {Object.keys(stats.pendingRevenueByCurrency).length > 0 && (
+          <div className="text-xs text-amber-400/90 flex flex-wrap gap-2">
+            <span className="text-hero-foreground/60">Pending (not counted):</span>
+            {Object.entries(stats.pendingRevenueByCurrency).map(([c, a]) => (
+              <span key={c} className="px-2 py-0.5 rounded bg-amber-500/10">{c} {a.toLocaleString()}</span>
             ))}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       <Card className="p-0 bg-hero-foreground/[0.03] border-hero-foreground/10 overflow-hidden">
         <div className="p-4 border-b border-hero-foreground/10 flex items-center justify-between">
@@ -444,5 +527,12 @@ const StatusBadge = ({ status }: { status: string }) => {
   };
   return <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold ${map[status] || "bg-hero-foreground/10"}`}>{status}</span>;
 };
+
+const MiniStat = ({ label, value, hint }: { label: string; value: any; hint?: string }) => (
+  <div className="rounded-lg bg-hero-foreground/[0.04] border border-hero-foreground/10 p-3" title={hint}>
+    <div className="text-[10px] uppercase tracking-wide text-hero-foreground/60">{label}</div>
+    <div className="text-lg font-semibold tabular-nums mt-0.5">{value}</div>
+  </div>
+);
 
 export default FinanceTab;
