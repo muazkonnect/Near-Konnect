@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Briefcase, Globe, HeartPulse, MapPin, Search, ShieldCheck, Zap, Star, Users, Zap } from "lucide-react";
+import { ArrowRight, Briefcase, Globe, HeartPulse, MapPin, Search, ShieldCheck, Star, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
