@@ -28,7 +28,12 @@ type PaymentRow = {
   admin_note: string;
   created_at: string;
   decided_at: string | null;
+  invoice_number: number | null;
+  invoiced_at: string | null;
 };
+
+const formatInvoiceNo = (n: number | null | undefined, fallbackId: string) =>
+  n ? `INV-${String(n).padStart(6, "0")}` : `DRAFT-${fallbackId.slice(0, 6).toUpperCase()}`;
 
 type SparksTx = {
   id: string;
