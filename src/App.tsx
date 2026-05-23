@@ -110,8 +110,8 @@ const AppContent = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
             <Route path="/worker-dashboard" element={<RoleProtectedRoute allow={["worker","admin","manager","moderator","ads_manager"]}><WorkerDashboard /></RoleProtectedRoute>} />
-            <Route path="/admin" element={<RoleProtectedRoute allow={["admin"]}><AdminDashboard /></RoleProtectedRoute>} />
-            <Route path="/admin/*" element={<RoleProtectedRoute allow={["admin"]}><AdminDashboard /></RoleProtectedRoute>} />
+            <Route path="/admin" element={<RoleProtectedRoute allow={["admin"]}><AdminOtpGate><AdminDashboard /></AdminOtpGate></RoleProtectedRoute>} />
+            <Route path="/admin/*" element={<RoleProtectedRoute allow={["admin"]}><AdminOtpGate><AdminDashboard /></AdminOtpGate></RoleProtectedRoute>} />
             <Route path="/worker/ads" element={<RoleProtectedRoute allow={["worker","admin","manager","ads_manager"]}><AdsDashboard /></RoleProtectedRoute>} />
             <Route path="/blood-donors" element={<BloodDonors />} />
             <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
