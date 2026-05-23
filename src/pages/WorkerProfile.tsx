@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MapPin, Copy } from "lucide-react";
-import { ArrowLeft, MoreVertical, Star, ShieldCheck, Briefcase, Zap, Send, Mail, Phone, MessageSquare, Video, Lock, CalendarPlus, EyeOff, Crown, BadgeCheck } from "lucide-react";
+import { ArrowLeft, MoreVertical, Star, ShieldCheck, Briefcase, Zap, Send, Mail, Phone, MessageSquare, Video, Lock, CalendarPlus, EyeOff, Crown, BadgeCheck, Gem } from "lucide-react";
 import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
