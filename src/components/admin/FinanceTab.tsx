@@ -277,7 +277,7 @@ ${p.admin_note ? `<div class="muted" style="margin-top:20px">Note: ${p.admin_not
   const printPeriodReport = () => {
     const w = window.open("", "_blank", "width=900,height=900");
     if (!w) return toast.error("Popup blocked");
-    const revRows = Object.entries(stats.byCurrency).map(([c, a]) => `<tr><td>${c}</td><td class="right">${a.toLocaleString()}</td></tr>`).join("");
+    const revRows = profit.map((r) => `<tr><td>${r.currency}</td><td class="right">${r.revenue.toLocaleString()}</td><td class="right">-${r.fees.toLocaleString(undefined,{maximumFractionDigits:2})}</td><td class="right"><b>${r.net.toLocaleString(undefined,{maximumFractionDigits:2})}</b></td></tr>`).join("");
     const txRows = payments.slice(0, 200).map((p) => `<tr>
       <td>${format(new Date(p.created_at), "MMM d, HH:mm")}</td>
       <td>${profileMap[p.user_id]?.full_name || p.user_id.slice(0, 8)}</td>
