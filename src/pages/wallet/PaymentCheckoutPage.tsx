@@ -16,6 +16,7 @@ import { useAppSetting } from "@/hooks/useAppSettings";
 import {
   fetchPackageById, fetchPaymentSettings, uploadPaymentProof, createPaymentRequest,
 } from "@/services/walletService";
+import { sparksToPrice, formatPrice } from "@/lib/sparkPricing";
 
 type Method = "easypaisa" | "jazzcash" | "usdt";
 type UsdtNet = "trc" | "bep" | "erc";
