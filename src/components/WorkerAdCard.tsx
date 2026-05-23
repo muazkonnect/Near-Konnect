@@ -147,7 +147,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
-          <div className="relative flex w-[120px] shrink-0 flex-col items-center justify-center gap-1.5 p-2.5 pt-7">
+          <div className="relative w-[120px] shrink-0 flex-col gap-1.5 p-2.5 pt-7 flex items-center justify-center">
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
               <Avatar className="h-[96px] w-[88px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
@@ -162,7 +162,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               )}
             </div>
             <span
-              className={`inline-flex items-center gap-1 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/60 px-1.5 py-[2px] text-[8px] font-extrabold uppercase tracking-[0.16em] backdrop-blur`}
+              className={`inline-flex items-center gap-1 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/60 px-1.5 py-[2px] text-[8px] font-extrabold uppercase tracking-[0.16em] backdrop-blur my-[6px]`}
             >
               <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${worker.available ? "bg-lime-400" : "bg-white/40"}`}>
                 {worker.available && <span className="absolute inset-0 animate-ping rounded-full bg-lime-400/80" />}
@@ -170,7 +170,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               {worker.available ? "Available" : "Busy"}
             </span>
             {isTopRated && (
-              <div className="flex items-center gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px]">
+              <div className="gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px] flex-row flex items-center justify-start my-0">
                 <Trophy className="h-2.5 w-2.5 fill-amber-400 text-amber-500" />
                 <span className="text-[8px] font-black uppercase tracking-[0.14em] text-amber-300">Top Rated</span>
               </div>
@@ -182,7 +182,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {/* identity */}
             <div className="min-w-0">
               <div className="flex items-start gap-1.5">
-                <h3 className="line-clamp-1 text-[16px] font-black leading-tight tracking-tight text-white">
+                <h3 className="line-clamp-1 font-black leading-tight tracking-tight text-white text-3xl">
                   {worker.name}
                 </h3>
                 {worker.verified && (
@@ -272,14 +272,14 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <>
                     <div className="flex min-w-0 items-center gap-1">
                       <MessageCircle className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-                      <div className="text-[10.5px] font-black uppercase tracking-[0.14em]">Message</div>
+                      <div className="text-[10.5px] font-black uppercase tracking-[0.14em] px-[13px]">Message</div>
                     </div>
                     <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black/85 text-white">
                       <ChevronRight className="h-2.5 w-2.5" />
                     </span>
                   </>
                 );
-                const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15`;
+                const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15 text-center`;
                 if (worker.showContact === false) {
                   return isAuthed && worker.userId ? (
                     <Link to={`/chat/${worker.userId}`} onClick={fireClick} className={ctaClass}>{ContactInner}</Link>
