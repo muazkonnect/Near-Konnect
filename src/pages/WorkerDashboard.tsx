@@ -81,6 +81,9 @@ const WorkerDashboard = () => {
     }
   }, [authLoading, roleLoading, roles, navigate]);
   const { data: workerData, isLoading } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
+  const isVerifiedWorker = !!workerData?.verified;
   const { data: sparksBalance = 0 } = useSparksWallet();
   const { data: myFeatured = [] } = useMyFeatured(user?.id ?? null);
   const activePremium = useMemo(() => {
