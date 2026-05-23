@@ -594,6 +594,12 @@ const CampaignWizard = ({
                 <p className={`text-lg font-bold ${balance < cost ? "text-destructive" : ""}`}>{balance}</p>
               </div>
             </div>
+            {multiplier > 1 && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-[11px] text-foreground">
+                Tier {tier} pricing applies (×{multiplier}) — your country tier multiplies the Sparks cost.
+              </div>
+            )}
+
             {previewWorker && (
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Live preview</p>
