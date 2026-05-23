@@ -38,9 +38,17 @@ const AvatarResetFlow = ({ onReplaced }: { onReplaced?: (url: string) => void })
     const { error } = await (supabase as any)
       .from("avatar_reset_requests")
       .insert({ user_id: user.id, reason: reason.trim(), status: "pending" });
+    if (error) { setSubmitting(false); toast.error(error.message); return; }
+
+    // Immediately remove the current profile photo while the request is pending
+    try {
+      await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);
+      await supabase.storage.from("avatars").remove([`${user.id}/avatar.jpg`]);
+      onReplaced?.("");
+    } catch { /* best-effort */ }
+
     setSubmitting(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Request sent to admins");
+    toast.success("Request sent. Your profile photo has been removed until approval.");
     setAskOpen(false);
     setReason("");
     setStatus("pending");
