@@ -480,7 +480,7 @@
   {
    "main": "Home Services",
    "name": "Tile & Marble Expert",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 21,
    "expertise": [
     "Floor Tile Installation",
@@ -1207,7 +1207,7 @@
   {
    "main": "Auto & Transport",
    "name": "Car Detailing Expert",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 22,
    "expertise": [
     "Interior Detailing",
@@ -1655,7 +1655,7 @@
   {
    "main": "Health & Care",
    "name": "Skin Specialist",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 13,
    "expertise": [
     "Acne Treatment",
@@ -2267,7 +2267,7 @@
   {
    "main": "Beauty & Fashion",
    "name": "Skincare Specialist",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 7,
    "expertise": [
     "Skin Analysis",
@@ -3437,7 +3437,7 @@
   {
    "main": "Education & Training",
    "name": "Personality Development Coach",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 32,
    "expertise": [
     "Confidence Building",
@@ -5201,7 +5201,7 @@
   {
    "main": "Property & Construction",
    "name": "Tile & Marble Worker",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 10,
    "expertise": [
     "Floor Tile Installation",
@@ -14447,7 +14447,7 @@
   {
    "main": "Cleaning & Maintenance",
    "name": "Floor Polishing & Marble Care",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 22,
    "expertise": [
     "Marble Polishing",
@@ -15635,7 +15635,7 @@
   {
    "main": "Daily Labour & Workers",
    "name": "Tile & Marble Worker",
-   "icon": "✨",
+   "icon": "⚡",
    "sort_order": 8,
    "expertise": [
     "Floor Tile Installation",
