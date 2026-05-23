@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MapPin, Copy } from "lucide-react";
-import { ArrowLeft, MoreVertical, Star, ShieldCheck, Briefcase, Zap, Send, Mail, Phone, MessageSquare, Video, Lock, CalendarPlus, EyeOff, Crown, BadgeCheck } from "lucide-react";
+import { ArrowLeft, MoreVertical, Star, ShieldCheck, Briefcase, Zap, Send, Mail, Phone, MessageSquare, Video, Lock, CalendarPlus, EyeOff, Crown, BadgeCheck, Gem } from "lucide-react";
 import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -82,6 +82,42 @@ const WorkerProfile = () => {
   });
 
   const { data: portfolio = [] } = useWorkerPortfolio(dbWorker?.id);
+
+  // Detect featured / active-ad status to theme the profile
+  const { data: featuredRow } = useQuery({
+    queryKey: ["worker_featured_active", dbWorker?.id],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("featured_workers")
+        .select("id, ends_at")
+        .eq("worker_id", dbWorker!.id)
+        .gt("ends_at", new Date().toISOString())
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!dbWorker?.id,
+    staleTime: 60_000,
+  });
+
+  const { data: activeCampaign } = useQuery({
+    queryKey: ["worker_active_campaign", dbWorker?.id],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("ad_campaigns")
+        .select("id, ends_at, status")
+        .eq("worker_id", dbWorker!.id)
+        .eq("status", "active")
+        .gt("ends_at", new Date().toISOString())
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!dbWorker?.id,
+    staleTime: 60_000,
+  });
 
 
   useEffect(() => {
@@ -199,6 +235,45 @@ const WorkerProfile = () => {
     }
   };
 
+  // Theme: active ad → lime/promoted, else featured → amber/gold, else default primary
+  const themeMode: "ad" | "featured" | "none" = activeCampaign ? "ad" : featuredRow ? "featured" : "none";
+  const themed = themeMode !== "none";
+  const t = themeMode === "ad"
+    ? {
+        grad: "from-lime-400 via-lime-300 to-lime-500",
+        text: "text-lime-300",
+        textStrong: "text-lime-400",
+        border: "border-lime-400/55",
+        ring: "ring-lime-400/50",
+        bgSoft: "from-lime-500/25 via-lime-500/8 to-transparent",
+        rgb: "163,230,53",
+        label: "Promoted",
+        Icon: Gem,
+      }
+    : themeMode === "featured"
+    ? {
+        grad: "from-amber-400 via-yellow-300 to-amber-500",
+        text: "text-amber-300",
+        textStrong: "text-amber-400",
+        border: "border-amber-400/55",
+        ring: "ring-amber-400/50",
+        bgSoft: "from-amber-500/25 via-amber-500/8 to-transparent",
+        rgb: "251,191,36",
+        label: "Featured",
+        Icon: Crown,
+      }
+    : {
+        grad: "from-primary via-primary to-primary",
+        text: "text-primary",
+        textStrong: "text-primary",
+        border: "border-primary/40",
+        ring: "ring-primary/40",
+        bgSoft: "from-primary/10 via-primary/5 to-transparent",
+        rgb: "0,0,0",
+        label: "",
+        Icon: Star,
+      };
+
   return (
     <AppLayout hideMobileHeader>
       <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
@@ -206,38 +281,70 @@ const WorkerProfile = () => {
         <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-hero/85 px-5 py-3 backdrop-blur-md">
           <button
             onClick={() => navigate(-1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10"
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10 ${themed ? t.textStrong : "text-primary"}`}
             aria-label="Back"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Worker Profile</h1>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10" aria-label="More">
+          <h1 className={`text-xs font-bold uppercase tracking-[0.18em] ${themed ? t.textStrong : "text-primary"}`}>
+            {themed ? `${t.label} Profile` : "Worker Profile"}
+          </h1>
+          <button className={`flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10 ${themed ? t.textStrong : "text-primary"}`} aria-label="More">
             <MoreVertical className="h-5 w-5" />
           </button>
         </header>
 
         {/* Banner */}
-        <div className="relative -mt-px h-44 w-full overflow-hidden bg-gradient-to-br from-primary/30 via-primary/10 to-hero sm:h-56">
+        <div
+          className={`relative -mt-px h-44 w-full overflow-hidden sm:h-56 ${themed ? "" : "bg-gradient-to-br from-primary/30 via-primary/10 to-hero"}`}
+          style={themed ? { background: `radial-gradient(620px 260px at -10% -20%, rgba(${t.rgb},0.45), transparent 60%), radial-gradient(520px 220px at 110% 110%, rgba(${t.rgb},0.3), transparent 60%), linear-gradient(180deg, rgba(10,13,10,0.4) 0%, hsl(var(--hero)) 100%)` } : undefined}
+        >
           {worker.bannerUrl ? (
-            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-60" />
           ) : worker.profilePhoto ? (
             <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
+          {themed && (
+            <>
+              <div
+                aria-hidden
+                className="absolute -left-16 -top-16 h-56 w-56 rounded-full blur-3xl opacity-80 animate-[spark-pulse_5s_ease-in-out_infinite]"
+                style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.85), transparent 70%)` }}
+              />
+              <div
+                aria-hidden
+                className="absolute -right-16 -bottom-16 h-52 w-52 rounded-full blur-3xl opacity-70 animate-[spark-pulse_6s_ease-in-out_infinite]"
+                style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.7), transparent 70%)` }}
+              />
+              {/* Corner ribbon */}
+              <div
+                className={`pointer-events-none absolute top-12 left-0 h-[28px] w-[140px] bg-gradient-to-br ${t.grad}`}
+                style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
+              />
+              <div className="pointer-events-none absolute top-[55px] left-2 flex items-center gap-1">
+                <t.Icon className="h-3 w-3 text-black" strokeWidth={2.5} />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">{t.label}</span>
+              </div>
+            </>
+          )}
         </div>
 
         <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
           {/* 1. Compact Header */}
           <section className="mb-6 flex flex-col items-center gap-3 text-center">
             <div className="relative group shrink-0">
-              <div className="absolute -inset-1 rounded-full bg-primary opacity-20 blur transition duration-700 group-hover:opacity-30" />
-              <Avatar className="relative z-10 h-32 w-32 border-2 border-primary">
+              <div
+                className="absolute -inset-1 rounded-full opacity-30 blur transition duration-700 group-hover:opacity-50"
+                style={themed ? { background: `rgb(${t.rgb})` } : undefined}
+              />
+              {!themed && <div className="absolute -inset-1 rounded-full bg-primary opacity-20 blur" />}
+              <Avatar className={`relative z-10 h-32 w-32 border-2 ${themed ? "border-transparent" : "border-primary"}`} style={themed ? { borderColor: `rgb(${t.rgb})` } : undefined}>
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className="bg-white/10 text-2xl font-bold text-primary">{initials}</AvatarFallback>
+                <AvatarFallback className={`bg-white/10 text-2xl font-bold ${themed ? t.textStrong : "text-primary"}`}>{initials}</AvatarFallback>
               </Avatar>
               {worker.verified && (
-                <div className="absolute bottom-1 right-1 z-20 rounded-full border-4 border-hero bg-primary p-1 text-primary-foreground">
+                <div className={`absolute bottom-1 right-1 z-20 rounded-full border-4 border-hero p-1 ${themed ? "text-black" : "bg-primary text-primary-foreground"} ${themed ? `bg-gradient-to-br ${t.grad}` : ""}`}>
                   <BadgeCheck className="h-4 w-4" />
                 </div>
               )}
@@ -247,7 +354,11 @@ const WorkerProfile = () => {
               <div className="flex items-center justify-center gap-2 flex-nowrap">
                 <h2 className="text-[22px] font-black tracking-tight text-hero-foreground">{worker.name}</h2>
                 {worker.verified && (
-                  <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
+                  themed ? (
+                    <t.Icon className={`h-4 w-4 ${t.textStrong}`} fill="currentColor" aria-label={t.label} />
+                  ) : (
+                    <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
+                  )
                 )}
               </div>
               <div className="mt-3 flex flex-wrap items-stretch justify-center gap-2">
@@ -259,7 +370,7 @@ const WorkerProfile = () => {
                       toast.success("Worker ID copied");
                     }}
                     title="Click to copy"
-                    className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:border-primary/40 hover:bg-white/10"
+                    className={`group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:bg-white/10 ${themed ? "" : "hover:border-primary/40"}`}
                   >
                     <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-hero-muted">ID</span>
                     <span className="h-3 w-px bg-white/15" />
@@ -269,9 +380,15 @@ const WorkerProfile = () => {
                     <Copy className="h-3 w-3 text-hero-muted opacity-0 transition group-hover:opacity-100" />
                   </button>
                 )}
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3.5 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.8)]">
+                <div
+                  className={themed
+                    ? `inline-flex items-center gap-2 rounded-full border ${t.border} bg-black/40 px-3.5 py-1.5 ${t.textStrong}`
+                    : "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3.5 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.8)]"}
+                  style={themed ? { boxShadow: `0 0 18px -6px rgba(${t.rgb},0.8)` } : undefined}
+                >
                   <MapPin className="h-3.5 w-3.5" />
-                  <span className="h-3 w-px bg-primary/30" />
+                  <span className={`h-3 w-px ${themed ? "bg-white/20" : "bg-primary/30"}`} />
+
                   {hasDist ? (
                     <>
                       <span className="font-sora text-sm font-bold leading-none">{distanceLabel}</span>
@@ -300,9 +417,13 @@ const WorkerProfile = () => {
               <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Sub-Category</span>
               <span className="block font-sora text-base font-semibold uppercase">{worker.subCategory || "—"}</span>
             </div>
-            <div className="col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3">
+            <div
+              className={themed
+                ? `col-span-2 rounded-xl border ${t.border} bg-gradient-to-br ${t.bgSoft} p-3`
+                : "col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3"}
+            >
               <div className="mb-2 flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-primary" />
+                <Zap className={`h-3.5 w-3.5 ${themed ? t.textStrong : "text-primary"}`} />
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Top Expertise</span>
               </div>
               {expertise.length > 0 ? (
@@ -310,7 +431,9 @@ const WorkerProfile = () => {
                   {expertise.map((e) => (
                     <span
                       key={e}
-                      className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"
+                      className={themed
+                        ? `inline-flex items-center rounded-full border ${t.border} bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold ${t.textStrong}`
+                        : "inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"}
                     >
                       {e}
                     </span>
@@ -477,7 +600,10 @@ const WorkerProfile = () => {
                 </Button>
               </BookingDialog>
               <Button
-                className="h-11 flex-[1.2] gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10"
+                className={themed
+                  ? `h-11 flex-[1.2] gap-2 rounded-lg bg-gradient-to-r ${t.grad} text-sm font-black uppercase tracking-wider text-black shadow-lg`
+                  : "h-11 flex-[1.2] gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10"}
+                style={themed ? { boxShadow: `0 10px 30px -10px rgba(${t.rgb},0.55)` } : undefined}
                 onClick={() => {
                   void trackEvent("contact_click");
                   if (phoneSan) window.location.href = `tel:${phoneSan}`;
