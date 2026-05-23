@@ -31,13 +31,13 @@ export default function SteppedCarousel({
 
   // Advance one card on a timer
   useEffect(() => {
-    if (!items.length || paused) return;
+    if (!items.length) return;
     const id = window.setInterval(() => {
-      if (pausedRef.current) return;
+      if (pausedRef.current || paused) return;
       setIndex((i) => i + 1);
     }, dwellMs + transitionMs);
     return () => window.clearInterval(id);
-  }, [items.length, dwellMs, transitionMs, paused]);
+  }, [items.length, dwellMs, transitionMs]);
 
   // Measure offset to center the (index)-th child in the viewport
   useEffect(() => {

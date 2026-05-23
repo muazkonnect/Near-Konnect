@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices } from "@/hooks/useSponsored";
@@ -9,7 +9,6 @@ import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppSetting } from "@/hooks/useAppSettings";
-import { useIsVisible, useReducedMotion } from "@/hooks/useIsVisible";
 
 type FeaturedWorker = {
   id: string;
@@ -46,9 +45,6 @@ const FeaturedWorkersCarousel = ({
   const [items, setItems] = useState<FeaturedWorker[]>([]);
   const dwellMs = useAppSetting("featured_cards_dwell_ms");
   const transitionMs = useAppSetting("featured_cards_transition_ms");
-  const sectionRef = useRef<HTMLElement>(null);
-  const visible = useIsVisible(sectionRef);
-  const reduced = useReducedMotion();
 
   const mergedIds = useMemo(() => {
     const set = new Set<string>([...featured.map((f) => f.service_id), ...paidFeaturedIds]);
@@ -104,7 +100,7 @@ const FeaturedWorkersCarousel = ({
   if (items.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className={`space-y-3 ${className}`}>
+    <section className={`space-y-3 ${className}`}>
       <div className="flex items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-1.5">
@@ -119,8 +115,7 @@ const FeaturedWorkersCarousel = ({
         className="pb-3"
         trackClassName="px-5"
         dwellMs={dwellMs || 2800}
-        transitionMs={reduced ? 0 : (transitionMs || 450)}
-        paused={!visible || reduced}
+        transitionMs={transitionMs || 450}
         items={items.map((w, i) => (
           <FeaturedWorkerCard
             key={w.id}
