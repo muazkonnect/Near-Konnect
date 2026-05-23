@@ -22,6 +22,8 @@ import {
   Search,
   Bell,
   ScrollText,
+  Receipt,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +62,8 @@ const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
+const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
+
 
 const TabFallback = () => (
   <div className="flex h-40 items-center justify-center">
@@ -69,7 +73,7 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
@@ -81,6 +85,8 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "verifications", label: "Verifications", icon: BadgeCheck, group: "Operations" },
   { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
   { key: "sparks", label: "Sparks & Payments", icon: Zap, group: "Operations" },
+  { key: "finance", label: "Finance & Invoices", icon: Receipt, group: "Operations" },
+
   { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
   { key: "location_requests", label: "Location Requests", icon: UserCog, group: "Operations" },
@@ -791,6 +797,14 @@ const AdminDashboard = () => {
                 <SparksAdminTab />
               </Suspense>
             )}
+
+            {tab === "finance" && (
+              <Suspense fallback={<TabFallback />}>
+                <FinanceTab />
+              </Suspense>
+            )}
+
+
 
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
