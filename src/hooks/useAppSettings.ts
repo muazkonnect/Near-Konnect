@@ -14,6 +14,7 @@ export type AppSettingsMap = {
   announcement_ticker_speed_seconds: number;
   featured_cards_dwell_ms: number;
   featured_cards_transition_ms: number;
+  blood_cards_stagger_ms: number;
   special_announcement: SpecialAnnouncement;
 };
 
