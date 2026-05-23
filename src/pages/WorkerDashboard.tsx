@@ -534,8 +534,15 @@ const WorkerDashboard = () => {
             </div>
             <div className="relative mt-6 grid grid-cols-2 gap-2">
               <button
-                onClick={() => navigate("/wallet/buy")}
-                className="rounded-xl bg-primary-foreground py-3 text-sm font-bold text-primary transition hover:opacity-90"
+                onClick={() => {
+                  if (!isVerifiedWorker) {
+                    toast.error(verificationPending ? "Verification pending. You can buy Sparks after approval." : "Only verified workers can buy Sparks.");
+                    setVerifyOpen(true);
+                    return;
+                  }
+                  navigate("/wallet/buy");
+                }}
+                className="rounded-xl bg-primary-foreground py-3 text-sm font-bold text-primary transition hover:opacity-90 disabled:opacity-60"
               >
                 Buy Sparks
               </button>
