@@ -798,6 +798,14 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
+            {tab === "finance" && (
+              <Suspense fallback={<TabFallback />}>
+                <FinanceTab />
+              </Suspense>
+            )}
+
+
+
             {/* AVATAR RESETS */}
             {tab === "avatar_resets" && <AvatarResetsTab />}
 
