@@ -808,6 +808,13 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
+            {tab === "discounts" && (
+              <Suspense fallback={<TabFallback />}>
+                <DiscountsTab />
+              </Suspense>
+            )}
+
+
 
 
             {/* AVATAR RESETS */}
