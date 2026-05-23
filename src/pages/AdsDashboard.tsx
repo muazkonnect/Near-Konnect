@@ -84,9 +84,13 @@ const AdsDashboard = () => {
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/15 ring-1 ring-amber-500/40">
           <Sparkles className="h-6 w-6 text-amber-500" />
         </div>
-        <h2 className="text-lg font-bold">Verification required</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Only verified workers can create ad campaigns. Get verified to unlock ads and featured placement.</p>
-        <Button className="mt-4" onClick={() => navigate("/worker")}>Go to Verification</Button>
+        <h2 className="text-lg font-bold">{verificationPending ? "Verification pending" : "Verification required"}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {verificationPending
+            ? "Your verification is under review. Ads will unlock automatically once approved."
+            : "Only verified workers can create ad campaigns. Get verified to unlock ads and featured placement."}
+        </p>
+        {!verificationPending && <Button className="mt-4" onClick={() => navigate("/worker")}>Go to Verification</Button>}
       </div>
     </AppLayout>
   );
