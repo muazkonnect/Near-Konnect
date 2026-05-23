@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, TrendingUp, TrendingDown, Plus } from "lucide-react";
+import { Zap, TrendingUp, TrendingDown, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/WalletContext";
@@ -26,7 +26,7 @@ const SparksBalanceCard = () => {
       <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 h-44 w-44 rounded-full bg-primary/20 blur-3xl" />
       <div className="relative">
         <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-hero-foreground/60">
-          <Sparkles className="h-3.5 w-3.5" /> Sparks Wallet
+          <Zap className="h-3.5 w-3.5" /> Sparks Wallet
         </div>
         <div className="mt-2 flex items-end justify-between gap-3">
           <div>

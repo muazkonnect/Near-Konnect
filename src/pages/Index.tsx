@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Briefcase, Globe, HeartPulse, MapPin, Search, ShieldCheck, Sparkles, Star, Users, Zap } from "lucide-react";
+import { ArrowRight, Briefcase, Globe, HeartPulse, MapPin, Search, ShieldCheck, Zap, Star, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
@@ -38,7 +38,7 @@ const actions = [
 
 const trustPoints = [
   { icon: ShieldCheck, title: "Verified providers", text: "Every listed provider goes through identity checks before connecting with clients." },
-  { icon: Sparkles, title: "Direct connections", text: "We introduce you — then step aside. Chat and arrange everything directly with the provider." },
+  { icon: Zap, title: "Direct connections", text: "We introduce you — then step aside. Chat and arrange everything directly with the provider." },
   { icon: HeartPulse, title: "Community-powered", text: "Urgent posts and blood requests stand out so the right people see them fast." },
 ];
 

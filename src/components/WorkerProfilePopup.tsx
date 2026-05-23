@@ -7,7 +7,7 @@ import {
   MapPin,
   ShieldCheck,
   Crown,
-  Sparkles,
+  Zap,
   Gem,
   MessageCircle,
   CalendarClock,
@@ -309,7 +309,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
               <div className={`mb-1.5 flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
-                <Sparkles className="h-3 w-3" />
+                <Zap className="h-3 w-3" />
                 Expertise
               </div>
               <div className="flex flex-wrap gap-1">

@@ -13,7 +13,7 @@ import {
   MessageSquare,
   Video,
   Lock,
-  Sparkles,
+  Zap,
   CalendarPlus,
   EyeOff,
   Crown,
@@ -320,7 +320,7 @@ const WorkerProfile = () => {
             </div>
             <div className="col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3">
               <div className="mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <Zap className="h-3.5 w-3.5 text-primary" />
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Top Expertise</span>
               </div>
               {expertise.length > 0 ? (
@@ -376,7 +376,7 @@ const WorkerProfile = () => {
               value={`${worker.experience} ${worker.experience === 1 ? "Year" : "Years"}`}
             />
             <Metric
-              icon={<Sparkles className="h-5 w-5 text-primary" />}
+              icon={<Zap className="h-5 w-5 text-primary" />}
               label="Reply"
               value={worker.available ? "< 15m" : "Offline"}
             />

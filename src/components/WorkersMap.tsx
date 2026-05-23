@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Sparkles } from "lucide-react";
+import { MapPin, Zap } from "lucide-react";
 import type { Coords } from "@/lib/geolocation";
 
 // Profession → SVG path (lucide). Falls back to MapPin.
@@ -19,7 +19,7 @@ const PROFESSION_ICONS: { keywords: string[]; svg: string }[] = [
   { keywords: ["chef", "cook", "kitchen"], svg: `<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>` },
   // Truck (driver, mover)
   { keywords: ["driver", "transport", "deliver", "mover", "haul"], svg: `<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>` },
-  // Sparkles (cleaner, maid)
+  // Zap (cleaner, maid)
   { keywords: ["clean", "maid", "wash"], svg: `<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>` },
   // Camera (photographer)
   { keywords: ["photo", "camera", "video"], svg: `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>` },
@@ -211,7 +211,7 @@ const WorkersMap = ({ workers, userCoords, height = "400px", fitToWorkers = true
       <div className="relative z-[2] flex items-center justify-between gap-3 px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
         <div className="min-w-0">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-hero-muted">
-            <Sparkles className="h-3 w-3 text-primary" /> Live Map
+            <Zap className="h-3 w-3 text-primary" /> Live Map
           </span>
           <p className="mt-1.5 text-sm font-bold tracking-tight sm:text-base">Nearby services</p>
         </div>

@@ -12,7 +12,7 @@ import {
   ShoppingBag,
   Briefcase,
   HeartPulse,
-  Sparkles,
+  Zap,
   Compass,
   Star,
   ArrowRight,

@@ -3,7 +3,7 @@ import { useAdDiscounts, useUpsertAdDiscount, DEFAULT_DISCOUNTS, type AdDuration
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Percent, Save, Sparkles } from "lucide-react";
+import { Loader2, Percent, Save, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 const DURATIONS = [1, 7, 15, 30] as const;
@@ -92,7 +92,7 @@ export default function DiscountsTab() {
       )}
 
       <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
-        <p className="flex items-center gap-2 font-bold text-primary"><Sparkles className="h-4 w-4" /> How it works</p>
+        <p className="flex items-center gap-2 font-bold text-primary"><Zap className="h-4 w-4" /> How it works</p>
         <p className="mt-1 text-xs text-muted-foreground">
           Final cost = <b>per-km rate × radius × paid days</b>. Per-km rates (homepage 3, explore 2) and featured monthly cost are managed in <b>Sparks &amp; Payments</b>.
         </p>

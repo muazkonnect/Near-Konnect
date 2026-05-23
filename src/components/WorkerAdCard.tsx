@@ -14,7 +14,7 @@ import {
   Hammer,
   Home,
   Crown,
-  Sparkles,
+  Zap,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
@@ -280,7 +280,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
 
             {/* expertise pills */}
             <div className="flex flex-wrap items-center gap-1">
-              <Sparkles className={`h-2.5 w-2.5 ${t.textStrong}`} />
+              <Zap className={`h-2.5 w-2.5 ${t.textStrong}`} />
               {getExpertise(worker.mainCategory, worker.subCategory, [], 3).map((skill) => (
                 <span
                   key={skill}

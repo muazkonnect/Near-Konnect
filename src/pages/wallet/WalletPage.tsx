@@ -2,7 +2,7 @@ import AppLayout from "@/components/AppLayout";
 import SparksBalanceCard from "@/components/wallet/SparksBalanceCard";
 import TransactionRow, { TransactionStatusIcon } from "@/components/wallet/TransactionRow";
 import { useWalletTransactions, useUserPaymentRequests } from "@/hooks/useWalletHistory";
-import { Sparkles, Receipt, Inbox, Clock } from "lucide-react";
+import { Zap, Receipt, Inbox, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -49,7 +49,7 @@ const WalletPage = () => {
 
         {requests.length > 0 && (
           <section>
-            <h2 className="mb-3 flex items-center gap-2 text-base font-bold"><Sparkles className="h-4 w-4 text-primary" /> Payment Requests</h2>
+            <h2 className="mb-3 flex items-center gap-2 text-base font-bold"><Zap className="h-4 w-4 text-primary" /> Payment Requests</h2>
             <div className="space-y-2">
               {requests.map((r) => (
                 <Link

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Check, Zap } from "lucide-react";
+import { Zap, Check, Zap } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import SparksBalanceCard from "@/components/wallet/SparksBalanceCard";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ const BuySparksPage = () => {
                       </span>
                     )}
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-hero-foreground/60">
-                      <Sparkles className="h-3.5 w-3.5 text-primary" /> {p.name}
+                      <Zap className="h-3.5 w-3.5 text-primary" /> {p.name}
                     </div>
                     <p className="mt-2 text-3xl font-extrabold tabular-nums">{total.toLocaleString()}</p>
                     <p className="text-xs text-hero-foreground/60">
