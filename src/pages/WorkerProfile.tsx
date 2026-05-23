@@ -600,7 +600,10 @@ const WorkerProfile = () => {
                 </Button>
               </BookingDialog>
               <Button
-                className="h-11 flex-[1.2] gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10"
+                className={themed
+                  ? `h-11 flex-[1.2] gap-2 rounded-lg bg-gradient-to-r ${t.grad} text-sm font-black uppercase tracking-wider text-black shadow-lg`
+                  : "h-11 flex-[1.2] gap-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/10"}
+                style={themed ? { boxShadow: `0 10px 30px -10px rgba(${t.rgb},0.55)` } : undefined}
                 onClick={() => {
                   void trackEvent("contact_click");
                   if (phoneSan) window.location.href = `tel:${phoneSan}`;
