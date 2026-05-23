@@ -522,34 +522,48 @@ const AdminDashboard = () => {
 
           <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
             {/* OVERVIEW */}
-            {tab === "overview" && (
-              <div>
-                <SectionHeader title="Overview" subtitle="What needs your attention right now." />
+            {tab === "overview" && (() => {
+              const items = [
+                { key: "finance", label: "Payments", count: pending?.payments ?? 0, icon: Zap },
+                { key: "verifications", label: "Verifications", count: pending?.verifications ?? 0, icon: BadgeCheck },
+                { key: "featured", label: "Featured", count: pending?.featured ?? 0, icon: Star },
+                { key: "avatar_resets", label: "Avatar Resets", count: pending?.avatars ?? 0, icon: UserCog },
+                { key: "location_requests", label: "Location Req", count: pending?.locations ?? 0, icon: UserCog },
+              ];
+              const open = items.filter((i) => i.count > 0);
+              return (
+                <div className="mx-auto max-w-3xl">
+                  <SectionHeader title="Overview" subtitle="Only what needs your attention." />
 
-                {/* Pending actions — primary focus */}
-                <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                  Needs your attention
-                </h3>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
-                  <StatCard label="Payments" value={pending?.payments ?? 0} icon={Zap} accent={(pending?.payments ?? 0) > 0} onClick={() => setTab("finance")} />
-                  <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} accent={(pending?.verifications ?? 0) > 0} onClick={() => setTab("verifications")} />
-                  <StatCard label="Featured Req" value={pending?.featured ?? 0} icon={Star} accent={(pending?.featured ?? 0) > 0} onClick={() => setTab("featured")} />
-                  <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} accent={(pending?.avatars ?? 0) > 0} onClick={() => setTab("avatar_resets")} />
-                  <StatCard label="Location Req" value={pending?.locations ?? 0} icon={UserCog} accent={(pending?.locations ?? 0) > 0} onClick={() => setTab("location_requests")} />
-                </div>
+                  <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] divide-y divide-hero-foreground/10">
+                    {open.length === 0 ? (
+                      <div className="flex items-center justify-center gap-2 py-10 text-sm text-hero-foreground/60">
+                        <CheckCircle className="h-4 w-4 text-success" />
+                        All caught up.
+                      </div>
+                    ) : (
+                      open.map((i) => (
+                        <button
+                          key={i.key}
+                          onClick={() => setTab(i.key as TabKey)}
+                          className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-hero-foreground/[0.04]"
+                        >
+                          <span className="flex items-center gap-3 text-sm font-medium text-hero-foreground">
+                            <i.icon className="h-4 w-4 text-primary" />
+                            {i.label}
+                          </span>
+                          <Badge className="bg-primary text-primary-foreground">{i.count}</Badge>
+                        </button>
+                      ))
+                    )}
+                  </div>
 
-                {/* Platform pulse */}
-                <h3 className="mt-6 mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                  Platform
-                </h3>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-                  <StatCard label="Users" value={allProfiles.length} icon={Users} onClick={() => setTab("users")} />
-                  <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
-                  <StatCard label="Blood Donors" value={bloodDonors.length} icon={Heart} onClick={() => setTab("donors")} />
-                  <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
+                  <p className="mt-4 text-center text-[11px] text-hero-foreground/50">
+                    {allProfiles.length} users · {workers.length} workers · {newUsers24h} new (24h)
+                  </p>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
 
 
