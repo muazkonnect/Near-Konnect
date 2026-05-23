@@ -183,11 +183,11 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
-          <div className="relative w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-0 py-0 my-px gap-[5px]">
+          <div className="relative w-[100px] sm:w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-1 py-1 my-px gap-[5px]">
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
-              <Avatar className="h-[96px] w-[88px] rounded-[12px] border-2 border-black">
+              <Avatar className="h-[72px] w-[64px] sm:h-[96px] sm:w-[88px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className={`rounded-[10px] bg-black text-2xl font-black ${t.text}`}>
+                <AvatarFallback className={`rounded-[10px] bg-black text-lg sm:text-2xl font-black ${t.text}`}>
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -206,7 +206,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               {worker.available ? "Available" : "Busy"}
             </span>
             {isTopRated && (
-              <div className="gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px] flex-row flex items-center justify-start my-0">
+              <div className="gap-1 rounded-md border border-amber-400/40 bg-amber-500/10 px-1.5 py-[2px] flex-row flex items-center justify-start my- 0">
                 <Trophy className="h-2.5 w-2.5 fill-amber-400 text-amber-500" />
                 <span className="text-[8px] font-black uppercase tracking-[0.14em] text-amber-300">Top Rated</span>
               </div>
