@@ -38,9 +38,10 @@ const AdminProfileTab = () => {
 
   useEffect(() => {
     if (profile) {
-      setFullName(profile.full_name || "");
-      setPhone(((profile as any).profile_phones?.phone) || "");
-      setAvatarUrl(profile.avatar_url || null);
+      const p = profile as any;
+      setFullName(p.full_name || "");
+      setPhone(p.profile_phones?.phone || "");
+      setAvatarUrl(p.avatar_url || null);
     }
   }, [profile]);
 

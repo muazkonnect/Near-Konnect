@@ -45,9 +45,10 @@ const CustomerDashboard = () => {
 
   useEffect(() => {
     if (profile) {
-      setName(profile.full_name || "");
-      setPhone(((profile as any).profile_phones?.phone) || "");
-      setBloodShowContact((profile as any).blood_show_contact ?? true);
+      const p = profile as any;
+      setName(p.full_name || "");
+      setPhone(p.profile_phones?.phone || "");
+      setBloodShowContact(p.blood_show_contact ?? true);
     }
   }, [profile]);
 
