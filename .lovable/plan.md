@@ -1,80 +1,33 @@
-## Goal
+# Performance fixes
 
-Add a 3-tier country-based multiplier to all **sparks costs** for actions (verification, featured, ads). Tier 1 = ×1, Tier 2 = ×3, Tier 3 = ×5. Resolved as the **higher** of the user's fixed profile country and current GPS country. Admin-editable.
+## 1. Pause ticker when off-screen / reduced motion
 
-## Database
+**File:** `src/pages/Home.tsx` (announcement ticker)
 
-**New tables**
+- Wrap the ticker element with a `ref` and an `IntersectionObserver` that toggles an `isVisible` state.
+- Detect `window.matchMedia('(prefers-reduced-motion: reduce)')` once into `prefersReducedMotion`.
+- Replace the inline `animation` style with a conditional: when `!isVisible || prefersReducedMotion` set `animationPlayState: 'paused'` (keep the animation declaration so resuming is instant). When reduced motion is on, also drop the transform entirely.
 
-- `country_tiers` — `country_code text PK`, `tier int (1|2|3)`, `updated_at`, `updated_by`.
-  Seeded with the 20 Tier 2 and 20 Tier 3 ISO codes; everything else defaults to Tier 1.
-- `tier_settings` — `tier int PK`, `multiplier numeric NOT NULL`, `label text`.
-  Seeded: (1, 1.0), (2, 3.0), (3, 5.0).
+## 2. Pause featured carousel when off-screen / reduced motion
 
-RLS: public SELECT; admin-only ALL.
+**File:** `src/components/FeaturedWorkersCarousel.tsx`
 
-**New helpers (SECURITY DEFINER, search_path=public)**
+- Add a wrapper `ref` + `IntersectionObserver` → `isVisible` state.
+- Read `prefers-reduced-motion`.
+- Pass a new `paused` prop to `SteppedCarousel` = `!isVisible || prefersReducedMotion`.
+- In `SteppedCarousel`, short-circuit the dwell `setInterval` / step advance when `paused` is true (skip scheduling, clear existing timer on pause). When reduced motion, also set transition duration to 0.
 
-- `country_to_tier(_cc text) → int` — lookup with default 1.
-- `resolve_user_tier(_uid uuid, _current_cc text DEFAULT NULL) → int` — reads `profiles` to get a fixed country (derived from `profiles.phone` ISO via existing data / a new optional `profiles.country_code` column added in this migration), compares to `_current_cc`, returns max tier of the two.
-- `tier_multiplier(_tier int) → numeric`.
-- `apply_tier(_uid uuid, _current_cc text, _base_cost int) → int` — returns `CEIL(base * multiplier)`.
+## 3. Lazy-load push notifications after first interaction
 
-**Profile change**
+**Files:** wherever `src/lib/pushNotifications.ts` is currently imported at boot (likely `src/main.tsx` or `src/App.tsx` — confirm during build).
 
-- Add nullable `profiles.country_code text` (ISO-2). Backfilled from phone E.164 where possible; otherwise NULL → treated as Tier 1.
+- Remove the top-level static import.
+- In a root `useEffect`, attach one-shot listeners for `pointerdown`, `keydown`, `touchstart` (with `{ once: true, passive: true }`) that `await import('@/lib/pushNotifications')` then invoke its init function.
+- Also schedule a fallback `requestIdleCallback` (with `setTimeout` fallback, ~4s) so the module still loads on idle pages that never get interaction.
 
-**Updated RPCs** (all already SECURITY DEFINER)
+## Technical notes
 
-- `calc_sparks_cost(_ad_type, _radius_km, _duration_days, _placement_type, _current_cc text DEFAULT NULL)` — wraps the existing base formula in `apply_tier(auth.uid(), _current_cc, base)`.
-- `purchase_featured(p_duration_days, p_category_id, p_current_cc text DEFAULT NULL)` — multiply `v_cost` via `apply_tier` before `spend_sparks`; persist the tiered cost in `featured_workers.sparks_cost`.
-- `request_verification(p_current_cc text DEFAULT NULL)` (and the approval path) — multiply `verification_settings.sparks_cost` via `apply_tier`.
-- Ad campaign creation RPC — same pattern.
-
-Sparks **packages** (money price) are intentionally NOT changed.
-
-## Frontend
-
-**New hook** `src/hooks/useUserTier.ts`
-
-- Returns `{ tier, multiplier, fixedCC, currentCC, loading }`.
-- `currentCC` from `useDetectedCountry` / cached geo; `fixedCC` from `profiles.country_code`.
-- `tier = max(country_to_tier(fixed), country_to_tier(current))` resolved client-side from a small cached `country_tiers` fetch (also exposed via a `tier_for_country` RPC for SSR-safety).
-
-**Client cost previews** (so UI matches what the RPC will charge)
-
-- `calcSparksCost` in `src/hooks/useSparks.ts` — pass `_current_cc` (from `useDetectedCountry`).
-- `FeaturedPurchaseDialog` — multiply displayed cost by `useUserTier().multiplier`, show a "Tier 2 pricing (×3)" badge when > 1.
-- `VerificationDialog` — same badge + multiplied cost.
-- `AdsDashboard` cost preview — already uses `calcSparksCost`; just pass current country.
-- All RPC call sites pass `currentCC` so server resolution matches client preview.
-
-**Admin UI** — new tab `TierPricingTab` in `AdminDashboard`:
-
-- Table 1: Tiers (id, label, multiplier) — inline edit.
-- Table 2: Countries — searchable list of all ISO countries with a Tier selector per row; bulk-assign by pasting names; saves to `country_tiers`.
-- Audit log entries on every change.
-
-## Edge cases
-
-- Unknown / missing country → Tier 1.
-- Server is the source of truth: even if client sends a stale `currentCC`, the RPC re-resolves via `resolve_user_tier` and always uses **max(fixed, server-supplied current)**.
-- Existing active featured/ads keep their stored `sparks_cost`; only new purchases are tiered.
-- Discounts (`ad_duration_discounts`) apply BEFORE the tier multiplier, so the discount % still shows correctly to the user; tier multiplies the final total.
-
-## Files
-
-**Migration (new)**
-- `country_tiers`, `tier_settings`, `profiles.country_code`, helper functions, updated `calc_sparks_cost` / `purchase_featured` / verification + ad campaign RPCs, seed data, RLS.
-
-**Created**
-- `src/hooks/useUserTier.ts`
-- `src/components/admin/TierPricingTab.tsx`
-
-**Edited**
-- `src/hooks/useSparks.ts` (pass `_current_cc`)
-- `src/components/featured/FeaturedPurchaseDialog.tsx` (tier badge + multiplied display)
-- `src/components/verification/VerificationDialog.tsx` (tier badge + multiplied display)
-- `src/pages/AdsDashboard.tsx` (pass current country, tier badge)
-- `src/pages/AdminDashboard.tsx` (register new tab)
-- `src/integrations/supabase/types.ts` (auto-regenerated by migration)
+- Single shared `useIsVisible(ref)` hook in `src/hooks/useIsVisible.ts` to avoid duplicating IntersectionObserver logic between ticker and carousel. Threshold `0.01`, disconnect on unmount.
+- `prefers-reduced-motion` read via a tiny `useReducedMotion()` hook with `matchMedia` + `change` listener.
+- No backend, schema, or settings changes. Admin speed controls keep working unchanged.
+- No visible UI change when section is on-screen and motion is allowed.
