@@ -10,7 +10,7 @@ export function useWorkerProfile() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, avatar_url, city, use_whatsapp, contact_methods, show_contact, blood_show_contact, profile_phones(phone))")
+        .select("*, profiles(full_name, avatar_url, city, use_whatsapp, show_contact, blood_show_contact, profile_phones(phone), profile_contact_methods(methods))")
         .eq("user_id", user!.id)
         .maybeSingle();
       if (error) throw error;

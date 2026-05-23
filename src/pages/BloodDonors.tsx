@@ -38,7 +38,7 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods, blood_show_contact, profile_phones(phone)" as any)
+        .select("user_id, full_name, avatar_url, city, blood_group, is_blood_donor, donor_status, blood_show_contact, profile_phones(phone), profile_contact_methods(methods)" as any)
         .eq("is_blood_donor", true)
         .order("full_name") as any;
       if (error) throw error;
@@ -56,9 +56,10 @@ const BloodDonors = () => {
 
       return (data as any[]).map((d: any) => ({
         ...d,
+        contact_methods: d.profile_contact_methods?.methods,
         latitude: workerMap.get(d.user_id)?.lat ?? null,
         longitude: workerMap.get(d.user_id)?.lng ?? null,
-        contact_methods_parsed: parseContactMethods(d.contact_methods),
+        contact_methods_parsed: parseContactMethods(d.profile_contact_methods?.methods),
       }));
     },
   });

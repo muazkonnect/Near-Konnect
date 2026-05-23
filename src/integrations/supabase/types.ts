@@ -1346,6 +1346,35 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_contact_methods: {
+        Row: {
+          created_at: string
+          methods: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          methods?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          methods?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_contact_methods_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profile_phones: {
         Row: {
           created_at: string
@@ -1381,7 +1410,6 @@ export type Database = {
           blood_group: string | null
           blood_show_contact: boolean
           city: string | null
-          contact_methods: Json
           country_code: string | null
           created_at: string
           donor_status: string
@@ -1400,7 +1428,6 @@ export type Database = {
           blood_group?: string | null
           blood_show_contact?: boolean
           city?: string | null
-          contact_methods?: Json
           country_code?: string | null
           created_at?: string
           donor_status?: string
@@ -1419,7 +1446,6 @@ export type Database = {
           blood_group?: string | null
           blood_show_contact?: boolean
           city?: string | null
-          contact_methods?: Json
           country_code?: string | null
           created_at?: string
           donor_status?: string
@@ -2429,6 +2455,7 @@ export type Database = {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
       }
+      can_view_contact_methods: { Args: { _user_id: string }; Returns: boolean }
       can_view_phone: { Args: { _user_id: string }; Returns: boolean }
       country_to_tier: { Args: { _cc: string }; Returns: number }
       create_ad_campaign:
