@@ -20,6 +20,10 @@ interface Props {
 const RequestFeaturedDialog = ({ workerId }: Props) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: workerProfile } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const isVerified = !!(workerProfile as any)?.verified;
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
