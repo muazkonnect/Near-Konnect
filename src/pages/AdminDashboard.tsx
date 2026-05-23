@@ -66,6 +66,7 @@ import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
 const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
 const DiscountsTab = lazy(() => import("@/components/admin/DiscountsTab"));
+const TierPricingTab = lazy(() => import("@/components/admin/TierPricingTab"));
 
 
 const TabFallback = () => (
@@ -73,10 +74,11 @@ const TabFallback = () => (
     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
   </div>
 );
-import { Pencil, BadgeCheck } from "lucide-react";
+import { Pencil, BadgeCheck, Globe2 } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "discounts" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "discounts" | "tiers" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
+
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
