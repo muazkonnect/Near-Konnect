@@ -77,7 +77,7 @@ const BuySparksPage = () => {
                       {p.sparks.toLocaleString()} Sparks{p.bonus_sparks > 0 && <span className="text-emerald-400"> + {p.bonus_sparks} bonus</span>}
                     </p>
                     <div className="mt-4 flex items-center justify-between">
-                      <span className="text-lg font-bold text-primary">{formatPrice(p.sparks)}</span>
+                      <span className="text-lg font-bold text-primary">{displayPrice(p.sparks)}</span>
                       <Zap className="h-4 w-4 text-primary" />
                     </div>
                   </motion.button>
