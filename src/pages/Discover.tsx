@@ -399,7 +399,7 @@ const Discover = () => {
             <div className="mx-5">
               <PromoteYourselfBanner />
             </div>
-          ) : promoted3kmFiltered.length === 1 ? null : (
+          ) : promoted3kmFiltered.length > 0 ? (
             <SteppedCarousel
               className="pb-3"
               trackClassName="pl-5 pr-5"
@@ -415,7 +415,7 @@ const Discover = () => {
                 </div>
               ))}
             />
-          )}
+          ) : null}
         </section>
 
         {/* FEATURED PROFESSIONALS — marquee, like ads section */}
