@@ -7,7 +7,9 @@ import { useMyVerification, useVerificationSettings } from "@/hooks/useVerificat
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
 import { startVerification, submitVerification, createDiditSession, getDiditDecision, fetchDiditEvidence } from "@/services/verificationService";
+import { useUserTier, useCurrentCC } from "@/hooks/useUserTier";
 import { toast } from "sonner";
+
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 
