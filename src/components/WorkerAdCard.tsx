@@ -147,7 +147,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
-          <div className="relative flex w-[120px] shrink-0 flex-col items-center justify-center gap-1.5 p-2.5 pt-7">
+          <div className="relative w-[120px] shrink-0 flex-col gap-1.5 p-2.5 pt-7 flex items-center justify-center">
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${t.grad}`}>
               <Avatar className="h-[96px] w-[88px] rounded-[12px] border-2 border-black">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
