@@ -16,6 +16,7 @@ import WorkerAdCard from "@/components/WorkerAdCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useMyVerification } from "@/hooks/useVerification";
 import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign, type AdPlacement } from "@/hooks/useAdCampaigns";
