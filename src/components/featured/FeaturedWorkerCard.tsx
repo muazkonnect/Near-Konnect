@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Star, BadgeCheck, MapPin, Briefcase, ArrowRight, Zap, Award } from "lucide-react";
+import { Star, BadgeCheck, MapPin, Briefcase, ArrowRight, MessageCircle, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -189,7 +189,7 @@ export default function FeaturedWorkerCard({ worker, index = 0 }: Props) {
                     onClick={() => { trackFeaturedEvent(worker.id, "contact_click", user?.id); setPopupOpen(true); }}
                     className="inline-flex h-8 flex-[1.4] items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 px-2 text-[11px] font-extrabold text-hero shadow-lg shadow-star/30 hover:shadow-star/50"
                   >
-                    <Zap className="mr-1 h-3 w-3 fill-current" /> Contact
+                    <MessageCircle className="h-4 w-4 fill-current" strokeWidth={2.5} />
                   </button>
                 ) : (
                   <AuthRequiredDialog
@@ -197,7 +197,7 @@ export default function FeaturedWorkerCard({ worker, index = 0 }: Props) {
                     description="Sign in or create an account to contact this provider."
                   >
                     <button className="inline-flex h-8 flex-[1.4] items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 px-2 text-[11px] font-extrabold text-hero shadow-lg shadow-star/30 hover:shadow-star/50">
-                      <Zap className="mr-1 h-3 w-3 fill-current" /> Contact
+                      <MessageCircle className="h-4 w-4 fill-current" strokeWidth={2.5} />
                     </button>
                   </AuthRequiredDialog>
                 )}
