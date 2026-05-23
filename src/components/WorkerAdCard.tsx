@@ -329,7 +329,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/85 text-white">
                     <ChevronRight className="h-4 w-4" />
                   </span>
-                </a>
+                </button>
               ) : (
                 <AuthRequiredDialog title="Log in to contact" description="Sign in to message this provider.">
                   <button className={`group/btn flex w-full items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}>
