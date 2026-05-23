@@ -376,6 +376,13 @@ const Home = () => {
           )}
         </motion.section>
 
+        {/* PROMOTE AWARENESS — compact, always visible */}
+        <div className="mb-6 px-5">
+          <PromoteYourselfBanner variant="compact" />
+        </div>
+
+
+
         {/* AD: BANNER */}
         {bannerAds[0] ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
