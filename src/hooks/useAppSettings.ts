@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export type SpecialAnnouncement = { text: string; expires_at: string | null } | null;
+
 export type AppSettingsMap = {
   homepage_promoted_radii_km: number[];
   explore_default_radius_km: number;
@@ -9,6 +11,7 @@ export type AppSettingsMap = {
   workers_default_radius_km: number;
   featured_default_radius_km: number;
   announcement_messages: string[];
+  special_announcement: SpecialAnnouncement;
 };
 
 export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
@@ -22,6 +25,7 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
     "Welcome to Near Konnect — your hyperlocal network",
     "Safety protocols for verified providers updated",
   ],
+  special_announcement: null,
 };
 
 export function useAppSettings() {
