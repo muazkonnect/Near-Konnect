@@ -116,10 +116,12 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]">
             {worker.bannerUrl ? (
-              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-60" />
+              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute top-1 left-1 right-1 h-[52%] w-auto rounded-t-[18px] object-cover opacity-35" />
             ) : worker.profilePhoto ? (
-              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-30 blur-2xl" />
+              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute top-0 left-0 right-1 h-[48%] w-full scale-125 rounded-t-[18px] object-cover opacity-20 blur-xl" />
             ) : null}
+            {/* banner fade mask */}
+            <div className="pointer-events-none absolute top-0 left-0 right-0 h-[65%] w-full" style={{ background: "linear-gradient(to bottom, rgba(10,13,10,0) 0%, rgba(10,13,10,0.35) 40%, rgba(10,13,10,0.92) 75%, #0a0d0a 100%)" }} />
             <div
               className="absolute inset-0 opacity-[0.18]"
               style={{
