@@ -87,7 +87,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { error: profileError } = await supabase.from("profiles").insert({
           user_id: nextUser.id,
           full_name: fullName || nextUser.email?.split("@")[0] || "Near Konnect User",
-          phone: phone || null,
           blood_group: bloodGroup,
           is_blood_donor: isBloodDonor,
           use_whatsapp: useWhatsapp,
@@ -95,6 +94,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } as any);
         if (profileError && !String(profileError.message).toLowerCase().includes("duplicate")) {
           throw profileError;
+        }
+        if (phone) {
+          await (supabase as any).from("profile_phones").upsert({ user_id: nextUser.id, phone }, { onConflict: "user_id" });
         }
       }
 

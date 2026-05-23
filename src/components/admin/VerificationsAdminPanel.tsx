@@ -99,7 +99,7 @@ function useWorkerProfiles(userIds: string[]) {
     (async () => {
       const { data } = await (supabase as any)
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city")
+        .select("user_id, full_name, avatar_url, city, profile_phones(phone)" as any)
         .in("user_id", userIds);
       const m: any = {};
       (data || []).forEach((p: any) => { m[p.user_id] = p; });
@@ -192,7 +192,7 @@ function VerificationItem({ v, onDecide, busy }: { v: any; onDecide: (id: string
             </div>
 
             <div className="rounded-lg border bg-muted/20 p-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <Field label="Worker phone" value={prof.phone} icon={Phone} />
+              <Field label="Worker phone" value={(prof as any)?.profile_phones?.phone} icon={Phone} />
               <Field label="Didit session" value={v.persona_inquiry_id} mono />
               <Field label="Worker ID" value={v.worker_id} mono />
               <Field label="User ID" value={v.user_id} mono />

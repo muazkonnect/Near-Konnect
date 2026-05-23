@@ -151,7 +151,7 @@ const WorkerDashboard = () => {
       setExpertiseTags(Array.isArray((workerData as any).expertise_tags) ? (workerData as any).expertise_tags : []);
       setShowContact((workerData as any).profiles?.show_contact ?? true);
       setBloodShowContact((workerData as any).profiles?.blood_show_contact ?? true);
-      const profilePhone = (workerData as any).profiles?.phone || "";
+      const profilePhone = (workerData as any).profiles?.profile_phones?.phone || "";
       const stored = parseContactMethods((workerData as any).profiles?.contact_methods);
       if (stored.length > 0) {
         setContactMethods(stored.some((m) => m.type === "whatsapp") ? stored : [{ type: "whatsapp", value: profilePhone }, ...stored]);
@@ -184,7 +184,7 @@ const WorkerDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("bookings")
-        .select("*, profiles:customer_id(full_name, phone, avatar_url)")
+        .select("*, profiles:customer_id(full_name, avatar_url, profile_phones(phone))")
         .eq("worker_id", workerData!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -710,7 +710,7 @@ const WorkerDashboard = () => {
                         <BadgeCheck className="h-4 w-4 text-success" aria-label="Verified" />
                       )}
                     </div>
-                    <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
+                    <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.profile_phones?.phone}</p>
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>

@@ -143,10 +143,10 @@ const FinanceTab = () => {
     queryKey: ["admin_finance_profiles", userIds.join(",")],
     enabled: userIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await sb.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
+      const { data, error } = await sb.from("profiles").select("user_id, full_name, profile_phones(phone)" as any).in("user_id", userIds);
       if (error) throw error;
       const map: Record<string, { full_name: string; phone: string | null }> = {};
-      (data || []).forEach((p: any) => { map[p.user_id] = { full_name: p.full_name, phone: p.phone }; });
+      (data || []).forEach((p: any) => { map[p.user_id] = { full_name: p.full_name, phone: p.profile_phones?.phone ?? null }; });
       return map;
     },
   });

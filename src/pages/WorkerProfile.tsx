@@ -57,7 +57,7 @@ const WorkerProfile = () => {
       if (!id || !lookupValid) return null;
       const query = (supabase as any)
         .from("workers")
-        .select("*, profiles!workers_user_id_fkey_profiles(full_name, phone, avatar_url, use_whatsapp, contact_methods, show_contact)")
+        .select("*, profiles!workers_user_id_fkey_profiles(full_name, avatar_url, use_whatsapp, contact_methods, show_contact, profile_phones(phone))")
         .eq(isUuid ? "id" : "uid", isUuid ? id : normalizedUid)
         .maybeSingle();
       const { data, error } = await query;
@@ -143,7 +143,7 @@ const WorkerProfile = () => {
     );
   }
 
-  const profilePhone = (dbWorker as any).profiles?.phone || "";
+  const profilePhone = (dbWorker as any).profiles?.profile_phones?.phone || "";
   const storedMethods = parseContactMethods((dbWorker as any).profiles?.contact_methods);
   const fallbackMethods: ContactMethod[] = profilePhone
     ? [

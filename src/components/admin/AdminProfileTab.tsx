@@ -22,7 +22,7 @@ const AdminProfileTab = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("*, profile_phones(phone)" as any)
         .eq("user_id", user!.id)
         .maybeSingle();
       if (error) throw error;
@@ -38,9 +38,10 @@ const AdminProfileTab = () => {
 
   useEffect(() => {
     if (profile) {
-      setFullName(profile.full_name || "");
-      setPhone(profile.phone || "");
-      setAvatarUrl(profile.avatar_url || null);
+      const p = profile as any;
+      setFullName(p.full_name || "");
+      setPhone(p.profile_phones?.phone || "");
+      setAvatarUrl(p.avatar_url || null);
     }
   }, [profile]);
 
@@ -61,8 +62,11 @@ const AdminProfileTab = () => {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim(), phone: phone.trim() || null })
+      .update({ full_name: fullName.trim() })
       .eq("user_id", user.id);
+    if (!error) {
+      await (supabase as any).from("profile_phones").upsert({ user_id: user.id, phone: phone.trim() || null }, { onConflict: "user_id" });
+    }
     setSaving(false);
     if (error) {
       toast.error("Failed to update profile");
