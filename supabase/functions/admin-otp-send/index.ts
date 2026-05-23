@@ -73,9 +73,8 @@ Deno.serve(async (req) => {
     });
 
     const { error: enqueueError } = await admin.rpc("enqueue_email", {
-      queue_name: "auth_emails",
+      queue_name: "transactional_emails",
       payload: {
-        run_id: runId,
         message_id: messageId,
         to: email,
         from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
@@ -85,6 +84,7 @@ Deno.serve(async (req) => {
         text,
         purpose: "transactional",
         label: "admin_otp",
+        idempotency_key: `admin-otp-${messageId}`,
         queued_at: new Date().toISOString(),
       },
     });
