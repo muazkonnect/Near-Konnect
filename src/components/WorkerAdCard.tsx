@@ -140,38 +140,38 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* HERO: photo + identity + emblem */}
-          <div className="relative mt-3 grid grid-cols-[112px_1fr] gap-3 px-4 sm:grid-cols-[128px_1fr_auto]">
+          <div className="relative mt-2.5 grid grid-cols-[88px_1fr] gap-3 px-3.5 sm:grid-cols-[100px_1fr_auto]">
             {/* photo */}
             <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${accentGradient}`}>
-              <Avatar className="h-[112px] w-[112px] rounded-2xl border-2 border-black sm:h-[128px] sm:w-[128px]">
+              <Avatar className="h-[88px] w-[88px] rounded-2xl border-2 border-black sm:h-[100px] sm:w-[100px]">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className="rounded-2xl bg-black text-2xl font-black text-lime-300">
+                <AvatarFallback className="rounded-2xl bg-black text-xl font-black text-lime-300">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               {worker.verified && (
-                <div className={`absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black ring-2 ${accentRing}`}>
-                  <ShieldCheck className={`h-4 w-4 ${accentTextStrong}`} strokeWidth={3} />
+                <div className={`absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black ring-2 ${accentRing}`}>
+                  <ShieldCheck className={`h-3.5 w-3.5 ${accentTextStrong}`} strokeWidth={3} />
                 </div>
               )}
             </div>
 
             {/* identity */}
             <div className="min-w-0">
-              <div className="flex items-start gap-2">
-                <h3 className="line-clamp-2 text-[22px] font-black leading-[1.05] tracking-tight text-white sm:text-[26px]">
+              <div className="flex items-start gap-1.5">
+                <h3 className="line-clamp-2 text-[18px] font-black leading-[1.05] tracking-tight text-white sm:text-[20px]">
                   {worker.name}
                 </h3>
                 {worker.verified && (
-                  <span className={`mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${accentGradient}`}>
-                    <BadgeCheck className="h-3.5 w-3.5 text-black" strokeWidth={3} />
+                  <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${accentGradient}`}>
+                    <BadgeCheck className="h-3 w-3 text-black" strokeWidth={3} />
                   </span>
                 )}
               </div>
               {worker.profession && (
-                <p className={`mt-1 flex items-center gap-1.5 text-[14px] font-extrabold uppercase tracking-[0.14em] ${accentTextStrong}`}>
+                <p className={`mt-0.5 flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-[0.14em] ${accentTextStrong}`}>
                   {worker.profession}
-                  <Hammer className="h-3.5 w-3.5" />
+                  <Hammer className="h-3 w-3" />
                 </p>
               )}
               {worker.verified && (
