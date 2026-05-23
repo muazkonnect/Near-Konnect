@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useMyVerification } from "@/hooks/useVerification";
 
 const sb = supabase as any;
 
@@ -18,6 +20,10 @@ interface Props {
 const RequestFeaturedDialog = ({ workerId }: Props) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: workerProfile } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const isVerified = !!(workerProfile as any)?.verified;
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -55,6 +61,10 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
 
   const submit = async () => {
     if (!user) return;
+    if (!isVerified) {
+      toast.error(verificationPending ? "Verification pending. You can request Featured after approval." : "Only verified workers can request Featured listing.");
+      return;
+    }
     setSubmitting(true);
     const { error } = await sb
       .from("featured_requests")
@@ -103,7 +113,18 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           </DialogDescription>
         </DialogHeader>
 
-        {isFeatured ? (
+        {!isVerified ? (
+          <div className="rounded-xl border border-amber-400/40 bg-amber-50/40 p-3 text-sm dark:bg-amber-500/5">
+            <div className="flex items-center gap-2 font-semibold text-amber-700 dark:text-amber-300">
+              <Clock className="h-4 w-4" /> {verificationPending ? "Verification pending" : "Verification required"}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {verificationPending
+                ? "Your verification is under admin review. Featured Listing unlocks automatically once approved."
+                : "Only verified workers can request a Featured Listing. Complete verification first."}
+            </p>
+          </div>
+        ) : isFeatured ? (
           <div className="rounded-xl border border-success/30 bg-success/5 p-3 text-sm">
             <div className="flex items-center gap-2 font-semibold text-success">
               <CheckCircle2 className="h-4 w-4" /> You're currently featured
@@ -164,7 +185,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           </div>
         )}
 
-        {!isFeatured && !pending && (
+        {isVerified && !isFeatured && !pending && (
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={submit} disabled={submitting} className="gap-2">

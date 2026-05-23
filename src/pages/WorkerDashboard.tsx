@@ -63,6 +63,7 @@ import { useNotifications, markRead } from "@/hooks/useNotifications";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 import { useCategories } from "@/hooks/useCategories";
+import { useMyVerification } from "@/hooks/useVerification";
 
 const WorkerDashboard = () => {
   const [verifyOpen, setVerifyOpen] = useState(false);
@@ -80,6 +81,9 @@ const WorkerDashboard = () => {
     }
   }, [authLoading, roleLoading, roles, navigate]);
   const { data: workerData, isLoading } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
+  const isVerifiedWorker = !!workerData?.verified;
   const { data: sparksBalance = 0 } = useSparksWallet();
   const { data: myFeatured = [] } = useMyFeatured(user?.id ?? null);
   const activePremium = useMemo(() => {
@@ -488,9 +492,13 @@ const WorkerDashboard = () => {
             {[
               { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
               { label: "Boost Ad", icon: Zap, onClick: () => {
-                if (!workerData?.verified) { toast.error("Get verified to create ads."); setVerifyOpen(true); return; }
+                if (!isVerifiedWorker) {
+                  toast.error(verificationPending ? "Verification pending. You can use ads once approved." : "Get verified to create ads.");
+                  if (!verificationPending) setVerifyOpen(true);
+                  return;
+                }
                 navigate("/worker/ads");
-              }, gated: !workerData?.verified },
+              }, gated: !isVerifiedWorker },
             ].map((a) => (
               <button
                 key={a.label}
@@ -552,14 +560,18 @@ const WorkerDashboard = () => {
             </button>
             <button
               onClick={() => {
-                if (!workerData?.verified) { toast.error("Get verified to become featured."); setVerifyOpen(true); return; }
+                if (!isVerifiedWorker) {
+                  toast.error(verificationPending ? "Verification pending. Featured unlocks after approval." : "Get verified to become featured.");
+                  if (!verificationPending) setVerifyOpen(true);
+                  return;
+                }
                 setFeaturedOpen(true);
               }}
               className="group relative rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
             >
               <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
               <p className="text-sm font-bold">Become Featured</p>
-              <p className="text-[11px] text-hero-foreground/60">{workerData?.verified ? "3 km premium reach" : "Verification required"}</p>
+              <p className="text-[11px] text-hero-foreground/60">{isVerifiedWorker ? "3 km premium reach" : verificationPending ? "Verification pending" : "Verification required"}</p>
             </button>
           </div>
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
