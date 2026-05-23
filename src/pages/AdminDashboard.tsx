@@ -544,6 +544,18 @@ const AdminDashboard = () => {
               </p>
               <p className="truncate text-[11px] text-hero-foreground/60">Signed in as {user?.email}</p>
             </div>
+            <button
+              onClick={() => setTab("overview")}
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-hero-foreground/80 hover:bg-hero-foreground/10"
+              title={`${totalPending} pending`}
+            >
+              <Bell className="h-4 w-4" />
+              {totalPending > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-destructive-foreground ring-2 ring-hero">
+                  {totalPending > 99 ? "99+" : totalPending}
+                </span>
+              )}
+            </button>
             <Badge className="bg-primary text-primary-foreground shrink-0">Admin</Badge>
           </header>
 
