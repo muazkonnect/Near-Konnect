@@ -396,6 +396,22 @@ const AdminDashboard = () => {
     return (allProfiles as any[]).filter((p) => new Date(p.created_at).getTime() >= cutoff).length;
   }, [allProfiles]);
 
+  const pendingMap = useMemo<Partial<Record<TabKey, number>>>(() => ({
+    verifications: pending?.verifications ?? 0,
+    featured: pending?.featured ?? 0,
+    sparks: pending?.payments ?? 0,
+    finance: pending?.payments ?? 0,
+    avatar_resets: pending?.avatars ?? 0,
+    location_requests: pending?.locations ?? 0,
+  }), [pending]);
+  const totalPending = useMemo(() => (
+    (pending?.verifications ?? 0) + (pending?.featured ?? 0) + (pending?.payments ?? 0) + (pending?.avatars ?? 0) + (pending?.locations ?? 0)
+  ), [pending]);
+
+  const activeFeatured = useMemo(() => (featuredServices as any[]).filter((f) => f.is_active).length, [featuredServices]);
+  const activeAds = useMemo(() => (nativeAds as any[]).filter((a) => a.is_active).length, [nativeAds]);
+  const verifiedWorkersCount = useMemo(() => (workers as any[]).filter((w) => w.verified).length, [workers]);
+
 
   const featuredMap = useMemo(
     () => new Map((featuredServices as any[]).map((row) => [row.service_id, row])),
