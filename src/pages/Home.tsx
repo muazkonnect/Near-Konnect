@@ -1,18 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  BadgeCheck,
-  ChevronRight,
-  Droplet,
-  HeartPulse,
-  MapPin,
-  Search,
-  Zap,
-  Star,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, ChevronRight, Droplet, HeartPulse, MapPin, Search, Zap, Star } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import CurrentLocationChip from "@/components/CurrentLocationChip";
