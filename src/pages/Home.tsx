@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, BadgeCheck, ChevronRight, Droplet, HeartPulse, MapPin, Search, Zap, Star } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
@@ -28,6 +28,7 @@ import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
+import { useIsVisible, useReducedMotion } from "@/hooks/useIsVisible";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -193,6 +194,10 @@ const Home = () => {
   const announcementMessages = useAppSetting("announcement_messages");
   const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds") || 30;
   const specialAnnouncement = useAppSetting("special_announcement");
+  const tickerRef = useRef<HTMLDivElement>(null);
+  const tickerVisible = useIsVisible(tickerRef);
+  const reducedMotion = useReducedMotion();
+  const tickerPaused = !tickerVisible || reducedMotion;
   const { data: activity = [] } = useRecentActivity(20);
 
   // Re-evaluate special-announcement expiry on a tick
@@ -231,9 +236,9 @@ const Home = () => {
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground md:mx-0 md:mt-0 md:mb-0 md:rounded-3xl md:overflow-hidden md:border md:border-hero-foreground/10">
         {/* TICKER */}
-        <div className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
+        <div ref={tickerRef} className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
           <div className="flex h-9 items-center">
-            <div className="flex gap-10 whitespace-nowrap px-4" style={{ animation: `ticker ${tickerSpeed}s linear infinite` }}>
+            <div className="flex gap-10 whitespace-nowrap px-4" style={{ animation: `ticker ${tickerSpeed}s linear infinite`, animationPlayState: tickerPaused ? "paused" : "running" }}>
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
