@@ -15,6 +15,7 @@ import AppLayout from "@/components/AppLayout";
 import { parseContactMethods } from "@/lib/contactMethods";
 import BloodDonorPopup, { type BloodDonorPopupData } from "@/components/BloodDonorPopup";
 import { markRead } from "@/hooks/useNotifications";
+import { useAppSetting } from "@/hooks/useAppSettings";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
