@@ -1,80 +1,35 @@
 ## Goal
+Add a second factor for admin access: after a user with the `admin` role logs in with email + password, they must enter a 6-digit code sent to their email before the `/admin` panel unlocks.
 
-Add a 3-tier country-based multiplier to all **sparks costs** for actions (verification, featured, ads). Tier 1 = ×1, Tier 2 = ×3, Tier 3 = ×5. Resolved as the **higher** of the user's fixed profile country and current GPS country. Admin-editable.
+## How it works
+1. Admin logs in normally (email + password).
+2. When they navigate to `/admin`, the app checks for a valid "admin session" flag.
+3. If missing/expired, show an Admin Verification screen instead of the dashboard.
+4. App calls an edge function `admin-otp-send` → generates a 6-digit code, stores a hash in DB with 10-min expiry, emails it via Lovable transactional email to the admin's verified email.
+5. Admin enters the code → app calls `admin-otp-verify` → on success, sets an admin session row (valid e.g. 8 hours) and the panel unlocks.
+6. After expiry or sign-out, admin must re-verify.
 
-## Database
+## Database (new)
+- `admin_otp_codes` — `user_id`, `code_hash`, `expires_at`, `consumed_at`, `attempts`. RLS: no client access; only edge functions (service role).
+- `admin_sessions` — `user_id`, `token_hash`, `expires_at`, `created_at`, `ip`, `user_agent`. RLS: user can read their own active session (to check expiry); writes only via edge function.
+- Rate limiting: max 5 OTP requests / 15 min per admin; max 5 wrong attempts per code.
 
-**New tables**
-
-- `country_tiers` — `country_code text PK`, `tier int (1|2|3)`, `updated_at`, `updated_by`.
-  Seeded with the 20 Tier 2 and 20 Tier 3 ISO codes; everything else defaults to Tier 1.
-- `tier_settings` — `tier int PK`, `multiplier numeric NOT NULL`, `label text`.
-  Seeded: (1, 1.0), (2, 3.0), (3, 5.0).
-
-RLS: public SELECT; admin-only ALL.
-
-**New helpers (SECURITY DEFINER, search_path=public)**
-
-- `country_to_tier(_cc text) → int` — lookup with default 1.
-- `resolve_user_tier(_uid uuid, _current_cc text DEFAULT NULL) → int` — reads `profiles` to get a fixed country (derived from `profiles.phone` ISO via existing data / a new optional `profiles.country_code` column added in this migration), compares to `_current_cc`, returns max tier of the two.
-- `tier_multiplier(_tier int) → numeric`.
-- `apply_tier(_uid uuid, _current_cc text, _base_cost int) → int` — returns `CEIL(base * multiplier)`.
-
-**Profile change**
-
-- Add nullable `profiles.country_code text` (ISO-2). Backfilled from phone E.164 where possible; otherwise NULL → treated as Tier 1.
-
-**Updated RPCs** (all already SECURITY DEFINER)
-
-- `calc_sparks_cost(_ad_type, _radius_km, _duration_days, _placement_type, _current_cc text DEFAULT NULL)` — wraps the existing base formula in `apply_tier(auth.uid(), _current_cc, base)`.
-- `purchase_featured(p_duration_days, p_category_id, p_current_cc text DEFAULT NULL)` — multiply `v_cost` via `apply_tier` before `spend_sparks`; persist the tiered cost in `featured_workers.sparks_cost`.
-- `request_verification(p_current_cc text DEFAULT NULL)` (and the approval path) — multiply `verification_settings.sparks_cost` via `apply_tier`.
-- Ad campaign creation RPC — same pattern.
-
-Sparks **packages** (money price) are intentionally NOT changed.
+## Edge functions (new)
+- `admin-otp-send` — verifies caller has `admin` role, rate-limits, creates code, enqueues email via existing transactional email infra.
+- `admin-otp-verify` — verifies code hash + expiry + attempt count, issues admin session token (random opaque string stored hashed), returns it to client. Client stores token in `sessionStorage` (cleared on tab close) + we also persist `admin_sessions` row so server can validate.
+- `admin-session-check` — validates token against `admin_sessions` (not expired, matches hash). Called by `RoleProtectedRoute` for `/admin`.
 
 ## Frontend
+- New `AdminOtpGate` component wrapping the admin route content. Shows "Send code" → OTP input → verify. On success, stores session token and renders children.
+- Update `RoleProtectedRoute` usage for `/admin` (and `/admin/*`) in `src/App.tsx` to wrap with `AdminOtpGate` after role check passes.
+- Add small banner in admin nav with "Lock admin panel" button to clear the session token.
 
-**New hook** `src/hooks/useUserTier.ts`
+## Email
+- Requires Lovable email domain + transactional email infra. If not set up, the first run will prompt the user through the email setup dialog, then scaffold transactional emails + add `admin-otp` template.
 
-- Returns `{ tier, multiplier, fixedCC, currentCC, loading }`.
-- `currentCC` from `useDetectedCountry` / cached geo; `fixedCC` from `profiles.country_code`.
-- `tier = max(country_to_tier(fixed), country_to_tier(current))` resolved client-side from a small cached `country_tiers` fetch (also exposed via a `tier_for_country` RPC for SSR-safety).
+## Notes
+- The OTP step only triggers for `/admin` — worker dashboard etc. unaffected.
+- Codes are stored hashed (SHA-256). Tokens too. Codes are single-use.
+- Optional: also require OTP on initial admin login if you prefer (let me know — current plan triggers it when entering /admin, which covers the same goal with less friction).
 
-**Client cost previews** (so UI matches what the RPC will charge)
-
-- `calcSparksCost` in `src/hooks/useSparks.ts` — pass `_current_cc` (from `useDetectedCountry`).
-- `FeaturedPurchaseDialog` — multiply displayed cost by `useUserTier().multiplier`, show a "Tier 2 pricing (×3)" badge when > 1.
-- `VerificationDialog` — same badge + multiplied cost.
-- `AdsDashboard` cost preview — already uses `calcSparksCost`; just pass current country.
-- All RPC call sites pass `currentCC` so server resolution matches client preview.
-
-**Admin UI** — new tab `TierPricingTab` in `AdminDashboard`:
-
-- Table 1: Tiers (id, label, multiplier) — inline edit.
-- Table 2: Countries — searchable list of all ISO countries with a Tier selector per row; bulk-assign by pasting names; saves to `country_tiers`.
-- Audit log entries on every change.
-
-## Edge cases
-
-- Unknown / missing country → Tier 1.
-- Server is the source of truth: even if client sends a stale `currentCC`, the RPC re-resolves via `resolve_user_tier` and always uses **max(fixed, server-supplied current)**.
-- Existing active featured/ads keep their stored `sparks_cost`; only new purchases are tiered.
-- Discounts (`ad_duration_discounts`) apply BEFORE the tier multiplier, so the discount % still shows correctly to the user; tier multiplies the final total.
-
-## Files
-
-**Migration (new)**
-- `country_tiers`, `tier_settings`, `profiles.country_code`, helper functions, updated `calc_sparks_cost` / `purchase_featured` / verification + ad campaign RPCs, seed data, RLS.
-
-**Created**
-- `src/hooks/useUserTier.ts`
-- `src/components/admin/TierPricingTab.tsx`
-
-**Edited**
-- `src/hooks/useSparks.ts` (pass `_current_cc`)
-- `src/components/featured/FeaturedPurchaseDialog.tsx` (tier badge + multiplied display)
-- `src/components/verification/VerificationDialog.tsx` (tier badge + multiplied display)
-- `src/pages/AdsDashboard.tsx` (pass current country, tier badge)
-- `src/pages/AdminDashboard.tsx` (register new tab)
-- `src/integrations/supabase/types.ts` (auto-regenerated by migration)
+Confirm and I'll implement.
