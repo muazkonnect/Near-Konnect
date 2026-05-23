@@ -27,6 +27,7 @@ const BloodDonors = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedDonor, setSelectedDonor] = useState<BloodDonorPopupData | null>(null);
   const { coords: userCoords } = useRealtimeLocation();
+  const staggerMs = useAppSetting("blood_cards_stagger_ms") || 30;
 
   useEffect(() => {
     if (user) markRead((n) => n.type === "booking");
