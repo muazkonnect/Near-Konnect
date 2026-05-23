@@ -279,6 +279,7 @@ const CampaignWizard = ({
   const [areaText, setAreaText] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
+  const { paidDays, freeDays } = useDiscountFor(duration);
 
   const countryName = useMemo(() => Country.getCountryByCode(countryCode)?.name || "", [countryCode]);
   const stateName = useMemo(
