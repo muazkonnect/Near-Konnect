@@ -89,6 +89,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
   { key: "sparks", label: "Sparks & Payments", icon: Zap, group: "Operations" },
   { key: "finance", label: "Finance & Invoices", icon: Receipt, group: "Operations" },
+  { key: "discounts", label: "Discounts", icon: Percent, group: "Operations" },
 
   { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
