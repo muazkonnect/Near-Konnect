@@ -236,9 +236,9 @@ const Home = () => {
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground md:mx-0 md:mt-0 md:mb-0 md:rounded-3xl md:overflow-hidden md:border md:border-hero-foreground/10">
         {/* TICKER */}
-        <div className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
+        <div ref={tickerRef} className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
           <div className="flex h-9 items-center">
-            <div className="flex gap-10 whitespace-nowrap px-4" style={{ animation: `ticker ${tickerSpeed}s linear infinite` }}>
+            <div className="flex gap-10 whitespace-nowrap px-4" style={{ animation: `ticker ${tickerSpeed}s linear infinite`, animationPlayState: tickerPaused ? "paused" : "running" }}>
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
