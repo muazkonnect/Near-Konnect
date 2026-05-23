@@ -9,7 +9,7 @@ import {
   HeartPulse,
   MapPin,
   Search,
-  Sparkles,
+  Zap,
   Star,
   Zap,
 } from "lucide-react";
@@ -489,7 +489,7 @@ const Home = () => {
         <section className="px-5 pb-16">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm md:p-10">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
-              <Sparkles className="h-3 w-3" /> Get Connected
+              <Zap className="h-3 w-3" /> Get Connected
             </span>
             <h2 className="mx-auto mt-4 max-w-xl text-2xl font-bold tracking-tight md:text-3xl">
               Ready to find someone <span className="text-primary">near you?</span>

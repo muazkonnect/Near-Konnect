@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CheckCircle2, XCircle, Clock, ArrowLeft, Sparkles } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ArrowLeft, Zap } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { fetchPaymentRequest, getProofSignedUrl } from "@/services/walletService";
@@ -59,7 +59,7 @@ const PaymentStatusPage = () => {
 
         <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 to-transparent p-5">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-hero-foreground/60">
-            <Sparkles className="h-3.5 w-3.5" /> Sparks
+            <Zap className="h-3.5 w-3.5" /> Sparks
           </div>
           <p className="mt-1 text-3xl font-extrabold tabular-nums">{(req.sparks_amount + req.bonus_sparks).toLocaleString()}</p>
           <p className="text-xs text-hero-foreground/60">{req.payment_method.toUpperCase()} · {req.currency} {Number(req.price_amount).toLocaleString()}</p>

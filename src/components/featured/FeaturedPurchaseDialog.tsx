@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Sparkles, Loader2, CheckCircle2, MapPin, Calendar } from "lucide-react";
+import { Star, Zap, Loader2, CheckCircle2, MapPin, Calendar } from "lucide-react";
 import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
@@ -61,7 +61,7 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
             <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Monthly Plan</p>
             <p className="mt-1 text-3xl font-extrabold">30 days</p>
             <p className="mt-1 flex items-center justify-center gap-1 text-sm text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> {cost} Sparks
+              <Zap className="h-3.5 w-3.5 text-primary" /> {cost} Sparks
             </p>
           </div>
 
@@ -89,7 +89,7 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
           <div className="rounded-xl border bg-muted/30 p-3 space-y-1.5 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />Radius</span><span className="font-bold">3 km (fixed)</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" />Duration</span><span className="font-bold">30 days</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Cost</span><Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" />{cost}</Badge></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Cost</span><Badge variant="secondary" className="gap-1"><Zap className="h-3 w-3" />{cost}</Badge></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Your balance</span><span className={`font-bold ${insufficient ? "text-destructive" : ""}`}>{balance}</span></div>
           </div>
 

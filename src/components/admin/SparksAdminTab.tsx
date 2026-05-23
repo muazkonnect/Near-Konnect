@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  Sparkles, Pause, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
+  Zap, Pause, MapPin, Globe, Search, Plus, Minus, Save, Loader2,
   CheckCircle2, XCircle, Image as ImageIcon, Package, Settings2, Receipt, Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -253,7 +253,7 @@ const ManualSparksPanel = () => {
           {selected ? (
             <>
               <div className="flex items-center gap-2 rounded-xl bg-primary/10 px-3 py-2 text-primary">
-                <Sparkles className="h-4 w-4" />
+                <Zap className="h-4 w-4" />
                 <p className="text-sm font-bold">{selected.full_name} • {bal ?? 0} Sparks</p>
               </div>
               <div><Label>Amount</Label>
@@ -682,7 +682,7 @@ const SparksAdminTab = () => (
       <TabsTrigger value="manual" className="gap-1"><Wallet className="h-3.5 w-3.5" /> Manual</TabsTrigger>
       <TabsTrigger value="packages" className="gap-1"><Package className="h-3.5 w-3.5" /> Packages</TabsTrigger>
       <TabsTrigger value="settings" className="gap-1"><Settings2 className="h-3.5 w-3.5" /> Settings</TabsTrigger>
-      <TabsTrigger value="campaigns" className="gap-1"><Sparkles className="h-3.5 w-3.5" /> Campaigns</TabsTrigger>
+      <TabsTrigger value="campaigns" className="gap-1"><Zap className="h-3.5 w-3.5" /> Campaigns</TabsTrigger>
       <TabsTrigger value="tx" className="gap-1"><Receipt className="h-3.5 w-3.5" /> Tx</TabsTrigger>
     </TabsList>
     <TabsContent value="payments"><PendingPaymentsPanel /></TabsContent>

@@ -1,4 +1,4 @@
-import { Megaphone, ArrowRight, Sparkles } from "lucide-react";
+import { Megaphone, ArrowRight, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function PromoteYourselfBanner({ variant = "default" }: { variant?: "default" | "compact" }) {
@@ -14,7 +14,7 @@ export function PromoteYourselfBanner({ variant = "default" }: { variant?: "defa
           <Megaphone className="h-3.5 w-3.5 text-primary" />
         </div>
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold text-hero-foreground">
-          <Sparkles className="mr-1 inline h-3 w-3 text-primary" />
+          <Zap className="mr-1 inline h-3 w-3 text-primary" />
           Advertise yourself here — reach more clients nearby
         </p>
         <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" />
@@ -31,7 +31,7 @@ export function PromoteYourselfBanner({ variant = "default" }: { variant?: "defa
         </div>
         <div className="min-w-1 flex-1">
           <p className="text-sm font-bold text-hero-foreground">
-            <Sparkles className="mr-1 inline h-3.5 w-3.5 text-primary" />
+            <Zap className="mr-1 inline h-3.5 w-3.5 text-primary" />
             Advertise yourself here
           </p>
           <p className="mt-0.5 text-xs text-hero-muted">

@@ -8,7 +8,7 @@ import {
   Crown,
   Clock,
   Compass,
-  Sparkles,
+  Zap,
   Zap,
   Eye,
   HeartPulse,

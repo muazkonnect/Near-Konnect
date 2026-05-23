@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Search, Navigation, Check, Home as HomeIcon, Compass } from "lucide-react";
+import { Zap, Zap, MapPin, Globe, Pause, Play, BarChart3, Plus, Loader2, Clock, Target, Search, Navigation, Check, Home as HomeIcon, Compass } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -85,7 +85,7 @@ const AdsDashboard = () => {
     <AppLayout title="Ads Dashboard">
       <div className="mx-auto mt-10 max-w-md rounded-2xl border border-amber-400/40 bg-amber-50/40 p-6 text-center dark:bg-amber-500/5">
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/15 ring-1 ring-amber-500/40">
-          <Sparkles className="h-6 w-6 text-amber-500" />
+          <Zap className="h-6 w-6 text-amber-500" />
         </div>
         <h2 className="text-lg font-bold">{verificationPending ? "Verification pending" : "Verification required"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -122,7 +122,7 @@ const AdsDashboard = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatBox icon={Sparkles} label="Available Sparks" value={balance.toString()} accent />
+          <StatBox icon={Zap} label="Available Sparks" value={balance.toString()} accent />
           <StatBox icon={Target} label="Active" value={totals.active.toString()} />
           <StatBox icon={BarChart3} label="Impressions" value={totals.imp.toString()} />
           <StatBox icon={Zap} label="CTR" value={`${totals.ctr}%`} />
@@ -250,7 +250,7 @@ const DailyChart = ({ daily }: { daily: { date: string; impressions: number; cli
 
 const EmptyState = ({ onCreate }: { onCreate: () => void }) => (
   <div className="rounded-2xl border-2 border-dashed bg-muted/30 p-8 text-center">
-    <Sparkles className="mx-auto h-8 w-8 text-primary" />
+    <Zap className="mx-auto h-8 w-8 text-primary" />
     <p className="mt-2 text-sm font-semibold">No campaigns yet</p>
     <p className="mt-1 text-xs text-muted-foreground">Launch your first promoted listing to appear on the homepage.</p>
     <Button className="mt-4 gap-2 rounded-full" onClick={onCreate}><Plus className="h-4 w-4" /> Create Campaign</Button>
@@ -560,7 +560,7 @@ const CampaignWizard = ({
             {freeDays > 0 && (
               <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/10 to-primary/5 p-3 text-sm">
                 <p className="flex items-center gap-2 font-semibold text-primary">
-                  <Sparkles className="h-4 w-4" /> Discount applied
+                  <Zap className="h-4 w-4" /> Discount applied
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   You're getting <b className="text-foreground">{freeDays} day{freeDays > 1 ? "s" : ""} free</b> — pay for only {paidDays} of {duration} days.
@@ -587,7 +587,7 @@ const CampaignWizard = ({
             <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-primary/15 to-primary/5 p-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cost</p>
-                <p className="flex items-center gap-1.5 text-2xl font-extrabold text-primary"><Sparkles className="h-5 w-5" /> {cost}</p>
+                <p className="flex items-center gap-1.5 text-2xl font-extrabold text-primary"><Zap className="h-5 w-5" /> {cost}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Balance</p>

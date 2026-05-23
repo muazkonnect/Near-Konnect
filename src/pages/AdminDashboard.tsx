@@ -25,7 +25,7 @@ import {
   Receipt,
   Percent,
   Activity,
-  Sparkles,
+  Zap,
   TrendingUp,
   ArrowUpRight,
   Radio,
@@ -724,7 +724,7 @@ const AdminDashboard = () => {
 
                 {/* ACTIVITY BENTO */}
                 <section className="grid gap-4 md:grid-cols-3">
-                  <FuturisticTile label="Active Featured" value={activeFeatured} icon={Sparkles} onClick={() => setTab("featured")} />
+                  <FuturisticTile label="Active Featured" value={activeFeatured} icon={Zap} onClick={() => setTab("featured")} />
                   <FuturisticTile label="Active Ads" value={activeAds} icon={Megaphone} onClick={() => setTab("running_ads")} />
                   <FuturisticTile label="Blood Donors" value={bloodDonors.length} icon={Droplet} onClick={() => setTab("donors")} />
                 </section>
