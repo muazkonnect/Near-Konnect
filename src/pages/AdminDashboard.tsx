@@ -818,6 +818,13 @@ const AdminDashboard = () => {
               </Suspense>
             )}
 
+            {tab === "tiers" && (
+              <Suspense fallback={<TabFallback />}>
+                <TierPricingTab />
+              </Suspense>
+            )}
+
+
 
 
 
