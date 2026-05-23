@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           throw profileError;
         }
         if (phone) {
-          await supabase.from("profile_phones").upsert({ user_id: nextUser.id, phone } as any, { onConflict: "user_id" });
+          await (supabase as any).from("profile_phones").upsert({ user_id: nextUser.id, phone }, { onConflict: "user_id" });
         }
       }
 
