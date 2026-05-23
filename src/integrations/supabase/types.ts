@@ -97,6 +97,27 @@ export type Database = {
           },
         ]
       }
+      ad_duration_discounts: {
+        Row: {
+          duration_days: number
+          paid_days: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          duration_days: number
+          paid_days: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          duration_days?: number
+          paid_days?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       ad_events: {
         Row: {
           ad_id: string
@@ -2204,6 +2225,7 @@ export type Database = {
         Args: {
           _ad_type: Database["public"]["Enums"]["ad_type"]
           _duration_days: number
+          _placement_type?: Database["public"]["Enums"]["ad_placement"]
           _radius_km: number
         }
         Returns: number
