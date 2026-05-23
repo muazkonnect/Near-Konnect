@@ -65,6 +65,13 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
             </p>
           </div>
 
+          {multiplier > 1 && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-xs text-foreground">
+              Tier {tier} pricing applies (×{multiplier}). Your country tier multiplies the base Sparks cost.
+            </div>
+          )}
+
+
           <div>
             <label className="text-xs font-semibold text-muted-foreground">Target category (optional)</label>
             <select
