@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeaturedServices } from "@/hooks/useSponsored";
@@ -9,6 +9,7 @@ import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppSetting } from "@/hooks/useAppSettings";
+import { useIsVisible, useReducedMotion } from "@/hooks/useIsVisible";
 
 type FeaturedWorker = {
   id: string;
