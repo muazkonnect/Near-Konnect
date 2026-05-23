@@ -101,10 +101,12 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
           {/* BANNER BACKGROUND */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]">
             {worker.bannerUrl ? (
-              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-70" />
+              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute top-1 left-1 right-1 h-[42%] w-auto rounded-t-[20px] object-cover opacity-40" />
             ) : worker.profilePhoto ? (
-              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-40 blur-2xl" />
+              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute top-0 left-0 right-1 h-[40%] w-full scale-125 rounded-t-[20px] object-cover opacity-25 blur-xl" />
             ) : null}
+            {/* banner fade mask */}
+            <div className="pointer-events-none absolute top-0 left-0 right-0 h-[55%] w-full" style={{ background: "linear-gradient(to bottom, rgba(10,13,10,0) 0%, rgba(10,13,10,0.35) 40%, rgba(10,13,10,0.92) 75%, #0a0d0a 100%)" }} />
             <div
               className="absolute inset-0 opacity-[0.18]"
               style={{
@@ -115,9 +117,41 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `radial-gradient(900px 320px at -10% -20%, rgba(${t.rgb},0.16), transparent 60%), radial-gradient(700px 260px at 110% 110%, rgba(${t.rgb},0.10), transparent 60%), linear-gradient(180deg, rgba(10,13,10,0.82) 0%, rgba(5,6,5,0.96) 70%, #050605 100%)`,
+                backgroundImage: `radial-gradient(620px 260px at -10% -20%, rgba(${t.rgb},0.38), transparent 60%), radial-gradient(520px 220px at 110% 110%, rgba(${t.rgb},0.28), transparent 60%), linear-gradient(180deg, rgba(10,13,10,0.5) 0%, rgba(5,6,5,0.92) 70%, #050605 100%)`,
               }}
             />
+            {/* premium inner glow orbs */}
+            <div
+              aria-hidden
+              className="absolute -left-20 -top-20 h-56 w-56 rounded-full blur-3xl opacity-90 animate-[spark-pulse_5s_ease-in-out_infinite]"
+              style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.95), rgba(${t.rgb},0.25) 45%, transparent 70%)` }}
+            />
+            <div
+              aria-hidden
+              className="absolute -right-16 -bottom-20 h-52 w-52 rounded-full blur-3xl opacity-80 animate-[spark-pulse_6s_ease-in-out_infinite]"
+              style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.8), rgba(${t.rgb},0.2) 45%, transparent 70%)` }}
+            />
+            {/* center color wash */}
+            <div
+              aria-hidden
+              className="absolute left-1/2 top-1/2 h-56 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-50"
+              style={{ background: `radial-gradient(ellipse, rgba(${t.rgb},0.45), transparent 70%)` }}
+            />
+            {/* grain/noise overlay */}
+            <div
+              className="absolute inset-0 opacity-[0.07] mix-blend-overlay"
+              style={{
+                backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`,
+              }}
+            />
+            {/* inner top highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            {/* inner bottom shadow line */}
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-black/60 to-transparent" />
+            {/* inset ring */}
+            <div className="absolute inset-0 rounded-[22px] ring-1 ring-inset ring-white/[0.08]" />
+            {/* aesthetic sheen sweep */}
+            <div className="absolute -inset-y-4 -left-1/3 h-[140%] w-1/4 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_4s_ease-in-out_infinite]" />
           </div>
 
           {/* CORNER RIBBON */}
