@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Check, Zap, ShieldAlert } from "lucide-react";
+import { Sparkles, Check, Zap } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import SparksBalanceCard from "@/components/wallet/SparksBalanceCard";
 import { Button } from "@/components/ui/button";
@@ -9,18 +9,9 @@ import { Input } from "@/components/ui/input";
 import { fetchPackages } from "@/services/walletService";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
 import { useState } from "react";
-import { useWorkerProfile } from "@/hooks/useWorkerProfile";
-import { useMyVerification } from "@/hooks/useVerification";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
 
 const BuySparksPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: workerData } = useWorkerProfile();
-  const { data: myVerification } = useMyVerification(user?.id);
-  const isVerifiedWorker = !!(workerData as any)?.verified;
-  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
   const { data: packages = [], isLoading } = useQuery({ queryKey: ["packages"], queryFn: fetchPackages });
   const { region } = usePaymentRegion();
   const [customSparks, setCustomSparks] = useState("");
@@ -29,46 +20,15 @@ const BuySparksPage = () => {
     region === "pk" ? `PKR ${pkr.toLocaleString()}` : `$${usdt.toLocaleString()} USDT`;
 
   const goCustom = () => {
-    if (!isVerifiedWorker) {
-      toast.error(verificationPending ? "Verification pending. You can buy Sparks after approval." : "Only verified workers can buy Sparks.");
-      return;
-    }
     const n = parseInt(customSparks);
     if (!n || n < 50) return;
     navigate(`/wallet/buy/custom/checkout?sparks=${n}`);
-  };
-
-  const handlePackageClick = (id: string) => {
-    if (!isVerifiedWorker) {
-      toast.error(verificationPending ? "Verification pending. You can buy Sparks after approval." : "Only verified workers can buy Sparks.");
-      return;
-    }
-    navigate(`/wallet/buy/${id}/checkout`);
   };
 
   return (
     <AppLayout title="Buy Sparks" subtitle="Choose a package to recharge your wallet.">
       <div className="space-y-6">
         <SparksBalanceCard />
-
-        {!isVerifiedWorker && (
-          <div className="flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-            <ShieldAlert className="h-5 w-5 shrink-0 text-amber-400" />
-            <div className="flex-1">
-              <p className="font-semibold">
-                {verificationPending ? "Verification pending" : "Verification required"}
-              </p>
-              <p className="mt-0.5 text-xs opacity-90">
-                {verificationPending
-                  ? "Sparks purchases unlock automatically once an admin approves your verification."
-                  : "Only verified workers can buy Sparks. Complete worker verification to top up your wallet."}
-              </p>
-              <Link to="/worker/dashboard" className="mt-2 inline-block text-xs font-semibold underline">
-                Go to verification →
-              </Link>
-            </div>
-          </div>
-        )}
 
         <div>
           <h2 className="mb-3 text-base font-bold">Packages</h2>
@@ -89,9 +49,8 @@ const BuySparksPage = () => {
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => handlePackageClick(p.id)}
-                    disabled={!isVerifiedWorker}
-                    className={`relative overflow-hidden rounded-2xl border p-5 text-left text-hero-foreground transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
+                    onClick={() => navigate(`/wallet/buy/${p.id}/checkout`)}
+                    className={`relative overflow-hidden rounded-2xl border p-5 text-left text-hero-foreground transition-all ${
                       featured
                         ? "border-primary/50 bg-gradient-to-br from-primary/20 to-primary/5 shadow-[0_10px_30px_-15px_hsl(var(--primary)/0.6)]"
                         : "border-hero-foreground/10 bg-hero-foreground/[0.04] hover:border-primary/30"
@@ -132,7 +91,7 @@ const BuySparksPage = () => {
               onChange={(e) => setCustomSparks(e.target.value)}
               className="bg-hero-foreground/5 border-hero-foreground/15 text-hero-foreground"
             />
-            <Button onClick={goCustom} disabled={!isVerifiedWorker} className="rounded-full">
+            <Button onClick={goCustom} className="rounded-full">
               <Check className="mr-1 h-4 w-4" /> Continue
             </Button>
           </div>
