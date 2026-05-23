@@ -171,6 +171,12 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               <span className="text-muted-foreground">Cost</span>
               <Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" />{cost} Sparks</Badge>
             </div>
+            {multiplier > 1 && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-[11px] text-foreground">
+                Tier {tier} pricing applies (×{multiplier}). Base: {baseCost} Sparks.
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Your balance</span>
               <span className={`font-bold ${insufficient ? "text-destructive" : ""}`}>{balance} Sparks</span>
