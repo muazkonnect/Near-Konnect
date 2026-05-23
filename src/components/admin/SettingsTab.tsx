@@ -47,6 +47,7 @@ export default function SettingsTab() {
         {sub === "defaults" && <AppDefaultsTab />}
         {sub === "announcement" && <AnnouncementBarTab />}
         {sub === "blood" && <BloodKonnectTab />}
+        {sub === "sparks" && <SparksPricingTab />}
         {sub === "account" && <AdminProfileTab />}
       </div>
     </div>
