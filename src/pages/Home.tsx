@@ -239,22 +239,26 @@ const Home = () => {
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground md:mx-0 md:mt-0 md:mb-0 md:rounded-3xl md:overflow-hidden md:border md:border-hero-foreground/10">
         {/* TICKER */}
-        <div className="overflow-hidden border-b border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]">
+        <div className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
           <div className="flex h-9 items-center">
             <div className="flex animate-[ticker_30s_linear_infinite] gap-10 whitespace-nowrap px-4">
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
-                  className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                    t.hot ? "text-primary" : "text-hero-muted"
+                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] ${
+                    t.special ? "text-destructive-foreground" : t.hot ? "text-primary" : "text-hero-muted"
                   }`}
                 >
                   <span
-                    className={`h-1 w-1 rounded-full ${
-                      t.hot ? "bg-primary shadow-[0_0_10px_hsl(var(--primary))]" : "bg-hero-muted/60"
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      t.special
+                        ? "bg-destructive-foreground shadow-[0_0_10px_hsl(var(--destructive))] animate-pulse"
+                        : t.hot
+                        ? "bg-primary shadow-[0_0_10px_hsl(var(--primary))]"
+                        : "bg-hero-muted/60"
                     }`}
                   />
-                  {t.text}
+                  {t.special ? `⚠ ${t.text}` : t.text}
                 </span>
               ))}
             </div>
