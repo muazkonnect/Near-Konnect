@@ -473,18 +473,19 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead><TableHead>User</TableHead><TableHead>Method</TableHead>
+                <TableHead>Invoice</TableHead><TableHead>Date</TableHead><TableHead>User</TableHead><TableHead>Method</TableHead>
                 <TableHead>Reference</TableHead><TableHead className="text-right">Sparks</TableHead>
                 <TableHead className="text-right">Amount</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pLoading ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-hero-foreground/60">Loading…</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-hero-foreground/60">Loading…</TableCell></TableRow>
               ) : payments.length === 0 ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-hero-foreground/60">No transactions in this period</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-hero-foreground/60">No transactions in this period</TableCell></TableRow>
               ) : payments.map((p) => (
                 <TableRow key={p.id}>
+                  <TableCell className="text-xs font-mono whitespace-nowrap">{p.invoice_number ? formatInvoiceNo(p.invoice_number, p.id) : <span className="text-hero-foreground/40">—</span>}</TableCell>
                   <TableCell className="text-xs whitespace-nowrap">{format(new Date(p.created_at), "MMM d, HH:mm")}</TableCell>
                   <TableCell className="text-xs">{profileMap[p.user_id]?.full_name || p.user_id.slice(0, 8)}</TableCell>
                   <TableCell className="text-xs uppercase">{p.payment_method}</TableCell>
@@ -493,7 +494,7 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
                   <TableCell className="text-right text-xs tabular-nums font-semibold">{p.currency} {Number(p.price_amount).toLocaleString()}</TableCell>
                   <TableCell><StatusBadge status={p.status} /></TableCell>
                   <TableCell>
-                    <Button size="sm" variant="ghost" onClick={() => printInvoice(p)}><FileText className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => printInvoice(p)} title="Print invoice"><FileText className="h-3.5 w-3.5" /></Button>
                   </TableCell>
                 </TableRow>
               ))}
