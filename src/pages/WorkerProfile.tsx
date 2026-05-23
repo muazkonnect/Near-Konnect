@@ -354,7 +354,11 @@ const WorkerProfile = () => {
               <div className="flex items-center justify-center gap-2 flex-nowrap">
                 <h2 className="text-[22px] font-black tracking-tight text-hero-foreground">{worker.name}</h2>
                 {worker.verified && (
-                  <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
+                  themed ? (
+                    <t.Icon className={`h-4 w-4 ${t.textStrong}`} fill="currentColor" aria-label={t.label} />
+                  ) : (
+                    <Crown className="h-4 w-4 text-amber-400" fill="currentColor" aria-label="Premium" />
+                  )
                 )}
               </div>
               <div className="mt-3 flex flex-wrap items-stretch justify-center gap-2">
@@ -366,7 +370,7 @@ const WorkerProfile = () => {
                       toast.success("Worker ID copied");
                     }}
                     title="Click to copy"
-                    className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:border-primary/40 hover:bg-white/10"
+                    className={`group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:bg-white/10 ${themed ? "" : "hover:border-primary/40"}`}
                   >
                     <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-hero-muted">ID</span>
                     <span className="h-3 w-px bg-white/15" />
@@ -376,9 +380,15 @@ const WorkerProfile = () => {
                     <Copy className="h-3 w-3 text-hero-muted opacity-0 transition group-hover:opacity-100" />
                   </button>
                 )}
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3.5 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.8)]">
+                <div
+                  className={themed
+                    ? `inline-flex items-center gap-2 rounded-full border ${t.border} bg-black/40 px-3.5 py-1.5 ${t.textStrong}`
+                    : "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3.5 py-1.5 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.8)]"}
+                  style={themed ? { boxShadow: `0 0 18px -6px rgba(${t.rgb},0.8)` } : undefined}
+                >
                   <MapPin className="h-3.5 w-3.5" />
-                  <span className="h-3 w-px bg-primary/30" />
+                  <span className={`h-3 w-px ${themed ? "bg-white/20" : "bg-primary/30"}`} />
+
                   {hasDist ? (
                     <>
                       <span className="font-sora text-sm font-bold leading-none">{distanceLabel}</span>
