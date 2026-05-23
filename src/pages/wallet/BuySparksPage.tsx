@@ -89,8 +89,9 @@ const BuySparksPage = () => {
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate(`/wallet/buy/${p.id}/checkout`)}
-                    className={`relative overflow-hidden rounded-2xl border p-5 text-left text-hero-foreground transition-all ${
+                    onClick={() => handlePackageClick(p.id)}
+                    disabled={!isVerifiedWorker}
+                    className={`relative overflow-hidden rounded-2xl border p-5 text-left text-hero-foreground transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
                       featured
                         ? "border-primary/50 bg-gradient-to-br from-primary/20 to-primary/5 shadow-[0_10px_30px_-15px_hsl(var(--primary)/0.6)]"
                         : "border-hero-foreground/10 bg-hero-foreground/[0.04] hover:border-primary/30"
