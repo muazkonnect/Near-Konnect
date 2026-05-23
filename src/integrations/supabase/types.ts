@@ -1113,6 +1113,8 @@ export type Database = {
           decided_at: string | null
           decided_by: string | null
           id: string
+          invoice_number: number | null
+          invoiced_at: string | null
           package_id: string | null
           payment_method: string
           price_amount: number
@@ -1131,6 +1133,8 @@ export type Database = {
           decided_at?: string | null
           decided_by?: string | null
           id?: string
+          invoice_number?: number | null
+          invoiced_at?: string | null
           package_id?: string | null
           payment_method: string
           price_amount: number
@@ -1149,6 +1153,8 @@ export type Database = {
           decided_at?: string | null
           decided_by?: string | null
           id?: string
+          invoice_number?: number | null
+          invoiced_at?: string | null
           package_id?: string | null
           payment_method?: string
           price_amount?: number

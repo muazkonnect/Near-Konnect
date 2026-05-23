@@ -28,7 +28,12 @@ type PaymentRow = {
   admin_note: string;
   created_at: string;
   decided_at: string | null;
+  invoice_number: number | null;
+  invoiced_at: string | null;
 };
+
+const formatInvoiceNo = (n: number | null | undefined, fallbackId: string) =>
+  n ? `INV-${String(n).padStart(6, "0")}` : `DRAFT-${fallbackId.slice(0, 6).toUpperCase()}`;
 
 type SparksTx = {
   id: string;
@@ -193,8 +198,9 @@ const FinanceTab = () => {
   }, [history]);
 
   const exportPaymentsCsv = () => {
-    const headers = ["id", "date", "user_name", "user_phone", "method", "reference", "currency", "amount", "sparks", "bonus_sparks", "status", "decided_at"];
+    const headers = ["invoice_no", "id", "date", "user_name", "user_phone", "method", "reference", "currency", "amount", "sparks", "bonus_sparks", "status", "decided_at"];
     const rows = payments.map((p) => [
+      formatInvoiceNo(p.invoice_number, p.id),
       p.id,
       format(new Date(p.created_at), "yyyy-MM-dd HH:mm"),
       profileMap[p.user_id]?.full_name || p.user_id,
@@ -231,44 +237,80 @@ const FinanceTab = () => {
 
   const printInvoice = (p: PaymentRow) => {
     const user = profileMap[p.user_id];
-    const w = window.open("", "_blank", "width=800,height=900");
+    const invoiceNo = formatInvoiceNo(p.invoice_number, p.id);
+    const issued = p.invoiced_at || p.decided_at || p.created_at;
+    const statusClass = p.status === "approved" ? "ok" : p.status === "pending" ? "pend" : "rej";
+    const subtotal = Number(p.price_amount);
+    const w = window.open("", "_blank", "width=820,height=920");
     if (!w) return toast.error("Popup blocked");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${p.id.slice(0, 8)}</title>
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${invoiceNo} — Near Konnect</title>
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#0f172a;padding:40px;max-width:780px;margin:auto}
-  h1{margin:0 0 4px;font-size:28px}
-  .muted{color:#64748b;font-size:13px}
-  .row{display:flex;justify-content:space-between;margin-top:30px;gap:24px}
-  .box{flex:1;padding:16px;background:#f8fafc;border-radius:10px}
-  table{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px}
-  th,td{text-align:left;padding:10px;border-bottom:1px solid #e2e8f0}
-  .right{text-align:right}
-  .total{font-size:20px;font-weight:700;margin-top:18px;text-align:right}
-  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;text-transform:uppercase}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:#0f172a;padding:48px;max-width:800px;margin:auto;background:#fff}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0f172a;padding-bottom:18px}
+  .brand h1{margin:0;font-size:24px;letter-spacing:-0.5px}
+  .brand .tag{color:#64748b;font-size:12px;margin-top:2px;text-transform:uppercase;letter-spacing:1.5px}
+  .meta{text-align:right}
+  .meta .label{color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  .meta .num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;font-weight:700;margin-top:2px}
+  .meta .date{color:#64748b;font-size:12px;margin-top:6px}
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+  .party{padding:14px 16px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
+  .party .l{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .party .v{font-weight:600;font-size:14px}
+  .party .s{color:#64748b;font-size:12px;margin-top:2px}
+  table{width:100%;border-collapse:collapse;margin-top:28px;font-size:13px}
+  thead th{text-align:left;padding:10px 12px;background:#0f172a;color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  thead th.right{text-align:right}
+  tbody td{padding:14px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+  tbody td.right{text-align:right;font-variant-numeric:tabular-nums}
+  .muted{color:#64748b;font-size:12px}
+  .totals{margin-top:18px;margin-left:auto;width:280px}
+  .totals .line{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+  .totals .grand{border-top:2px solid #0f172a;margin-top:8px;padding-top:10px;font-size:16px;font-weight:700}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
   .ok{background:#dcfce7;color:#166534}.pend{background:#fef3c7;color:#92400e}.rej{background:#fee2e2;color:#991b1b}
-  @media print{button{display:none}}
+  .note{margin-top:24px;padding:12px 14px;background:#fefce8;border-left:3px solid #facc15;font-size:12px;color:#713f12}
+  .footer{margin-top:48px;padding-top:18px;border-top:1px solid #e2e8f0;text-align:center;color:#64748b;font-size:11px;line-height:1.6}
+  .actions{margin-top:28px;text-align:center}
+  .actions button{padding:10px 24px;background:#0f172a;color:#fff;border:0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+  @media print{.actions{display:none}body{padding:24px}}
 </style></head><body>
-<div style="display:flex;justify-content:space-between;align-items:start">
-  <div><h1>Near Konnect</h1><div class="muted">Sparks Purchase Invoice</div></div>
-  <div class="right"><div class="muted">Invoice #</div><div style="font-family:monospace">${p.id.slice(0, 8).toUpperCase()}</div></div>
+<div class="head">
+  <div class="brand"><h1>Near Konnect</h1><div class="tag">Sparks Purchase Invoice</div></div>
+  <div class="meta">
+    <div class="label">Invoice</div><div class="num">${invoiceNo}</div>
+    <div class="date">Issued ${format(new Date(issued), "PP")}</div>
+    <div class="date">Status <span class="badge ${statusClass}">${p.status}</span></div>
+  </div>
 </div>
-<div class="row">
-  <div class="box"><div class="muted">Billed To</div><div style="font-weight:600;margin-top:4px">${user?.full_name || "—"}</div><div class="muted">${user?.phone || ""}</div></div>
-  <div class="box"><div class="muted">Date</div><div style="font-weight:600;margin-top:4px">${format(new Date(p.created_at), "PPpp")}</div>
-  <div class="muted" style="margin-top:6px">Status: <span class="badge ${p.status === "approved" ? "ok" : p.status === "pending" ? "pend" : "rej"}">${p.status}</span></div></div>
+<div class="parties">
+  <div class="party"><div class="l">Billed To</div><div class="v">${user?.full_name || "—"}</div><div class="s">${user?.phone || ""}</div></div>
+  <div class="party"><div class="l">Payment</div><div class="v">${p.payment_method.toUpperCase()}</div><div class="s">Ref: ${p.reference || "—"}</div></div>
 </div>
 <table>
-  <thead><tr><th>Description</th><th class="right">Sparks</th><th class="right">Amount</th></tr></thead>
+  <thead><tr><th>Description</th><th class="right">Sparks</th><th class="right">Unit</th><th class="right">Amount</th></tr></thead>
   <tbody>
-    <tr><td>Sparks purchase (${p.payment_method.toUpperCase()})<br><span class="muted">Ref: ${p.reference || "—"}</span></td>
-    <td class="right">${p.sparks_amount.toLocaleString()}${p.bonus_sparks ? ` <span class="muted">+${p.bonus_sparks} bonus</span>` : ""}</td>
-    <td class="right">${p.currency} ${Number(p.price_amount).toLocaleString()}</td></tr>
+    <tr>
+      <td><div style="font-weight:600">Sparks credit purchase</div><div class="muted">Account top-up${p.bonus_sparks ? ` · includes ${p.bonus_sparks} bonus sparks` : ""}</div></td>
+      <td class="right">${p.sparks_amount.toLocaleString()}${p.bonus_sparks ? `<div class="muted">+${p.bonus_sparks}</div>` : ""}</td>
+      <td class="right muted">${p.currency}</td>
+      <td class="right">${subtotal.toLocaleString()}</td>
+    </tr>
   </tbody>
 </table>
-<div class="total">Total: ${p.currency} ${Number(p.price_amount).toLocaleString()}</div>
-${p.admin_note ? `<div class="muted" style="margin-top:20px">Note: ${p.admin_note}</div>` : ""}
-<div style="margin-top:40px;text-align:center" class="muted">Thank you for your business.</div>
-<div style="margin-top:30px;text-align:center"><button onclick="window.print()" style="padding:10px 20px;background:#0f172a;color:#fff;border:0;border-radius:8px;cursor:pointer">Print / Save as PDF</button></div>
+<div class="totals">
+  <div class="line"><span class="muted">Subtotal</span><span>${p.currency} ${subtotal.toLocaleString()}</span></div>
+  <div class="line"><span class="muted">Tax</span><span>${p.currency} 0</span></div>
+  <div class="line grand"><span>Total</span><span>${p.currency} ${subtotal.toLocaleString()}</span></div>
+</div>
+${p.admin_note ? `<div class="note"><b>Note:</b> ${p.admin_note}</div>` : ""}
+<div class="footer">
+  Thank you for choosing Near Konnect.<br>
+  Invoice ${invoiceNo} · Generated ${format(new Date(), "PPpp")}<br>
+  This document was generated electronically and is valid without signature.
+</div>
+<div class="actions"><button onclick="window.print()">Print / Save as PDF</button></div>
 </body></html>`;
     w.document.write(html);
     w.document.close();
@@ -431,18 +473,19 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead><TableHead>User</TableHead><TableHead>Method</TableHead>
+                <TableHead>Invoice</TableHead><TableHead>Date</TableHead><TableHead>User</TableHead><TableHead>Method</TableHead>
                 <TableHead>Reference</TableHead><TableHead className="text-right">Sparks</TableHead>
                 <TableHead className="text-right">Amount</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pLoading ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-hero-foreground/60">Loading…</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-hero-foreground/60">Loading…</TableCell></TableRow>
               ) : payments.length === 0 ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-hero-foreground/60">No transactions in this period</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-hero-foreground/60">No transactions in this period</TableCell></TableRow>
               ) : payments.map((p) => (
                 <TableRow key={p.id}>
+                  <TableCell className="text-xs font-mono whitespace-nowrap">{p.invoice_number ? formatInvoiceNo(p.invoice_number, p.id) : <span className="text-hero-foreground/40">—</span>}</TableCell>
                   <TableCell className="text-xs whitespace-nowrap">{format(new Date(p.created_at), "MMM d, HH:mm")}</TableCell>
                   <TableCell className="text-xs">{profileMap[p.user_id]?.full_name || p.user_id.slice(0, 8)}</TableCell>
                   <TableCell className="text-xs uppercase">{p.payment_method}</TableCell>
@@ -451,7 +494,7 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
                   <TableCell className="text-right text-xs tabular-nums font-semibold">{p.currency} {Number(p.price_amount).toLocaleString()}</TableCell>
                   <TableCell><StatusBadge status={p.status} /></TableCell>
                   <TableCell>
-                    <Button size="sm" variant="ghost" onClick={() => printInvoice(p)}><FileText className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => printInvoice(p)} title="Print invoice"><FileText className="h-3.5 w-3.5" /></Button>
                   </TableCell>
                 </TableRow>
               ))}
