@@ -269,7 +269,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                 <div className="flex items-center gap-1.5">
                   <CalendarClock className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} />
                   <div className="min-w-0">
-                    <div className="text-[14px] font-black leading-none text-white tabular-nums">
+                    <div className="text-[12px] sm:text-[14px] font-black leading-none text-white tabular-nums">
                       {worker.experience > 0 ? `${worker.experience}+` : "—"}
                     </div>
                     <div className={`mt-0.5 text-[7.5px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>Yrs Exp</div>
