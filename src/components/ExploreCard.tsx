@@ -3,7 +3,7 @@ import { Star, BadgeCheck, Crown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
-import WorkerProfilePopup from "@/components/WorkerProfilePopup";
+import WorkerProfilePopup from "@/components/SimpleWorkerProfilePopup";
 import type { Worker } from "@/data/mockData";
 
 interface ExploreCardProps {
