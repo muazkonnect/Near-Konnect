@@ -235,11 +235,120 @@ const WorkerProfile = () => {
     }
   };
 
+  // Theme: active ad → lime/promoted, else featured → amber/gold, else default primary
+  const themeMode: "ad" | "featured" | "none" = activeCampaign ? "ad" : featuredRow ? "featured" : "none";
+  const themed = themeMode !== "none";
+  const t = themeMode === "ad"
+    ? {
+        grad: "from-lime-400 via-lime-300 to-lime-500",
+        text: "text-lime-300",
+        textStrong: "text-lime-400",
+        border: "border-lime-400/55",
+        ring: "ring-lime-400/50",
+        bgSoft: "from-lime-500/25 via-lime-500/8 to-transparent",
+        rgb: "163,230,53",
+        label: "Promoted",
+        Icon: Gem,
+      }
+    : themeMode === "featured"
+    ? {
+        grad: "from-amber-400 via-yellow-300 to-amber-500",
+        text: "text-amber-300",
+        textStrong: "text-amber-400",
+        border: "border-amber-400/55",
+        ring: "ring-amber-400/50",
+        bgSoft: "from-amber-500/25 via-amber-500/8 to-transparent",
+        rgb: "251,191,36",
+        label: "Featured",
+        Icon: Crown,
+      }
+    : {
+        grad: "from-primary via-primary to-primary",
+        text: "text-primary",
+        textStrong: "text-primary",
+        border: "border-primary/40",
+        ring: "ring-primary/40",
+        bgSoft: "from-primary/10 via-primary/5 to-transparent",
+        rgb: "0,0,0",
+        label: "",
+        Icon: Star,
+      };
+
   return (
     <AppLayout hideMobileHeader>
       <div className="-mx-4 -mt-[90px] -mb-[166px] min-h-screen bg-hero text-hero-foreground">
         {/* Top App Bar */}
         <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-hero/85 px-5 py-3 backdrop-blur-md">
+          <button
+            onClick={() => navigate(-1)}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10 ${themed ? t.textStrong : "text-primary"}`}
+            aria-label="Back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className={`text-xs font-bold uppercase tracking-[0.18em] ${themed ? t.textStrong : "text-primary"}`}>
+            {themed ? `${t.label} Profile` : "Worker Profile"}
+          </h1>
+          <button className={`flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10 ${themed ? t.textStrong : "text-primary"}`} aria-label="More">
+            <MoreVertical className="h-5 w-5" />
+          </button>
+        </header>
+
+        {/* Banner */}
+        <div
+          className={`relative -mt-px h-44 w-full overflow-hidden sm:h-56 ${themed ? "" : "bg-gradient-to-br from-primary/30 via-primary/10 to-hero"}`}
+          style={themed ? { background: `radial-gradient(620px 260px at -10% -20%, rgba(${t.rgb},0.45), transparent 60%), radial-gradient(520px 220px at 110% 110%, rgba(${t.rgb},0.3), transparent 60%), linear-gradient(180deg, rgba(10,13,10,0.4) 0%, hsl(var(--hero)) 100%)` } : undefined}
+        >
+          {worker.bannerUrl ? (
+            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-60" />
+          ) : worker.profilePhoto ? (
+            <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
+          {themed && (
+            <>
+              <div
+                aria-hidden
+                className="absolute -left-16 -top-16 h-56 w-56 rounded-full blur-3xl opacity-80 animate-[spark-pulse_5s_ease-in-out_infinite]"
+                style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.85), transparent 70%)` }}
+              />
+              <div
+                aria-hidden
+                className="absolute -right-16 -bottom-16 h-52 w-52 rounded-full blur-3xl opacity-70 animate-[spark-pulse_6s_ease-in-out_infinite]"
+                style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.7), transparent 70%)` }}
+              />
+              {/* Corner ribbon */}
+              <div
+                className={`pointer-events-none absolute top-12 left-0 h-[28px] w-[140px] bg-gradient-to-br ${t.grad}`}
+                style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
+              />
+              <div className="pointer-events-none absolute top-[55px] left-2 flex items-center gap-1">
+                <t.Icon className="h-3 w-3 text-black" strokeWidth={2.5} />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">{t.label}</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
+          {/* 1. Compact Header */}
+          <section className="mb-6 flex flex-col items-center gap-3 text-center">
+            <div className="relative group shrink-0">
+              <div
+                className="absolute -inset-1 rounded-full opacity-30 blur transition duration-700 group-hover:opacity-50"
+                style={themed ? { background: `rgb(${t.rgb})` } : undefined}
+              />
+              {!themed && <div className="absolute -inset-1 rounded-full bg-primary opacity-20 blur" />}
+              <Avatar className={`relative z-10 h-32 w-32 border-2 ${themed ? "border-transparent" : "border-primary"}`} style={themed ? { borderColor: `rgb(${t.rgb})` } : undefined}>
+                <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
+                <AvatarFallback className={`bg-white/10 text-2xl font-bold ${themed ? t.textStrong : "text-primary"}`}>{initials}</AvatarFallback>
+              </Avatar>
+              {worker.verified && (
+                <div className={`absolute bottom-1 right-1 z-20 rounded-full border-4 border-hero p-1 ${themed ? "text-black" : "bg-primary text-primary-foreground"} ${themed ? `bg-gradient-to-br ${t.grad}` : ""}`}>
+                  <BadgeCheck className="h-4 w-4" />
+                </div>
+              )}
+            </div>
           <button
             onClick={() => navigate(-1)}
             className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10"
