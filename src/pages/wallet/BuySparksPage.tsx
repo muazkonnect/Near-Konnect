@@ -132,7 +132,7 @@ const BuySparksPage = () => {
               onChange={(e) => setCustomSparks(e.target.value)}
               className="bg-hero-foreground/5 border-hero-foreground/15 text-hero-foreground"
             />
-            <Button onClick={goCustom} className="rounded-full">
+            <Button onClick={goCustom} disabled={!isVerifiedWorker} className="rounded-full">
               <Check className="mr-1 h-4 w-4" /> Continue
             </Button>
           </div>
