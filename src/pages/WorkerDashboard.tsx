@@ -492,9 +492,13 @@ const WorkerDashboard = () => {
             {[
               { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
               { label: "Boost Ad", icon: Zap, onClick: () => {
-                if (!workerData?.verified) { toast.error("Get verified to create ads."); setVerifyOpen(true); return; }
+                if (!isVerifiedWorker) {
+                  toast.error(verificationPending ? "Verification pending. You can use ads once approved." : "Get verified to create ads.");
+                  if (!verificationPending) setVerifyOpen(true);
+                  return;
+                }
                 navigate("/worker/ads");
-              }, gated: !workerData?.verified },
+              }, gated: !isVerifiedWorker },
             ].map((a) => (
               <button
                 key={a.label}
