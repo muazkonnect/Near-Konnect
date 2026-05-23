@@ -24,6 +24,12 @@ import {
   ScrollText,
   Receipt,
   Percent,
+  Activity,
+  Sparkles,
+  TrendingUp,
+  ArrowUpRight,
+  Radio,
+
 
 
 } from "lucide-react";
