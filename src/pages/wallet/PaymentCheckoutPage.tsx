@@ -143,7 +143,7 @@ const PaymentCheckoutPage = () => {
               <p className="text-3xl font-extrabold tabular-nums">{(sparks + bonus).toLocaleString()} <span className="text-base font-semibold text-hero-foreground/60">Sparks</span></p>
               {bonus > 0 && <p className="text-xs text-emerald-400">includes {bonus} bonus</p>}
             </div>
-            <p className="text-2xl font-bold text-primary">{currency === "PKR" ? `PKR ${price.toLocaleString()}` : `$${price} USDT`}</p>
+            <p className="text-2xl font-bold text-primary">{formatPrice(price, currency as "PKR" | "USDT")}</p>
           </div>
         </motion.div>
 
