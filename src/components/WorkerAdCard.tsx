@@ -250,7 +250,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* stats row: distance + experience */}
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-2 gap-1.5 mx-px">
               <div className={`relative overflow-hidden rounded-lg border ${t.border} bg-gradient-to-br ${t.soft} px-2 py-1.5`}>
                 <div className="flex items-center gap-1.5">
                   <MapPin className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} />
@@ -279,12 +279,12 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* expertise pills */}
-            <div className="flex flex-wrap items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1 my-[6px]">
               <Zap className={`h-2.5 w-2.5 ${t.textStrong}`} />
               {getExpertise(worker.mainCategory, worker.subCategory, [], 3).map((skill) => (
                 <span
                   key={skill}
-                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80"
+                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80 mx-[14px]"
                 >
                   {skill}
                 </span>
