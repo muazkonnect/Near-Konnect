@@ -194,6 +194,10 @@ const Home = () => {
   const announcementMessages = useAppSetting("announcement_messages");
   const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds") || 30;
   const specialAnnouncement = useAppSetting("special_announcement");
+  const tickerRef = useRef<HTMLDivElement>(null);
+  const tickerVisible = useIsVisible(tickerRef);
+  const reducedMotion = useReducedMotion();
+  const tickerPaused = !tickerVisible || reducedMotion;
   const { data: activity = [] } = useRecentActivity(20);
 
   // Re-evaluate special-announcement expiry on a tick
