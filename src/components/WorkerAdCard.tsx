@@ -305,15 +305,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </button>
               {(() => {
                 const ContactInner = (
-                  <>
-                    <div className="flex min-w-0 items-center gap-1">
-                      <MessageCircle className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-                      <div className="text-[10.5px] font-black uppercase tracking-[0.14em] px-1 sm:px-[13px]">Message</div>
-                    </div>
-                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black/85 text-white">
-                      <ChevronRight className="h-2.5 w-2.5" />
-                    </span>
-                  </>
+                  <MessageCircle className="h-4 w-4 shrink-1" strokeWidth={2.5} />
                 );
                 const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15 text-center`;
                 if (worker.showContact === false) {
