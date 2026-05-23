@@ -185,7 +185,7 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           </div>
         )}
 
-        {!isFeatured && !pending && (
+        {isVerified && !isFeatured && !pending && (
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={submit} disabled={submitting} className="gap-2">
