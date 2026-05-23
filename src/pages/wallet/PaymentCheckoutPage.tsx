@@ -81,8 +81,8 @@ const PaymentCheckoutPage = () => {
 
   const sparks = isCustom ? customSparks : pkg?.sparks ?? 0;
   const bonus = isCustom ? 0 : pkg?.bonus_sparks ?? 0;
-  const pricePkr = Math.round(sparks * ratePkr);
-  const priceUsdt = +(sparks * rateUsdt).toFixed(2);
+  const pricePkr = sparksToPrice(sparks, ratePkr, "PKR");
+  const priceUsdt = sparksToPrice(sparks, rateUsdt, "USDT");
 
   const defaultMethod: Method = region === "pk" ? "easypaisa" : "usdt";
   const [method, setMethod] = useState<Method>(defaultMethod);
