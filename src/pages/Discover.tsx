@@ -357,6 +357,11 @@ const Discover = () => {
           </div>
         </section>
 
+        {/* PROMOTE AWARENESS — compact, always visible above ads */}
+        <div className="mt-5 px-5">
+          <PromoteYourselfBanner variant="compact" />
+        </div>
+
         {/* FEATURED ADS marquee */}
         {bannerAds.length > 0 ? (
           <section className="mt-5">
