@@ -61,6 +61,10 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
 
   const submit = async () => {
     if (!user) return;
+    if (!isVerified) {
+      toast.error(verificationPending ? "Verification pending. You can request Featured after approval." : "Only verified workers can request Featured listing.");
+      return;
+    }
     setSubmitting(true);
     const { error } = await sb
       .from("featured_requests")
