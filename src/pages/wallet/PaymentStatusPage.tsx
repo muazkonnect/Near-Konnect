@@ -63,7 +63,7 @@ const PaymentStatusPage = () => {
             <Zap className="h-3.5 w-3.5" /> Sparks
           </div>
           <p className="mt-1 text-3xl font-extrabold tabular-nums">{(req.sparks_amount + req.bonus_sparks).toLocaleString()}</p>
-          <p className="text-xs text-hero-foreground/60">{req.payment_method.toUpperCase()} · {req.currency} {Number(req.price_amount).toLocaleString()}</p>
+          <p className="text-xs text-hero-foreground/60">{req.payment_method.toUpperCase()} · {formatPrice(Number(req.price_amount), (req.currency === "USDT" ? "USDT" : "PKR"))}</p>
         </div>
 
         <div className="space-y-2 rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
