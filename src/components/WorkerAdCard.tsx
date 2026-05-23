@@ -75,29 +75,30 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
   // Premium = gold theme, otherwise neon-lime theme
   const t = premium
     ? {
-        grad: "from-amber-400 via-yellow-300 to-amber-500",
+        grad: "from-amber-300 via-yellow-200 to-amber-500",
         text: "text-amber-300",
         textStrong: "text-amber-400",
-        border: "border-amber-400/55",
-        ring: "ring-amber-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(251,191,36,0.55)]",
-        soft: "from-amber-500/25 via-amber-500/8 to-transparent",
+        border: "border-amber-400/60",
+        ring: "ring-amber-400/60",
+        glow: "shadow-[0_0_60px_-10px_rgba(251,191,36,0.75),0_0_120px_-40px_rgba(251,191,36,0.45)]",
+        soft: "from-amber-500/30 via-amber-500/10 to-transparent",
         rgb: "251,191,36",
         label: "Featured",
         Icon: Crown,
       }
     : {
-        grad: "from-lime-400 via-lime-300 to-lime-500",
+        grad: "from-lime-300 via-emerald-300 to-lime-500",
         text: "text-lime-300",
         textStrong: "text-lime-400",
-        border: "border-lime-400/55",
-        ring: "ring-lime-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(163,230,53,0.6)]",
-        soft: "from-lime-500/25 via-lime-500/8 to-transparent",
+        border: "border-lime-400/60",
+        ring: "ring-lime-400/60",
+        glow: "shadow-[0_0_60px_-10px_rgba(163,230,53,0.75),0_0_120px_-40px_rgba(163,230,53,0.5)]",
+        soft: "from-lime-500/30 via-emerald-500/10 to-transparent",
         rgb: "163,230,53",
         label: "Promoted",
         Icon: Gem,
       };
+
 
   const positivePct = worker.reviewCount > 0 ? 100 : 0;
   const isTopRated = (worker.rating || 0) >= 4.5;
