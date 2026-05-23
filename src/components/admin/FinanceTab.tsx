@@ -528,4 +528,11 @@ const StatusBadge = ({ status }: { status: string }) => {
   return <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold ${map[status] || "bg-hero-foreground/10"}`}>{status}</span>;
 };
 
+const MiniStat = ({ label, value, hint }: { label: string; value: any; hint?: string }) => (
+  <div className="rounded-lg bg-hero-foreground/[0.04] border border-hero-foreground/10 p-3" title={hint}>
+    <div className="text-[10px] uppercase tracking-wide text-hero-foreground/60">{label}</div>
+    <div className="text-lg font-semibold tabular-nums mt-0.5">{value}</div>
+  </div>
+);
+
 export default FinanceTab;
