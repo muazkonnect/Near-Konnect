@@ -77,11 +77,12 @@ export async function fetchDiditEvidence(session_id: string): Promise<any> {
   return data;
 }
 
-export async function submitVerification(inquiryId: string, sessionToken?: string | null): Promise<WorkerVerification> {
-  const { data, error } = await sb.rpc("submit_verification", { p_inquiry_id: inquiryId, p_session_token: sessionToken ?? null });
+export async function submitVerification(inquiryId: string, sessionToken?: string | null, currentCC?: string | null): Promise<WorkerVerification> {
+  const { data, error } = await sb.rpc("submit_verification", { p_inquiry_id: inquiryId, p_session_token: sessionToken ?? null, p_current_cc: currentCC ?? null });
   if (error) throw error;
   return data as WorkerVerification;
 }
+
 
 export async function adminFetchVerifications(): Promise<WorkerVerification[]> {
   const { data, error } = await sb.from("worker_verifications").select("*").order("created_at", { ascending: false });
