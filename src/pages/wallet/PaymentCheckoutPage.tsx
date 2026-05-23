@@ -63,7 +63,7 @@ const PaymentCheckoutPage = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { region } = usePaymentRegion();
+  const { region, source } = usePaymentRegion();
   const ratePkr = useAppSetting("spark_price_pkr");
   const rateUsdt = useAppSetting("spark_price_usdt");
 
@@ -145,6 +145,14 @@ const PaymentCheckoutPage = () => {
             <p className="text-2xl font-bold text-primary">{currency === "PKR" ? `PKR ${price.toLocaleString()}` : `$${price} USDT`}</p>
           </div>
         </motion.div>
+
+        {(source === "ip" || source === "locale" || source === "default") && (
+          <div className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
+            {source === "default"
+              ? `We couldn't detect your location, so we're showing international pricing in USDT. Switch tabs if you'd prefer to pay in PKR.`
+              : `Location unavailable — using ${source === "ip" ? "your network region" : "device language/timezone"} to show ${region === "pk" ? "PKR pricing for Pakistan" : "international pricing in USDT"}. You can switch payment methods below.`}
+          </div>
+        )}
 
         <Tabs value={method} onValueChange={(v) => setMethod(v as Method)}>
           <TabsList className="grid w-full grid-cols-3 bg-hero-foreground/[0.06]">
