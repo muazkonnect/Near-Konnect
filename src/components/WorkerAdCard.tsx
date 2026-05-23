@@ -222,41 +222,41 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── RATING STRIP ──────────────────────────────────────── */}
-          <div className="relative mx-3.5 mt-3 flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 backdrop-blur">
-            <div className="flex items-center gap-1.5">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-              <span className="text-[15px] font-black leading-none text-white">
+          <div className="relative mx-3 mt-2 flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 backdrop-blur">
+            <div className="flex items-center gap-1">
+              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-[13px] font-black leading-none text-white">
                 {worker.rating?.toFixed(1) || "—"}
               </span>
-              <span className="text-[9.5px] text-white/55">({worker.reviewCount || 0})</span>
+              <span className="text-[9px] text-white/55">({worker.reviewCount || 0})</span>
             </div>
-            <div className="h-5 w-px bg-white/10" />
-            <div className="flex items-center gap-0.5">
+            <div className="h-4 w-px bg-white/10" />
+            <div className="flex items-center gap-[1px]">
               {[0, 1, 2, 3, 4].map((i) => (
-                <Star key={i} className={`h-3 w-3 ${i < Math.round(worker.rating || 0) ? "fill-amber-400 text-amber-400" : "text-white/15"}`} />
+                <Star key={i} className={`h-2.5 w-2.5 ${i < Math.round(worker.rating || 0) ? "fill-amber-400 text-amber-400" : "text-white/15"}`} />
               ))}
             </div>
-            <div className="h-5 w-px bg-white/10" />
+            <div className="h-4 w-px bg-white/10" />
             <div className="flex items-center gap-1">
-              <MessageCircle className="h-3 w-3 text-white/65" />
-              <span className="text-[11px] font-extrabold text-white">{positivePct}%</span>
-              <span className="text-[9px] uppercase tracking-wider text-white/50">Positive</span>
+              <MessageCircle className="h-2.5 w-2.5 text-white/65" />
+              <span className="text-[10px] font-extrabold text-white">{positivePct}%</span>
+              <span className="text-[8px] uppercase tracking-wider text-white/50">Positive</span>
             </div>
           </div>
 
           {/* ── CATEGORY PILLS ────────────────────────────────────── */}
           {(worker.mainCategory || worker.subCategory) && (
-            <div className="relative mx-3.5 mt-2.5 flex items-stretch gap-1.5 rounded-2xl border border-white/8 bg-white/[0.03] p-1.5">
+            <div className="relative mx-3 mt-2 flex items-stretch gap-1 rounded-2xl border border-white/8 bg-white/[0.03] p-1">
               {worker.mainCategory && (
-                <div className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br ${t.grad} px-2.5 py-1.5 text-black shadow-[inset_0_-2px_0_rgba(0,0,0,0.15)]`}>
-                  <Home className="h-3.5 w-3.5" strokeWidth={2.6} />
-                  <span className="truncate text-[10.5px] font-black uppercase tracking-[0.14em]">{worker.mainCategory}</span>
+                <div className={`flex flex-1 items-center justify-center gap-1 rounded-xl bg-gradient-to-br ${t.grad} px-2 py-1 text-black shadow-[inset_0_-2px_0_rgba(0,0,0,0.15)]`}>
+                  <Home className="h-3 w-3" strokeWidth={2.6} />
+                  <span className="truncate text-[9.5px] font-black uppercase tracking-[0.14em]">{worker.mainCategory}</span>
                 </div>
               )}
               {worker.subCategory && (
-                <div className="flex flex-1 items-center justify-center gap-1.5 px-2.5 py-1.5">
-                  <Hammer className="h-3.5 w-3.5 text-white/70" />
-                  <span className="truncate text-[10.5px] font-bold uppercase tracking-[0.14em] text-white/85">{worker.subCategory}</span>
+                <div className="flex flex-1 items-center justify-center gap-1 px-2 py-1">
+                  <Hammer className="h-3 w-3 text-white/70" />
+                  <span className="truncate text-[9.5px] font-bold uppercase tracking-[0.14em] text-white/85">{worker.subCategory}</span>
                 </div>
               )}
             </div>
