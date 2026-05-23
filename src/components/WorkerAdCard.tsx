@@ -9,19 +9,18 @@ import {
   User,
   MessageCircle,
   ChevronRight,
-  ThumbsUp,
-  Clock,
-  Handshake,
   Trophy,
   BadgeCheck,
   Hammer,
   Home,
   Crown,
+  Sparkles,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { trackAdEvent } from "@/hooks/usePromoted";
+import { getExpertise } from "@/lib/categoryExpertise";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
@@ -117,9 +116,9 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]">
             {worker.bannerUrl ? (
-              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-35" />
+              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-70" />
             ) : worker.profilePhoto ? (
-              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-20 blur-2xl" />
+              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-40 blur-2xl" />
             ) : null}
             {/* dot grid texture */}
             <div
@@ -290,7 +289,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* experience */}
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
+            <div className="relative flex items-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
               <div className="flex items-center gap-2">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-full border ${t.border} bg-black/50`}>
                   <CalendarClock className={`h-4 w-4 ${t.textStrong}`} />
@@ -304,21 +303,22 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </div>
             </div>
 
-            {/* trust list */}
+            {/* expertise */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
-              <ul className="space-y-1 text-[9.5px] font-semibold text-white/80">
-                {[
-                  { Icon: ShieldCheck, label: "Background Verified" },
-                  { Icon: ThumbsUp, label: "High Quality Work" },
-                  { Icon: Clock, label: "On Time Service" },
-                  { Icon: Handshake, label: "Trusted by Clients" },
-                ].map(({ Icon, label }) => (
-                  <li key={label} className="flex items-center gap-1.5">
-                    <Icon className={`h-3 w-3 shrink-0 ${t.textStrong}`} />
-                    <span className="truncate">{label}</span>
-                  </li>
+              <div className={`mb-1.5 flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
+                <Sparkles className="h-3 w-3" />
+                Expertise
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {getExpertise(worker.mainCategory, worker.subCategory, [], 4).map((skill) => (
+                  <span
+                    key={skill}
+                    className="truncate rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-[2px] text-[9px] font-semibold text-white/80"
+                  >
+                    {skill}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
 
@@ -374,20 +374,11 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
 
           {/* ── FOOTER TRUST BAR ──────────────────────────────────── */}
-          <div className={`relative mt-3 grid grid-cols-4 gap-1.5 border-t ${t.border} bg-black/50 px-3 py-2.5 backdrop-blur`}>
+          <div className={`relative mt-3 grid grid-cols-3 gap-1.5 border-t ${t.border} bg-black/50 px-3 py-2.5 backdrop-blur`}>
             <div className="flex flex-col items-center text-center">
               <ShieldCheck className={`h-4 w-4 ${t.textStrong}`} />
               <div className="mt-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">Verified</div>
               <div className="text-[8px] leading-tight text-white/50">ID Checked</div>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex -space-x-1">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className={`h-3.5 w-3.5 rounded-full border border-black bg-gradient-to-br ${t.grad}`} />
-                ))}
-              </div>
-              <div className={`mt-0.5 text-[10px] font-black ${t.textStrong}`}>500+</div>
-              <div className="text-[8px] leading-tight text-white/50">Customers</div>
             </div>
             <div className="flex flex-col items-center text-center">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
