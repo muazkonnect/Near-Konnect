@@ -218,7 +218,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             {/* identity */}
             <div className="min-w-0">
               <div className="flex items-start gap-1.5">
-                <h3 className="line-clamp-1 font-black leading-tight tracking-tight text-white text-3xl">
+                <h3 className="line-clamp-1 font-black leading-tight tracking-tight text-white text-xl sm:text-3xl">
                   {worker.name}
                 </h3>
                 {worker.verified && (
