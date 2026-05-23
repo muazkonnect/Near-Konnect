@@ -216,7 +216,6 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
               {worker.profession && (
                 <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
                   <span className="truncate">{worker.profession}</span>
-                  <Hammer className="h-3 w-3 shrink-0" />
                 </p>
               )}
               {worker.city && (
