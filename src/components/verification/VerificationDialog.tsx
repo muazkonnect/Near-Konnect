@@ -36,7 +36,7 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
 
   const finalize = async (sessionId: string, sessionToken: string | null) => {
-    await submitVerification(sessionId, sessionToken);
+    await submitVerification(sessionId, sessionToken, currentCC);
     try { await fetchDiditEvidence(sessionId); } catch (e) { console.error("evidence fetch failed", e); }
     sessionStorage.removeItem(PENDING_KEY);
     toast.success("Verification submitted for admin approval");
