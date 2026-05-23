@@ -200,19 +200,33 @@ const Home = () => {
 
   // Live ticker: admin static messages + real-time activity
   const announcementMessages = useAppSetting("announcement_messages");
+  const specialAnnouncement = useAppSetting("special_announcement");
   const { data: activity = [] } = useRecentActivity(20);
+
+  // Re-evaluate special-announcement expiry on a tick
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  useEffect(() => {
+    const i = setInterval(() => setNowTs(Date.now()), 30_000);
+    return () => clearInterval(i);
+  }, []);
+  const specialActive =
+    !!specialAnnouncement?.text?.trim() &&
+    (!specialAnnouncement.expires_at || new Date(specialAnnouncement.expires_at).getTime() > nowTs);
+
   const tickerItems = useMemo(() => {
+    if (specialActive && specialAnnouncement) {
+      return [{ text: specialAnnouncement.text.trim(), special: true as const }];
+    }
     const staticItems = (announcementMessages || []).map((text) => ({ text, hot: true }));
     const activityItems = activity.map((a) => ({ text: a.text, hot: !!a.hot }));
-    // Interleave: static, activity, static, activity…
-    const out: { text: string; hot?: boolean }[] = [];
+    const out: { text: string; hot?: boolean; special?: boolean }[] = [];
     const max = Math.max(staticItems.length, activityItems.length);
     for (let i = 0; i < max; i++) {
       if (staticItems[i]) out.push(staticItems[i]);
       if (activityItems[i]) out.push(activityItems[i]);
     }
     return out.length ? out : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
-  }, [announcementMessages, activity]);
+  }, [announcementMessages, activity, specialActive, specialAnnouncement]);
 
   const submitSearch = (q: string) => {
     if (!q.trim()) return navigate("/discover");
