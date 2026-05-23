@@ -115,6 +115,7 @@ export async function createCampaign(params: {
   country?: string | null;
   city?: string | null;
   area?: string | null;
+  currentCC?: string | null;
 }): Promise<string> {
   const { data, error } = await (supabase as any).rpc("create_ad_campaign", {
     _worker_id: params.workerId,
@@ -127,7 +128,9 @@ export async function createCampaign(params: {
     _city: params.city ?? null,
     _area: params.area ?? null,
     _placement_type: params.placementType,
+    _current_cc: params.currentCC ?? null,
   });
   if (error) throw error;
   return data as string;
 }
+

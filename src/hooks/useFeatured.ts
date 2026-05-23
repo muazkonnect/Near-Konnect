@@ -24,8 +24,9 @@ export function useMyFeatured(userId?: string | null) {
 export function usePurchaseFeatured() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ duration, categoryId }: { duration: 1 | 7 | 15 | 30; categoryId?: string | null }) =>
-      purchaseFeatured(duration, categoryId),
+    mutationFn: ({ duration, categoryId, currentCC }: { duration: 1 | 7 | 15 | 30; categoryId?: string | null; currentCC?: string | null }) =>
+      purchaseFeatured(duration, categoryId, currentCC),
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my_featured"] });
       qc.invalidateQueries({ queryKey: ["wallet"] });

@@ -7,7 +7,9 @@ import { useFeaturedPricing, usePurchaseFeatured } from "@/hooks/useFeatured";
 import { useWallet } from "@/contexts/WalletContext";
 import { useCategories } from "@/hooks/useCategories";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useUserTier, useCurrentCC } from "@/hooks/useUserTier";
 import { toast } from "sonner";
+
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; workerCategoryId?: string | null };
 
@@ -19,21 +21,25 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const isVerified = !!(workerProfile as any)?.verified;
   const purchase = usePurchaseFeatured();
   const [categoryId, setCategoryId] = useState<string | null>(workerCategoryId ?? null);
+  const { tier, multiplier } = useUserTier();
+  const currentCC = useCurrentCC();
 
   const cost = useMemo(() => {
     const r = pricing.find((p) => p.duration_days === 30 && p.category_id === categoryId)
       ?? pricing.find((p) => p.duration_days === 30 && p.category_id === null);
-    if (!r) return 30;
-    return Math.ceil(r.base_sparks * Number(r.multiplier || 1));
-  }, [pricing, categoryId]);
+    const base = r ? Math.ceil(r.base_sparks * Number(r.multiplier || 1)) : 30;
+    return Math.ceil(base * (multiplier || 1));
+  }, [pricing, categoryId, multiplier]);
+
   const insufficient = balance < cost;
 
   const handlePurchase = async () => {
     if (!isVerified) return toast.error("Only verified workers can become featured.");
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
     try {
-      await purchase.mutateAsync({ duration: 30, categoryId });
+      await purchase.mutateAsync({ duration: 30, categoryId, currentCC });
       onOpenChange(false);
+
     } catch {}
   };
 
@@ -58,6 +64,13 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
               <Sparkles className="h-3.5 w-3.5 text-primary" /> {cost} Sparks
             </p>
           </div>
+
+          {multiplier > 1 && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-xs text-foreground">
+              Tier {tier} pricing applies (×{multiplier}). Your country tier multiplies the base Sparks cost.
+            </div>
+          )}
+
 
           <div>
             <label className="text-xs font-semibold text-muted-foreground">Target category (optional)</label>

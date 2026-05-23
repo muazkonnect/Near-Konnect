@@ -616,6 +616,27 @@ export type Database = {
         }
         Relationships: []
       }
+      country_tiers: {
+        Row: {
+          country_code: string
+          tier: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          country_code: string
+          tier: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          country_code?: string
+          tier?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1248,6 +1269,7 @@ export type Database = {
           blood_show_contact: boolean
           city: string | null
           contact_methods: Json
+          country_code: string | null
           created_at: string
           donor_status: string
           full_name: string
@@ -1267,6 +1289,7 @@ export type Database = {
           blood_show_contact?: boolean
           city?: string | null
           contact_methods?: Json
+          country_code?: string | null
           created_at?: string
           donor_status?: string
           full_name?: string
@@ -1286,6 +1309,7 @@ export type Database = {
           blood_show_contact?: boolean
           city?: string | null
           contact_methods?: Json
+          country_code?: string | null
           created_at?: string
           donor_status?: string
           full_name?: string
@@ -1665,6 +1689,30 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      tier_settings: {
+        Row: {
+          label: string
+          multiplier: number
+          tier: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          label?: string
+          multiplier: number
+          tier: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          label?: string
+          multiplier?: number
+          tier?: number
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -2222,6 +2270,10 @@ export type Database = {
         Args: { p_note?: string; p_worker_id: string }
         Returns: undefined
       }
+      apply_tier: {
+        Args: { _base_cost: number; _current_cc: string; _uid: string }
+        Returns: number
+      }
       approve_payment_request: {
         Args: { p_id: string; p_note?: string }
         Returns: string
@@ -2230,6 +2282,7 @@ export type Database = {
       calc_sparks_cost: {
         Args: {
           _ad_type: Database["public"]["Enums"]["ad_type"]
+          _current_cc?: string
           _duration_days: number
           _placement_type?: Database["public"]["Enums"]["ad_placement"]
           _radius_km: number
@@ -2240,6 +2293,7 @@ export type Database = {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
       }
+      country_to_tier: { Args: { _cc: string }; Returns: number }
       create_ad_campaign:
         | {
             Args: {
@@ -2263,6 +2317,22 @@ export type Database = {
               _center_lng: number
               _city?: string
               _country?: string
+              _duration_days: number
+              _placement_type?: Database["public"]["Enums"]["ad_placement"]
+              _radius_km: number
+              _worker_id: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _ad_type: Database["public"]["Enums"]["ad_type"]
+              _area?: string
+              _center_lat: number
+              _center_lng: number
+              _city?: string
+              _country?: string
+              _current_cc?: string
               _duration_days: number
               _placement_type?: Database["public"]["Enums"]["ad_placement"]
               _radius_km: number
@@ -2695,30 +2765,59 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
-      purchase_featured: {
-        Args: { p_category_id?: string; p_duration_days: number }
-        Returns: {
-          category_id: string | null
-          center: unknown
-          created_at: string
-          duration_days: number
-          ends_at: string
-          id: string
-          radius_km: number
-          sparks_cost: number
-          starts_at: string
-          status: string
-          updated_at: string
-          user_id: string
-          worker_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "featured_workers"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      purchase_featured:
+        | {
+            Args: { p_category_id?: string; p_duration_days: number }
+            Returns: {
+              category_id: string | null
+              center: unknown
+              created_at: string
+              duration_days: number
+              ends_at: string
+              id: string
+              radius_km: number
+              sparks_cost: number
+              starts_at: string
+              status: string
+              updated_at: string
+              user_id: string
+              worker_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "featured_workers"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_category_id?: string
+              p_current_cc?: string
+              p_duration_days: number
+            }
+            Returns: {
+              category_id: string | null
+              center: unknown
+              created_at: string
+              duration_days: number
+              ends_at: string
+              id: string
+              radius_km: number
+              sparks_cost: number
+              starts_at: string
+              status: string
+              updated_at: string
+              user_id: string
+              worker_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "featured_workers"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       push_to_admins: {
         Args: { _body: string; _tag: string; _title: string; _url: string }
         Returns: undefined
@@ -2734,6 +2833,10 @@ export type Database = {
       reject_payment_request: {
         Args: { p_id: string; p_note?: string }
         Returns: string
+      }
+      resolve_user_tier: {
+        Args: { _current_cc?: string; _uid: string }
+        Returns: number
       }
       seed_nearkonnect_taxonomy: {
         Args: { payload: Json }
@@ -3371,33 +3474,66 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      submit_verification: {
-        Args: { p_inquiry_id: string; p_session_token?: string }
-        Returns: {
-          admin_note: string
-          created_at: string
-          decided_at: string | null
-          decided_by: string | null
-          id: string
-          persona_inquiry_id: string | null
-          persona_payload: Json
-          persona_session_token: string | null
-          persona_status: string | null
-          sparks_cost: number
-          status: string
-          submitted_at: string | null
-          updated_at: string
-          user_id: string
-          verified_at: string | null
-          worker_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "worker_verifications"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      submit_verification:
+        | {
+            Args: { p_inquiry_id: string; p_session_token?: string }
+            Returns: {
+              admin_note: string
+              created_at: string
+              decided_at: string | null
+              decided_by: string | null
+              id: string
+              persona_inquiry_id: string | null
+              persona_payload: Json
+              persona_session_token: string | null
+              persona_status: string | null
+              sparks_cost: number
+              status: string
+              submitted_at: string | null
+              updated_at: string
+              user_id: string
+              verified_at: string | null
+              worker_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "worker_verifications"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_current_cc?: string
+              p_inquiry_id: string
+              p_session_token?: string
+            }
+            Returns: {
+              admin_note: string
+              created_at: string
+              decided_at: string | null
+              decided_by: string | null
+              id: string
+              persona_inquiry_id: string | null
+              persona_payload: Json
+              persona_session_token: string | null
+              persona_status: string | null
+              sparks_cost: number
+              status: string
+              submitted_at: string | null
+              updated_at: string
+              user_id: string
+              verified_at: string | null
+              worker_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "worker_verifications"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+      tier_multiplier: { Args: { _tier: number }; Returns: number }
       unlockrows: { Args: { "": string }; Returns: number }
       updategeometrysrid: {
         Args: {

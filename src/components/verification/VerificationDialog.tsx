@@ -7,7 +7,9 @@ import { useMyVerification, useVerificationSettings } from "@/hooks/useVerificat
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/contexts/WalletContext";
 import { startVerification, submitVerification, createDiditSession, getDiditDecision, fetchDiditEvidence } from "@/services/verificationService";
+import { useUserTier, useCurrentCC } from "@/hooks/useUserTier";
 import { toast } from "sonner";
+
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 
@@ -22,15 +24,19 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
   const [loading, setLoading] = useState(false);
   const pollRef = useRef<number | null>(null);
 
-  const cost = settings?.sparks_cost ?? 500;
+  const { tier, multiplier } = useUserTier();
+  const currentCC = useCurrentCC();
+  const baseCost = settings?.sparks_cost ?? 500;
+  const cost = Math.ceil(baseCost * (multiplier || 1));
   const insufficient = balance < cost;
   const status = verification?.status ?? "none";
+
 
   useEffect(() => { if (open) refetch(); }, [open, refetch]);
   useEffect(() => () => { if (pollRef.current) window.clearInterval(pollRef.current); }, []);
 
   const finalize = async (sessionId: string, sessionToken: string | null) => {
-    await submitVerification(sessionId, sessionToken);
+    await submitVerification(sessionId, sessionToken, currentCC);
     try { await fetchDiditEvidence(sessionId); } catch (e) { console.error("evidence fetch failed", e); }
     sessionStorage.removeItem(PENDING_KEY);
     toast.success("Verification submitted for admin approval");
@@ -165,6 +171,12 @@ export default function VerificationDialog({ open, onOpenChange }: Props) {
               <span className="text-muted-foreground">Cost</span>
               <Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" />{cost} Sparks</Badge>
             </div>
+            {multiplier > 1 && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-[11px] text-foreground">
+                Tier {tier} pricing applies (×{multiplier}). Base: {baseCost} Sparks.
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Your balance</span>
               <span className={`font-bold ${insufficient ? "text-destructive" : ""}`}>{balance} Sparks</span>

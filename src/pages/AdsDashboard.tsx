@@ -21,6 +21,8 @@ import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign, type AdPlacement } from "@/hooks/useAdCampaigns";
 import { useDiscountFor } from "@/hooks/useAdDiscounts";
+import { useUserTier, useCurrentCC } from "@/hooks/useUserTier";
+
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
@@ -280,6 +282,9 @@ const CampaignWizard = ({
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const { paidDays, freeDays } = useDiscountFor(duration);
+  const { tier, multiplier } = useUserTier();
+  const currentCC = useCurrentCC();
+
 
   const countryName = useMemo(() => Country.getCountryByCode(countryCode)?.name || "", [countryCode]);
   const stateName = useMemo(
@@ -337,9 +342,10 @@ const CampaignWizard = ({
 
   useEffect(() => {
     let cancelled = false;
-    calcSparksCost(adType, radius, duration, placement).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
+    calcSparksCost(adType, radius, duration, placement, currentCC).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
     return () => { cancelled = true; };
-  }, [adType, radius, duration, placement]);
+  }, [adType, radius, duration, placement, currentCC]);
+
 
   const useMyLocation = async () => {
     try {
@@ -382,7 +388,9 @@ const CampaignWizard = ({
         country: adType === "international" ? countryName || null : null,
         city: adType === "international" ? [cityName, stateName].filter(Boolean).join(", ") || null : null,
         area: adType === "international" ? areaText || null : null,
+        currentCC,
       });
+
 
       toast.success("Campaign launched 🚀");
       queryClient.invalidateQueries({ queryKey: ["sparks_wallet"] });
@@ -586,6 +594,12 @@ const CampaignWizard = ({
                 <p className={`text-lg font-bold ${balance < cost ? "text-destructive" : ""}`}>{balance}</p>
               </div>
             </div>
+            {multiplier > 1 && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-[11px] text-foreground">
+                Tier {tier} pricing applies (×{multiplier}) — your country tier multiplies the Sparks cost.
+              </div>
+            )}
+
             {previewWorker && (
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Live preview</p>

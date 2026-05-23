@@ -61,11 +61,12 @@ export async function adminDeletePricing(id: string) {
   if (error) throw error;
 }
 
-export async function purchaseFeatured(durationDays: 1 | 7 | 15 | 30, categoryId?: string | null): Promise<FeaturedWorker> {
-  const { data, error } = await sb.rpc("purchase_featured", { p_duration_days: durationDays, p_category_id: categoryId ?? null });
+export async function purchaseFeatured(durationDays: 1 | 7 | 15 | 30, categoryId?: string | null, currentCC?: string | null): Promise<FeaturedWorker> {
+  const { data, error } = await sb.rpc("purchase_featured", { p_duration_days: durationDays, p_category_id: categoryId ?? null, p_current_cc: currentCC ?? null });
   if (error) throw error;
   return data as FeaturedWorker;
 }
+
 
 export async function fetchMyFeatured(userId: string): Promise<FeaturedWorker[]> {
   const { data, error } = await sb.from("featured_workers").select("*").eq("user_id", userId).order("created_at", { ascending: false });
