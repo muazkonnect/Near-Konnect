@@ -113,7 +113,18 @@ const RequestFeaturedDialog = ({ workerId }: Props) => {
           </DialogDescription>
         </DialogHeader>
 
-        {isFeatured ? (
+        {!isVerified ? (
+          <div className="rounded-xl border border-amber-400/40 bg-amber-50/40 p-3 text-sm dark:bg-amber-500/5">
+            <div className="flex items-center gap-2 font-semibold text-amber-700 dark:text-amber-300">
+              <Clock className="h-4 w-4" /> {verificationPending ? "Verification pending" : "Verification required"}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {verificationPending
+                ? "Your verification is under admin review. Featured Listing unlocks automatically once approved."
+                : "Only verified workers can request a Featured Listing. Complete verification first."}
+            </p>
+          </div>
+        ) : isFeatured ? (
           <div className="rounded-xl border border-success/30 bg-success/5 p-3 text-sm">
             <div className="flex items-center gap-2 font-semibold text-success">
               <CheckCircle2 className="h-4 w-4" /> You're currently featured
