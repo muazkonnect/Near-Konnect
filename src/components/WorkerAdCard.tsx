@@ -292,7 +292,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* CTAs */}
-            <div className="mt-0.5 grid grid-cols-[1fr_auto] gap-1.5" onClick={(e) => e.stopPropagation()}>
+            <div className="mt-0.5 grid grid-cols-[1fr_auto] gap-1.5 my-px text-center px-[21px] mx-[62px]" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => { fireClick(); setPopupOpen(true); }}
                 className="group/btn flex items-center justify-between rounded-xl border border-white/12 bg-white/[0.05] px-2 py-1.5 text-left transition hover:bg-white/[0.09]"
