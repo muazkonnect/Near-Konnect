@@ -1262,6 +1262,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_phones: {
+        Row: {
+          created_at: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1277,7 +1298,6 @@ export type Database = {
           is_blood_donor: boolean
           latitude: number | null
           longitude: number | null
-          phone: string | null
           show_contact: boolean
           updated_at: string
           use_whatsapp: boolean
@@ -1297,7 +1317,6 @@ export type Database = {
           is_blood_donor?: boolean
           latitude?: number | null
           longitude?: number | null
-          phone?: string | null
           show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
@@ -1317,7 +1336,6 @@ export type Database = {
           is_blood_donor?: boolean
           latitude?: number | null
           longitude?: number | null
-          phone?: string | null
           show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
@@ -1891,6 +1909,27 @@ export type Database = {
           },
         ]
       }
+      worker_private: {
+        Row: {
+          cnic: string | null
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cnic?: string | null
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cnic?: string | null
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       worker_verifications: {
         Row: {
           admin_note: string
@@ -1954,7 +1993,6 @@ export type Database = {
           available: boolean
           banner_url: string | null
           city: string | null
-          cnic: string | null
           created_at: string
           description: string | null
           experience: number
@@ -1979,7 +2017,6 @@ export type Database = {
           available?: boolean
           banner_url?: string | null
           city?: string | null
-          cnic?: string | null
           created_at?: string
           description?: string | null
           experience?: number
@@ -2004,7 +2041,6 @@ export type Database = {
           available?: boolean
           banner_url?: string | null
           city?: string | null
-          cnic?: string | null
           created_at?: string
           description?: string | null
           experience?: number
@@ -2293,6 +2329,7 @@ export type Database = {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
       }
+      can_view_phone: { Args: { _user_id: string }; Returns: boolean }
       country_to_tier: { Args: { _cc: string }; Returns: number }
       create_ad_campaign:
         | {
