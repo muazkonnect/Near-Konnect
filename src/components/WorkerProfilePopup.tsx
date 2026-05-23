@@ -357,24 +357,27 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
           <div className="relative mx-3.5 mt-3 space-y-2.5">
             {(worker as any).showContact !== false ? (
               <>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   <button
                     onClick={() => { navigate(`/w/${(worker as any).uid || worker.id}`, { state: { distance: worker.distance } }); onOpenChange(false); }}
-                    className="flex items-center justify-center gap-1.5 rounded-2xl border border-white/12 bg-white/[0.05] px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-white transition hover:bg-white/[0.09]"
+                    className="flex min-w-0 items-center justify-center gap-1 rounded-2xl border border-white/12 bg-white/[0.05] px-1.5 py-2.5 text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-white/[0.09] sm:gap-1.5 sm:px-2 sm:text-[11px] sm:tracking-[0.12em]"
                   >
-                    <Trophy className={`h-3.5 w-3.5 ${t.textStrong}`} /> Profile
+                    <Trophy className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} /> <span className="truncate">Profile</span>
                   </button>
                   <button
                     onClick={requireAuth(() => { if (phone) window.location.href = `tel:${phone}`; })}
-                    className="flex items-center justify-center gap-1.5 rounded-2xl border border-white/12 bg-white/[0.05] px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-white transition hover:bg-white/[0.09]"
+                    className="flex min-w-0 items-center justify-center gap-1 rounded-2xl border border-white/12 bg-white/[0.05] px-1.5 py-2.5 text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-white/[0.09] sm:gap-1.5 sm:px-2 sm:text-[11px] sm:tracking-[0.12em]"
                   >
-                    <Phone className={`h-3.5 w-3.5 ${t.textStrong}`} /> Call
+                    <Phone className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} /> <span className="truncate">Call</span>
                   </button>
                   <button
-                    onClick={requireAuth(() => navigate(`/messages?worker=${worker.id}`))}
-                    className={`flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r ${t.grad} px-2 py-2.5 text-[11px] font-black uppercase tracking-[0.12em] text-black shadow-lg`}
+                    onClick={requireAuth(() => {
+                      const uid = (worker as any).userId || worker.userId;
+                      if (uid) { navigate(`/chat/${uid}`); onOpenChange(false); }
+                    })}
+                    className={`flex min-w-0 items-center justify-center gap-1 rounded-2xl bg-gradient-to-r ${t.grad} px-1.5 py-2.5 text-[10px] font-black uppercase tracking-[0.08em] text-black shadow-lg sm:gap-1.5 sm:px-2 sm:text-[11px] sm:tracking-[0.12em]`}
                   >
-                    <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.6} /> Message
+                    <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={2.6} /> <span className="truncate">Message</span>
                   </button>
                 </div>
 
