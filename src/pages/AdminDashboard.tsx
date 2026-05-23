@@ -102,7 +102,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "settings", label: "Settings", icon: Sliders, group: "System" },
 ];
 
-const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void }) => {
+const AdminSidebar = ({ tab, setTab, onSignOut, pendingMap }: { tab: TabKey; setTab: (t: TabKey) => void; onSignOut: () => void; pendingMap: Partial<Record<TabKey, number>> }) => {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   return (
@@ -129,6 +129,7 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
                 {NAV_ITEMS.filter((n) => n.group === grp).map((it) => {
                   const active = tab === it.key;
                   const Icon = it.icon;
+                  const count = pendingMap[it.key] ?? 0;
                   return (
                     <SidebarMenuItem key={it.key}>
                       <SidebarMenuButton
@@ -139,8 +140,18 @@ const AdminSidebar = ({ tab, setTab, onSignOut }: { tab: TabKey; setTab: (t: Tab
                             : "text-hero-foreground/70 hover:bg-hero-foreground/10 hover:text-hero-foreground"
                         }
                       >
-                        <Icon className="h-4 w-4" />
-                        <span>{it.label}</span>
+                        <span className="relative">
+                          <Icon className="h-4 w-4" />
+                          {count > 0 && collapsed && (
+                            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive ring-2 ring-hero" />
+                          )}
+                        </span>
+                        <span className="flex-1 truncate">{it.label}</span>
+                        {count > 0 && !collapsed && (
+                          <Badge className="h-5 min-w-5 px-1.5 text-[10px] font-bold bg-destructive text-destructive-foreground">
+                            {count > 99 ? "99+" : count}
+                          </Badge>
+                        )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
