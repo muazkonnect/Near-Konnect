@@ -107,7 +107,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} shadow-[0_10px_40px_-18px_rgba(0,0,0,0.8)]`}
+        className={`group relative w-full max-w-[calc(100vw-2.5rem)] sm:max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} shadow-[0_10px_40px_-18px_rgba(0,0,0,0.8)]`}
       >
         <article
           onClick={handleOpen}
