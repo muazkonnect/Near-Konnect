@@ -16,6 +16,7 @@ import { useAppSetting } from "@/hooks/useAppSettings";
 import {
   fetchPackageById, fetchPaymentSettings, uploadPaymentProof, createPaymentRequest,
 } from "@/services/walletService";
+import { sparksToPrice, formatPrice } from "@/lib/sparkPricing";
 
 type Method = "easypaisa" | "jazzcash" | "usdt";
 type UsdtNet = "trc" | "bep" | "erc";
@@ -80,8 +81,8 @@ const PaymentCheckoutPage = () => {
 
   const sparks = isCustom ? customSparks : pkg?.sparks ?? 0;
   const bonus = isCustom ? 0 : pkg?.bonus_sparks ?? 0;
-  const pricePkr = Math.round(sparks * ratePkr);
-  const priceUsdt = +(sparks * rateUsdt).toFixed(2);
+  const pricePkr = sparksToPrice(sparks, ratePkr, "PKR");
+  const priceUsdt = sparksToPrice(sparks, rateUsdt, "USDT");
 
   const defaultMethod: Method = region === "pk" ? "easypaisa" : "usdt";
   const [method, setMethod] = useState<Method>(defaultMethod);
@@ -142,7 +143,7 @@ const PaymentCheckoutPage = () => {
               <p className="text-3xl font-extrabold tabular-nums">{(sparks + bonus).toLocaleString()} <span className="text-base font-semibold text-hero-foreground/60">Sparks</span></p>
               {bonus > 0 && <p className="text-xs text-emerald-400">includes {bonus} bonus</p>}
             </div>
-            <p className="text-2xl font-bold text-primary">{currency === "PKR" ? `PKR ${price.toLocaleString()}` : `$${price} USDT`}</p>
+            <p className="text-2xl font-bold text-primary">{formatPrice(price, currency as "PKR" | "USDT")}</p>
           </div>
         </motion.div>
 
