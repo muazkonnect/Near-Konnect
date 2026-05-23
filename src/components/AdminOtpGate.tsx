@@ -16,54 +16,69 @@ const AdminOtpGate = ({ children }: { children: React.ReactNode }) => {
   const { signOut } = useAuth();
   const [checking, setChecking] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
-  const [stage, setStage] = useState<"idle" | "sent">("idle");
-  const [sending, setSending] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [code, setCode] = useState("");
-  const [maskedEmail, setMaskedEmail] = useState<string>("");
+  const [hasPin, setHasPin] = useState<boolean | null>(null);
+  const [pin, setPin] = useState("");
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       const token = sessionStorage.getItem(TOKEN_KEY);
-      if (!token) { if (mounted) setChecking(false); return; }
-      const { data, error } = await supabase.functions.invoke("admin-session-check", { body: { token } });
+      if (token) {
+        const { data, error } = await supabase.functions.invoke("admin-session-check", { body: { token } });
+        if (mounted && !error && data?.valid) {
+          setUnlocked(true);
+          setChecking(false);
+          return;
+        }
+        sessionStorage.removeItem(TOKEN_KEY);
+      }
+      const { data: st } = await supabase.functions.invoke("admin-pin-status", {});
       if (!mounted) return;
-      if (!error && data?.valid) setUnlocked(true);
-      else sessionStorage.removeItem(TOKEN_KEY);
+      setHasPin(!!st?.hasPin);
       setChecking(false);
     })();
     return () => { mounted = false; };
   }, []);
 
-  const sendCode = async () => {
-    setSending(true);
-    const { data, error } = await supabase.functions.invoke("admin-otp-send", {});
-    setSending(false);
-    if (error || !data?.ok) {
-      toast({ title: "Could not send code", description: (data as any)?.error || error?.message || "Try again", variant: "destructive" });
-      return;
-    }
-    const email = data.email as string;
-    setMaskedEmail(email.replace(/(.{2}).*(@.*)/, "$1***$2"));
-    setStage("sent");
-    toast({ title: "Code sent", description: "Check your email for a 6-digit code." });
-  };
-
   const verify = async () => {
-    if (!/^\d{6}$/.test(code)) {
-      toast({ title: "Enter the 6-digit code", variant: "destructive" });
+    if (!/^\d{4,8}$/.test(pin)) {
+      toast({ title: "Enter your 4-8 digit PIN", variant: "destructive" });
       return;
     }
-    setVerifying(true);
-    const { data, error } = await supabase.functions.invoke("admin-otp-verify", { body: { code } });
-    setVerifying(false);
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke("admin-pin-verify", { body: { pin } });
+    setBusy(false);
     if (error || !data?.ok) {
       toast({ title: "Verification failed", description: (data as any)?.error || error?.message || "Try again", variant: "destructive" });
       return;
     }
     sessionStorage.setItem(TOKEN_KEY, data.token);
     setUnlocked(true);
+  };
+
+  const createPin = async () => {
+    if (!/^\d{4,8}$/.test(newPin)) {
+      toast({ title: "PIN must be 4-8 digits", variant: "destructive" });
+      return;
+    }
+    if (newPin !== confirmPin) {
+      toast({ title: "PINs do not match", variant: "destructive" });
+      return;
+    }
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke("admin-pin-set", { body: { new_pin: newPin } });
+    setBusy(false);
+    if (error || !data?.ok) {
+      toast({ title: "Could not set PIN", description: (data as any)?.error || error?.message || "Try again", variant: "destructive" });
+      return;
+    }
+    toast({ title: "PIN set", description: "Enter your new PIN to continue." });
+    setHasPin(true);
+    setNewPin("");
+    setConfirmPin("");
   };
 
   if (checking) {
@@ -85,33 +100,53 @@ const AdminOtpGate = ({ children }: { children: React.ReactNode }) => {
           </div>
           <h1 className="text-xl font-semibold">Admin verification</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            For your security, confirm with a one-time code emailed to the admin address before opening the panel.
+            {hasPin
+              ? "Enter your admin PIN to access the panel."
+              : "Set a secure admin PIN. You'll use this PIN every time you open the admin panel."}
           </p>
         </div>
 
         <div className="mt-6 space-y-3">
-          {stage === "idle" ? (
-            <Button className="w-full" onClick={sendCode} disabled={sending}>
-              {sending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Send code to my email
-            </Button>
+          {hasPin ? (
+            <>
+              <Input
+                type="password"
+                inputMode="numeric"
+                maxLength={8}
+                placeholder="Enter PIN"
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+                className="text-center text-lg tracking-[0.5em]"
+                onKeyDown={(e) => { if (e.key === "Enter") verify(); }}
+              />
+              <Button className="w-full" onClick={verify} disabled={busy}>
+                {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Unlock
+              </Button>
+            </>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground text-center">Code sent to {maskedEmail}</p>
               <Input
+                type="password"
                 inputMode="numeric"
-                maxLength={6}
-                placeholder="123456"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                className="text-center text-lg tracking-[0.5em]"
+                maxLength={8}
+                placeholder="New PIN (4-8 digits)"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
+                className="text-center tracking-[0.4em]"
               />
-              <Button className="w-full" onClick={verify} disabled={verifying}>
-                {verifying && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Verify & unlock
-              </Button>
-              <Button variant="ghost" className="w-full" onClick={sendCode} disabled={sending}>
-                Resend code
+              <Input
+                type="password"
+                inputMode="numeric"
+                maxLength={8}
+                placeholder="Confirm PIN"
+                value={confirmPin}
+                onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ""))}
+                className="text-center tracking-[0.4em]"
+              />
+              <Button className="w-full" onClick={createPin} disabled={busy}>
+                {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Set PIN
               </Button>
             </>
           )}
