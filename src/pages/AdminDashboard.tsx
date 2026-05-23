@@ -524,54 +524,29 @@ const AdminDashboard = () => {
             {/* OVERVIEW */}
             {tab === "overview" && (
               <div>
-                <SectionHeader title="Overview" subtitle="A quick pulse on your platform." />
+                <SectionHeader title="Overview" subtitle="What needs your attention right now." />
 
-                {/* Headline stats */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-                  <StatCard label="Users" value={allProfiles.length} icon={Users} accent onClick={() => setTab("users")} />
-                  <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
-                  <StatCard label="Blood Donors" value={bloodDonors.length} icon={Heart} onClick={() => setTab("donors")} />
-                  <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
-                </div>
-
-                {/* Pending actions */}
-                <h3 className="mt-6 mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                {/* Pending actions — primary focus */}
+                <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
                   Needs your attention
                 </h3>
                 <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
-                  <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} onClick={() => setTab("verifications")} />
-                  <StatCard label="Featured Req" value={pending?.featured ?? 0} icon={Star} onClick={() => setTab("featured")} />
-                  <StatCard label="Payments" value={pending?.payments ?? 0} icon={Zap} onClick={() => setTab("sparks")} />
-                  <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} onClick={() => setTab("avatar_resets")} />
-                  <StatCard label="Location Req" value={pending?.locations ?? 0} icon={UserCog} onClick={() => setTab("location_requests")} />
+                  <StatCard label="Payments" value={pending?.payments ?? 0} icon={Zap} accent={(pending?.payments ?? 0) > 0} onClick={() => setTab("finance")} />
+                  <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} accent={(pending?.verifications ?? 0) > 0} onClick={() => setTab("verifications")} />
+                  <StatCard label="Featured Req" value={pending?.featured ?? 0} icon={Star} accent={(pending?.featured ?? 0) > 0} onClick={() => setTab("featured")} />
+                  <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} accent={(pending?.avatars ?? 0) > 0} onClick={() => setTab("avatar_resets")} />
+                  <StatCard label="Location Req" value={pending?.locations ?? 0} icon={UserCog} accent={(pending?.locations ?? 0) > 0} onClick={() => setTab("location_requests")} />
                 </div>
 
-                {/* Latest workers */}
-                <div className="mt-6 rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
-                    <button onClick={() => setTab("workers")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
-                  </div>
-                  <ul className="space-y-2.5">
-                    {workers.slice(0, 5).map((w: any) => (
-                      <li key={w.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04] transition-colors">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-[11px] font-bold text-primary overflow-hidden">
-                            {w.profiles?.avatar_url ? (
-                              <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
-                            )}
-                          </div>
-                          <span className="truncate text-sm font-medium text-hero-foreground">
-                            {w.profiles?.full_name || "Unnamed"}
-                          </span>
-                        </div>
-                        <span className="text-xs text-hero-foreground/60 shrink-0 truncate max-w-[140px]">{w.profession}</span>
-                      </li>
-                    ))}
-                    {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No workers yet.</li>}
-                  </ul>
+                {/* Platform pulse */}
+                <h3 className="mt-6 mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                  Platform
+                </h3>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                  <StatCard label="Users" value={allProfiles.length} icon={Users} onClick={() => setTab("users")} />
+                  <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
+                  <StatCard label="Blood Donors" value={bloodDonors.length} icon={Heart} onClick={() => setTab("donors")} />
+                  <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
                 </div>
               </div>
             )}
