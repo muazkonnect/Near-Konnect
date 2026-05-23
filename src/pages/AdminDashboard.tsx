@@ -62,6 +62,8 @@ const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
+const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
+
 
 const TabFallback = () => (
   <div className="flex h-40 items-center justify-center">
