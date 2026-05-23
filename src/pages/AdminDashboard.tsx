@@ -23,6 +23,8 @@ import {
   Bell,
   ScrollText,
   Receipt,
+  Percent,
+
 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,6 +65,7 @@ import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
 const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
+const DiscountsTab = lazy(() => import("@/components/admin/DiscountsTab"));
 
 
 const TabFallback = () => (
@@ -73,7 +76,7 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "discounts" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard, group: "Manage" },
@@ -86,6 +89,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "running_ads", label: "Running Ads", icon: Megaphone, group: "Operations" },
   { key: "sparks", label: "Sparks & Payments", icon: Zap, group: "Operations" },
   { key: "finance", label: "Finance & Invoices", icon: Receipt, group: "Operations" },
+  { key: "discounts", label: "Discounts", icon: Percent, group: "Operations" },
 
   { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
@@ -803,6 +807,13 @@ const AdminDashboard = () => {
                 <FinanceTab />
               </Suspense>
             )}
+
+            {tab === "discounts" && (
+              <Suspense fallback={<TabFallback />}>
+                <DiscountsTab />
+              </Suspense>
+            )}
+
 
 
 

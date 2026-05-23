@@ -20,6 +20,7 @@ import { useMyVerification } from "@/hooks/useVerification";
 import { useWorkers } from "@/hooks/useWorkers";
 import { useSparksWallet, calcSparksCost } from "@/hooks/useSparks";
 import { useMyCampaigns, useCampaignAnalytics, createCampaign, setCampaignStatus, type AdCampaign, type AdPlacement } from "@/hooks/useAdCampaigns";
+import { useDiscountFor } from "@/hooks/useAdDiscounts";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { Country, State, City } from "country-state-city";
 
@@ -278,6 +279,7 @@ const CampaignWizard = ({
   const [areaText, setAreaText] = useState("");
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
+  const { paidDays, freeDays } = useDiscountFor(duration);
 
   const countryName = useMemo(() => Country.getCountryByCode(countryCode)?.name || "", [countryCode]);
   const stateName = useMemo(
@@ -335,9 +337,9 @@ const CampaignWizard = ({
 
   useEffect(() => {
     let cancelled = false;
-    calcSparksCost(adType, radius, duration).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
+    calcSparksCost(adType, radius, duration, placement).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
     return () => { cancelled = true; };
-  }, [adType, radius, duration]);
+  }, [adType, radius, duration, placement]);
 
   const useMyLocation = async () => {
     try {
@@ -547,6 +549,16 @@ const CampaignWizard = ({
             <div className="rounded-xl border bg-muted/30 p-3 text-sm">
               <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> Ends on {new Date(Date.now() + duration * 86400000).toLocaleDateString()}</p>
             </div>
+            {freeDays > 0 && (
+              <div className="rounded-xl border border-primary/40 bg-gradient-to-r from-primary/10 to-primary/5 p-3 text-sm">
+                <p className="flex items-center gap-2 font-semibold text-primary">
+                  <Sparkles className="h-4 w-4" /> Discount applied
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  You're getting <b className="text-foreground">{freeDays} day{freeDays > 1 ? "s" : ""} free</b> — pay for only {paidDays} of {duration} days.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -558,7 +570,7 @@ const CampaignWizard = ({
                 <li>Placement: <b className="capitalize">{placement === "homepage" ? "Homepage" : "Explore Page"}</b></li>
                 <li>Targeting: <b className="capitalize">{adType}</b></li>
                 <li>Radius: <b>{radius} km</b></li>
-                <li>Duration: <b>{duration} days</b></li>
+                <li>Duration: <b>{duration} days</b>{freeDays > 0 ? <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">Pay {paidDays}d · {freeDays}d free</span> : null}</li>
                 {adType === "international" && (
                   <li>Target: <b>{[areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
