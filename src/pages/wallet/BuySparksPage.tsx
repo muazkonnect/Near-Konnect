@@ -29,15 +29,46 @@ const BuySparksPage = () => {
     region === "pk" ? `PKR ${pkr.toLocaleString()}` : `$${usdt.toLocaleString()} USDT`;
 
   const goCustom = () => {
+    if (!isVerifiedWorker) {
+      toast.error(verificationPending ? "Verification pending. You can buy Sparks after approval." : "Only verified workers can buy Sparks.");
+      return;
+    }
     const n = parseInt(customSparks);
     if (!n || n < 50) return;
     navigate(`/wallet/buy/custom/checkout?sparks=${n}`);
+  };
+
+  const handlePackageClick = (id: string) => {
+    if (!isVerifiedWorker) {
+      toast.error(verificationPending ? "Verification pending. You can buy Sparks after approval." : "Only verified workers can buy Sparks.");
+      return;
+    }
+    navigate(`/wallet/buy/${id}/checkout`);
   };
 
   return (
     <AppLayout title="Buy Sparks" subtitle="Choose a package to recharge your wallet.">
       <div className="space-y-6">
         <SparksBalanceCard />
+
+        {!isVerifiedWorker && (
+          <div className="flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+            <ShieldAlert className="h-5 w-5 shrink-0 text-amber-400" />
+            <div className="flex-1">
+              <p className="font-semibold">
+                {verificationPending ? "Verification pending" : "Verification required"}
+              </p>
+              <p className="mt-0.5 text-xs opacity-90">
+                {verificationPending
+                  ? "Sparks purchases unlock automatically once an admin approves your verification."
+                  : "Only verified workers can buy Sparks. Complete worker verification to top up your wallet."}
+              </p>
+              <Link to="/worker/dashboard" className="mt-2 inline-block text-xs font-semibold underline">
+                Go to verification →
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div>
           <h2 className="mb-3 text-base font-bold">Packages</h2>
