@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProofUploader from "@/components/wallet/ProofUploader";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
+import { useAppSetting } from "@/hooks/useAppSettings";
 import {
   fetchPackageById, fetchPaymentSettings, uploadPaymentProof, createPaymentRequest,
 } from "@/services/walletService";
