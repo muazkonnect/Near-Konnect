@@ -63,9 +63,9 @@ const PendingPaymentsPanel = () => {
     queryKey: ["admin_pr_profiles", userIds.sort().join(",")],
     queryFn: async () => {
       if (!userIds.length) return {} as Record<string, { name: string; phone: string | null }>;
-      const { data } = await sb.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
+      const { data } = await sb.from("profiles").select("user_id, full_name, profile_phones(phone)" as any).in("user_id", userIds);
       const m: Record<string, any> = {};
-      (data || []).forEach((r: any) => (m[r.user_id] = { name: r.full_name || "Unknown", phone: r.phone }));
+      (data || []).forEach((r: any) => (m[r.user_id] = { name: r.full_name || "Unknown", phone: r.profile_phones?.phone ?? null }));
       return m;
     },
     enabled: userIds.length > 0,
@@ -194,9 +194,9 @@ const ManualSparksPanel = () => {
   const { data: users = [] } = useQuery({
     queryKey: ["admin_users_search", search],
     queryFn: async () => {
-      const q = sb.from("profiles").select("user_id, full_name, phone").limit(15);
+      const q = sb.from("profiles").select("user_id, full_name, profile_phones(phone)" as any).limit(15);
       const { data } = search.trim() ? await q.ilike("full_name", `%${search.trim()}%`) : await q.order("full_name");
-      return (data || []) as { user_id: string; full_name: string; phone: string | null }[];
+      return ((data || []) as any[]).map((r) => ({ user_id: r.user_id, full_name: r.full_name, phone: r.profile_phones?.phone ?? null })) as { user_id: string; full_name: string; phone: string | null }[];
     },
     staleTime: 30_000,
   });
@@ -449,9 +449,9 @@ const CampaignsPanel = () => {
     queryKey: ["admin_camp_profiles", ownerIds.sort().join(",")],
     queryFn: async () => {
       if (!ownerIds.length) return {} as Record<string, any>;
-      const { data } = await sb.from("profiles").select("user_id, full_name, phone").in("user_id", ownerIds);
+      const { data } = await sb.from("profiles").select("user_id, full_name, profile_phones(phone)" as any).in("user_id", ownerIds);
       const m: Record<string, any> = {};
-      (data || []).forEach((r: any) => (m[r.user_id] = { name: r.full_name || "Unknown", phone: r.phone }));
+      (data || []).forEach((r: any) => (m[r.user_id] = { name: r.full_name || "Unknown", phone: r.profile_phones?.phone ?? null }));
       return m;
     },
     enabled: ownerIds.length > 0,

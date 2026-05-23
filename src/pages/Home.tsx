@@ -56,7 +56,7 @@ const toBloodDonorPopupData = (d: DonorWithDistance): BloodDonorPopupData => ({
   blood_group: d.blood_group,
   city: d.city,
   distance: isFinite(d.distance) ? d.distance : undefined,
-  phone: d.phone ?? null,
+  phone: (d as any).profile_phones?.phone ?? d.phone ?? null,
   contact_methods: d.contact_methods,
   blood_show_contact: d.blood_show_contact,
 });
@@ -157,7 +157,7 @@ const Home = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url, city, blood_group, latitude, longitude, phone, contact_methods, blood_show_contact" as any)
+        .select("user_id, full_name, avatar_url, city, blood_group, latitude, longitude, contact_methods, blood_show_contact, profile_phones(phone)" as any)
         .eq("is_blood_donor", true)
         .eq("donor_status", "active")
         .limit(20);

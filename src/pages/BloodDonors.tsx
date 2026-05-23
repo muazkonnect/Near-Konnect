@@ -38,7 +38,7 @@ const BloodDonors = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods, blood_show_contact" as any)
+        .select("user_id, full_name, avatar_url, city, blood_group, is_blood_donor, donor_status, contact_methods, blood_show_contact, profile_phones(phone)" as any)
         .eq("is_blood_donor", true)
         .order("full_name") as any;
       if (error) throw error;
@@ -201,7 +201,7 @@ const BloodDonors = () => {
                     blood_group: donor.blood_group,
                     city: donor.city,
                     distance: distNum,
-                    phone: donor.phone ?? null,
+                    phone: (donor as any).profile_phones?.phone ?? donor.phone ?? null,
                     contact_methods: donor.contact_methods,
                     blood_show_contact: (donor as any).blood_show_contact ?? true,
                   };

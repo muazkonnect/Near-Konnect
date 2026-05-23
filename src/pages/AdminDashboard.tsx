@@ -301,7 +301,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles(full_name, phone, avatar_url)")
+        .select("*, profiles(full_name, avatar_url, profile_phones(phone))")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;

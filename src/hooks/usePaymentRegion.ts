@@ -61,10 +61,10 @@ export function n(): { region: PaymentRegion; loading: boolean } {
       if (user?.id) {
         const { data: p } = await (supabase as any)
           .from("profiles")
-          .select("city, phone")
+          .select("city, profile_phones(phone)")
           .eq("user_id", user.id)
           .maybeSingle();
-        profile = p;
+        profile = p ? { city: p.city, phone: p.profile_phones?.phone } : null;
       }
 
       // 3) live geolocation

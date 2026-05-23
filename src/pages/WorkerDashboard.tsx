@@ -710,7 +710,7 @@ const WorkerDashboard = () => {
                         <BadgeCheck className="h-4 w-4 text-success" aria-label="Verified" />
                       )}
                     </div>
-                    <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.phone}</p>
+                    <p className="truncate text-xs text-hero-foreground/60">{(workerData as any).profiles?.profile_phones?.phone}</p>
                     <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_worker_profile"] })} />
                   </div>
                 </div>

@@ -31,7 +31,7 @@ const CustomerDashboard = () => {
   const { data: profile } = useQuery({
     queryKey: ["my_profile", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user!.id).maybeSingle();
+      const { data, error } = await supabase.from("profiles").select("*, profile_phones(phone)" as any).eq("user_id", user!.id).maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -46,7 +46,7 @@ const CustomerDashboard = () => {
   useEffect(() => {
     if (profile) {
       setName(profile.full_name || "");
-      setPhone(profile.phone || "");
+      setPhone(((profile as any).profile_phones?.phone) || "");
       setBloodShowContact((profile as any).blood_show_contact ?? true);
     }
   }, [profile]);
@@ -63,11 +63,13 @@ const CustomerDashboard = () => {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       full_name: name,
-      phone: cleaned,
       use_whatsapp: true,
       contact_methods: [{ type: "whatsapp", value: cleaned }],
       blood_show_contact: bloodShowContact,
     } as any).eq("user_id", user.id);
+    if (!error) {
+      await (supabase as any).from("profile_phones").upsert({ user_id: user.id, phone: cleaned }, { onConflict: "user_id" });
+    }
     setSaving(false);
     if (error) toast.error(error.message || "Failed to save");
     else {
