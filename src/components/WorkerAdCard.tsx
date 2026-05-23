@@ -107,24 +107,12 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow}`}
+        className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} shadow-[0_10px_40px_-18px_rgba(0,0,0,0.8)]`}
       >
-        {/* pulsing outer aura */}
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute -inset-1 rounded-[26px] bg-gradient-to-br ${t.grad} opacity-40 blur-2xl animate-pulse`}
-        />
         <article
           onClick={handleOpen}
           className="relative flex cursor-pointer overflow-hidden rounded-[20px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
         >
-          {/* animated sheen sweep */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]"
-          >
-            <div className="absolute -inset-y-4 -left-1/3 h-[140%] w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-[shimmer_3.5s_ease-in-out_infinite]" />
-          </div>
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]">
             {worker.bannerUrl ? (
@@ -145,7 +133,25 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                 backgroundImage: `radial-gradient(600px 240px at -10% -20%, rgba(${t.rgb},0.18), transparent 60%), radial-gradient(500px 200px at 110% 110%, rgba(${t.rgb},0.12), transparent 60%), linear-gradient(90deg, rgba(10,13,10,0.55) 0%, rgba(5,6,5,0.92) 55%, #050605 100%)`,
               }}
             />
+            {/* premium inner glow orbs */}
+            <div
+              aria-hidden
+              className="absolute -left-16 -top-16 h-48 w-48 rounded-full blur-3xl opacity-60 animate-[spark-pulse_6s_ease-in-out_infinite]"
+              style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.55), transparent 70%)` }}
+            />
+            <div
+              aria-hidden
+              className="absolute -right-12 -bottom-16 h-44 w-44 rounded-full blur-3xl opacity-50 animate-[spark-pulse_7s_ease-in-out_infinite]"
+              style={{ background: `radial-gradient(circle, rgba(${t.rgb},0.4), transparent 70%)` }}
+            />
+            {/* inner top highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            {/* inset ring */}
+            <div className="absolute inset-0 rounded-[20px] ring-1 ring-inset ring-white/[0.06]" />
+            {/* aesthetic sheen sweep (clipped inside) */}
+            <div className="absolute -inset-y-4 -left-1/3 h-[140%] w-1/4 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_4.5s_ease-in-out_infinite]" />
           </div>
+
 
           {/* ── CORNER RIBBON ─────────────────────────────────────── */}
           <div
