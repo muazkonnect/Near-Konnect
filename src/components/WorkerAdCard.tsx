@@ -92,7 +92,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         textStrong: "text-lime-400",
         border: "border-lime-400/55",
         ring: "ring-lime-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(163,230,53,0.6)]",
+        glow: "shadow-[0_0_80px_-10px_rgba(163,230,53,0.85),0_0_24px_-4px_rgba(163,230,53,0.5)]",
         soft: "from-lime-500/25 via-lime-500/8 to-transparent",
         rgb: "163,230,53",
         label: "Promoted",
