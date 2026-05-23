@@ -123,6 +123,7 @@ const Home = () => {
   const bannerAds = useNativeAds("home_banner", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
   const feedAds = useNativeAds("home_feed", browsingCoords);
+  const hasAnyAds = bannerAds.length > 0 || inlineAds.length > 0 || feedAds.length > 1 || promotedTop.length > 1 || promoted5.length > 1 || promoted10.length > 1 || promoted15.length > 1 || featuredIds.size > 1;
 
   const workers = useMemo(
     () =>
@@ -388,11 +389,11 @@ const Home = () => {
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
             <NativeAdCard ad={bannerAds[0]} variant="banner" viewerCoords={browsingCoords} />
           </motion.section>
-        ) : (
+        ) : !hasAnyAds ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={1.5} className="mb-10 px-5">
             <PromoteYourselfBanner />
           </motion.section>
-        )}
+        ) : null}
 
         {/* PROMOTED SECTIONS — Top Rated + 5/10/15 KM (Sparks campaigns only) */}
         <PromotedSection
@@ -411,11 +412,11 @@ const Home = () => {
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
             <NativeAdCard ad={inlineAds[0]} variant="inline" viewerCoords={browsingCoords} />
           </motion.section>
-        ) : (
+        ) : !hasAnyAds ? (
           <motion.section initial="hidden" animate="visible" variants={fadeUp} custom={2.3} className="mb-10 px-5">
             <PromoteYourselfBanner />
           </motion.section>
-        )}
+        ) : null}
 
 
         <PromotedSection
@@ -478,11 +479,11 @@ const Home = () => {
           <section className="mb-12 px-5">
             <NativeAdCard ad={feedAds[0]} variant="feed" viewerCoords={browsingCoords} />
           </section>
-        ) : (
+        ) : !hasAnyAds ? (
           <section className="mb-12 px-5">
             <PromoteYourselfBanner />
           </section>
-        )}
+        ) : null}
 
         {/* FINAL CTA */}
         <section className="px-5 pb-16">

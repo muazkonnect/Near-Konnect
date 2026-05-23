@@ -118,6 +118,7 @@ const Discover = () => {
   );
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
+  const hasAnyAds = bannerAds.length > 1 || promoted3kmFiltered.length > 1 || featuredWorkers.length > 1 || exploreAds.length > 1;
 
   const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords, {
     mainCategory: selectedMainCategory,
