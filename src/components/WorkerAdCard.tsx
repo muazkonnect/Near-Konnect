@@ -75,30 +75,29 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
   // Premium = gold theme, otherwise neon-lime theme
   const t = premium
     ? {
-        grad: "from-amber-300 via-yellow-200 to-amber-500",
+        grad: "from-amber-400 via-yellow-300 to-amber-500",
         text: "text-amber-300",
         textStrong: "text-amber-400",
-        border: "border-amber-400/60",
-        ring: "ring-amber-400/60",
-        glow: "shadow-[0_0_60px_-10px_rgba(251,191,36,0.75),0_0_120px_-40px_rgba(251,191,36,0.45)]",
-        soft: "from-amber-500/30 via-amber-500/10 to-transparent",
+        border: "border-amber-400/55",
+        ring: "ring-amber-400/50",
+        glow: "shadow-[0_0_48px_-12px_rgba(251,191,36,0.55)]",
+        soft: "from-amber-500/25 via-amber-500/8 to-transparent",
         rgb: "251,191,36",
         label: "Featured",
         Icon: Crown,
       }
     : {
-        grad: "from-lime-300 via-emerald-300 to-lime-500",
+        grad: "from-lime-400 via-lime-300 to-lime-500",
         text: "text-lime-300",
         textStrong: "text-lime-400",
-        border: "border-lime-400/60",
-        ring: "ring-lime-400/60",
-        glow: "shadow-[0_0_60px_-10px_rgba(163,230,53,0.75),0_0_120px_-40px_rgba(163,230,53,0.5)]",
-        soft: "from-lime-500/30 via-emerald-500/10 to-transparent",
+        border: "border-lime-400/55",
+        ring: "ring-lime-400/50",
+        glow: "shadow-[0_0_48px_-12px_rgba(163,230,53,0.6)]",
+        soft: "from-lime-500/25 via-lime-500/8 to-transparent",
         rgb: "163,230,53",
         label: "Promoted",
         Icon: Gem,
       };
-
 
   const positivePct = worker.reviewCount > 0 ? 100 : 0;
   const isTopRated = (worker.rating || 0) >= 4.5;
@@ -108,15 +107,11 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-full max-w-[680px] rounded-[22px] p-[2px] bg-gradient-to-br ${t.grad} ${t.glow} transition-shadow duration-500 hover:shadow-[0_0_80px_-8px_rgba(${t.rgb},0.9)]`}
+        className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow}`}
       >
-        {/* animated gradient sheen border */}
-        <div
-          className={`pointer-events-none absolute -inset-[1px] rounded-[22px] bg-gradient-to-r ${t.grad} opacity-60 blur-[10px] animate-pulse`}
-        />
         <article
           onClick={handleOpen}
-          className="relative flex cursor-pointer overflow-hidden rounded-[20px] bg-[#070907] text-white transition-transform duration-200 active:scale-[0.995] hover:-translate-y-[1px]"
+          className="relative flex cursor-pointer overflow-hidden rounded-[20px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
         >
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]">
@@ -126,38 +121,30 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-30 blur-2xl" />
             ) : null}
             <div
-              className="absolute inset-0 opacity-[0.22]"
+              className="absolute inset-0 opacity-[0.18]"
               style={{
-                backgroundImage: "radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1px)",
                 backgroundSize: "14px 14px",
               }}
             />
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `radial-gradient(700px 280px at -10% -20%, rgba(${t.rgb},0.32), transparent 60%), radial-gradient(600px 240px at 110% 120%, rgba(${t.rgb},0.22), transparent 60%), linear-gradient(115deg, rgba(10,13,10,0.4) 0%, rgba(5,6,5,0.92) 55%, #030403 100%)`,
-              }}
-            />
-            {/* diagonal sheen */}
-            <div
-              className="absolute -inset-x-1/2 -top-1/2 h-full w-[200%] rotate-12 opacity-[0.07]"
-              style={{
-                backgroundImage: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)`,
+                backgroundImage: `radial-gradient(600px 240px at -10% -20%, rgba(${t.rgb},0.18), transparent 60%), radial-gradient(500px 200px at 110% 110%, rgba(${t.rgb},0.12), transparent 60%), linear-gradient(90deg, rgba(10,13,10,0.55) 0%, rgba(5,6,5,0.92) 55%, #050605 100%)`,
               }}
             />
           </div>
 
           {/* ── CORNER RIBBON ─────────────────────────────────────── */}
           <div
-            className={`pointer-events-none absolute -top-px -left-px z-10 h-[30px] w-[130px] rounded-tl-[20px] bg-gradient-to-br ${t.grad} shadow-[0_4px_16px_-4px_rgba(${t.rgb},0.8)]`}
+            className={`pointer-events-none absolute -top-px -left-px z-10 h-[28px] w-[120px] rounded-tl-[20px] bg-gradient-to-br ${t.grad}`}
             style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
           />
-          <div className="pointer-events-none absolute -top-px left-[108px] z-10 h-[3px] w-10 rotate-[20deg] bg-white/80 blur-[2px]" />
-          <div className="pointer-events-none absolute top-[8px] left-2 z-20 flex items-center gap-1">
-            <t.Icon className="h-3 w-3 text-black drop-shadow" strokeWidth={2.5} />
-            <span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-black">{t.label}</span>
+          <div className="pointer-events-none absolute -top-px left-[108px] z-10 h-[2px] w-8 rotate-[20deg] bg-white/70 blur-[2px]" />
+          <div className="pointer-events-none absolute top-[7px] left-2 z-20 flex items-center gap-1">
+            <t.Icon className="h-2.5 w-2.5 text-black" strokeWidth={2.5} />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-black">{t.label}</span>
           </div>
-
 
           {/* ── LEFT: PHOTO COLUMN ────────────────────────────────── */}
           <div className="relative w-[120px] shrink-0 flex-col p-2.5 pt-7 flex items-center justify-center px-0 py-0 my-px gap-[5px]">
