@@ -532,7 +532,7 @@ const AdminDashboard = () => {
   return (
     <SidebarProvider>
       <div className="admin-shell flex min-h-screen w-full bg-hero text-hero-foreground">
-        <AdminSidebar tab={tab} setTab={setTab} onSignOut={onSignOut} />
+        <AdminSidebar tab={tab} setTab={setTab} onSignOut={onSignOut} pendingMap={pendingMap} />
 
         <div className="flex flex-1 flex-col min-w-0">
           {/* Top bar */}
