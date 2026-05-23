@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Star, BadgeCheck, MapPin, Briefcase, ArrowRight, Zap, Award } from "lucide-react";
+import { Star, BadgeCheck, MapPin, Briefcase, ArrowRight, MessageCircle, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
