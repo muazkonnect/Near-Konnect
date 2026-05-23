@@ -60,12 +60,14 @@ export function useSparksTransactions() {
 export async function calcSparksCost(
   adType: "local" | "international",
   radiusKm: number,
-  durationDays: number
+  durationDays: number,
+  placementType: "homepage" | "explore" = "homepage"
 ): Promise<number> {
   const { data, error } = await (supabase as any).rpc("calc_sparks_cost", {
     _ad_type: adType,
     _radius_km: radiusKm,
     _duration_days: durationDays,
+    _placement_type: placementType,
   });
   if (error) throw error;
   return data as number;
