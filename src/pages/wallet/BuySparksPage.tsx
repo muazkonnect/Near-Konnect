@@ -8,16 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchPackages } from "@/services/walletService";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
+import { useAppSetting } from "@/hooks/useAppSettings";
 import { useState } from "react";
 
 const BuySparksPage = () => {
   const navigate = useNavigate();
   const { data: packages = [], isLoading } = useQuery({ queryKey: ["packages"], queryFn: fetchPackages });
   const { region } = usePaymentRegion();
+  const pricePkr = useAppSetting("spark_price_pkr");
+  const priceUsdt = useAppSetting("spark_price_usdt");
   const [customSparks, setCustomSparks] = useState("");
 
-  const formatPrice = (pkr: number, usdt: number) =>
-    region === "pk" ? `PKR ${pkr.toLocaleString()}` : `$${usdt.toLocaleString()} USDT`;
+  const formatPrice = (sparks: number) =>
+    region === "pk"
+      ? `PKR ${Math.round(sparks * pricePkr).toLocaleString()}`
+      : `$${(sparks * priceUsdt).toFixed(2)} USDT`;
 
   const goCustom = () => {
     const n = parseInt(customSparks);
