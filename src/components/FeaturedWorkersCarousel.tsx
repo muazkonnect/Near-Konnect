@@ -46,6 +46,9 @@ const FeaturedWorkersCarousel = ({
   const [items, setItems] = useState<FeaturedWorker[]>([]);
   const dwellMs = useAppSetting("featured_cards_dwell_ms");
   const transitionMs = useAppSetting("featured_cards_transition_ms");
+  const sectionRef = useRef<HTMLElement>(null);
+  const visible = useIsVisible(sectionRef);
+  const reduced = useReducedMotion();
 
   const mergedIds = useMemo(() => {
     const set = new Set<string>([...featured.map((f) => f.service_id), ...paidFeaturedIds]);
