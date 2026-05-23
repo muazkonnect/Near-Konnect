@@ -568,81 +568,151 @@ const AdminDashboard = () => {
           <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
             {/* OVERVIEW */}
             {tab === "overview" && (
-              <div className="space-y-8">
-                <SectionHeader title="Overview" subtitle="A complete pulse on your platform." />
+              <div className="space-y-6">
+                {/* COMMAND CENTER HERO */}
+                <section className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-gradient-to-br from-hero via-hero to-primary/[0.08] p-5 sm:p-8">
+                  {/* animated grid background */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-[0.18]"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(hsl(var(--primary)/0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/0.4) 1px, transparent 1px)",
+                      backgroundSize: "44px 44px",
+                      maskImage: "radial-gradient(ellipse at top right, black 0%, transparent 70%)",
+                    }}
+                  />
+                  {/* glow orbs */}
+                  <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/30 blur-3xl animate-spark-pulse" />
+                  <div aria-hidden className="pointer-events-none absolute -left-16 bottom-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
 
-                {/* Pending requests & approvals */}
+                  <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                    <div className="space-y-3">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+                        </span>
+                        System Online
+                      </div>
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-hero-foreground">
+                        Command <span className="text-gradient">Center</span>
+                      </h1>
+                      <p className="text-sm text-hero-foreground/60 max-w-md">
+                        Realtime pulse across users, workers, requests and revenue streams.
+                      </p>
+                    </div>
+
+                    <div className="flex items-stretch gap-3">
+                      <div className="relative min-w-[140px] overflow-hidden rounded-2xl border border-primary/30 bg-primary/[0.08] p-4">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary/80">
+                          <Radio className="h-3 w-3" /> Pending
+                        </div>
+                        <p className="mt-1 text-4xl font-black tracking-tight text-primary">{totalPending}</p>
+                        <p className="text-[10px] text-hero-foreground/50">queued actions</p>
+                      </div>
+                      <div className="relative min-w-[140px] overflow-hidden rounded-2xl border border-hero-foreground/15 bg-hero-foreground/[0.04] p-4">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-hero-foreground/60">
+                          <TrendingUp className="h-3 w-3" /> New 24h
+                        </div>
+                        <p className="mt-1 text-4xl font-black tracking-tight text-hero-foreground">{newUsers24h}</p>
+                        <p className="text-[10px] text-hero-foreground/50">signups</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* REQUESTS / APPROVALS */}
                 <section>
                   <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                      Requests & approvals
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <div className="h-px w-6 bg-primary/60" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-hero-foreground/70">
+                        Requests · Approvals
+                      </h3>
+                    </div>
                     {totalPending > 0 && (
-                      <Badge className="bg-destructive text-destructive-foreground">{totalPending} pending</Badge>
+                      <Badge className="bg-destructive/15 text-destructive border border-destructive/40 animate-pulse">
+                        {totalPending} awaiting
+                      </Badge>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
-                    <StatCard label="Payments" value={pending?.payments ?? 0} icon={Receipt} accent={(pending?.payments ?? 0) > 0} onClick={() => setTab("finance")} />
-                    <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} accent={(pending?.verifications ?? 0) > 0} onClick={() => setTab("verifications")} />
-                    <StatCard label="Featured" value={pending?.featured ?? 0} icon={Star} accent={(pending?.featured ?? 0) > 0} onClick={() => setTab("featured")} />
-                    <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} accent={(pending?.avatars ?? 0) > 0} onClick={() => setTab("avatar_resets")} />
-                    <StatCard label="Location Req" value={pending?.locations ?? 0} icon={Globe2} accent={(pending?.locations ?? 0) > 0} onClick={() => setTab("location_requests")} />
+                    <FuturisticTile label="Payments" value={pending?.payments ?? 0} icon={Receipt} hot={(pending?.payments ?? 0) > 0} onClick={() => setTab("finance")} />
+                    <FuturisticTile label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} hot={(pending?.verifications ?? 0) > 0} onClick={() => setTab("verifications")} />
+                    <FuturisticTile label="Featured" value={pending?.featured ?? 0} icon={Star} hot={(pending?.featured ?? 0) > 0} onClick={() => setTab("featured")} />
+                    <FuturisticTile label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} hot={(pending?.avatars ?? 0) > 0} onClick={() => setTab("avatar_resets")} />
+                    <FuturisticTile label="Location Req" value={pending?.locations ?? 0} icon={Globe2} hot={(pending?.locations ?? 0) > 0} onClick={() => setTab("location_requests")} />
                   </div>
                 </section>
 
-                {/* Users & Workers */}
+                {/* PLATFORM METRICS */}
                 <section>
-                  <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                    Users & workers
-                  </h3>
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="h-px w-6 bg-primary/60" />
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-hero-foreground/70">
+                      Platform · Telemetry
+                    </h3>
+                  </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-                    <StatCard label="Total Users" value={allProfiles.length} icon={Users} onClick={() => setTab("users")} />
-                    <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
-                    <StatCard label="Verified" value={verifiedWorkersCount} icon={BadgeCheck} onClick={() => setTab("workers")} />
-                    <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
+                    <FuturisticTile label="Total Users" value={allProfiles.length} icon={Users} onClick={() => setTab("users")} />
+                    <FuturisticTile label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
+                    <FuturisticTile label="Verified" value={verifiedWorkersCount} icon={BadgeCheck} onClick={() => setTab("workers")} />
+                    <FuturisticTile label="Categories" value={categories.length} icon={Shield} onClick={() => setTab("categories")} />
                   </div>
                 </section>
 
-                {/* Activity */}
-                <section>
-                  <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
-                    Activity
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-                    <StatCard label="Active Featured" value={activeFeatured} icon={Star} onClick={() => setTab("featured")} />
-                    <StatCard label="Active Ads" value={activeAds} icon={Megaphone} onClick={() => setTab("running_ads")} />
-                    <StatCard label="Blood Donors" value={bloodDonors.length} icon={Droplet} onClick={() => setTab("donors")} />
-                    <StatCard label="Categories" value={categories.length} icon={Shield} onClick={() => setTab("categories")} />
-                  </div>
+                {/* ACTIVITY BENTO */}
+                <section className="grid gap-4 md:grid-cols-3">
+                  <FuturisticTile label="Active Featured" value={activeFeatured} icon={Sparkles} onClick={() => setTab("featured")} />
+                  <FuturisticTile label="Active Ads" value={activeAds} icon={Megaphone} onClick={() => setTab("running_ads")} />
+                  <FuturisticTile label="Blood Donors" value={bloodDonors.length} icon={Droplet} onClick={() => setTab("donors")} />
                 </section>
 
-                {/* Latest workers */}
-                <section className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5">
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
-                    <button onClick={() => setTab("workers")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
+                {/* LATEST WORKERS — futuristic list */}
+                <section className="relative overflow-hidden rounded-3xl border border-hero-foreground/10 bg-gradient-to-b from-hero-foreground/[0.05] to-transparent p-4 sm:p-5">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-3.5 w-3.5 text-primary" />
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-hero-foreground/70">Latest Operators</h3>
+                    </div>
+                    <button
+                      onClick={() => setTab("workers")}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:gap-2 transition-all"
+                    >
+                      View all <ArrowUpRight className="h-3 w-3" />
+                    </button>
                   </div>
-                  <ul className="space-y-2.5">
-                    {workers.slice(0, 5).map((w: any) => (
-                      <li key={w.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04]">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-[11px] font-bold text-primary overflow-hidden">
+                  <ul className="divide-y divide-hero-foreground/5">
+                    {workers.slice(0, 5).map((w: any, i: number) => (
+                      <li key={w.id} className="group flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-hero-foreground/[0.03] -mx-2 px-2 rounded-xl">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="font-mono text-[10px] text-hero-foreground/30 w-5">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-[11px] font-bold text-primary overflow-hidden ring-1 ring-primary/20">
                             {w.profiles?.avatar_url ? (
                               <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
                             ) : (
                               w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
                             )}
                           </div>
-                          <span className="truncate text-sm font-medium text-hero-foreground">{w.profiles?.full_name || "Unnamed"}</span>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-hero-foreground">{w.profiles?.full_name || "Unnamed"}</p>
+                            <p className="truncate text-[11px] text-hero-foreground/50">{w.profession}</p>
+                          </div>
                         </div>
-                        <span className="text-xs text-hero-foreground/60 shrink-0 truncate max-w-[160px]">{w.profession}</span>
+                        {w.verified && (
+                          <BadgeCheck className="h-4 w-4 text-primary shrink-0" />
+                        )}
                       </li>
                     ))}
-                    {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No workers yet.</li>}
+                    {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-6 text-center">No operators online.</li>}
                   </ul>
                 </section>
               </div>
             )}
+
 
 
 
