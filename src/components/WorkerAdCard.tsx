@@ -292,7 +292,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* CTAs */}
-            <div className="mt-0.5 grid grid-cols-2 gap-1.5" onClick={(e) => e.stopPropagation()}>
+            <div className="mt-0.5 grid grid-cols-[1fr_auto] gap-1.5" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => { fireClick(); setPopupOpen(true); }}
                 className="group/btn flex items-center justify-between rounded-xl border border-white/12 bg-white/[0.05] px-2 py-1.5 text-left transition hover:bg-white/[0.09]"
@@ -305,9 +305,9 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </button>
               {(() => {
                 const ContactInner = (
-                  <MessageCircle className="h-4 w-4 shrink-1" strokeWidth={2.5} />
+                  <MessageCircle className="h-4 w-4" strokeWidth={2.5} />
                 );
-                const ctaClass = `group/btn flex w-full items-center justify-between rounded-xl bg-gradient-to-r ${t.grad} px-2 py-1.5 text-black shadow-lg shadow-lime-500/15 text-center`;
+                const ctaClass = `group/btn inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-r ${t.grad} text-black shadow-lg shadow-lime-500/15`;
                 if (worker.showContact === false) {
                   return isAuthed && worker.userId ? (
                     <Link to={`/chat/${worker.userId}`} onClick={fireClick} className={ctaClass}>{ContactInner}</Link>

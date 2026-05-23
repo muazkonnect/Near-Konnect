@@ -187,7 +187,7 @@ export default function FeaturedWorkerCard({ worker, index = 0 }: Props) {
                 {user ? (
                   <button
                     onClick={() => { trackFeaturedEvent(worker.id, "contact_click", user?.id); setPopupOpen(true); }}
-                    className="inline-flex h-8 flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 px-2 text-[11px] font-extrabold text-hero shadow-lg shadow-star/30 hover:shadow-star/50"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 text-hero shadow-lg shadow-star/30 hover:shadow-star/50"
                   >
                     <MessageCircle className="h-4 w-4 fill-current" strokeWidth={2.5} />
                   </button>
@@ -196,7 +196,7 @@ export default function FeaturedWorkerCard({ worker, index = 0 }: Props) {
                     title="Log in to contact"
                     description="Sign in or create an account to contact this provider."
                   >
-                    <button className="inline-flex h-8 flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 px-2 text-[11px] font-extrabold text-hero shadow-lg shadow-star/30 hover:shadow-star/50">
+                    <button className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-star to-amber-500 text-hero shadow-lg shadow-star/30 hover:shadow-star/50">
                       <MessageCircle className="h-4 w-4 fill-current" strokeWidth={2.5} />
                     </button>
                   </AuthRequiredDialog>
