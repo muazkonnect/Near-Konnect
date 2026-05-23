@@ -92,8 +92,10 @@ const AppContent = () => {
       <BrowserRouter>
         <OfflineBanner />
         <UnverifiedEmailBanner />
-        <DisclosureModals />
-        <WorkerOnboardingDialog />
+        <Suspense fallback={null}>
+          <DisclosureModals />
+          <WorkerOnboardingDialog />
+        </Suspense>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -125,9 +127,13 @@ const AppContent = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
         <MobileBottomNav />
-        <AssistantSheet />
+        <Suspense fallback={null}>
+          <AssistantSheet />
+        </Suspense>
       </BrowserRouter>
     </>
   );
