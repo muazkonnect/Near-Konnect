@@ -417,9 +417,13 @@ const WorkerProfile = () => {
               <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Sub-Category</span>
               <span className="block font-sora text-base font-semibold uppercase">{worker.subCategory || "—"}</span>
             </div>
-            <div className="col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3">
+            <div
+              className={themed
+                ? `col-span-2 rounded-xl border ${t.border} bg-gradient-to-br ${t.bgSoft} p-3`
+                : "col-span-2 rounded-xl border border-primary/15 bg-gradient-to-br from-primary/10 to-transparent p-3"}
+            >
               <div className="mb-2 flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-primary" />
+                <Zap className={`h-3.5 w-3.5 ${themed ? t.textStrong : "text-primary"}`} />
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-hero-muted">Top Expertise</span>
               </div>
               {expertise.length > 0 ? (
@@ -427,7 +431,9 @@ const WorkerProfile = () => {
                   {expertise.map((e) => (
                     <span
                       key={e}
-                      className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"
+                      className={themed
+                        ? `inline-flex items-center rounded-full border ${t.border} bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold ${t.textStrong}`
+                        : "inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary"}
                     >
                       {e}
                     </span>
