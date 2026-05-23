@@ -232,6 +232,66 @@ const StatCard = ({
   </motion.button>
 );
 
+const FuturisticTile = ({
+  label,
+  value,
+  icon: Icon,
+  hot,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  icon: typeof Users;
+  hot?: boolean;
+  onClick?: () => void;
+}) => (
+  <motion.button
+    type="button"
+    onClick={onClick}
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all ${
+      hot
+        ? "border-primary/50 bg-gradient-to-br from-primary/20 via-primary/[0.08] to-transparent shadow-[0_0_24px_-8px_hsl(var(--primary)/0.6)]"
+        : "border-hero-foreground/10 bg-hero-foreground/[0.03] hover:border-primary/30"
+    }`}
+  >
+    {/* corner brackets */}
+    <span aria-hidden className={`absolute top-2 left-2 h-2.5 w-2.5 border-t border-l ${hot ? "border-primary" : "border-hero-foreground/30 group-hover:border-primary/60"} transition-colors`} />
+    <span aria-hidden className={`absolute top-2 right-2 h-2.5 w-2.5 border-t border-r ${hot ? "border-primary" : "border-hero-foreground/30 group-hover:border-primary/60"} transition-colors`} />
+    <span aria-hidden className={`absolute bottom-2 left-2 h-2.5 w-2.5 border-b border-l ${hot ? "border-primary" : "border-hero-foreground/30 group-hover:border-primary/60"} transition-colors`} />
+    <span aria-hidden className={`absolute bottom-2 right-2 h-2.5 w-2.5 border-b border-r ${hot ? "border-primary" : "border-hero-foreground/30 group-hover:border-primary/60"} transition-colors`} />
+
+    {/* scan line on hover */}
+    <span aria-hidden className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+    <div className="relative flex items-center justify-between">
+      <span
+        className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${
+          hot ? "bg-primary/20 text-primary ring-primary/40" : "bg-hero-foreground/[0.06] text-hero-foreground/70 ring-hero-foreground/10"
+        }`}
+      >
+        <Icon className="h-4 w-4" />
+      </span>
+      {hot && (
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+        </span>
+      )}
+    </div>
+    <p className={`relative mt-4 font-mono text-[9px] uppercase tracking-[0.2em] ${hot ? "text-primary/80" : "text-hero-foreground/50"}`}>
+      {label}
+    </p>
+    <p className="relative mt-1 text-3xl font-black tracking-tight text-hero-foreground tabular-nums">
+      {value}
+    </p>
+  </motion.button>
+);
+
+
 const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) => (
   <div className="mb-4 sm:mb-6 flex items-end justify-between gap-3 flex-wrap">
     <div>
