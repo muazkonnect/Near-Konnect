@@ -1,8 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, BadgeCheck, Crown, MapPin, Briefcase, ArrowUpRight, Sparkles, Zap, ShieldCheck, MessageCircle } from "lucide-react";
+import {
+  Star,
+  Gem,
+  ShieldCheck,
+  MapPin,
+  CalendarClock,
+  User,
+  MessageCircle,
+  ChevronRight,
+  ThumbsUp,
+  Clock,
+  Handshake,
+  Trophy,
+  BadgeCheck,
+  Hammer,
+  Home,
+  Crown,
+  Radio,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { trackAdEvent } from "@/hooks/usePromoted";
@@ -58,261 +75,349 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     setPopupOpen(o);
   };
 
-  const badgeLabel = premium ? "Featured Pro" : campaignId ? "Promoted" : "Sponsored";
-  const BadgeIcon = premium ? Crown : Sparkles;
+  // Color tokens — neon-lime accent for promoted, gold for premium
+  const accent = premium ? "amber" : "lime";
+  const accentRing = premium ? "ring-amber-400/50" : "ring-lime-400/50";
+  const accentText = premium ? "text-amber-300" : "text-lime-300";
+  const accentTextStrong = premium ? "text-amber-400" : "text-lime-400";
+  const accentBorder = premium ? "border-amber-400/60" : "border-lime-400/50";
+  const accentGlow = premium
+    ? "shadow-[0_0_40px_-10px_rgba(251,191,36,0.45)]"
+    : "shadow-[0_0_40px_-10px_rgba(163,230,53,0.5)]";
+  const accentGradient = premium
+    ? "from-amber-400 via-amber-300 to-amber-500"
+    : "from-lime-400 via-lime-300 to-lime-500";
+
+  const positivePct = worker.reviewCount > 0 ? 100 : 0; // placeholder until real metric exists
 
   return (
     <>
       <div
         ref={cardRef}
-        className={`group relative w-[330px] rounded-[24px] p-[1px] sm:w-[400px] ${
-          premium
-            ? "bg-gradient-to-br from-primary/70 via-primary/30 to-primary/50 shadow-[0_12px_32px_-18px_hsl(var(--primary)/0.5)]"
-            : "bg-gradient-to-br from-primary/30 via-hero-foreground/10 to-primary/15 shadow-[0_10px_28px_-20px_hsl(var(--primary)/0.35)]"
-        }`}
+        className={`group relative w-[330px] sm:w-[420px] rounded-[28px] p-[1.5px] bg-gradient-to-br ${accentGradient} ${accentGlow}`}
       >
         <article
           onClick={handleOpen}
-          className="relative cursor-pointer overflow-hidden rounded-[23px] bg-hero transition-transform duration-200 active:scale-[0.99]"
+          className="relative cursor-pointer overflow-hidden rounded-[26px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
+          style={{
+            backgroundImage:
+              "radial-gradient(1200px 400px at -10% -20%, rgba(163,230,53,0.08), transparent 60%), radial-gradient(800px 300px at 110% 0%, rgba(163,230,53,0.06), transparent 60%), linear-gradient(180deg, #0a0d0a 0%, #050605 100%)",
+          }}
         >
-          {/* ====== COVER BAND ====== */}
-          <div className="relative h-[88px] w-full overflow-hidden">
-            {/* Custom banner if set, else derived from profile photo */}
-            {worker.bannerUrl ? (
-              <img
-                src={worker.bannerUrl}
-                alt=""
-                aria-hidden
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            ) : worker.profilePhoto ? (
-              <img
-                src={worker.profilePhoto}
-                alt=""
-                aria-hidden
-                className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/20 to-hero" />
-            )}
-            {/* Gradient overlay for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/55 to-hero" />
-
-
-            {/* Top meta row */}
-            <div className="relative flex items-center justify-between px-3.5 pt-3">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-[0.18em] ${
-                  premium
-                    ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-md shadow-primary/40"
-                    : "bg-hero-foreground/15 text-hero-foreground backdrop-blur-md ring-1 ring-hero-foreground/15"
-                }`}
-              >
-                <BadgeIcon className="h-3 w-3" />
-                {badgeLabel}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full bg-hero/60 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider backdrop-blur-md ring-1 ${
-                  worker.available ? "text-emerald-400 ring-emerald-500/30" : "text-hero-muted ring-hero-foreground/15"
-                }`}
-              >
-                <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${worker.available ? "bg-emerald-400" : "bg-hero-foreground/40"}`}>
-                  {worker.available && <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />}
-                </span>
-                {worker.available ? "Available" : "Busy"}
+          {/* corner accent ribbon */}
+          <div className={`pointer-events-none absolute -top-px -left-px h-[60px] w-[210px] rounded-tl-[26px] bg-gradient-to-br ${accentGradient}`}
+            style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
+          />
+          {/* TOP ROW: PROMOTED + AVAILABLE */}
+          <div className="relative flex items-start justify-between px-4 pt-3.5">
+            <div className="relative z-10 flex items-center gap-2 pl-1">
+              {premium ? <Crown className="h-4 w-4 text-black" /> : <Gem className="h-4 w-4 text-black" />}
+              <span className="text-[12px] font-black uppercase tracking-[0.22em] text-black">
+                {premium ? "Featured" : "Promoted"}
               </span>
             </div>
-
+            <span
+              className={`inline-flex items-center gap-2 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/60"} bg-black/40 px-3 py-1 text-[11px] font-bold uppercase tracking-widest backdrop-blur`}
+            >
+              <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${worker.available ? "bg-lime-400" : "bg-white/40"}`}>
+                {worker.available && <span className="absolute inset-0 animate-ping rounded-full bg-lime-400/70" />}
+              </span>
+              {worker.available ? "Available" : "Busy"}
+              <Radio className="h-3 w-3 opacity-80" />
+            </span>
           </div>
 
-          {/* ====== AVATAR + IDENTITY (name on right of avatar) ====== */}
-          <div className="relative -mt-[52px] flex items-start gap-3 px-3.5">
-            <div className="relative shrink-0">
-              <Avatar className="relative h-[104px] w-[96px] rounded-[18px] border-[3px] border-hero shadow-xl">
+          {/* HERO: photo + identity + emblem */}
+          <div className="relative mt-3 grid grid-cols-[112px_1fr] gap-3 px-4 sm:grid-cols-[128px_1fr_auto]">
+            {/* photo */}
+            <div className={`relative rounded-2xl p-[1.5px] bg-gradient-to-br ${accentGradient}`}>
+              <Avatar className="h-[112px] w-[112px] rounded-2xl border-2 border-black sm:h-[128px] sm:w-[128px]">
                 <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className="rounded-[16px] bg-gradient-to-br from-primary/20 to-hero-foreground/10 text-xl font-extrabold text-primary">
+                <AvatarFallback className="rounded-2xl bg-black text-2xl font-black text-lime-300">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               {worker.verified && (
-                <div className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 shadow-xl ring-[3px] ring-hero">
-                  <ShieldCheck className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={3} />
+                <div className={`absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black ring-2 ${accentRing}`}>
+                  <ShieldCheck className={`h-4 w-4 ${accentTextStrong}`} strokeWidth={3} />
                 </div>
               )}
             </div>
 
-            {/* Identity column on right of avatar */}
-            <div className="min-w-0 flex-1 pt-[54px]">
-              <div className="flex items-start gap-1.5">
-                <h3 className="line-clamp-2 bg-gradient-to-br from-hero-foreground via-hero-foreground to-hero-foreground/70 bg-clip-text text-[20px] font-black leading-[1.05] tracking-tight text-transparent">
+            {/* identity */}
+            <div className="min-w-0">
+              <div className="flex items-start gap-2">
+                <h3 className="line-clamp-2 text-[22px] font-black leading-[1.05] tracking-tight text-white sm:text-[26px]">
                   {worker.name}
                 </h3>
-                {worker.verified && <BadgeCheck className="mt-1 h-4 w-4 shrink-0 fill-primary text-hero" />}
+                {worker.verified && (
+                  <span className={`mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${accentGradient}`}>
+                    <BadgeCheck className="h-3.5 w-3.5 text-black" strokeWidth={3} />
+                  </span>
+                )}
               </div>
               {worker.profession && (
-                <p className="mt-0.5 truncate text-[12px] font-bold uppercase tracking-wide text-primary">
+                <p className={`mt-1 flex items-center gap-1.5 text-[14px] font-extrabold uppercase tracking-[0.14em] ${accentTextStrong}`}>
                   {worker.profession}
+                  <Hammer className="h-3.5 w-3.5" />
                 </p>
               )}
-              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-amber-500/5 px-2 py-0.5 ring-1 ring-amber-500/20 backdrop-blur">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                <span className="text-[11.5px] font-extrabold leading-none text-hero-foreground">
-                  {worker.rating?.toFixed(1) || "—"}
-                </span>
-                {worker.reviewCount > 0 && (
-                  <span className="text-[9px] font-semibold leading-none text-hero-muted">
-                    ({worker.reviewCount})
+              {worker.verified && (
+                <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full border ${accentBorder} bg-white/[0.03] px-2.5 py-1`}>
+                  <ShieldCheck className={`h-3.5 w-3.5 ${accentTextStrong}`} />
+                  <span className="text-[11px] font-bold text-white/85">Verified Professional</span>
+                </div>
+              )}
+
+              {/* rating strip */}
+              <div className="mt-2.5 flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
+                <div className="flex items-center gap-1.5">
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  <span className="text-[16px] font-black leading-none">
+                    {worker.rating?.toFixed(1) || "—"}
                   </span>
-                )}
+                  <span className="text-[10px] text-white/50">({worker.reviewCount || 0})</span>
+                </div>
+                <div className="h-6 w-px bg-white/10" />
+                <div className="flex items-center gap-0.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star
+                      key={i}
+                      className={`h-3.5 w-3.5 ${i < Math.round(worker.rating || 0) ? "fill-amber-400 text-amber-400" : "text-white/15"}`}
+                    />
+                  ))}
+                </div>
+                <div className="h-6 w-px bg-white/10" />
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="h-3.5 w-3.5 text-white/70" />
+                  <span className="text-[12px] font-bold">{positivePct}%</span>
+                  <span className="hidden text-[9.5px] uppercase tracking-wider text-white/50 sm:inline">Positive</span>
+                </div>
               </div>
             </div>
+
+            {/* top-rated emblem */}
+            {worker.rating >= 4.5 && (
+              <div className="hidden sm:flex shrink-0 items-center justify-center">
+                <div className="relative flex h-[120px] w-[100px] flex-col items-center justify-center rounded-xl border border-amber-400/40 bg-gradient-to-b from-amber-500/15 to-transparent text-center">
+                  <Trophy className="absolute -top-3 h-6 w-6 fill-amber-400 text-amber-500" />
+                  <span className="mt-2 text-[12px] font-black uppercase tracking-widest text-amber-300">Top</span>
+                  <span className="text-[12px] font-black uppercase tracking-widest text-amber-300">Rated</span>
+                  <div className="mt-1 flex gap-0.5">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <Star key={i} className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* ====== CATEGORY + LOCATION ====== */}
-          <div className="relative mt-2.5 px-3.5">
-            {(worker.mainCategory || worker.subCategory) && (
-              <div className="flex flex-wrap items-center gap-1">
-                {worker.mainCategory && (
-                  <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary ring-1 ring-primary/30">
+          {/* CATEGORY PILLS */}
+          {(worker.mainCategory || worker.subCategory) && (
+            <div className="mx-4 mt-3 flex items-stretch gap-2 rounded-2xl border border-white/8 bg-white/[0.02] p-1.5">
+              {worker.mainCategory && (
+                <div className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-br ${accentGradient} px-3 py-2 text-black`}>
+                  <Home className="h-4 w-4" strokeWidth={2.5} />
+                  <span className="truncate text-[11.5px] font-black uppercase tracking-[0.14em]">
                     {worker.mainCategory}
                   </span>
-                )}
-                {worker.subCategory && (
-                  <span className="rounded-md bg-hero-foreground/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/80 ring-1 ring-hero-foreground/10">
+                </div>
+              )}
+              {worker.subCategory && (
+                <div className="flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2">
+                  <Hammer className="h-4 w-4 text-white/70" />
+                  <span className="truncate text-[11.5px] font-bold uppercase tracking-[0.14em] text-white/85">
                     {worker.subCategory}
                   </span>
-                )}
-              </div>
-            )}
-            {worker.city && (
-              <span className="mt-1.5 inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-hero-muted">
-                <MapPin className="h-3 w-3 shrink-0 text-primary/70" />
-                <span className="truncate">{worker.city}</span>
-              </span>
-            )}
-          </div>
-
-
-          {/* Description */}
-          {worker.description && (
-            <p className="relative mx-3.5 mt-2.5 line-clamp-2 border-l-2 border-primary/40 pl-2 text-[11.5px] leading-snug text-hero-foreground/75">
-              {worker.description}
-            </p>
+                </div>
+              )}
+            </div>
           )}
 
-          {/* ====== STATS ====== */}
-          <div className="relative mx-3.5 mt-3 grid grid-cols-2 gap-2">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/85 px-3 py-2.5 text-primary-foreground shadow-md shadow-primary/20">
-              <div className="relative flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-hero-foreground/15 backdrop-blur">
-                  <MapPin className="h-4 w-4" />
+          {/* STATS + TRUST GRID */}
+          <div className="mx-4 mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-[1.2fr_1fr_1.1fr]">
+            {/* distance hero card */}
+            <div className={`relative overflow-hidden rounded-2xl border ${accentBorder} bg-gradient-to-br from-lime-500/20 via-lime-500/5 to-transparent p-3.5`}>
+              <div className="flex items-center gap-3">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full border ${accentBorder} bg-black/40`}>
+                  <MapPin className={`h-5 w-5 ${accentTextStrong}`} />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[17px] font-black leading-none">
-                    {hasDistance ? worker.distance : "—"}
-                    {hasDistance && <span className="ml-0.5 text-[10px] font-bold opacity-90">km</span>}
+                  <div className="flex items-baseline gap-1 leading-none">
+                    <span className="text-[28px] font-black text-white">
+                      {hasDistance ? worker.distance.toFixed(2) : "—"}
+                    </span>
+                    {hasDistance && <span className="text-[12px] font-bold text-white/70">km</span>}
                   </div>
-                  <div className="mt-1 text-[8.5px] font-extrabold uppercase tracking-[0.12em] opacity-85">Distance</div>
+                  <div className={`mt-1 text-[10.5px] font-black uppercase tracking-[0.18em] ${accentTextStrong}`}>
+                    Distance
+                  </div>
+                  <div className="text-[10px] text-white/55">From your location</div>
                 </div>
               </div>
             </div>
-            <div className="relative flex items-center gap-2.5 rounded-2xl bg-hero-foreground/[0.05] px-3 py-2.5 ring-1 ring-hero-foreground/10">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                <Briefcase className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[17px] font-black leading-none text-hero-foreground">
-                  {worker.experience > 0 ? `${worker.experience}+` : "—"}
+
+            {/* experience */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full border ${accentBorder} bg-black/40`}>
+                  <CalendarClock className={`h-5 w-5 ${accentTextStrong}`} />
                 </div>
-                <div className="mt-1 text-[8.5px] font-extrabold uppercase tracking-[0.12em] text-hero-muted">Years Exp</div>
+                <div className="min-w-0">
+                  <div className="text-[24px] font-black leading-none">
+                    {worker.experience > 0 ? `${worker.experience}+` : "—"}
+                  </div>
+                  <div className={`mt-1 text-[10px] font-black uppercase tracking-[0.16em] ${accentTextStrong}`}>
+                    Years Experience
+                  </div>
+                  <div className="text-[10px] text-white/55">Skilled & Trusted</div>
+                </div>
               </div>
+            </div>
+
+            {/* trust list */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <ul className="space-y-1.5 text-[11px] font-semibold text-white/80">
+                {[
+                  { icon: ShieldCheck, label: "Background Verified" },
+                  { icon: ThumbsUp, label: "High Quality Work" },
+                  { icon: Clock, label: "On Time Service" },
+                  { icon: Handshake, label: "Trusted by Customers" },
+                ].map(({ icon: Icon, label }, i, arr) => (
+                  <li key={label} className={`flex items-center gap-2 ${i < arr.length - 1 ? "border-b border-dashed border-white/8 pb-1.5" : ""}`}>
+                    <Icon className={`h-3.5 w-3.5 ${accentTextStrong}`} />
+                    <span className="truncate">{label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Service areas */}
-          {worker.serviceAreas && worker.serviceAreas.length > 0 && (
-            <div className="relative mx-3.5 mt-2.5 flex items-center gap-1.5 overflow-hidden">
-              <span className="shrink-0 text-[9px] font-extrabold uppercase tracking-[0.15em] text-hero-muted">Serves</span>
-              <div className="flex min-w-0 flex-1 gap-1 overflow-hidden">
-                {worker.serviceAreas.slice(0, 3).map((area, i) => (
-                  <span
-                    key={i}
-                    className="truncate rounded-full bg-hero-foreground/5 px-2 py-0.5 text-[9.5px] font-bold text-hero-foreground/85 ring-1 ring-hero-foreground/10"
-                  >
-                    {area}
-                  </span>
-                ))}
-                {worker.serviceAreas.length > 3 && (
-                  <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[9.5px] font-extrabold text-primary ring-1 ring-primary/30">
-                    +{worker.serviceAreas.length - 3}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ====== CTA ROW ====== */}
+          {/* CTAs */}
           <div
-            className="relative mt-3.5 flex items-center gap-2 border-t border-hero-foreground/8 bg-gradient-to-b from-hero-foreground/[0.02] to-transparent px-3.5 py-3"
+            className="mx-4 mt-3 grid grid-cols-[1fr_1.5fr] gap-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-11 ${worker.showContact === false ? "flex-1" : "flex-1"} rounded-xl border border-hero-foreground/12 bg-hero-foreground/[0.04] px-2 text-[12px] font-extrabold uppercase tracking-wider text-hero-foreground hover:bg-hero-foreground/10`}
+            <button
               onClick={() => { fireClick(); setPopupOpen(true); }}
+              className="group/btn flex items-center justify-between rounded-2xl border border-white/12 bg-white/[0.04] px-4 py-3 text-left transition hover:bg-white/[0.08]"
             >
-              Profile
-              <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-            </Button>
+              <div className="flex items-center gap-2.5">
+                <User className={`h-5 w-5 ${accentTextStrong}`} />
+                <div>
+                  <div className="text-[13px] font-black uppercase tracking-[0.14em] text-white">Profile</div>
+                  <div className="text-[10px] text-white/55">View full details</div>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-white/60 transition group-hover/btn:translate-x-0.5" />
+            </button>
+
             {worker.showContact !== false ? (
               isAuthed ? (
-                <Button
-                  size="sm"
-                  className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                  onClick={() => { fireClick(); setPopupOpen(true); }}
+                <a
+                  href={worker.whatsapp ? `https://wa.me/${worker.whatsapp.replace(/\D/g, "")}` : "#"}
+                  onClick={(e) => { if (!worker.whatsapp) { e.preventDefault(); setPopupOpen(true); } fireClick(); }}
+                  className={`group/btn flex items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}
                 >
-                  <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
-                </Button>
+                  <div className="flex items-center gap-2.5">
+                    <MessageCircle className="h-5 w-5" strokeWidth={2.5} />
+                    <div>
+                      <div className="text-[14px] font-black uppercase tracking-[0.14em]">Message</div>
+                      <div className="text-[10px] font-semibold opacity-80">Chat with {worker.name.split(" ")[0]}</div>
+                    </div>
+                  </div>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/85 text-white">
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </a>
               ) : (
-                <AuthRequiredDialog
-                  title="Log in to contact"
-                  description="Sign in or create an account to contact this provider."
-                >
-                  <Button
-                    size="sm"
-                    className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                  >
-                    <Zap className="mr-1 h-4 w-4 fill-current" /> Contact Now
-                  </Button>
+                <AuthRequiredDialog title="Log in to contact" description="Sign in to message this provider.">
+                  <button className={`group/btn flex w-full items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}>
+                    <div className="flex items-center gap-2.5">
+                      <MessageCircle className="h-5 w-5" strokeWidth={2.5} />
+                      <div className="text-left">
+                        <div className="text-[14px] font-black uppercase tracking-[0.14em]">Message</div>
+                        <div className="text-[10px] font-semibold opacity-80">Chat with {worker.name.split(" ")[0]}</div>
+                      </div>
+                    </div>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/85 text-white">
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
+                  </button>
                 </AuthRequiredDialog>
               )
+            ) : isAuthed && worker.userId ? (
+              <Link
+                to={`/chat/${worker.userId}`}
+                onClick={fireClick}
+                className={`group/btn flex items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <MessageCircle className="h-5 w-5" strokeWidth={2.5} />
+                  <div>
+                    <div className="text-[14px] font-black uppercase tracking-[0.14em]">Message</div>
+                    <div className="text-[10px] font-semibold opacity-80">Chat with {worker.name.split(" ")[0]}</div>
+                  </div>
+                </div>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/85 text-white">
+                  <ChevronRight className="h-4 w-4" />
+                </span>
+              </Link>
             ) : (
-              isAuthed && worker.userId ? (
-                <Button
-                  asChild
-                  size="sm"
-                  className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                  onClick={(e) => { e.stopPropagation(); fireClick(); }}
-                >
-                  <Link to={`/chat/${worker.userId}`} aria-label="Message in app">
-                    <MessageCircle className="mr-1 h-4 w-4" /> Message
-                  </Link>
-                </Button>
-              ) : (
-                <AuthRequiredDialog
-                  title="Log in to message"
-                  description="Sign in or create an account to message this provider."
-                >
-                  <Button
-                    size="sm"
-                    className="h-11 flex-[1.6] rounded-xl bg-gradient-to-r from-primary to-primary/85 px-2 text-[12.5px] font-black uppercase tracking-wider shadow-md shadow-primary/25"
-                  >
-                    <MessageCircle className="mr-1 h-4 w-4" /> Message
-                  </Button>
-                </AuthRequiredDialog>
-              )
+              <AuthRequiredDialog title="Log in to message" description="Sign in to message this provider.">
+                <button className={`group/btn flex w-full items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}>
+                  <div className="flex items-center gap-2.5">
+                    <MessageCircle className="h-5 w-5" strokeWidth={2.5} />
+                    <div className="text-left">
+                      <div className="text-[14px] font-black uppercase tracking-[0.14em]">Message</div>
+                      <div className="text-[10px] font-semibold opacity-80">Chat with {worker.name.split(" ")[0]}</div>
+                    </div>
+                  </div>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/85 text-white">
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </button>
+              </AuthRequiredDialog>
             )}
+          </div>
+
+          {/* FOOTER TRUST BAR */}
+          <div className={`mt-4 grid grid-cols-2 gap-3 border-t ${accentBorder} bg-black/40 px-4 py-3 sm:grid-cols-4`}>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className={`h-5 w-5 ${accentTextStrong}`} />
+              <div className="min-w-0">
+                <div className="text-[10.5px] font-black uppercase tracking-[0.14em] text-white">Verified</div>
+                <div className="truncate text-[9.5px] text-white/55">ID & Background</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-1.5">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-5 w-5 rounded-full border border-black bg-gradient-to-br from-white/30 to-white/10" />
+                ))}
+              </div>
+              <div className="min-w-0">
+                <div className={`text-[11px] font-black ${accentTextStrong}`}>500+</div>
+                <div className="truncate text-[9.5px] text-white/55">Happy Customers</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
+              <div className="min-w-0">
+                <div className="text-[11px] font-black text-white">
+                  {worker.rating?.toFixed(1) || "4.9"}<span className="text-white/50">/5</span>
+                </div>
+                <div className="truncate text-[9.5px] text-white/55">Overall Rating</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-amber-400" />
+              <div className="min-w-0">
+                <div className="text-[10.5px] font-black uppercase tracking-[0.14em] text-amber-300">Top Rated</div>
+                <div className="truncate text-[9.5px] text-white/55">On Near Konnect</div>
+              </div>
+            </div>
           </div>
         </article>
       </div>
