@@ -107,10 +107,10 @@ const CustomerDashboard = () => {
         <div className="mx-auto max-w-xl space-y-4 md:max-w-2xl">
           <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/5 p-6 sm:p-8">
             <div className="mb-6 flex items-center gap-4">
-              <AvatarUpload currentUrl={profile?.avatar_url} />
+              <AvatarUpload currentUrl={(profile as any)?.avatar_url} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-sora text-lg font-bold text-hero-foreground">
-                  {profile?.full_name || "Your profile"}
+                  {(profile as any)?.full_name || "Your profile"}
                 </p>
                 <p className="truncate text-sm text-hero-foreground/60">{user?.email}</p>
                 <AvatarResetFlow onReplaced={() => queryClient.invalidateQueries({ queryKey: ["my_profile"] })} />

@@ -8,16 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchPackages } from "@/services/walletService";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
+import { useAppSetting } from "@/hooks/useAppSettings";
 import { useState } from "react";
 
 const BuySparksPage = () => {
   const navigate = useNavigate();
   const { data: packages = [], isLoading } = useQuery({ queryKey: ["packages"], queryFn: fetchPackages });
   const { region } = usePaymentRegion();
+  const pricePkr = useAppSetting("spark_price_pkr");
+  const priceUsdt = useAppSetting("spark_price_usdt");
   const [customSparks, setCustomSparks] = useState("");
 
-  const formatPrice = (pkr: number, usdt: number) =>
-    region === "pk" ? `PKR ${pkr.toLocaleString()}` : `$${usdt.toLocaleString()} USDT`;
+  const formatPrice = (sparks: number) =>
+    region === "pk"
+      ? `PKR ${Math.round(sparks * pricePkr).toLocaleString()}`
+      : `$${(sparks * priceUsdt).toFixed(2)} USDT`;
 
   const goCustom = () => {
     const n = parseInt(customSparks);
@@ -69,7 +74,7 @@ const BuySparksPage = () => {
                       {p.sparks.toLocaleString()} Sparks{p.bonus_sparks > 0 && <span className="text-emerald-400"> + {p.bonus_sparks} bonus</span>}
                     </p>
                     <div className="mt-4 flex items-center justify-between">
-                      <span className="text-lg font-bold text-primary">{formatPrice(Number(p.price_pkr), Number(p.price_usdt))}</span>
+                      <span className="text-lg font-bold text-primary">{formatPrice(p.sparks)}</span>
                       <Zap className="h-4 w-4 text-primary" />
                     </div>
                   </motion.button>

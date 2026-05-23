@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProofUploader from "@/components/wallet/ProofUploader";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
+import { useAppSetting } from "@/hooks/useAppSettings";
 import {
   fetchPackageById, fetchPaymentSettings, uploadPaymentProof, createPaymentRequest,
 } from "@/services/walletService";
@@ -63,6 +64,8 @@ const PaymentCheckoutPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { region } = usePaymentRegion();
+  const ratePkr = useAppSetting("spark_price_pkr");
+  const rateUsdt = useAppSetting("spark_price_usdt");
 
   const { data: pkg } = useQuery({
     queryKey: ["package", packageId],
@@ -77,8 +80,8 @@ const PaymentCheckoutPage = () => {
 
   const sparks = isCustom ? customSparks : pkg?.sparks ?? 0;
   const bonus = isCustom ? 0 : pkg?.bonus_sparks ?? 0;
-  const pricePkr = isCustom ? customSparks * 5 : Number(pkg?.price_pkr ?? 0);
-  const priceUsdt = isCustom ? +(customSparks * 0.02).toFixed(2) : Number(pkg?.price_usdt ?? 0);
+  const pricePkr = Math.round(sparks * ratePkr);
+  const priceUsdt = +(sparks * rateUsdt).toFixed(2);
 
   const defaultMethod: Method = region === "pk" ? "easypaisa" : "usdt";
   const [method, setMethod] = useState<Method>(defaultMethod);

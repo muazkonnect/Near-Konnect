@@ -16,6 +16,8 @@ export type AppSettingsMap = {
   featured_cards_transition_ms: number;
   blood_cards_stagger_ms: number;
   special_announcement: SpecialAnnouncement;
+  spark_price_pkr: number;
+  spark_price_usdt: number;
 };
 
 export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
@@ -34,6 +36,8 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
   featured_cards_transition_ms: 450,
   blood_cards_stagger_ms: 30,
   special_announcement: null,
+  spark_price_pkr: 10,
+  spark_price_usdt: 0.036,
 };
 
 export function useAppSettings() {
