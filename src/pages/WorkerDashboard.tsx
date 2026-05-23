@@ -63,6 +63,7 @@ import { useNotifications, markRead } from "@/hooks/useNotifications";
 import ContactMethodsEditor from "@/components/ContactMethodsEditor";
 import { type ContactMethod, parseContactMethods, validateContactMethods, sanitizePhone, normalizeContactMethods } from "@/lib/contactMethods";
 import { useCategories } from "@/hooks/useCategories";
+import { useMyVerification } from "@/hooks/useVerification";
 
 const WorkerDashboard = () => {
   const [verifyOpen, setVerifyOpen] = useState(false);
