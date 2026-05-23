@@ -98,11 +98,16 @@ export default {
           "0%, 100%": { opacity: "0.8", transform: "scale(1)" },
           "50%": { opacity: "1", transform: "scale(1.03)" },
         },
+        shimmer: {
+          "0%": { transform: "translateX(0) skewX(-12deg)" },
+          "100%": { transform: "translateX(600%) skewX(-12deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "spark-pulse": "spark-pulse 12s ease-in-out infinite",
+        shimmer: "shimmer 3.5s ease-in-out infinite",
       },
     },
   },
