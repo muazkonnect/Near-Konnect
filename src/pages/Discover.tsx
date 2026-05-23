@@ -358,7 +358,7 @@ const Discover = () => {
         </section>
 
         {/* FEATURED ADS marquee */}
-        {bannerAds.length > 0 && (
+        {bannerAds.length > 0 ? (
           <section className="mt-5">
             <div className="mb-2 px-5">
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-hero-muted">
@@ -376,6 +376,10 @@ const Discover = () => {
               <style>{`@keyframes ads-slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
             </div>
           </section>
+        ) : (
+          <section className="mt-5 px-5">
+            <PromoteYourselfBanner />
+          </section>
         )}
 
         {/* PROMOTED 3KM ADS */}
@@ -386,8 +390,8 @@ const Discover = () => {
             </h2>
           </div>
           {promoted3kmFiltered.length === 0 ? (
-            <div className="mx-5 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center text-xs text-hero-muted">
-              No promoted ads within 3 KM of your location
+            <div className="mx-5">
+              <PromoteYourselfBanner />
             </div>
           ) : (
             <SteppedCarousel
