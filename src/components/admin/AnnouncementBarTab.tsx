@@ -11,10 +11,16 @@ import { Loader2, Save, Megaphone, AlertTriangle, X } from "lucide-react";
 export default function AnnouncementBarTab() {
   const messages = useAppSetting("announcement_messages");
   const special = useAppSetting("special_announcement");
+  const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds");
   const update = useUpdateAppSetting();
   const [text, setText] = useState("");
   const [specialText, setSpecialText] = useState("");
   const [hours, setHours] = useState<number>(24);
+  const [speed, setSpeed] = useState<number>(30);
+
+  useEffect(() => {
+    setSpeed(tickerSpeed || 30);
+  }, [tickerSpeed]);
 
   useEffect(() => {
     setText((messages || []).join("\n"));
