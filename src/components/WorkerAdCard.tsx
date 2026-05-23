@@ -395,7 +395,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           </div>
         </article>
       </div>
-      <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={handleChange} isAuthed={isAuthed} />
+      <WorkerProfilePopup worker={worker} open={popupOpen} onOpenChange={handleChange} isAuthed={isAuthed} premium={premium} />
     </>
   );
 };

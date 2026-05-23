@@ -29,18 +29,20 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isAuthed?: boolean;
+  premium?: boolean;
 }
 
 const sanitizePhone = (p?: string) => (p || "").replace(/[^\d+]/g, "");
 
-const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Props) => {
+const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: premiumProp }: Props) => {
   const navigate = useNavigate();
   if (!worker) return null;
+
 
   const initials = worker.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = sanitizePhone(worker.phone);
   const savedMethods: ContactMethod[] = (worker.contactMethods || []).filter((m) => (m.value || "").trim().length > 0);
-  const premium = !!worker.verified;
+  const premium = premiumProp !== undefined ? premiumProp : !!worker.verified;
   const dist = worker.distance;
   const hasDistance = typeof dist === "number" && dist > 0 && isFinite(dist);
   const available = !!worker.available;
