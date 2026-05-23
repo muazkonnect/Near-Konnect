@@ -94,20 +94,32 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
     <>
       <div
         ref={cardRef}
-        className={`group relative w-[330px] sm:w-[420px] rounded-[28px] p-[1.5px] bg-gradient-to-br ${accentGradient} ${accentGlow}`}
+        className={`group relative w-[330px] sm:w-[400px] rounded-[24px] p-[1.5px] bg-gradient-to-br ${accentGradient} ${accentGlow}`}
       >
         <article
           onClick={handleOpen}
-          className="relative cursor-pointer overflow-hidden rounded-[26px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
-          style={{
-            backgroundImage:
-              "radial-gradient(1200px 400px at -10% -20%, rgba(163,230,53,0.08), transparent 60%), radial-gradient(800px 300px at 110% 0%, rgba(163,230,53,0.06), transparent 60%), linear-gradient(180deg, #0a0d0a 0%, #050605 100%)",
-          }}
+          className="relative cursor-pointer overflow-hidden rounded-[22px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
         >
+          {/* Banner background */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]">
+            {worker.bannerUrl ? (
+              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-40" />
+            ) : worker.profilePhoto ? (
+              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-25 blur-2xl" />
+            ) : null}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(900px 300px at -10% -20%, rgba(163,230,53,0.10), transparent 60%), radial-gradient(700px 240px at 110% 0%, rgba(163,230,53,0.06), transparent 60%), linear-gradient(180deg, rgba(10,13,10,0.78) 0%, rgba(5,6,5,0.96) 70%, #050605 100%)",
+              }}
+            />
+          </div>
           {/* corner accent ribbon */}
-          <div className={`pointer-events-none absolute -top-px -left-px h-[60px] w-[210px] rounded-tl-[26px] bg-gradient-to-br ${accentGradient}`}
+          <div className={`pointer-events-none absolute -top-px -left-px h-[48px] w-[170px] rounded-tl-[22px] bg-gradient-to-br ${accentGradient}`}
             style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
           />
+
           {/* TOP ROW: PROMOTED + AVAILABLE */}
           <div className="relative flex items-start justify-between px-4 pt-3.5">
             <div className="relative z-10 flex items-center gap-2 pl-1">
