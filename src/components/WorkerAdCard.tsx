@@ -80,7 +80,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         textStrong: "text-amber-400",
         border: "border-amber-400/55",
         ring: "ring-amber-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(251,191,36,0.55)]",
+        glow: "shadow-[0_0_80px_-10px_rgba(251,191,36,0.85),0_0_24px_-4px_rgba(251,191,36,0.5)]",
         soft: "from-amber-500/25 via-amber-500/8 to-transparent",
         rgb: "251,191,36",
         label: "Featured",
