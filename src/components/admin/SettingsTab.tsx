@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Settings, Sliders, UserCircle, Megaphone, Droplet } from "lucide-react";
+import { Settings, Sliders, UserCircle, Megaphone, Droplet, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminProfileTab from "./AdminProfileTab";
 import AppDefaultsTab from "./AppDefaultsTab";
 import AnnouncementBarTab from "./AnnouncementBarTab";
 import BloodKonnectTab from "./BloodKonnectTab";
+import SparksPricingTab from "./SparksPricingTab";
 
-type Sub = "defaults" | "announcement" | "blood" | "account";
+type Sub = "defaults" | "announcement" | "blood" | "sparks" | "account";
 
 const SUBS: { key: Sub; label: string; icon: typeof Sliders }[] = [
   { key: "defaults", label: "App Defaults", icon: Sliders },
   { key: "announcement", label: "Announcement Bar", icon: Megaphone },
   { key: "blood", label: "Blood Konnect", icon: Droplet },
+  { key: "sparks", label: "Sparks Pricing", icon: Zap },
   { key: "account", label: "Account", icon: UserCircle },
 ];
 
