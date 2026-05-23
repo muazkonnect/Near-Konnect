@@ -349,44 +349,6 @@ const WorkerProfile = () => {
                 </div>
               )}
             </div>
-          <button
-            onClick={() => navigate(-1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Worker Profile</h1>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-white/10" aria-label="More">
-            <MoreVertical className="h-5 w-5" />
-          </button>
-        </header>
-
-        {/* Banner */}
-        <div className="relative -mt-px h-44 w-full overflow-hidden bg-gradient-to-br from-primary/30 via-primary/10 to-hero sm:h-56">
-          {worker.bannerUrl ? (
-            <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-          ) : worker.profilePhoto ? (
-            <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-sm" />
-          ) : null}
-          <div className="absolute inset-0 bg-gradient-to-b from-hero/30 via-hero/40 to-hero" />
-        </div>
-
-        <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 -mt-16 relative">
-          {/* 1. Compact Header */}
-          <section className="mb-6 flex flex-col items-center gap-3 text-center">
-            <div className="relative group shrink-0">
-              <div className="absolute -inset-1 rounded-full bg-primary opacity-20 blur transition duration-700 group-hover:opacity-30" />
-              <Avatar className="relative z-10 h-32 w-32 border-2 border-primary">
-                <AvatarImage src={worker.profilePhoto} alt={worker.name} className="object-cover" />
-                <AvatarFallback className="bg-white/10 text-2xl font-bold text-primary">{initials}</AvatarFallback>
-              </Avatar>
-              {worker.verified && (
-                <div className="absolute bottom-1 right-1 z-20 rounded-full border-4 border-hero bg-primary p-1 text-primary-foreground">
-                  <BadgeCheck className="h-4 w-4" />
-                </div>
-              )}
-            </div>
 
             <div className="mt-0.5 text-center">
               <div className="flex items-center justify-center gap-2 flex-nowrap">
