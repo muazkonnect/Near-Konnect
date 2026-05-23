@@ -43,6 +43,8 @@ const FeaturedWorkersCarousel = ({
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(coords ?? null);
   const nearbyFeaturedMap = useNearbyFeaturedMap(coords ?? null);
   const [items, setItems] = useState<FeaturedWorker[]>([]);
+  const dwellMs = useAppSetting("featured_cards_dwell_ms");
+  const transitionMs = useAppSetting("featured_cards_transition_ms");
 
   const mergedIds = useMemo(() => {
     const set = new Set<string>([...featured.map((f) => f.service_id), ...paidFeaturedIds]);
