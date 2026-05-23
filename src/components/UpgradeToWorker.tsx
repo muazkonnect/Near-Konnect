@@ -245,15 +245,20 @@ const UpgradeToWorker = () => {
             <Label>Years of Experience *</Label>
             <Input type="number" placeholder="e.g. 5" className="mt-1.5" value={experience} onChange={e => setExperience(e.target.value)} />
           </div>
-          <div className="rounded-xl border bg-muted/40 p-3">
-            <p className="text-sm font-medium text-foreground">Use your current location as your service location?</p>
-            <p className="mt-1 text-xs text-muted-foreground">This location is fixed for nearby matching and cannot be changed frequently.</p>
-            <Button type="button" variant="outline" className="mt-3 w-full gap-2" onClick={captureLocation} disabled={capturingLocation || !!location}>
+          <div className="rounded-xl border bg-muted/40 p-3 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">Your fixed service location</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Use your current location, or drag the pin on the map to set a different work address. This location is fixed for nearby matching.
+              </p>
+            </div>
+            <Button type="button" variant="outline" className="w-full gap-2" onClick={captureLocation} disabled={capturingLocation}>
               <Navigation className="h-4 w-4" />
-              {location ? "Service location saved" : capturingLocation ? "Detecting location..." : "Use my current location"}
+              {capturingLocation ? "Detecting..." : location ? "Re-use my current location" : "Use my current location"}
             </Button>
+            <MapLocationPickerLazy value={location} onChange={(c) => setLocation(c)} />
             {location && (
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 <LocationLabel latitude={location.latitude} longitude={location.longitude} />
               </p>
             )}
