@@ -256,7 +256,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
                   <MapPin className={`h-3.5 w-3.5 shrink-0 ${t.textStrong}`} />
                   <div className="min-w-0">
                     <div className="flex items-baseline gap-0.5 leading-none">
-                      <span className="text-[14px] font-black text-white tabular-nums">
+                      <span className="text-[12px] sm:text-[14px] font-black text-white tabular-nums">
                         {hasDistance ? worker.distance.toFixed(2) : "—"}
                       </span>
                       {hasDistance && <span className="text-[8px] font-bold text-white/70">km</span>}
