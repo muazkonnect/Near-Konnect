@@ -11,6 +11,7 @@ export type AppSettingsMap = {
   workers_default_radius_km: number;
   featured_default_radius_km: number;
   announcement_messages: string[];
+  announcement_ticker_speed_seconds: number;
   special_announcement: SpecialAnnouncement;
 };
 
@@ -25,6 +26,7 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
     "Welcome to Near Konnect — your hyperlocal network",
     "Safety protocols for verified providers updated",
   ],
+  announcement_ticker_speed_seconds: 30,
   special_announcement: null,
 };
 

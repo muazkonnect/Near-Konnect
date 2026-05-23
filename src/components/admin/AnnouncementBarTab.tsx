@@ -11,10 +11,16 @@ import { Loader2, Save, Megaphone, AlertTriangle, X } from "lucide-react";
 export default function AnnouncementBarTab() {
   const messages = useAppSetting("announcement_messages");
   const special = useAppSetting("special_announcement");
+  const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds");
   const update = useUpdateAppSetting();
   const [text, setText] = useState("");
   const [specialText, setSpecialText] = useState("");
   const [hours, setHours] = useState<number>(24);
+  const [speed, setSpeed] = useState<number>(30);
+
+  useEffect(() => {
+    setSpeed(tickerSpeed || 30);
+  }, [tickerSpeed]);
 
   useEffect(() => {
     setText((messages || []).join("\n"));
@@ -143,6 +149,39 @@ export default function AnnouncementBarTab() {
             <p className="text-xs text-muted-foreground">
               Tip: Keep messages short (under 80 characters) so they fit nicely in the ticker.
             </p>
+          </div>
+          <div className="space-y-2">
+            <Label>Ticker scroll speed (seconds per loop)</Label>
+            <div className="flex items-center gap-3">
+              <Input
+                type="number"
+                min={5}
+                max={120}
+                step={1}
+                value={speed}
+                onChange={(e) => setSpeed(Number(e.target.value))}
+                className="max-w-[160px]"
+              />
+              <span className="text-xs text-muted-foreground">
+                Lower = faster. Default 30s. Current: {tickerSpeed || 30}s
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                const v = Math.min(120, Math.max(5, Number(speed) || 30));
+                try {
+                  await update.mutateAsync({ key: "announcement_ticker_speed_seconds", value: v });
+                  toast.success(`Ticker speed set to ${v}s`);
+                } catch (e: any) {
+                  toast.error(e?.message || "Save failed");
+                }
+              }}
+              disabled={update.isPending}
+            >
+              Save speed
+            </Button>
           </div>
           <div className="flex justify-end">
             <Button onClick={save} disabled={update.isPending}>

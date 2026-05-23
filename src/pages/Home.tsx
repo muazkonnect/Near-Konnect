@@ -191,6 +191,7 @@ const Home = () => {
 
   // Live ticker: admin static messages + real-time activity
   const announcementMessages = useAppSetting("announcement_messages");
+  const tickerSpeed = useAppSetting("announcement_ticker_speed_seconds") || 30;
   const specialAnnouncement = useAppSetting("special_announcement");
   const { data: activity = [] } = useRecentActivity(20);
 
@@ -232,7 +233,7 @@ const Home = () => {
         {/* TICKER */}
         <div className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
           <div className="flex h-9 items-center">
-            <div className="flex animate-[ticker_30s_linear_infinite] gap-10 whitespace-nowrap px-4">
+            <div className="flex gap-10 whitespace-nowrap px-4" style={{ animation: `ticker ${tickerSpeed}s linear infinite` }}>
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
