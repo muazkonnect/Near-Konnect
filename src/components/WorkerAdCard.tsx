@@ -80,7 +80,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         textStrong: "text-amber-400",
         border: "border-amber-400/55",
         ring: "ring-amber-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(251,191,36,0.55)]",
+        glow: "shadow-[0_0_80px_-10px_rgba(251,191,36,0.85),0_0_24px_-4px_rgba(251,191,36,0.5)]",
         soft: "from-amber-500/25 via-amber-500/8 to-transparent",
         rgb: "251,191,36",
         label: "Featured",
@@ -92,7 +92,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         textStrong: "text-lime-400",
         border: "border-lime-400/55",
         ring: "ring-lime-400/50",
-        glow: "shadow-[0_0_48px_-12px_rgba(163,230,53,0.6)]",
+        glow: "shadow-[0_0_80px_-10px_rgba(163,230,53,0.85),0_0_24px_-4px_rgba(163,230,53,0.5)]",
         soft: "from-lime-500/25 via-lime-500/8 to-transparent",
         rgb: "163,230,53",
         label: "Promoted",
@@ -109,10 +109,22 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
         ref={cardRef}
         className={`group relative w-full max-w-[680px] rounded-[22px] p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow}`}
       >
+        {/* pulsing outer aura */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute -inset-1 rounded-[26px] bg-gradient-to-br ${t.grad} opacity-40 blur-2xl animate-pulse`}
+        />
         <article
           onClick={handleOpen}
           className="relative flex cursor-pointer overflow-hidden rounded-[20px] bg-[#0a0d0a] text-white transition-transform duration-200 active:scale-[0.995]"
         >
+          {/* animated sheen sweep */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]"
+          >
+            <div className="absolute -inset-y-4 -left-1/3 h-[140%] w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-[shimmer_3.5s_ease-in-out_infinite]" />
+          </div>
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[20px]">
             {worker.bannerUrl ? (
