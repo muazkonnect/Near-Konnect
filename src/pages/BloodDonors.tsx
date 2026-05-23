@@ -15,6 +15,7 @@ import AppLayout from "@/components/AppLayout";
 import { parseContactMethods } from "@/lib/contactMethods";
 import BloodDonorPopup, { type BloodDonorPopupData } from "@/components/BloodDonorPopup";
 import { markRead } from "@/hooks/useNotifications";
+import { useAppSetting } from "@/hooks/useAppSettings";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -26,6 +27,7 @@ const BloodDonors = () => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedDonor, setSelectedDonor] = useState<BloodDonorPopupData | null>(null);
   const { coords: userCoords } = useRealtimeLocation();
+  const staggerMs = useAppSetting("blood_cards_stagger_ms") || 30;
 
   useEffect(() => {
     if (user) markRead((n) => n.type === "booking");
@@ -221,7 +223,7 @@ const BloodDonors = () => {
                     key={donor.user_id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.03, 0.2) }}
+                    transition={{ delay: Math.min(i * (staggerMs / 1000), 0.6) }}
                     onClick={openPopup}
                     role="button"
                     tabIndex={0}
