@@ -349,18 +349,79 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid #e2e8f0}.right{text-al
         <StatCard icon={Receipt} label="Sparks Spent" value={stats.sparksSpent.toLocaleString()} accent="rose" />
       </div>
 
-      {Object.keys(stats.byCurrency).length > 0 && (
-        <Card className="p-4 bg-hero-foreground/[0.03] border-hero-foreground/10">
-          <h3 className="text-sm font-semibold mb-2">Revenue (approved) — {range.label}</h3>
-          <div className="flex flex-wrap gap-3">
-            {Object.entries(stats.byCurrency).map(([c, a]) => (
-              <div key={c} className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 font-semibold tabular-nums">
-                {c} {a.toLocaleString()}
-              </div>
+      <Card className="p-4 bg-hero-foreground/[0.03] border-hero-foreground/10 space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-400" /> Profit & Loss — {range.label}</h3>
+            <p className="text-xs text-hero-foreground/60">Approved revenue minus platform/processing fees, per currency.</p>
+          </div>
+          <div className="flex gap-2 items-end">
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-hero-foreground/60">Fee %</label>
+              <Input type="number" step="0.1" min="0" value={feePct} className="h-8 w-20"
+                onChange={(e) => { const v = Number(e.target.value) || 0; setFeePct(v); localStorage.setItem("finance_fee_pct", String(v)); }} />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-hero-foreground/60">Fixed/tx</label>
+              <Input type="number" step="0.01" min="0" value={fixedFee} className="h-8 w-20"
+                onChange={(e) => { const v = Number(e.target.value) || 0; setFixedFee(v); localStorage.setItem("finance_fixed_fee", String(v)); }} />
+            </div>
+          </div>
+        </div>
+
+        {profit.length === 0 ? (
+          <div className="text-sm text-hero-foreground/60 py-4 text-center">No approved revenue in this period.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Currency</TableHead>
+                  <TableHead className="text-right">Txns</TableHead>
+                  <TableHead className="text-right">Sparks Issued</TableHead>
+                  <TableHead className="text-right">Revenue</TableHead>
+                  <TableHead className="text-right">Fees</TableHead>
+                  <TableHead className="text-right">Net Profit</TableHead>
+                  <TableHead className="text-right">Margin</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {profit.map((r) => {
+                  const margin = r.revenue > 0 ? (r.net / r.revenue) * 100 : 0;
+                  return (
+                    <TableRow key={r.currency}>
+                      <TableCell className="font-semibold">{r.currency}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.count}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.sparks.toLocaleString()}</TableCell>
+                      <TableCell className="text-right tabular-nums">{r.revenue.toLocaleString()}</TableCell>
+                      <TableCell className="text-right tabular-nums text-rose-400">-{r.fees.toLocaleString(undefined, { maximumFractionDigits: 2 })}</TableCell>
+                      <TableCell className="text-right tabular-nums font-semibold text-emerald-400">{r.net.toLocaleString(undefined, { maximumFractionDigits: 2 })}</TableCell>
+                      <TableCell className="text-right tabular-nums">{margin.toFixed(1)}%</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-hero-foreground/10">
+          <MiniStat label="Sparks Sold" value={stats.sparksSold.toLocaleString()} />
+          <MiniStat label="Bonus Granted" value={stats.bonusGranted.toLocaleString()} />
+          <MiniStat label="Sparks Spent" value={stats.sparksSpent.toLocaleString()} />
+          <MiniStat label="Net Liability Δ" value={(stats.sparksSold + stats.bonusGranted - stats.sparksSpent).toLocaleString()}
+            hint="Sparks issued minus sparks spent in period" />
+        </div>
+
+        {Object.keys(stats.pendingRevenueByCurrency).length > 0 && (
+          <div className="text-xs text-amber-400/90 flex flex-wrap gap-2">
+            <span className="text-hero-foreground/60">Pending (not counted):</span>
+            {Object.entries(stats.pendingRevenueByCurrency).map(([c, a]) => (
+              <span key={c} className="px-2 py-0.5 rounded bg-amber-500/10">{c} {a.toLocaleString()}</span>
             ))}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       <Card className="p-0 bg-hero-foreground/[0.03] border-hero-foreground/10 overflow-hidden">
         <div className="p-4 border-b border-hero-foreground/10 flex items-center justify-between">
