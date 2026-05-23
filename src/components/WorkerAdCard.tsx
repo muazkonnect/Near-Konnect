@@ -284,7 +284,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               {getExpertise(worker.mainCategory, worker.subCategory, [], 3).map((skill) => (
                 <span
                   key={skill}
-                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80"
+                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80 mx-[14px]"
                 >
                   {skill}
                 </span>
