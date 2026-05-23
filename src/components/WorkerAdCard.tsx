@@ -289,7 +289,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* experience */}
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
+            <div className="relative flex items-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
               <div className="flex items-center gap-2">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-full border ${t.border} bg-black/50`}>
                   <CalendarClock className={`h-4 w-4 ${t.textStrong}`} />
@@ -303,21 +303,22 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               </div>
             </div>
 
-            {/* trust list */}
+            {/* expertise */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
-              <ul className="space-y-1 text-[9.5px] font-semibold text-white/80">
-                {[
-                  { Icon: ShieldCheck, label: "Background Verified" },
-                  { Icon: ThumbsUp, label: "High Quality Work" },
-                  { Icon: Clock, label: "On Time Service" },
-                  { Icon: Handshake, label: "Trusted by Clients" },
-                ].map(({ Icon, label }) => (
-                  <li key={label} className="flex items-center gap-1.5">
-                    <Icon className={`h-3 w-3 shrink-0 ${t.textStrong}`} />
-                    <span className="truncate">{label}</span>
-                  </li>
+              <div className={`mb-1.5 flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.16em] ${t.textStrong}`}>
+                <Sparkles className="h-3 w-3" />
+                Expertise
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {getExpertise(worker.mainCategory, worker.subCategory, [], 4).map((skill) => (
+                  <span
+                    key={skill}
+                    className="truncate rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-[2px] text-[9px] font-semibold text-white/80"
+                  >
+                    {skill}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
 
