@@ -123,7 +123,6 @@ const Home = () => {
   const bannerAds = useNativeAds("home_banner", browsingCoords);
   const inlineAds = useNativeAds("home_inline", browsingCoords);
   const feedAds = useNativeAds("home_feed", browsingCoords);
-  const hasAnyAds = bannerAds.length > 0 || inlineAds.length > 0 || feedAds.length > 1 || promotedTop.length > 1 || promoted5.length > 1 || promoted10.length > 1 || promoted15.length > 1 || featuredIds.size > 1;
 
   const workers = useMemo(
     () =>
@@ -161,6 +160,7 @@ const Home = () => {
   const promoted10 = usePromotedNearby(browsingCoords, r1);
   const promoted15 = usePromotedNearby(browsingCoords, r2);
   const promotedTop = usePromotedTopRated(browsingCoords);
+  const hasAnyAds = bannerAds.length > 0 || inlineAds.length > 0 || feedAds.length > 0 || promotedTop.length > 0 || promoted5.length > 0 || promoted10.length > 0 || promoted15.length > 0 || featuredIds.size > 0;
 
   // Blood donors — top 3 nearest verified donors
   const { data: donors = [] } = useQuery({

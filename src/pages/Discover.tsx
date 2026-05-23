@@ -118,7 +118,6 @@ const Discover = () => {
   );
   const adminUserIds = useAdminUserIds();
   const bannerAds = useNativeAds("home_banner", userCoords);
-  const hasAnyAds = bannerAds.length > 1 || promoted3kmFiltered.length > 1 || featuredWorkers.length > 1 || exploreAds.length > 1;
 
   const { items: exploreAds, fetchNextPage, hasNextPage, isFetchingNextPage } = usePromotedExploreInfinite(userCoords, {
     mainCategory: selectedMainCategory,
@@ -275,6 +274,7 @@ const Discover = () => {
     () => sorted.filter((w) => !featuredIds.has(w.id)),
     [sorted, featuredIds]
   );
+  const hasAnyAds = bannerAds.length > 0 || promoted3kmFiltered.length > 0 || featuredWorkers.length > 0 || exploreAds.length > 1;
 
   const toggleMainCategory = (mainCategory: string) => {
     const next = new URLSearchParams(searchParams);
