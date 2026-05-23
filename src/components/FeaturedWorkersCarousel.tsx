@@ -114,13 +114,13 @@ const FeaturedWorkersCarousel = ({
       <SteppedCarousel
         className="pb-3"
         trackClassName="px-5"
-        dwellMs={2800}
+        dwellMs={dwellMs || 2800}
+        transitionMs={transitionMs || 450}
         items={items.map((w, i) => (
           <FeaturedWorkerCard
             key={w.id}
             worker={w}
             index={i}
-            
           />
         ))}
       />
