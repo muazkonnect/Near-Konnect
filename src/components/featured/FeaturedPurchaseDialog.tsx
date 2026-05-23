@@ -37,8 +37,9 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
     if (!isVerified) return toast.error("Only verified workers can become featured.");
     if (insufficient) return toast.error(`Need ${cost} Sparks. Top up first.`);
     try {
-      await purchase.mutateAsync({ duration: 30, categoryId });
+      await purchase.mutateAsync({ duration: 30, categoryId, currentCC });
       onOpenChange(false);
+
     } catch {}
   };
 
