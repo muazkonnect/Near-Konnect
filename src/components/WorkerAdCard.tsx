@@ -162,7 +162,7 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
               )}
             </div>
             <span
-              className={`inline-flex items-center gap-1 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/60 px-1.5 py-[2px] text-[8px] font-extrabold uppercase tracking-[0.16em] backdrop-blur`}
+              className={`inline-flex items-center gap-1 rounded-full border ${worker.available ? "border-lime-400/60 text-lime-300" : "border-white/15 text-white/55"} bg-black/60 px-1.5 py-[2px] text-[8px] font-extrabold uppercase tracking-[0.16em] backdrop-blur my-[6px]`}
             >
               <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${worker.available ? "bg-lime-400" : "bg-white/40"}`}>
                 {worker.available && <span className="absolute inset-0 animate-ping rounded-full bg-lime-400/80" />}
