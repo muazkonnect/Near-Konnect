@@ -43,7 +43,7 @@ const SimpleWorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed }: Prop
       <DialogContent
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
-        className="max-w-sm overflow-hidden rounded-2xl border border-border bg-background p-0 [&>button:last-child]:hidden"
+        className="w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-border bg-background p-0 [&>button:last-child]:hidden"
       >
         <VisuallyHidden>
           <DialogTitle>{worker.name}</DialogTitle>

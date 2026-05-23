@@ -90,7 +90,7 @@ const WorkerProfilePopup = ({ worker, open, onOpenChange, isAuthed, premium: pre
       <DialogContent
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
-        className={`max-w-[400px] overflow-hidden rounded-[24px] border-0 p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow} [&>button:last-child]:hidden`}
+        className={`w-[calc(100vw-2rem)] max-w-[400px] overflow-hidden rounded-[24px] border-0 p-[1.5px] bg-gradient-to-br ${t.grad} ${t.glow} [&>button:last-child]:hidden`}
       >
         <VisuallyHidden>
           <DialogTitle>{worker.name}</DialogTitle>
