@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -200,19 +200,33 @@ const Home = () => {
 
   // Live ticker: admin static messages + real-time activity
   const announcementMessages = useAppSetting("announcement_messages");
+  const specialAnnouncement = useAppSetting("special_announcement");
   const { data: activity = [] } = useRecentActivity(20);
+
+  // Re-evaluate special-announcement expiry on a tick
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  useEffect(() => {
+    const i = setInterval(() => setNowTs(Date.now()), 30_000);
+    return () => clearInterval(i);
+  }, []);
+  const specialActive =
+    !!specialAnnouncement?.text?.trim() &&
+    (!specialAnnouncement.expires_at || new Date(specialAnnouncement.expires_at).getTime() > nowTs);
+
   const tickerItems = useMemo(() => {
+    if (specialActive && specialAnnouncement) {
+      return [{ text: specialAnnouncement.text.trim(), special: true as const }];
+    }
     const staticItems = (announcementMessages || []).map((text) => ({ text, hot: true }));
     const activityItems = activity.map((a) => ({ text: a.text, hot: !!a.hot }));
-    // Interleave: static, activity, static, activity…
-    const out: { text: string; hot?: boolean }[] = [];
+    const out: { text: string; hot?: boolean; special?: boolean }[] = [];
     const max = Math.max(staticItems.length, activityItems.length);
     for (let i = 0; i < max; i++) {
       if (staticItems[i]) out.push(staticItems[i]);
       if (activityItems[i]) out.push(activityItems[i]);
     }
     return out.length ? out : [{ text: "Welcome to Near Konnect — your hyperlocal network", hot: true }];
-  }, [announcementMessages, activity]);
+  }, [announcementMessages, activity, specialActive, specialAnnouncement]);
 
   const submitSearch = (q: string) => {
     if (!q.trim()) return navigate("/discover");
@@ -225,22 +239,26 @@ const Home = () => {
       {/* DARK CANVAS — overrides the AppLayout main padding so the design feels edge-to-edge */}
       <div className="-mx-4 -mt-[90px] -mb-[166px] bg-hero text-hero-foreground md:mx-0 md:mt-0 md:mb-0 md:rounded-3xl md:overflow-hidden md:border md:border-hero-foreground/10">
         {/* TICKER */}
-        <div className="overflow-hidden border-b border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]">
+        <div className={`overflow-hidden border-b ${specialActive ? "border-destructive/40 bg-destructive/15" : "border-hero-foreground/10 bg-black/30 md:bg-hero-foreground/[0.03]"}`}>
           <div className="flex h-9 items-center">
             <div className="flex animate-[ticker_30s_linear_infinite] gap-10 whitespace-nowrap px-4">
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
-                  className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                    t.hot ? "text-primary" : "text-hero-muted"
+                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] ${
+                    t.special ? "text-destructive-foreground" : t.hot ? "text-primary" : "text-hero-muted"
                   }`}
                 >
                   <span
-                    className={`h-1 w-1 rounded-full ${
-                      t.hot ? "bg-primary shadow-[0_0_10px_hsl(var(--primary))]" : "bg-hero-muted/60"
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      t.special
+                        ? "bg-destructive-foreground shadow-[0_0_10px_hsl(var(--destructive))] animate-pulse"
+                        : t.hot
+                        ? "bg-primary shadow-[0_0_10px_hsl(var(--primary))]"
+                        : "bg-hero-muted/60"
                     }`}
                   />
-                  {t.text}
+                  {t.special ? `⚠ ${t.text}` : t.text}
                 </span>
               ))}
             </div>
