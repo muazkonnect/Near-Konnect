@@ -8,6 +8,7 @@ import { useRealtimeLocation } from "@/hooks/useRealtimeLocation";
 import FeaturedWorkerCard from "@/components/featured/FeaturedWorkerCard";
 import { calculateDistance } from "@/lib/geolocation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAppSetting } from "@/hooks/useAppSettings";
 
 type FeaturedWorker = {
   id: string;
@@ -42,6 +43,8 @@ const FeaturedWorkersCarousel = ({
   const paidFeaturedIds = useNearbyFeaturedWorkerIds(coords ?? null);
   const nearbyFeaturedMap = useNearbyFeaturedMap(coords ?? null);
   const [items, setItems] = useState<FeaturedWorker[]>([]);
+  const dwellMs = useAppSetting("featured_cards_dwell_ms");
+  const transitionMs = useAppSetting("featured_cards_transition_ms");
 
   const mergedIds = useMemo(() => {
     const set = new Set<string>([...featured.map((f) => f.service_id), ...paidFeaturedIds]);
@@ -111,13 +114,13 @@ const FeaturedWorkersCarousel = ({
       <SteppedCarousel
         className="pb-3"
         trackClassName="px-5"
-        dwellMs={2800}
+        dwellMs={dwellMs || 2800}
+        transitionMs={transitionMs || 450}
         items={items.map((w, i) => (
           <FeaturedWorkerCard
             key={w.id}
             worker={w}
             index={i}
-            
           />
         ))}
       />

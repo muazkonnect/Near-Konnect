@@ -12,6 +12,8 @@ export type AppSettingsMap = {
   featured_default_radius_km: number;
   announcement_messages: string[];
   announcement_ticker_speed_seconds: number;
+  featured_cards_dwell_ms: number;
+  featured_cards_transition_ms: number;
   special_announcement: SpecialAnnouncement;
 };
 
@@ -27,6 +29,8 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
     "Safety protocols for verified providers updated",
   ],
   announcement_ticker_speed_seconds: 30,
+  featured_cards_dwell_ms: 2800,
+  featured_cards_transition_ms: 450,
   special_announcement: null,
 };
 

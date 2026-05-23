@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Star, Search, Zap, Clock, XCircle, Loader2, Plus, Trash2 } from "lucide-react";
+import { Star, Search, Zap, Clock, XCircle, Loader2, Plus, Trash2, Gauge } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -29,9 +30,17 @@ const FeaturedManagementTab = () => {
   const [newSparks, setNewSparks] = useState("100");
 
   const defaultRadius = useAppSetting("featured_default_radius_km");
+  const defaultDwellMs = useAppSetting("featured_cards_dwell_ms");
+  const defaultTransitionMs = useAppSetting("featured_cards_transition_ms");
   const updateSetting = useUpdateAppSetting();
   const [radiusInput, setRadiusInput] = useState<string>("");
   const radiusValue = radiusInput === "" ? String(defaultRadius ?? 3) : radiusInput;
+
+  const [dwellInput, setDwellInput] = useState<number>(2800);
+  const [transitionInput, setTransitionInput] = useState<number>(450);
+
+  useEffect(() => { setDwellInput(defaultDwellMs || 2800); }, [defaultDwellMs]);
+  useEffect(() => { setTransitionInput(defaultTransitionMs || 450); }, [defaultTransitionMs]);
 
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ["admin_featured_workers"],
@@ -174,6 +183,66 @@ const FeaturedManagementTab = () => {
             Save
           </Button>
         </div>
+      </div>
+
+      {/* Featured Cards Animation Speed */}
+      <div className="rounded-2xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-hero-foreground">
+          <Gauge className="h-4 w-4 text-primary" /> Featured Cards Speed
+        </h3>
+        <p className="mb-3 text-xs text-hero-foreground/60">
+          Controls how fast the featured worker cards scroll on the homepage carousel.
+        </p>
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Dwell (ms)</Label>
+            <Input
+              type="number"
+              min={500}
+              max={10000}
+              step={100}
+              className="h-9 w-28"
+              value={dwellInput}
+              onChange={(e) => setDwellInput(Number(e.target.value))}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-hero-foreground/50">Transition (ms)</Label>
+            <Input
+              type="number"
+              min={100}
+              max={2000}
+              step={50}
+              className="h-9 w-28"
+              value={transitionInput}
+              onChange={(e) => setTransitionInput(Number(e.target.value))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="h-9"
+            disabled={
+              updateSetting.isPending ||
+              (dwellInput === (defaultDwellMs || 2800) && transitionInput === (defaultTransitionMs || 450))
+            }
+            onClick={async () => {
+              try {
+                const dwell = Math.min(10000, Math.max(500, Number(dwellInput) || 2800));
+                const trans = Math.min(2000, Math.max(100, Number(transitionInput) || 450));
+                await updateSetting.mutateAsync({ key: "featured_cards_dwell_ms", value: dwell });
+                await updateSetting.mutateAsync({ key: "featured_cards_transition_ms", value: trans });
+                toast.success("Featured cards speed saved");
+              } catch (e: any) {
+                toast.error(e?.message || "Failed to save");
+              }
+            }}
+          >
+            Save
+          </Button>
+        </div>
+        <p className="mt-2 text-[10px] text-hero-foreground/40">
+          Dwell = pause between card changes. Transition = animation duration. Lower dwell = faster scrolling.
+        </p>
       </div>
 
       {/* Pricing Rules */}
