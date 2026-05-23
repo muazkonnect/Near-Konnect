@@ -2,27 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
-import {
-  Search,
-  MapPin,
-  Navigation,
-  X,
-  Home as HomeIcon,
-  Car,
-  ShoppingBag,
-  Briefcase,
-  HeartPulse,
-  Zap,
-  Compass,
-  Star,
-  ArrowRight,
-  Zap,
-  ShieldCheck,
-  Clock3,
-  BadgeCheck,
-  Award,
-  Menu,
-} from "lucide-react";
+import { Search, MapPin, Navigation, X, Home as HomeIcon, Car, ShoppingBag, Briefcase, HeartPulse, Zap, Compass, Star, ArrowRight, ShieldCheck, Clock3, BadgeCheck, Award, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

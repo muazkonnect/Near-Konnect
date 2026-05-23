@@ -1,29 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Calendar,
-  BadgeCheck,
-  CheckCircle,
-  Crown,
-  Clock,
-  Compass,
-  Zap,
-  Zap,
-  Eye,
-  HeartPulse,
-  LayoutDashboard,
-  Lock,
-  KeyRound,
-  MapPin,
-  MessageSquare,
-  Navigation,
-  Save,
-  Search,
-  Star,
-  UserCheck,
-  XCircle,
-} from "lucide-react";
+import { Calendar, BadgeCheck, CheckCircle, Crown, Clock, Compass, Zap, Eye, HeartPulse, LayoutDashboard, Lock, KeyRound, MapPin, MessageSquare, Navigation, Save, Search, Star, UserCheck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
