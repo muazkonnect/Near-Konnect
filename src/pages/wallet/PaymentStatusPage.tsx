@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle, Clock, ArrowLeft, Zap } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { fetchPaymentRequest, getProofSignedUrl } from "@/services/walletService";
+import { formatPrice } from "@/lib/sparkPricing";
 import { useEffect, useState } from "react";
 
 const STATUS: Record<string, { icon: any; label: string; tone: string }> = {
