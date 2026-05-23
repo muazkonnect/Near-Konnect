@@ -571,38 +571,82 @@ const AdminDashboard = () => {
               ];
               const open = items.filter((i) => i.count > 0);
               return (
-                <div className="mx-auto max-w-3xl">
-                  <SectionHeader title="Overview" subtitle="Only what needs your attention." />
+            {tab === "overview" && (
+              <div className="space-y-8">
+                <SectionHeader title="Overview" subtitle="A complete pulse on your platform." />
 
-                  <div className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] divide-y divide-hero-foreground/10">
-                    {open.length === 0 ? (
-                      <div className="flex items-center justify-center gap-2 py-10 text-sm text-hero-foreground/60">
-                        <CheckCircle className="h-4 w-4 text-success" />
-                        All caught up.
-                      </div>
-                    ) : (
-                      open.map((i) => (
-                        <button
-                          key={i.key}
-                          onClick={() => setTab(i.key as TabKey)}
-                          className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-hero-foreground/[0.04]"
-                        >
-                          <span className="flex items-center gap-3 text-sm font-medium text-hero-foreground">
-                            <i.icon className="h-4 w-4 text-primary" />
-                            {i.label}
-                          </span>
-                          <Badge className="bg-primary text-primary-foreground">{i.count}</Badge>
-                        </button>
-                      ))
+                {/* Pending requests & approvals */}
+                <section>
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                      Requests & approvals
+                    </h3>
+                    {totalPending > 0 && (
+                      <Badge className="bg-destructive text-destructive-foreground">{totalPending} pending</Badge>
                     )}
                   </div>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+                    <StatCard label="Payments" value={pending?.payments ?? 0} icon={Receipt} accent={(pending?.payments ?? 0) > 0} onClick={() => setTab("finance")} />
+                    <StatCard label="Verifications" value={pending?.verifications ?? 0} icon={BadgeCheck} accent={(pending?.verifications ?? 0) > 0} onClick={() => setTab("verifications")} />
+                    <StatCard label="Featured" value={pending?.featured ?? 0} icon={Star} accent={(pending?.featured ?? 0) > 0} onClick={() => setTab("featured")} />
+                    <StatCard label="Avatar Resets" value={pending?.avatars ?? 0} icon={UserCog} accent={(pending?.avatars ?? 0) > 0} onClick={() => setTab("avatar_resets")} />
+                    <StatCard label="Location Req" value={pending?.locations ?? 0} icon={Globe2} accent={(pending?.locations ?? 0) > 0} onClick={() => setTab("location_requests")} />
+                  </div>
+                </section>
 
-                  <p className="mt-4 text-center text-[11px] text-hero-foreground/50">
-                    {allProfiles.length} users · {workers.length} workers · {newUsers24h} new (24h)
-                  </p>
-                </div>
-              );
-            })()}
+                {/* Users & Workers */}
+                <section>
+                  <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                    Users & workers
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                    <StatCard label="Total Users" value={allProfiles.length} icon={Users} onClick={() => setTab("users")} />
+                    <StatCard label="Workers" value={workers.length} icon={Briefcase} onClick={() => setTab("workers")} />
+                    <StatCard label="Verified" value={verifiedWorkersCount} icon={BadgeCheck} onClick={() => setTab("workers")} />
+                    <StatCard label="New (24h)" value={newUsers24h} icon={Zap} />
+                  </div>
+                </section>
+
+                {/* Activity */}
+                <section>
+                  <h3 className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">
+                    Activity
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                    <StatCard label="Active Featured" value={activeFeatured} icon={Star} onClick={() => setTab("featured")} />
+                    <StatCard label="Active Ads" value={activeAds} icon={Megaphone} onClick={() => setTab("running_ads")} />
+                    <StatCard label="Blood Donors" value={bloodDonors.length} icon={Droplet} onClick={() => setTab("donors")} />
+                    <StatCard label="Categories" value={categories.length} icon={Shield} onClick={() => setTab("categories")} />
+                  </div>
+                </section>
+
+                {/* Latest workers */}
+                <section className="rounded-3xl border border-hero-foreground/10 bg-hero-foreground/[0.04] p-4 sm:p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-hero-foreground/60">Latest workers</h3>
+                    <button onClick={() => setTab("workers")} className="text-[11px] font-semibold text-primary hover:underline">View all</button>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {workers.slice(0, 5).map((w: any) => (
+                      <li key={w.id} className="flex items-center justify-between gap-3 rounded-xl px-2 py-1.5 hover:bg-hero-foreground/[0.04]">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-[11px] font-bold text-primary overflow-hidden">
+                            {w.profiles?.avatar_url ? (
+                              <img src={w.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
+                            ) : (
+                              w.profiles?.full_name?.slice(0, 2).toUpperCase() || "??"
+                            )}
+                          </div>
+                          <span className="truncate text-sm font-medium text-hero-foreground">{w.profiles?.full_name || "Unnamed"}</span>
+                        </div>
+                        <span className="text-xs text-hero-foreground/60 shrink-0 truncate max-w-[160px]">{w.profession}</span>
+                      </li>
+                    ))}
+                    {workers.length === 0 && <li className="text-sm text-hero-foreground/60 py-4 text-center">No workers yet.</li>}
+                  </ul>
+                </section>
+              </div>
+            )}
 
 
 
