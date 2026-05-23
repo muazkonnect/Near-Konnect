@@ -560,14 +560,18 @@ const WorkerDashboard = () => {
             </button>
             <button
               onClick={() => {
-                if (!workerData?.verified) { toast.error("Get verified to become featured."); setVerifyOpen(true); return; }
+                if (!isVerifiedWorker) {
+                  toast.error(verificationPending ? "Verification pending. Featured unlocks after approval." : "Get verified to become featured.");
+                  if (!verificationPending) setVerifyOpen(true);
+                  return;
+                }
                 setFeaturedOpen(true);
               }}
               className="group relative rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
             >
               <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
               <p className="text-sm font-bold">Become Featured</p>
-              <p className="text-[11px] text-hero-foreground/60">{workerData?.verified ? "3 km premium reach" : "Verification required"}</p>
+              <p className="text-[11px] text-hero-foreground/60">{isVerifiedWorker ? "3 km premium reach" : verificationPending ? "Verification pending" : "Verification required"}</p>
             </button>
           </div>
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
