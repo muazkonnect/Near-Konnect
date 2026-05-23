@@ -104,7 +104,7 @@ const FeaturedWorkersCarousel = ({
   if (items.length === 0) return null;
 
   return (
-    <section className={`space-y-3 ${className}`}>
+    <section ref={sectionRef} className={`space-y-3 ${className}`}>
       <div className="flex items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-1.5">
@@ -119,7 +119,8 @@ const FeaturedWorkersCarousel = ({
         className="pb-3"
         trackClassName="px-5"
         dwellMs={dwellMs || 2800}
-        transitionMs={transitionMs || 450}
+        transitionMs={reduced ? 0 : (transitionMs || 450)}
+        paused={!visible || reduced}
         items={items.map((w, i) => (
           <FeaturedWorkerCard
             key={w.id}
