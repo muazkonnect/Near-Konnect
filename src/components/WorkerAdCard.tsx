@@ -9,19 +9,18 @@ import {
   User,
   MessageCircle,
   ChevronRight,
-  ThumbsUp,
-  Clock,
-  Handshake,
   Trophy,
   BadgeCheck,
   Hammer,
   Home,
   Crown,
+  Sparkles,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthRequiredDialog from "@/components/AuthRequiredDialog";
 import WorkerProfilePopup from "@/components/WorkerProfilePopup";
 import { trackAdEvent } from "@/hooks/usePromoted";
+import { getExpertise } from "@/lib/categoryExpertise";
 import type { Worker } from "@/data/mockData";
 
 interface Props {
