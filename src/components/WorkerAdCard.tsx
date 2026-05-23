@@ -315,9 +315,8 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
 
             {worker.showContact !== false ? (
               isAuthed ? (
-                <a
-                  href={worker.whatsapp ? `https://wa.me/${worker.whatsapp.replace(/\D/g, "")}` : "#"}
-                  onClick={(e) => { if (!worker.whatsapp) { e.preventDefault(); setPopupOpen(true); } fireClick(); }}
+                <button
+                  onClick={() => { fireClick(); setPopupOpen(true); }}
                   className={`group/btn flex items-center justify-between rounded-2xl bg-gradient-to-r ${accentGradient} px-4 py-3 text-black shadow-lg shadow-lime-500/20`}
                 >
                   <div className="flex items-center gap-2.5">
