@@ -570,7 +570,7 @@ const CampaignWizard = ({
                 <li>Placement: <b className="capitalize">{placement === "homepage" ? "Homepage" : "Explore Page"}</b></li>
                 <li>Targeting: <b className="capitalize">{adType}</b></li>
                 <li>Radius: <b>{radius} km</b></li>
-                <li>Duration: <b>{duration} days</b></li>
+                <li>Duration: <b>{duration} days</b>{freeDays > 0 ? <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">Pay {paidDays}d · {freeDays}d free</span> : null}</li>
                 {adType === "international" && (
                   <li>Target: <b>{[areaText, cityName, stateName, countryName].filter(Boolean).join(", ") || "—"}</b></li>
                 )}
