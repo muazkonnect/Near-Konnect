@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Check, Zap } from "lucide-react";
+import { Sparkles, Check, Zap, ShieldAlert } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import SparksBalanceCard from "@/components/wallet/SparksBalanceCard";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,18 @@ import { Input } from "@/components/ui/input";
 import { fetchPackages } from "@/services/walletService";
 import { usePaymentRegion } from "@/hooks/usePaymentRegion";
 import { useState } from "react";
+import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useMyVerification } from "@/hooks/useVerification";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const BuySparksPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: workerData } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const isVerifiedWorker = !!(workerData as any)?.verified;
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
   const { data: packages = [], isLoading } = useQuery({ queryKey: ["packages"], queryFn: fetchPackages });
   const { region } = usePaymentRegion();
   const [customSparks, setCustomSparks] = useState("");
