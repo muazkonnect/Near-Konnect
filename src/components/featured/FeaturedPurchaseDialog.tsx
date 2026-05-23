@@ -21,13 +21,16 @@ export default function FeaturedPurchaseDialog({ open, onOpenChange, workerCateg
   const isVerified = !!(workerProfile as any)?.verified;
   const purchase = usePurchaseFeatured();
   const [categoryId, setCategoryId] = useState<string | null>(workerCategoryId ?? null);
+  const { tier, multiplier } = useUserTier();
+  const currentCC = useCurrentCC();
 
   const cost = useMemo(() => {
     const r = pricing.find((p) => p.duration_days === 30 && p.category_id === categoryId)
       ?? pricing.find((p) => p.duration_days === 30 && p.category_id === null);
-    if (!r) return 30;
-    return Math.ceil(r.base_sparks * Number(r.multiplier || 1));
-  }, [pricing, categoryId]);
+    const base = r ? Math.ceil(r.base_sparks * Number(r.multiplier || 1)) : 30;
+    return Math.ceil(base * (multiplier || 1));
+  }, [pricing, categoryId, multiplier]);
+
   const insufficient = balance < cost;
 
   const handlePurchase = async () => {
