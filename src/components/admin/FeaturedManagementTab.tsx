@@ -30,9 +30,17 @@ const FeaturedManagementTab = () => {
   const [newSparks, setNewSparks] = useState("100");
 
   const defaultRadius = useAppSetting("featured_default_radius_km");
+  const defaultDwellMs = useAppSetting("featured_cards_dwell_ms");
+  const defaultTransitionMs = useAppSetting("featured_cards_transition_ms");
   const updateSetting = useUpdateAppSetting();
   const [radiusInput, setRadiusInput] = useState<string>("");
   const radiusValue = radiusInput === "" ? String(defaultRadius ?? 3) : radiusInput;
+
+  const [dwellInput, setDwellInput] = useState<number>(2800);
+  const [transitionInput, setTransitionInput] = useState<number>(450);
+
+  useEffect(() => { setDwellInput(defaultDwellMs || 2800); }, [defaultDwellMs]);
+  useEffect(() => { setTransitionInput(defaultTransitionMs || 450); }, [defaultTransitionMs]);
 
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ["admin_featured_workers"],
