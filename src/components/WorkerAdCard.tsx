@@ -116,9 +116,9 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
           {/* ── BANNER BACKGROUND ─────────────────────────────────── */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]">
             {worker.bannerUrl ? (
-              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-35" />
+              <img src={worker.bannerUrl} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-70" />
             ) : worker.profilePhoto ? (
-              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-20 blur-2xl" />
+              <img src={worker.profilePhoto} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover opacity-40 blur-2xl" />
             ) : null}
             {/* dot grid texture */}
             <div
