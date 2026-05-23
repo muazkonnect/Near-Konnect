@@ -1418,6 +1418,7 @@ export type Database = {
           is_blood_donor: boolean
           latitude: number | null
           longitude: number | null
+          phone: string | null
           show_contact: boolean
           updated_at: string
           use_whatsapp: boolean
@@ -1436,6 +1437,7 @@ export type Database = {
           is_blood_donor?: boolean
           latitude?: number | null
           longitude?: number | null
+          phone?: string | null
           show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
@@ -1454,6 +1456,7 @@ export type Database = {
           is_blood_donor?: boolean
           latitude?: number | null
           longitude?: number | null
+          phone?: string | null
           show_contact?: boolean
           updated_at?: string
           use_whatsapp?: boolean
