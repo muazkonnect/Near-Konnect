@@ -44,6 +44,8 @@ const AdsDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { roles, isLoading: roleLoading } = useUserRole();
   const { data: workerProfile, isLoading: wpLoading } = useWorkerProfile();
+  const { data: myVerification } = useMyVerification(user?.id);
+  const verificationPending = myVerification?.status === "submitted" || myVerification?.status === "resubmit";
   const { data: balance = 0 } = useSparksWallet();
   const { data: campaigns = [] } = useMyCampaigns();
   const campaignIds = useMemo(() => campaigns.map((c) => c.id), [campaigns]);
