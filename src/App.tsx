@@ -13,12 +13,13 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import OfflineBanner from "@/components/OfflineBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
-import Footer from "@/components/Footer";
-import DisclosureModals from "@/components/DisclosureModals";
-import WorkerOnboardingDialog from "@/components/WorkerOnboardingDialog";
-import AssistantSheet from "@/components/assistant/AssistantSheet";
 import SplashScreen from "@/components/SplashScreen";
 import LocationGate from "@/components/LocationGate";
+// Defer non-critical UI off the initial bundle
+const Footer = lazy(() => import("@/components/Footer"));
+const DisclosureModals = lazy(() => import("@/components/DisclosureModals"));
+const WorkerOnboardingDialog = lazy(() => import("@/components/WorkerOnboardingDialog"));
+const AssistantSheet = lazy(() => import("@/components/assistant/AssistantSheet"));
 import { useAuth } from "@/contexts/AuthContext";
 import { usePushAutoRegister } from "@/hooks/usePushAutoRegister";
 import { WalletProvider } from "@/contexts/WalletContext";
@@ -91,8 +92,10 @@ const AppContent = () => {
       <BrowserRouter>
         <OfflineBanner />
         <UnverifiedEmailBanner />
-        <DisclosureModals />
-        <WorkerOnboardingDialog />
+        <Suspense fallback={null}>
+          <DisclosureModals />
+          <WorkerOnboardingDialog />
+        </Suspense>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -124,9 +127,13 @@ const AppContent = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
         <MobileBottomNav />
-        <AssistantSheet />
+        <Suspense fallback={null}>
+          <AssistantSheet />
+        </Suspense>
       </BrowserRouter>
     </>
   );
