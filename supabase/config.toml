@@ -3,6 +3,12 @@ project_id = "lxghuqiheaoinytrwhac"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.admin-otp-send]
+    verify_jwt = true
+  [functions.admin-otp-verify]
+    verify_jwt = true
+  [functions.admin-session-check]
+    verify_jwt = true
   [functions.process-email-queue]
     verify_jwt = true
   [functions.check-face-duplicate]
