@@ -15,6 +15,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import UnverifiedEmailBanner from "@/components/UnverifiedEmailBanner";
 import SplashScreen from "@/components/SplashScreen";
 import LocationGate from "@/components/LocationGate";
+import AdminOtpGate from "@/components/AdminOtpGate";
 // Defer non-critical UI off the initial bundle
 const Footer = lazy(() => import("@/components/Footer"));
 const DisclosureModals = lazy(() => import("@/components/DisclosureModals"));
