@@ -63,6 +63,7 @@ import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
 const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
+const DiscountsTab = lazy(() => import("@/components/admin/DiscountsTab"));
 
 
 const TabFallback = () => (
