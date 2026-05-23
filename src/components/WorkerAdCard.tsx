@@ -279,12 +279,12 @@ const WorkerAdCard = ({ worker, premium = false, isAuthed, campaignId, placement
             </div>
 
             {/* expertise pills */}
-            <div className="flex flex-wrap items-center my-[6px] gap-[6px]">
+            <div className="flex flex-wrap items-center my-[6px] gap-[6px] mx-[17px]">
               <Zap className={`h-2.5 w-2.5 ${t.textStrong}`} />
               {getExpertise(worker.mainCategory, worker.subCategory, [], 3).map((skill) => (
                 <span
                   key={skill}
-                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80 mx-[17px]"
+                  className="truncate rounded border border-white/10 bg-white/[0.04] px-1 py-[1px] text-[8px] font-semibold text-white/80"
                 >
                   {skill}
                 </span>
