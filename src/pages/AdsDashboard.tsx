@@ -342,9 +342,10 @@ const CampaignWizard = ({
 
   useEffect(() => {
     let cancelled = false;
-    calcSparksCost(adType, radius, duration, placement).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
+    calcSparksCost(adType, radius, duration, placement, currentCC).then((c) => { if (!cancelled) setCost(c); }).catch(() => {});
     return () => { cancelled = true; };
-  }, [adType, radius, duration, placement]);
+  }, [adType, radius, duration, placement, currentCC]);
+
 
   const useMyLocation = async () => {
     try {
