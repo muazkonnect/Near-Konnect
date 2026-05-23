@@ -63,7 +63,7 @@ const PaymentCheckoutPage = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { region } = usePaymentRegion();
+  const { region, source } = usePaymentRegion();
   const ratePkr = useAppSetting("spark_price_pkr");
   const rateUsdt = useAppSetting("spark_price_usdt");
 
