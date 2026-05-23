@@ -23,6 +23,8 @@ import {
   Bell,
   ScrollText,
   Receipt,
+  Percent,
+
 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
