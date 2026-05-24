@@ -43,6 +43,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const ensureUserRecords = async (nextUser: User | null) => {
     if (!nextUser) return;
+    // Email verification is mandatory before any profile/worker record is created.
+    // Until the user verifies their email, treat them as not signed up.
+    if (!nextUser.email_confirmed_at) return;
 
     const existing = inFlightEnsuresRef.current.get(nextUser.id);
     if (existing) {
