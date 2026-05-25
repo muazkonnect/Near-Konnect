@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 const SITE_NAME = "Near Konnect App";
-const SENDER_DOMAIN = "notify.www.nearkonnect.com";
+const SENDER_DOMAIN = "notify.nearkonnect.com";
 const FROM_DOMAIN = SENDER_DOMAIN;
 
 async function sha256(s: string): Promise<string> {
