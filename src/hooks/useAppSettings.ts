@@ -18,13 +18,6 @@ export type AppSettingsMap = {
   special_announcement: SpecialAnnouncement;
   spark_price_pkr: number;
   spark_price_usdt: number;
-  job_requests_enabled: boolean;
-  job_requests_radius_km: number;
-  job_requests_client_post_cost: number;
-  job_requests_worker_claim_cost: number;
-  job_requests_require_verified_client: boolean;
-  job_requests_require_premium_worker: boolean;
-  job_requests_expiry_minutes: number;
 };
 
 export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
@@ -45,13 +38,6 @@ export const APP_SETTINGS_DEFAULTS: AppSettingsMap = {
   special_announcement: null,
   spark_price_pkr: 10,
   spark_price_usdt: 0.036,
-  job_requests_enabled: true,
-  job_requests_radius_km: 5,
-  job_requests_client_post_cost: 0,
-  job_requests_worker_claim_cost: 0,
-  job_requests_require_verified_client: true,
-  job_requests_require_premium_worker: true,
-  job_requests_expiry_minutes: 120,
 };
 
 export function useAppSettings() {

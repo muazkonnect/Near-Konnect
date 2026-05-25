@@ -1032,57 +1032,6 @@ export type Database = {
           },
         ]
       }
-      job_requests: {
-        Row: {
-          claimed_at: string | null
-          claimed_by_user_id: string | null
-          client_user_id: string
-          created_at: string
-          expires_at: string
-          id: string
-          latitude: number | null
-          longitude: number | null
-          main_category: string
-          note: string
-          sparks_cost: number
-          status: string
-          sub_category: string
-          updated_at: string
-        }
-        Insert: {
-          claimed_at?: string | null
-          claimed_by_user_id?: string | null
-          client_user_id: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          main_category: string
-          note?: string
-          sparks_cost?: number
-          status?: string
-          sub_category: string
-          updated_at?: string
-        }
-        Update: {
-          claimed_at?: string | null
-          claimed_by_user_id?: string | null
-          client_user_id?: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          main_category?: string
-          note?: string
-          sparks_cost?: number
-          status?: string
-          sub_category?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       jobs: {
         Row: {
           budget: number | null
@@ -2879,12 +2828,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      is_premium_or_featured_worker: {
-        Args: { _uid: string }
-        Returns: boolean
-      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
-      is_verified_user: { Args: { _uid: string }; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
       match_workers_for_query: {
         Args: {

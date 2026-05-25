@@ -39,7 +39,6 @@ const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
-const JobRequestsTab = lazy(() => import("@/components/admin/JobRequestsTab"));
 const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
 const DiscountsTab = lazy(() => import("@/components/admin/DiscountsTab"));
 const TierPricingTab = lazy(() => import("@/components/admin/TierPricingTab"));
@@ -53,7 +52,7 @@ const TabFallback = () => (
 import { Pencil, BadgeCheck, Globe2 } from "lucide-react";
 import { logAdminAction } from "@/lib/adminAudit";
 
-type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "discounts" | "tiers" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests" | "job_requests";
+type TabKey = "overview" | "workers" | "users" | "categories" | "donors" | "featured" | "verifications" | "running_ads" | "sparks" | "finance" | "discounts" | "tiers" | "push" | "audit" | "settings" | "avatar_resets" | "location_requests";
 
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; group: "Manage" | "Operations" | "System" }[] = [
@@ -74,7 +73,6 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
   { key: "location_requests", label: "Location Requests", icon: UserCog, group: "Operations" },
-  { key: "job_requests", label: "Job Requests", icon: Briefcase, group: "Operations" },
   { key: "audit", label: "Audit & Access", icon: ScrollText, group: "System" },
   { key: "settings", label: "Settings", icon: Sliders, group: "System" },
 ];
@@ -1001,12 +999,6 @@ const AdminDashboard = () => {
             {tab === "avatar_resets" && <AvatarResetsTab />}
 
             {tab === "location_requests" && <LocationChangeRequestsTab />}
-
-            {tab === "job_requests" && (
-              <Suspense fallback={<TabFallback />}>
-                <JobRequestsTab />
-              </Suspense>
-            )}
 
             {/* PUSH BROADCAST */}
             {tab === "push" && (
