@@ -74,6 +74,7 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: typeof LayoutDashboard; gro
   { key: "push", label: "Push Broadcast", icon: Bell, group: "Operations" },
   { key: "avatar_resets", label: "Avatar Resets", icon: UserCog, group: "Operations" },
   { key: "location_requests", label: "Location Requests", icon: UserCog, group: "Operations" },
+  { key: "job_requests", label: "Job Requests", icon: Briefcase, group: "Operations" },
   { key: "audit", label: "Audit & Access", icon: ScrollText, group: "System" },
   { key: "settings", label: "Settings", icon: Sliders, group: "System" },
 ];
