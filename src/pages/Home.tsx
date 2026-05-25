@@ -29,6 +29,7 @@ import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
+import JobRequestTicker from "@/components/JobRequestTicker";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
