@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, BadgeCheck, ChevronRight, Droplet, HeartPulse, MapPin, Search, Zap, Star } from "lucide-react";
+import { ArrowRight, BadgeCheck, ChevronRight, Droplet, HeartPulse, LogIn, MapPin, Search, Zap, Star } from "lucide-react";
 import logoImg from "@/assets/logo.svg";
 import NotificationBell from "@/components/NotificationBell";
 import CurrentLocationChip from "@/components/CurrentLocationChip";
@@ -28,6 +28,7 @@ import { useAppSetting } from "@/hooks/useAppSettings";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
+import RoleSelectDialog from "@/components/RoleSelectDialog";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -326,6 +327,21 @@ const Home = () => {
               More <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
+
+          {!user && (
+            <div className="relative mt-5 flex flex-wrap justify-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/login")}
+                className="rounded-full border-white/20 bg-transparent px-6 text-hero-foreground hover:bg-white/10"
+              >
+                <LogIn className="mr-1.5 h-3.5 w-3.5" /> Log In
+              </Button>
+              <RoleSelectDialog>
+                <Button className="rounded-full px-6">Sign Up</Button>
+              </RoleSelectDialog>
+            </div>
+          )}
         </motion.section>
 
         {/* BLOOD KONNECT */}
