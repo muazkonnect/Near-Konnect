@@ -39,6 +39,7 @@ const PushBroadcastTab = lazy(() => import("@/components/admin/PushBroadcastTab"
 import EditWorkerDialog from "@/components/admin/EditWorkerDialog";
 import AvatarResetsTab from "@/components/admin/AvatarResetsTab";
 import LocationChangeRequestsTab from "@/components/admin/LocationChangeRequestsTab";
+const JobRequestsTab = lazy(() => import("@/components/admin/JobRequestsTab"));
 const FinanceTab = lazy(() => import("@/components/admin/FinanceTab"));
 const DiscountsTab = lazy(() => import("@/components/admin/DiscountsTab"));
 const TierPricingTab = lazy(() => import("@/components/admin/TierPricingTab"));
