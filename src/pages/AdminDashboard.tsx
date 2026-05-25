@@ -1002,6 +1002,12 @@ const AdminDashboard = () => {
 
             {tab === "location_requests" && <LocationChangeRequestsTab />}
 
+            {tab === "job_requests" && (
+              <Suspense fallback={<TabFallback />}>
+                <JobRequestsTab />
+              </Suspense>
+            )}
+
             {/* PUSH BROADCAST */}
             {tab === "push" && (
               <Suspense fallback={<TabFallback />}>
