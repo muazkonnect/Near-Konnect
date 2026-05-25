@@ -37,8 +37,8 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 
 // Configuration
 const SITE_NAME = "Near Konnect App";
-const SENDER_DOMAIN = "connect@nearkonnect.com";
-const ROOT_DOMAIN = "www.nearkonnect.com";
+const SENDER_DOMAIN = "notify.nearkonnect.com";
+const ROOT_DOMAIN = "nearkonnect.com";
 const FROM_DOMAIN = SENDER_DOMAIN;
 
 // Sample data for preview mode ONLY (not used in actual email sending).
