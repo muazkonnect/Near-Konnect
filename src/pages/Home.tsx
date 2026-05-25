@@ -29,6 +29,7 @@ import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { MAIN_SERVICE_CATEGORIES } from "@/data/serviceCategories";
 import { PromoteYourselfBanner } from "@/components/PromoteYourselfBanner";
 import RoleSelectDialog from "@/components/RoleSelectDialog";
+import JobRequestTicker from "@/components/JobRequestTicker";
 
 type DonorWithDistance = DonorRow & { distance: number };
 
@@ -258,6 +259,9 @@ const Home = () => {
           </div>
           <style>{`@keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-33.333%) } } @keyframes auto-carousel { from { transform: translate3d(0,0,0) } to { transform: translate3d(-50%,0,0) } } .auto-carousel-track { will-change: transform; animation-play-state: running; }`}</style>
         </div>
+
+        {/* JOB REQUEST TICKER */}
+        <JobRequestTicker />
 
         {/* BRAND BAR — logo sits inside the hero, below the announcement ticker */}
         <div className="relative flex items-center justify-between px-5 pt-5 md:hidden">
