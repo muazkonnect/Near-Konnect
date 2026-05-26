@@ -340,7 +340,7 @@ const WorkerDashboard = () => {
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-1.5 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
               <span className={`h-2 w-2 shrink-0 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
-              <span className="hidden text-[10px] font-bold uppercase tracking-wider xs:inline sm:text-[11px]">{available ? "Online" : "Offline"}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider sm:text-[11px]">{available ? "Online" : "Offline"}</span>
               <Switch
                 checked={available}
                 onCheckedChange={(v) => {
