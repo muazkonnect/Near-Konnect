@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, BadgeCheck, CheckCircle, Crown, Clock, Compass, Zap, Eye, HeartPulse, LayoutDashboard, Lock, KeyRound, MapPin, MessageSquare, Navigation, Save, Search, Star, UserCheck, XCircle } from "lucide-react";
+import { Calendar, BadgeCheck, CheckCircle, Crown, Clock, Compass, Zap, Eye, HeartPulse, LayoutDashboard, Lock, KeyRound, MapPin, MessageSquare, Navigation, Save, Search, Settings, Star, UserCheck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -471,7 +471,7 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
+              { label: activeTab === "profile" ? "Profile Setting" : "Profile", icon: Settings, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
               { label: "Boost Ad", icon: Zap, onClick: () => {
                 if (!isVerifiedWorker) {
                   toast.error(verificationPending ? "Verification pending. You can use ads once approved." : "Get verified to create ads.");
