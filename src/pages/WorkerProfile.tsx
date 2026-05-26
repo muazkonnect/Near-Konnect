@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { MapPin, Copy } from "lucide-react";
+import { MapPin, Copy, Share2 } from "lucide-react";
 import { ArrowLeft, MoreVertical, Star, ShieldCheck, Briefcase, Zap, Send, Mail, Phone, MessageSquare, Video, Lock, CalendarPlus, EyeOff, Crown, BadgeCheck, Gem } from "lucide-react";
+
 import WhatsappIcon from "@/components/icons/WhatsappIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -363,23 +364,42 @@ const WorkerProfile = () => {
               </div>
               <div className="mt-3 flex flex-wrap items-stretch justify-center gap-2">
                 {(dbWorker as any).uid && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard?.writeText((dbWorker as any).uid);
-                      toast.success("Worker ID copied");
-                    }}
-                    title="Click to copy"
-                    className={`group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:bg-white/10 ${themed ? "" : "hover:border-primary/40"}`}
-                  >
-                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-hero-muted">ID</span>
-                    <span className="h-3 w-px bg-white/15" />
-                    <span className="font-mono text-xs font-semibold tracking-wider text-hero-foreground">
-                      {(dbWorker as any).uid}
-                    </span>
-                    <Copy className="h-3 w-3 text-hero-muted opacity-0 transition group-hover:opacity-100" />
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard?.writeText((dbWorker as any).uid);
+                        toast.success("Worker ID copied");
+                      }}
+                      title="Click to copy"
+                      className={`group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:bg-white/10 ${themed ? "" : "hover:border-primary/40"}`}
+                    >
+                      <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-hero-muted">ID</span>
+                      <span className="h-3 w-px bg-white/15" />
+                      <span className="font-mono text-xs font-semibold tracking-wider text-hero-foreground">
+                        {(dbWorker as any).uid}
+                      </span>
+                      <Copy className="h-3 w-3 text-hero-muted opacity-0 transition group-hover:opacity-100" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const shareUrl = `${window.location.origin}/w/${(dbWorker as any).uid}`;
+                        const shareData = { title: `${worker.name} on NearKonnect`, text: `Check out ${worker.name}'s profile`, url: shareUrl };
+                        try {
+                          if (navigator.share) await navigator.share(shareData);
+                          else { await navigator.clipboard.writeText(shareUrl); toast.success("Profile link copied"); }
+                        } catch { /* cancelled */ }
+                      }}
+                      title="Share profile"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur transition hover:bg-white/10 text-hero-foreground"
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                      <span className="text-[11px] font-semibold">Share</span>
+                    </button>
+                  </>
                 )}
+
                 <div
                   className={themed
                     ? `inline-flex items-center gap-2 rounded-full border ${t.border} bg-black/40 px-3.5 py-1.5 ${t.textStrong}`

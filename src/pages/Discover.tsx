@@ -251,9 +251,10 @@ const Discover = () => {
     [workersList, featuredIds, adminUserIds]
   );
   const allOthers = useMemo(
-    () => sorted.filter((w) => !featuredIds.has(w.id)),
-    [sorted, featuredIds]
+    () => sorted,
+    [sorted]
   );
+
   const hasAnyAds = bannerAds.length > 0 || promoted3kmFiltered.length > 0 || featuredWorkers.length > 0 || exploreAds.length > 1;
 
   const toggleMainCategory = (mainCategory: string) => {

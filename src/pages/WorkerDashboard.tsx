@@ -431,9 +431,14 @@ const WorkerDashboard = () => {
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
                   </span>
-                  <span className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("reviews")}
+                    className="flex items-center gap-1 hover:text-primary transition"
+                  >
                     <UserCheck className="h-3.5 w-3.5" /> {reviews.length} Reviews
-                  </span>
+                  </button>
+
                   <span className={`flex items-center gap-1.5 ${available ? "text-primary" : "text-hero-foreground/50"}`}>
                     <span className={`h-2 w-2 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
                     {available ? "Available Now" : "Offline"}
@@ -532,15 +537,17 @@ const WorkerDashboard = () => {
           {/* Premium upgrades */}
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => setVerifyOpen(true)}
-              className="group rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-4 text-left transition hover:border-primary/60"
+              onClick={() => { if (!isVerifiedWorker) setVerifyOpen(true); }}
+              disabled={isVerifiedWorker}
+              className={`group rounded-xl border p-4 text-left transition ${isVerifiedWorker ? "border-primary/60 bg-gradient-to-br from-primary/20 to-transparent cursor-default" : "border-primary/30 bg-gradient-to-br from-primary/10 to-transparent hover:border-primary/60"}`}
             >
-              <ShieldCheck className="h-6 w-6 text-primary mb-2" />
-              <p className="text-sm font-bold">Get Verified</p>
-              <p className="text-[11px] text-hero-foreground/60">Lifetime trust badge</p>
+              {isVerifiedWorker ? <BadgeCheck className="h-6 w-6 text-primary mb-2" /> : <ShieldCheck className="h-6 w-6 text-primary mb-2" />}
+              <p className="text-sm font-bold">{isVerifiedWorker ? "Verified" : "Get Verified"}</p>
+              <p className="text-[11px] text-hero-foreground/60">{isVerifiedWorker ? "Lifetime trust badge active" : "Lifetime trust badge"}</p>
             </button>
             <button
               onClick={() => {
+                if (activePremium) return;
                 if (!isVerifiedWorker) {
                   toast.error(verificationPending ? "Verification pending. Featured unlocks after approval." : "Get verified to become featured.");
                   if (!verificationPending) setVerifyOpen(true);
@@ -548,13 +555,15 @@ const WorkerDashboard = () => {
                 }
                 setFeaturedOpen(true);
               }}
-              className="group relative rounded-xl border border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent p-4 text-left transition hover:border-amber-400/70"
+              disabled={!!activePremium}
+              className={`group relative rounded-xl border p-4 text-left transition ${activePremium ? "border-amber-400/70 bg-gradient-to-br from-amber-400/20 to-transparent cursor-default" : "border-amber-400/40 bg-gradient-to-br from-amber-400/10 to-transparent hover:border-amber-400/70"}`}
             >
               <Star className="h-6 w-6 text-amber-500 mb-2" fill="currentColor" />
-              <p className="text-sm font-bold">Become Featured</p>
-              <p className="text-[11px] text-hero-foreground/60">{isVerifiedWorker ? "3 km premium reach" : verificationPending ? "Verification pending" : "Verification required"}</p>
+              <p className="text-sm font-bold">{activePremium ? "Featured" : "Become Featured"}</p>
+              <p className="text-[11px] text-hero-foreground/60">{activePremium ? premiumRemaining || "Active" : isVerifiedWorker ? "3 km premium reach" : verificationPending ? "Verification pending" : "Verification required"}</p>
             </button>
           </div>
+
           <VerificationDialog open={verifyOpen} onOpenChange={setVerifyOpen} />
           <FeaturedPurchaseDialog open={featuredOpen} onOpenChange={setFeaturedOpen} workerCategoryId={(workerData as any)?.category_id ?? null} />
 
