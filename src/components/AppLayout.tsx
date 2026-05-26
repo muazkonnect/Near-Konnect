@@ -146,7 +146,7 @@ const AppLayout = ({ title, subtitle, action, children, showSignOut = false, hid
             <div className="flex items-center gap-2">{user && <SparksBalanceChip />}{user && <NotificationBell />}</div>
             <button
               onClick={() => navigate(profilePath)}
-              className="inline-flex items-center gap-2 rounded-full border border-hero-foreground/10 bg-hero-foreground/5 px-3 py-1.5 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero-foreground/10"
+              className="inline-flex items-center gap-2 rounded-full border border-hero-foreground/10 bg-hero-foreground/5 px-3 py-1.5 text-sm font-semibold text-hero-foreground transition-colors hover:bg-hero-foreground/10 bg-lime-950"
               aria-label="Open dashboard"
             >
               <span className="grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-foreground text-xs">
