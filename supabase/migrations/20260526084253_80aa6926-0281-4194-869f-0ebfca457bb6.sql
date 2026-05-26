@@ -1,0 +1,1 @@
+REVOKE SELECT (latitude, longitude) ON public.profiles FROM anon, authenticated;
