@@ -238,7 +238,7 @@ const Home = () => {
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
-                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-950 ${
+                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-50 ${
                     t.special ? "text-destructive-foreground" : t.hot ? "text-primary" : "text-hero-muted"
                   }`}
                 >
@@ -265,7 +265,7 @@ const Home = () => {
             <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
           </Link>
           <div className="flex items-center gap-2">
-            <CurrentLocationChip className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-1.5 shadow-none border-inherit bg-slate-50" />
+            <CurrentLocationChip className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-1.5 shadow-none border-inherit bg-lime-950" />
             {user && <NotificationBell />}
           </div>
         </div>
