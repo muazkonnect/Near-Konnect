@@ -471,7 +471,7 @@ const WorkerDashboard = () => {
           {/* Quick Actions 2x2 */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: activeTab === "profile" ? "Hide Profile" : "Profile", icon: UserCheck, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
+              { label: activeTab === "profile" ? "Profile Setting" : "Profile", icon: Settings, onClick: () => setActiveTab(activeTab === "profile" ? "overview" : "profile"), gated: false },
               { label: "Boost Ad", icon: Zap, onClick: () => {
                 if (!isVerifiedWorker) {
                   toast.error(verificationPending ? "Verification pending. You can use ads once approved." : "Get verified to create ads.");
