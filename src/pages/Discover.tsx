@@ -201,15 +201,13 @@ const Discover = () => {
       });
     }
     if (radiusKm && userCoords) {
-      list = list.filter((w) => {
-        if (w.latitude == null || w.longitude == null) return false;
+      list = list.map((w) => {
+        if (w.latitude == null || w.longitude == null) return w;
         const meters = calculateDistance(userCoords.latitude, userCoords.longitude, w.latitude, w.longitude) * 1000;
-        return meters <= (radiusKm as number) * 1000;
-      }).map((w) => {
-        const meters = calculateDistance(userCoords.latitude, userCoords.longitude, w.latitude!, w.longitude!) * 1000;
         return { ...w, matchedDistanceMeters: meters };
       });
     }
+
     list.sort((a, b) => {
       if (sort === "distance") return a.distance - b.distance;
       if (sort === "rating") return b.rating - a.rating;
