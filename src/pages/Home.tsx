@@ -265,7 +265,7 @@ const Home = () => {
             <img src={logoImg} alt="Near Konnect" className="h-9 object-contain" />
           </Link>
           <div className="flex items-center gap-2">
-            <CurrentLocationChip className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 px-3 py-1.5 shadow-none border-inherit bg-lime-950" />
+            <CurrentLocationChip className="flex items-center gap-2 rounded-full border border-hero-foreground/15 bg-hero-foreground/5 py-1.5 shadow-none border-inherit bg-lime-950 px-[8px]" />
             {user && <NotificationBell />}
           </div>
         </div>
