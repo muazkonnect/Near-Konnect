@@ -431,9 +431,14 @@ const WorkerDashboard = () => {
                   <span className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-primary text-primary" /> {avgRating} Rating
                   </span>
-                  <span className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("reviews")}
+                    className="flex items-center gap-1 hover:text-primary transition"
+                  >
                     <UserCheck className="h-3.5 w-3.5" /> {reviews.length} Reviews
-                  </span>
+                  </button>
+
                   <span className={`flex items-center gap-1.5 ${available ? "text-primary" : "text-hero-foreground/50"}`}>
                     <span className={`h-2 w-2 rounded-full ${available ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-hero-foreground/30"}`} />
                     {available ? "Available Now" : "Offline"}
