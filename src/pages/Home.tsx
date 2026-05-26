@@ -238,7 +238,7 @@ const Home = () => {
               {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
                 <span
                   key={i}
-                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] ${
+                  className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-950 ${
                     t.special ? "text-destructive-foreground" : t.hot ? "text-primary" : "text-hero-muted"
                   }`}
                 >
