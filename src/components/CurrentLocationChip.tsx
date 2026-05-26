@@ -35,7 +35,7 @@ const CurrentLocationChip = ({ className = "" }: Props) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[11px] text-hero-foreground/60 ${className}`}
+      className={`inline-flex items-center gap-1 text-[11px] ${className}`}
       title="Your approximate current location"
     >
       <MapPin className="h-3 w-3 text-primary" />
