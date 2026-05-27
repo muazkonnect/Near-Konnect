@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Navigation, Search, MapOff } from "lucide-react";
+import { Loader2, Navigation, Search, MapPinOff } from "lucide-react";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { toast } from "sonner";
 import LocationLabel from "@/components/LocationLabel";
@@ -193,7 +193,7 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
   if (loadError) {
     return (
       <div className="flex h-56 flex-col items-center justify-center gap-2 rounded-lg border bg-muted/40 p-4 text-center">
-        <MapOff className="h-6 w-6 text-muted-foreground" />
+        <MapPinOff className="h-6 w-6 text-muted-foreground" />
         <p className="text-xs text-muted-foreground">Map unavailable. Please try again later.</p>
         <Button type="button" variant="outline" size="sm" className="gap-2" onClick={useCurrent} disabled={locating}>
           <Navigation className="h-4 w-4" />
