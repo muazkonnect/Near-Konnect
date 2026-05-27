@@ -1,20 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Navigation, Search } from "lucide-react";
+import { Loader2, Navigation, Search, MapOff } from "lucide-react";
 import { getCurrentPosition, type Coords } from "@/lib/geolocation";
 import { toast } from "sonner";
 import LocationLabel from "@/components/LocationLabel";
-
-const markerIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
+import { isGoogleMapsConfigured, loadGoogleMaps } from "@/components/maps/useGoogleMaps";
 
 interface MapLocationPickerProps {
   value: Coords | null;
@@ -22,7 +13,7 @@ interface MapLocationPickerProps {
   radiusKm?: number;
 }
 
-type Suggestion = { display_name: string; lat: string; lon: string };
+type Suggestion = { placeId: string; primary: string; secondary: string };
 
 const DEFAULT_CENTER: Coords = { latitude: 24.8607, longitude: 67.0011 };
 
@@ -32,125 +23,159 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
-  const circleRef = useRef<L.Circle | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const circleRef = useRef<google.maps.Circle | null>(null);
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
+  // Load Maps JS once
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
-    const center = value ?? DEFAULT_CENTER;
-    const map = L.map(containerRef.current, {
-      center: [center.latitude, center.longitude],
-      zoom: value ? 15 : 11,
-      scrollWheelZoom: false,
-    });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap",
-    }).addTo(map);
-
-    map.on("click", (e: L.LeafletMouseEvent) => {
-      onChangeRef.current({ latitude: e.latlng.lat, longitude: e.latlng.lng });
-    });
-
-    mapRef.current = map;
-
-    const invalidate = () => map.invalidateSize();
-    const t1 = setTimeout(invalidate, 100);
-    const t2 = setTimeout(invalidate, 400);
-    window.addEventListener("resize", invalidate);
-
+    if (!isGoogleMapsConfigured()) {
+      setLoadError(true);
+      return;
+    }
+    let mounted = true;
+    loadGoogleMaps()
+      .then(() => mounted && setReady(true))
+      .catch(() => mounted && setLoadError(true));
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      window.removeEventListener("resize", invalidate);
-      map.remove();
-      mapRef.current = null;
-      markerRef.current = null;
+      mounted = false;
     };
   }, []);
 
+  // Init map
+  useEffect(() => {
+    if (!ready || !containerRef.current || mapRef.current) return;
+    const center = value ?? DEFAULT_CENTER;
+    const map = new google.maps.Map(containerRef.current, {
+      center: { lat: center.latitude, lng: center.longitude },
+      zoom: value ? 15 : 11,
+      disableDefaultUI: true,
+      zoomControl: true,
+      gestureHandling: "greedy",
+      clickableIcons: false,
+    });
+    map.addListener("click", (e: google.maps.MapMouseEvent) => {
+      if (!e.latLng) return;
+      onChangeRef.current({ latitude: e.latLng.lat(), longitude: e.latLng.lng() });
+    });
+    mapRef.current = map;
+  }, [ready]);
+
+  // Marker sync
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     if (value) {
-      const latlng: L.LatLngTuple = [value.latitude, value.longitude];
+      const pos = { lat: value.latitude, lng: value.longitude };
       if (markerRef.current) {
-        markerRef.current.setLatLng(latlng);
+        markerRef.current.setPosition(pos);
       } else {
-        markerRef.current = L.marker(latlng, { icon: markerIcon }).addTo(map);
+        markerRef.current = new google.maps.Marker({ position: pos, map });
       }
-      map.setView(latlng, Math.max(map.getZoom(), 15));
+      map.panTo(pos);
+      if ((map.getZoom() ?? 0) < 15) map.setZoom(15);
     } else if (markerRef.current) {
-      markerRef.current.remove();
+      markerRef.current.setMap(null);
       markerRef.current = null;
     }
-  }, [value]);
+  }, [value, ready]);
 
+  // Radius circle
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     if (value && radiusKm && radiusKm > 0) {
-      const latlng: L.LatLngTuple = [value.latitude, value.longitude];
+      const pos = { lat: value.latitude, lng: value.longitude };
       const radiusM = radiusKm * 1000;
       if (circleRef.current) {
-        circleRef.current.setLatLng(latlng);
+        circleRef.current.setCenter(pos);
         circleRef.current.setRadius(radiusM);
       } else {
-        circleRef.current = L.circle(latlng, {
+        circleRef.current = new google.maps.Circle({
+          map,
+          center: pos,
           radius: radiusM,
-          color: "hsl(var(--primary))",
-          weight: 2,
-          fillColor: "hsl(var(--primary))",
-          fillOpacity: 0.15,
-        }).addTo(map);
+          strokeColor: "#000",
+          strokeWeight: 2,
+          fillColor: "#000",
+          fillOpacity: 0.1,
+        });
       }
-      map.fitBounds(circleRef.current.getBounds(), { padding: [20, 20], maxZoom: 15 });
+      const b = circleRef.current.getBounds();
+      if (b) map.fitBounds(b, 20);
     } else if (circleRef.current) {
-      circleRef.current.remove();
+      circleRef.current.setMap(null);
       circleRef.current = null;
     }
-  }, [value, radiusKm]);
+  }, [value, radiusKm, ready]);
 
-  // Debounced autocomplete via Nominatim
+  // Autocomplete suggestions (Places API New via JS library)
   useEffect(() => {
+    if (!ready) return;
     const q = query.trim();
     if (q.length < 3) {
       setSuggestions([]);
       return;
     }
-    const ctrl = new AbortController();
+    let cancelled = false;
     const t = setTimeout(async () => {
       try {
         setSearching(true);
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(q)}`,
-          { signal: ctrl.signal, headers: { "Accept-Language": navigator.language || "en" } },
-        );
-        const data: Suggestion[] = await res.json();
-        setSuggestions(data || []);
+        const { AutocompleteSuggestion, AutocompleteSessionToken } =
+          (await google.maps.importLibrary("places")) as google.maps.PlacesLibrary;
+        if (!sessionTokenRef.current) {
+          sessionTokenRef.current = new AutocompleteSessionToken();
+        }
+        const { suggestions: raw } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: q,
+          sessionToken: sessionTokenRef.current,
+        });
+        if (cancelled) return;
+        const mapped: Suggestion[] = raw
+          .map((s) => {
+            const p = s.placePrediction;
+            if (!p) return null;
+            return {
+              placeId: p.placeId,
+              primary: p.mainText?.text ?? p.text.text,
+              secondary: p.secondaryText?.text ?? "",
+            };
+          })
+          .filter(Boolean) as Suggestion[];
+        setSuggestions(mapped);
         setShowSuggestions(true);
       } catch {
         // ignore
       } finally {
-        setSearching(false);
+        if (!cancelled) setSearching(false);
       }
-    }, 350);
+    }, 300);
     return () => {
-      ctrl.abort();
+      cancelled = true;
       clearTimeout(t);
     };
-  }, [query]);
+  }, [query, ready]);
 
-  const pickSuggestion = (s: Suggestion) => {
-    const lat = parseFloat(s.lat);
-    const lon = parseFloat(s.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-    setQuery(s.display_name);
+  const pickSuggestion = async (s: Suggestion) => {
     setShowSuggestions(false);
-    onChange({ latitude: lat, longitude: lon });
+    setQuery(`${s.primary}${s.secondary ? ", " + s.secondary : ""}`);
+    try {
+      const { Place } = (await google.maps.importLibrary("places")) as google.maps.PlacesLibrary;
+      const place = new Place({ id: s.placeId });
+      await place.fetchFields({ fields: ["location", "formattedAddress"] });
+      const loc = place.location;
+      if (!loc) return;
+      onChange({ latitude: loc.lat(), longitude: loc.lng() });
+      sessionTokenRef.current = null; // end session
+    } catch {
+      toast.error("Couldn't load that place. Try another result.");
+    }
   };
 
   const useCurrent = async () => {
@@ -164,6 +189,19 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
       setLocating(false);
     }
   };
+
+  if (loadError) {
+    return (
+      <div className="flex h-56 flex-col items-center justify-center gap-2 rounded-lg border bg-muted/40 p-4 text-center">
+        <MapOff className="h-6 w-6 text-muted-foreground" />
+        <p className="text-xs text-muted-foreground">Map unavailable. Please try again later.</p>
+        <Button type="button" variant="outline" size="sm" className="gap-2" onClick={useCurrent} disabled={locating}>
+          <Navigation className="h-4 w-4" />
+          {locating ? "Detecting..." : "Use my current location"}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
@@ -185,21 +223,24 @@ const MapLocationPicker = ({ value, onChange, radiusKm }: MapLocationPickerProps
         )}
         {showSuggestions && suggestions.length > 0 && (
           <div className="absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-lg">
-            {suggestions.map((s, i) => (
+            {suggestions.map((s) => (
               <button
-                key={i}
+                key={s.placeId}
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => pickSuggestion(s)}
-                className="block w-full truncate px-3 py-2 text-left text-xs hover:bg-accent"
+                className="block w-full px-3 py-2 text-left text-xs hover:bg-accent"
               >
-                {s.display_name}
+                <div className="truncate font-medium">{s.primary}</div>
+                {s.secondary && (
+                  <div className="truncate text-[11px] text-muted-foreground">{s.secondary}</div>
+                )}
               </button>
             ))}
           </div>
         )}
       </div>
-      <div className="h-56 w-full overflow-hidden rounded-lg border">
+      <div className="h-56 w-full overflow-hidden rounded-lg border bg-muted">
         <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       </div>
       <Button type="button" variant="outline" size="sm" className="w-full gap-2" onClick={useCurrent} disabled={locating}>
